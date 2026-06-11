@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/it.xml</link>
     <description>Latest published Swiss court decisions in Italiano.</description>
     <language>de-CH</language>
-    <lastBuildDate>Wed, 10 Jun 2026 11:03:40 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 11 Jun 2026 11:00:20 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/it.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -101,6 +101,79 @@ Richte…</description>
       <pubDate>Tue, 26 May 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-10096.2025</guid>
       <category>bvger</category>
+    </item>
+    <item>
+      <title>gr_gerichte VR3 2026 5 vom 2026-05-26</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_VR3%202026%205</link>
+      <description>Obergericht des Kantons Graubünden
+Dretgira superiura dal chantun Grischun
+Tribunale d'appello del Cantone dei Grigioni
+Sentenza del 26 maggio 2026
+comunicata il 28 maggio 2026
+N. d'incarto
+VR3 26 5
+Istanza
+Terza Camera di diritto amministrativo
+Comp…</description>
+      <pubDate>Tue, 26 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">gr_gerichte_VR3 2026 5</guid>
+      <category>gr_gerichte</category>
+    </item>
+    <item>
+      <title>Bundesgericht 9C_302/2026 vom 2026-05-22</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_9C_302_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+9C_302/2026
+
+Sentenza del 22 maggio 2026
+
+III Corte di diritto pubblico
+
+Composizione
+
+Giudice federale Moser-Szeless, Presidente,
+
+Cancelliere Savoldelli.
+
+Partecipanti al proced…</description>
+      <pubDate>Fri, 22 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:9C_302.2026</guid>
+      <category>bger</category>
+    </item>
+    <item>
+      <title>Bundesgericht 9C_303/2026 vom 2026-05-22</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_9C_303_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+9C_303/2026
+
+Sentenza del 22 maggio 2026
+
+III Corte di diritto pubblico
+
+Composizione
+
+Giudice federale Moser-Szeless, Presidente,
+
+Cancelliere Savoldelli.
+
+Partecipanti al proced…</description>
+      <pubDate>Fri, 22 May 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:9C_303.2026</guid>
+      <category>bger</category>
     </item>
     <item>
       <title>Bundesverwaltungsgericht D-604/2026 vom 2026-05-21</title>
@@ -889,50 +962,6 @@ Comp…</description>
       <pubDate>Wed, 29 Apr 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">gr_gerichte_VR3 2025 5</guid>
       <category>gr_gerichte</category>
-    </item>
-    <item>
-      <title>Bundesgericht 6B_44/2026 vom 2026-04-28</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_6B_44_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-6B_44/2026
-
-Sentenza del 28 aprile 2026
-
-I Corte di diritto penale
-
-Composizione
-
-Giudici federali Muschietti, Presidente,
-
-Glassey, Segura, Giudice supplente,
-
-Cancelliere Gadoni…</description>
-      <pubDate>Tue, 28 Apr 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:6B_44.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesstrafgericht BP.2026.29 vom 2026-04-28</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bstger_BP.2026.29</link>
-      <description>Effetto sospensivo (art. 387 CPP)</description>
-      <pubDate>Tue, 28 Apr 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BStGer:2026:BP.2026.29</guid>
-      <category>bstger</category>
-    </item>
-    <item>
-      <title>Bundesstrafgericht BP.2026.30 vom 2026-04-28</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bstger_BP.2026.30</link>
-      <description>Effetto sospensivo (art. 387 CPP)</description>
-      <pubDate>Tue, 28 Apr 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BStGer:2026:BP.2026.30</guid>
-      <category>bstger</category>
     </item>
   </channel>
 </rss>
