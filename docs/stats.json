@@ -2273,7 +2273,7 @@
     "2026-05": 1202,
     "2026-06": 84
   },
-  "generated_at": "2026-06-12T11:38:44.219680+00:00",
+  "generated_at": "2026-06-12T16:59:25.462127+00:00",
   "scraper_health": {
     "run_at": "2026-06-12T02:49:49.572434+00:00",
     "run_duration_s": 6528.9,
@@ -3296,7 +3296,7 @@
         "note": "1775 listed on portal but content not downloadable (empty page or missing PDF)",
         "state_count": 1510,
         "jsonl_size_mb": 91.1,
-        "jsonl_mtime": "2026-06-12T02:49:49.510569+00:00"
+        "jsonl_mtime": "2026-06-12T14:45:20.278702+00:00"
       }
     },
     "run_at_daily": "2026-06-12T02:49:49.572434+00:00",
@@ -3352,14 +3352,14 @@
       "ZH": 135
     },
     "commentaries": 1131,
-    "scholarship_publications": 26574,
+    "scholarship_publications": 26430,
     "scholarship_by_source": {
       "boris_law": 7319,
       "e_periodica_law": 3041,
       "zhaw_digitalcollection": 3040,
       "e_periodica_polsci": 2957,
-      "unige_law": 2794,
-      "libra_unine": 1979,
+      "unige_law": 2649,
+      "libra_unine": 1980,
       "eth_research_collection": 1760,
       "e_periodica_pubadmin": 855,
       "fhnw_irf": 496,
@@ -3379,29 +3379,29 @@
       "alexandria_law": 13
     },
     "scholarship_by_type": {
-      "article": 19809,
-      "book": 4977,
-      "dissertation": 656,
-      "report": 439,
+      "article": 19766,
+      "book": 4880,
+      "dissertation": 655,
+      "report": 436,
       "commentary": 407,
       "working_paper": 173,
       "guidance": 70,
       "reference_article": 40,
       "bachelor_thesis": 3
     },
-    "citation_edges": 8873690,
-    "statute_edges": 11470502
+    "citation_edges": 8876355,
+    "statute_edges": 11472889
   },
   "interesting_stats": {
     "most_cited_decision": {
       "docket": "BGE 125 V 351",
-      "citation_count": 89463,
+      "citation_count": 89470,
       "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
     },
     "most_cited_statute": {
       "law_code": "LTF",
       "article": "100",
-      "ref_count": 180586
+      "ref_count": 180609
     },
     "oldest_decision": {
       "docket": "1_I_3",
@@ -3413,17 +3413,17 @@
       "de_pct": 46.7,
       "fr_pct": 45.1,
       "it_pct": 8.3,
-      "total": 990220
+      "total": 990361
     },
     "regeste_coverage": {
       "pct": 35.6,
-      "with_regeste": 352719,
-      "total": 990220
+      "with_regeste": 352732,
+      "total": 990361
     },
     "graph_size": {
-      "decision_edges": 8303424,
-      "statute_edges": 11470502,
-      "total": 19773926
+      "decision_edges": 8305979,
+      "statute_edges": 11472889,
+      "total": 19778868
     },
     "echr_switzerland": {
       "total": 2830,
@@ -3439,25 +3439,25 @@
     "top_5_decisions": [
       {
         "docket": "BGE 125 V 351",
-        "citation_count": 89463,
+        "citation_count": 89470,
         "regeste_excerpt": "Regeste\n Art. 4 BV; Art. 108 Abs. 1 lit. b UVG; Art. 40 BZP in Verbindung mit Art. 19 VwVG; Art. 95 Abs. 2 in Verbindung mit Art. 113 und 132 OG: Beweiswürdigun",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
       },
       {
         "docket": "BGE 122 V 157",
-        "citation_count": 47102,
+        "citation_count": 47106,
         "regeste_excerpt": "Regeste\n Art. 4 BV, Art. 6 Ziff. 1 EMRK. - Art. 4 BV und Art. 6 Ziff. 1 EMRK umfassen keinen formellen Anspruch auf Beizug versicherungsexterner medizinischer G",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_122_V_157"
       },
       {
         "docket": "BGE 134 V 231",
-        "citation_count": 37195,
+        "citation_count": 37198,
         "regeste_excerpt": "Regeste\n Art. 6 Abs. 1 UVG; Beweiswert diagnostischer Methoden; funktionelle Magnetresonanztomographie; Schleudertrauma. Eine medizinisch-diagnostische Methode ",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_134_V_231"
       },
       {
         "docket": "BGE 130 V 343",
-        "citation_count": 31029,
+        "citation_count": 31030,
         "regeste_excerpt": "Regeste\n Art. 1 Abs. 1 IVG (in der seit 1. Januar 2003 geltenden Fassung) in Verbindung mit Art. 6, 7, 8 Abs. 1, Art. 16 und 17 ATSG; Art. 4 Abs. 1, Art. 28 Abs",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_130_V_343"
       },
@@ -3472,27 +3472,27 @@
       {
         "law_code": "LTF",
         "article": "100",
-        "ref_count": 180586
+        "ref_count": 180609
       },
       {
         "law_code": "LTF",
         "article": "113",
-        "ref_count": 110802
+        "ref_count": 110815
       },
       {
         "law_code": "LTF",
         "article": "42",
-        "ref_count": 105178
+        "ref_count": 105190
       },
       {
         "law_code": "BGG",
         "article": "42",
-        "ref_count": 92853
+        "ref_count": 92879
       },
       {
         "law_code": "BGG",
         "article": "66",
-        "ref_count": 59607
+        "ref_count": 59613
       }
     ],
     "materialien_coverage": {
@@ -3548,9 +3548,9 @@
       {
         "court": "ge_gerichte",
         "earliest": "1908-11-08",
-        "latest": "2026-05-19",
+        "latest": "2026-06-02",
         "span_years": 118,
-        "decision_count": 168300
+        "decision_count": 168326
       }
     ]
   },
@@ -4175,7 +4175,10 @@
       "AG": 6,
       "BS": 9
     },
-    "corpus": {},
+    "corpus": {
+      "citation_edges": 2665,
+      "statute_edges": 2387
+    },
     "previous_generated_at": "2026-06-11T17:56:46.755902+00:00"
   }
 }
