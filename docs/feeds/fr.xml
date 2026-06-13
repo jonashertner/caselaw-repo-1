@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/fr.xml</link>
     <description>Latest published Swiss court decisions in Français.</description>
     <language>de-CH</language>
-    <lastBuildDate>Fri, 12 Jun 2026 11:26:57 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 13 Jun 2026 10:52:06 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/fr.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -429,6 +429,14 @@ représenté par Me …</description>
       <category>be_verwaltungsgericht</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht F-3841/2026 vom 2026-06-05</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-3841_2026</link>
+      <description>Attribution d'un demandeur d'asile à un canton</description>
+      <pubDate>Fri, 05 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-3841.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>fr_gerichte 102 2026 78 vom 2026-06-05</title>
       <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_102%202026%2078</link>
       <description>Tribunal cantonal TC
@@ -518,6 +526,14 @@ Laurent…</description>
       <description>Affiliation obligatoire à l'institution supplétive</description>
       <pubDate>Wed, 03 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-1933.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht E-338/2023 vom 2026-06-03</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-338_2023</link>
+      <description>Asile et renvoi</description>
+      <pubDate>Wed, 03 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-338.2023</guid>
       <category>bvger</category>
     </item>
     <item>
@@ -650,6 +666,14 @@ A._______…</description>
       <description>Exécution du renvoi</description>
       <pubDate>Mon, 01 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-7188.2025</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht F-4062/2023 vom 2026-06-01</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-4062_2023</link>
+      <description>Visa national</description>
+      <pubDate>Mon, 01 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-4062.2023</guid>
       <category>bvger</category>
     </item>
     <item>
@@ -819,43 +843,6 @@ Participants à la proc…</description>
       <pubDate>Fri, 29 May 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BGer:2026:8C_209.2026</guid>
       <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht D-3285/2024 vom 2026-05-29</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-3285_2024</link>
-      <description>Asile (sans excécution du renvoi) (demande multiple)</description>
-      <pubDate>Fri, 29 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-3285.2024</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht F-3374/2026 vom 2026-05-29</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-3374_2026</link>
-      <description>Asile (non-entrée en matière) et renvoi (Etat tiers sûr - art. 31a al. 1 let. a LAsi)</description>
-      <pubDate>Fri, 29 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-3374.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>fr_gerichte 102 2026 40 vom 2026-05-29</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_102%202026%2040</link>
-      <description>Tribunal cantonal TC
-Kantonsgericht KG
-Rue des Augustins 3, case postale 630, 1701 Fribourg
-T +41 26 304 15 00
-www.fr.ch/tc
-—
-Pouvoir Judiciaire PJ
-Gerichtsbehörden GB
-102 2026 40
-Arrêt du 26 mai 2026
-IIe Cour d’appel civil
-Composition
-Présidente :
-D…</description>
-      <pubDate>Fri, 29 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">fr_gerichte_102 2026 40</guid>
-      <category>fr_gerichte</category>
     </item>
   </channel>
 </rss>
