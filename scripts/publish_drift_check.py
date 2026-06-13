@@ -40,6 +40,7 @@ import argparse
 import json
 import logging
 import os
+import re
 import sqlite3
 import sys
 import time
@@ -76,10 +77,75 @@ PAIRS = [
 # if the table is intrinsically more volatile day-to-day.
 DEFAULT_ROW_TOLERANCE_PCT = 2.0
 
+# Strict threshold for LOST coverage — current decisions the full rebuild
+# has that the incremental dropped. This is the regression direction; a
+# trustworthy incremental should lose ~0, so the bound is much tighter than
+# the count-drift tolerance. The 2026-06-13 structure gap was 0.2 % (1,956
+# decisions) — this fails on that and passes only once the builder closes it.
+DEFAULT_MAX_LOST_PCT = 0.05
+
 # Tables that are state/audit metadata, not user-facing content — never
 # expected to match between live and shadow because they have different
 # extractor histories.
 SKIP_TABLES = {"processed_decisions", "meta", "sqlite_sequence"}
+
+# ── Decision-id normalization for coverage comparison ──────────────────
+# Collapses id-keying variants so the SAME decision under different id forms
+# maps to ONE key: court-prefix variants (bge_historical_X vs bge_X) and the
+# build_fts5 `_dYYYYMMDD` collision suffix (which keys on DECISION date — see
+# build_fts5.py:1461). Without this, a decision the legacy sidecar mis-keys
+# looks like BOTH "lost" and "gained", and a raw useful-count comparison can
+# show the incremental as larger/healthier while it is actually missing
+# current decisions (the 2026-06-13 finding: +3.86 % useful-count masked a
+# 1,956-decision Ticino coverage gap).
+_ID_DATE_SUFFIX_RE = re.compile(r"_d\d{8}$")
+_ID_PREFIXES = ("bge_historical_", "bge_egmr_", "bge_", "bger_evg_", "bger_")
+_ID_NONALNUM_RE = re.compile(r"[^a-z0-9]")
+
+
+def _norm_decision_id(i: str) -> str:
+    s = _ID_DATE_SUFFIX_RE.sub("", i.lower())
+    for p in _ID_PREFIXES:
+        if s.startswith(p):
+            s = s[len(p):]
+            break
+    return _ID_NONALNUM_RE.sub("", s)
+
+
+_dec_norm_cache: dict = {}
+
+
+def _decisions_norm_keys(decisions_db_path: Path) -> set:
+    """Normalized canonical decision-ids from decisions.db (cached per run)."""
+    key = str(decisions_db_path)
+    cached = _dec_norm_cache.get(key)
+    if cached is not None:
+        return cached
+    keys: set = set()
+    conn = sqlite3.connect(
+        f"file:{decisions_db_path}?mode=ro&immutable=1", uri=True)
+    try:
+        for (did,) in conn.execute("SELECT decision_id FROM decisions"):
+            keys.add(_norm_decision_id(did))
+    finally:
+        conn.close()
+    _dec_norm_cache[key] = keys
+    return keys
+
+
+def _covered_norm_keys(conn: sqlite3.Connection, table: str,
+                       dec_norm: set) -> set:
+    """Normalized decision-id keys this table covers, restricted to keys that
+    map to a CURRENT decision (in decisions.db). Variant keying collapsed."""
+    covered: set = set()
+    for (did,) in conn.execute(f"SELECT decision_id FROM {table}"):
+        if did is None:
+            continue
+        k = _norm_decision_id(did)
+        if k in dec_norm:
+            covered.add(k)
+    return covered
+
 
 logger = logging.getLogger("publish_drift_check")
 
@@ -161,7 +227,8 @@ def _useful_count(conn: sqlite3.Connection, table: str,
 
 def _compare_pair(display_name: str, live: Path, shadow: Path,
                   row_tolerance_pct: float,
-                  decisions_db: Path | None = None) -> dict:
+                  decisions_db: Path | None = None,
+                  max_lost_pct: float = 0.1) -> dict:
     """Compare one (live, shadow) DB pair. Returns a record suitable
     for both stdout and JSONL append. Sets ``ok=False`` if any shared
     table's row count drifts beyond tolerance."""
@@ -267,12 +334,56 @@ def _compare_pair(display_name: str, live: Path, shadow: Path,
                     "live_orphans": live_n - live_useful,
                     "shadow_orphans": shadow_n - shadow_useful,
                 })
+                # Coverage-direction check — the trustworthy signal, but
+                # EXPENSIVE (full decision_id scan + normalize, both sides).
+                # Only drill in when the cheap count check already drifts: a
+                # matched count needs no investigation. For the structure
+                # sidecar the legacy build's mis-keying makes the count differ
+                # permanently, so coverage governs there (correctly); graph
+                # edge tables (8-11M rows) whose counts match exactly skip
+                # this and stay fast. Gate fails on coverage LOST (decisions
+                # the full rebuild has that the incremental dropped — the
+                # cutover regression); GAINED is reported, never penalized.
+                if pct > row_tolerance_pct:
+                    try:
+                        dec_norm = _decisions_norm_keys(decisions_db)
+                        live_cov = _covered_norm_keys(live_conn, table, dec_norm)
+                        shadow_cov = _covered_norm_keys(shadow_conn, table, dec_norm)
+                        lost = live_cov - shadow_cov
+                        gained = shadow_cov - live_cov
+                        lost_pct = (len(lost) / len(live_cov) * 100.0
+                                    if live_cov else 0.0)
+                        entry["coverage"] = {
+                            "live": len(live_cov),
+                            "shadow": len(shadow_cov),
+                            "lost_current": len(lost),
+                            "gained_current": len(gained),
+                            "lost_pct": round(lost_pct, 3),
+                        }
+                        # Lost coverage is the regression signal — for a
+                        # trustworthy incremental it must be ~0, so it gets a
+                        # dedicated strict threshold, not the looser count
+                        # tolerance.
+                        entry["within_tolerance"] = lost_pct <= max_lost_pct
+                        entry["compare_mode"] = "coverage"
+                    except sqlite3.Error as e:
+                        record["errors"].append(
+                            f"{table}: coverage comparison failed ({e}); "
+                            f"kept useful-count verdict"
+                        )
             else:
                 entry["delta_pct"] = round(pct, 3)
             record["tables"][table] = entry
             if not entry["within_tolerance"]:
                 record["ok"] = False
-                if use_orphan_aware:
+                cov = entry.get("coverage")
+                if cov:
+                    record["errors"].append(
+                        f"{table}: coverage LOST {cov['lost_current']:,} "
+                        f"current decisions ({cov['lost_pct']:.2f} %) exceeds "
+                        f"{max_lost_pct} % (gained {cov['gained_current']:,})"
+                    )
+                elif use_orphan_aware:
                     record["errors"].append(
                         f"{table}: useful drift {delta_cmp:+,} rows "
                         f"({pct:.2f} %) exceeds {row_tolerance_pct} % "
@@ -313,6 +424,15 @@ def main() -> int:
              f"(default: {DECISIONS_DB}). Pass an empty string to "
              f"disable orphan-aware mode and use raw counts.",
     )
+    p.add_argument(
+        "--max-lost-pct",
+        type=float,
+        default=DEFAULT_MAX_LOST_PCT,
+        help=f"Max tolerated LOST coverage (current decisions the full "
+             f"rebuild has that the incremental dropped) before failing, in "
+             f"percent. Strict by design — the regression direction "
+             f"(default: {DEFAULT_MAX_LOST_PCT}).",
+    )
     p.add_argument("-v", "--verbose", action="store_true")
     args = p.parse_args()
     decisions_db = args.decisions_db if str(args.decisions_db) else None
@@ -337,7 +457,8 @@ def main() -> int:
                     display_name,
                     decisions_db if decisions_db else "OFF (raw mode)")
         rec = _compare_pair(display_name, live, shadow, args.tolerance_pct,
-                            decisions_db=decisions_db)
+                            decisions_db=decisions_db,
+                            max_lost_pct=args.max_lost_pct)
         run["pairs"].append(rec)
         if rec.get("errors"):
             run["ok"] = False
@@ -355,7 +476,16 @@ def main() -> int:
         # see at a glance that drift came from orphans not extraction.
         for table, entry in sorted(rec.get("tables", {}).items()):
             marker = "✓" if entry["within_tolerance"] else "✗"
-            if entry.get("compare_mode") == "orphan_aware":
+            if entry.get("coverage"):
+                cov = entry["coverage"]
+                logger.info(
+                    "  %s %s: coverage live=%d shadow=%d  LOST=%d (%.3f %%)  "
+                    "gained=%d  [raw live=%d shadow=%d]",
+                    marker, table, cov["live"], cov["shadow"],
+                    cov["lost_current"], cov["lost_pct"], cov["gained_current"],
+                    entry["live"], entry["shadow"],
+                )
+            elif entry.get("compare_mode") == "orphan_aware":
                 logger.info(
                     "  %s %s: live=%d (useful=%d, orphans=%d)  "
                     "shadow=%d (useful=%d, orphans=%d)  "
