@@ -168,6 +168,74 @@ def check_null_dates_floor(conn: sqlite3.Connection, **_):
         )
 
 
+# Baseline for publication_date < decision_date inversions, measured
+# 2026-06-13 (46,190). A court CANNOT publish a decision before it rules,
+# so every one is a mislabel or date-parse error (decision_date — the
+# header ruling date — is trusted; publication_date is optional and the
+# suspect field). WARNING + baseline so the known backlog doesn't
+# false-block the pipeline, but a scraper regression that ADDS inversions
+# trips it. DRIVE DOWN: scripts/fix_date_inversions.py (swap when that
+# makes pub>=dec, else NULL the optional pub_date) + a build_fts5 forward
+# guard — then lower this baseline toward 0.
+PUB_BEFORE_DEC_BASELINE = 47000
+
+
+def check_publication_before_decision(conn: sqlite3.Connection, **_) -> CheckResult:
+    """publication_date earlier than decision_date is impossible if the two
+    are labeled correctly — a court does not publish before it rules. Counts
+    inversions, with a gross (>1 month) subset and per-court breakdown so the
+    'document-vs-ruling date' band (0-3 days) is distinguished from outright
+    mislabels (months/years)."""
+    n = conn.execute(
+        "SELECT COUNT(*) FROM decisions "
+        "WHERE publication_date IS NOT NULL AND publication_date != '' "
+        "AND decision_date IS NOT NULL AND decision_date != '' "
+        "AND publication_date < decision_date"
+    ).fetchone()[0]
+    gross = conn.execute(
+        "SELECT COUNT(*) FROM decisions "
+        "WHERE publication_date IS NOT NULL AND publication_date != '' "
+        "AND decision_date IS NOT NULL AND decision_date != '' "
+        "AND publication_date < date(decision_date, '-31 days')"
+    ).fetchone()[0]
+    by_court = {
+        r["court"]: r["n"] for r in conn.execute(
+            "SELECT court, COUNT(*) AS n FROM decisions "
+            "WHERE publication_date IS NOT NULL AND publication_date != '' "
+            "AND decision_date IS NOT NULL AND decision_date != '' "
+            "AND publication_date < decision_date "
+            "GROUP BY court ORDER BY n DESC LIMIT 10"
+        ).fetchall()
+    }
+    sample = [
+        dict(r) for r in conn.execute(
+            "SELECT decision_id, court, decision_date, publication_date "
+            "FROM decisions WHERE publication_date IS NOT NULL "
+            "AND publication_date != '' AND decision_date IS NOT NULL "
+            "AND decision_date != '' "
+            "AND publication_date < date(decision_date, '-31 days') LIMIT 5"
+        ).fetchall()
+    ] if gross else []
+    return CheckResult(
+        name="dates.publication_before_decision",
+        severity=Severity.WARNING,
+        passed=(n <= PUB_BEFORE_DEC_BASELINE),
+        metric_value=n,
+        threshold=PUB_BEFORE_DEC_BASELINE,
+        message=(
+            f"{n} rows with publication_date < decision_date "
+            f"({gross} gross >1mo) — baseline {PUB_BEFORE_DEC_BASELINE}"
+        ),
+        sample_rows=sample,
+        extra={"gross_over_1mo": gross, "by_court": by_court},
+        fix_advice="decision_date (header ruling date) is trusted; run "
+                   "scripts/fix_date_inversions.py to swap-or-NULL the "
+                   "suspect publication_date + add a build_fts5 forward "
+                   "guard. Growth here = a scraper labeling the dates "
+                   "backwards.",
+    )
+
+
 def check_total_null_dates(conn: sqlite3.Connection, **_) -> CheckResult:
     """Aggregate: total rows with NULL decision_date should not exceed
     the sum of known floors + 200 absolute slack."""
