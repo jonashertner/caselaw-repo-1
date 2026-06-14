@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/fr.xml</link>
     <description>Latest published Swiss court decisions in Français.</description>
     <language>de-CH</language>
-    <lastBuildDate>Sat, 13 Jun 2026 10:52:06 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 14 Jun 2026 11:18:13 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/fr.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -615,6 +615,24 @@ DU M…</description>
       <category>ge_gerichte</category>
     </item>
     <item>
+      <title>ju_gerichte ASS 2025 61 vom 2026-06-02</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ju_gerichte_ASS%202025%2061</link>
+      <description>RÉPUBLIQUE ET CANTON DU JURA
+TRIBUNAL CANTONAL
+COUR DES ASSURANCES
+AA 61 / 2025
+Présidente : Anne-Françoise Boillat
+Juges : Carine Guenat et Jean Crevoisier
+Greffière e.o. : Océane Migliore
+ARRÊT DU 29 MAI 2026
+en la cause liée entre
+A.________,
+reco…</description>
+      <pubDate>Tue, 02 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ju_gerichte_ASS 2025 61</guid>
+      <category>ju_gerichte</category>
+    </item>
+    <item>
       <title>Bundesgericht 5A_249/2026 vom 2026-06-01</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_249_2026</link>
       <description>Bundesgericht
@@ -814,34 +832,6 @@ A.________,
 r…</description>
       <pubDate>Fri, 29 May 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_459.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 8C_209/2026 vom 2026-05-29</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_8C_209_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-8C_209/2026
-
-Arrêt du 29 mai 2026
-
-IVe Cour de droit public
-
-Composition
-
-M. le Juge fédéral Métral, en qualité de juge unique.
-
-Greffière : Mme von Zwehl.
-
-Participants à la proc…</description>
-      <pubDate>Fri, 29 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:8C_209.2026</guid>
       <category>bger</category>
     </item>
   </channel>

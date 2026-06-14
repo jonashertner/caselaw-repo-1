@@ -1,7 +1,7 @@
 {
-  "run_at": "2026-06-13T11:15:43+00:00",
+  "run_at": "2026-06-14T11:36:01+00:00",
   "db_path": "/opt/caselaw/repo/output/decisions.db",
-  "duration_seconds": 1416.57,
+  "duration_seconds": 1067.82,
   "summary": {
     "total": 52,
     "passed": 52,
@@ -94,17 +94,17 @@
       "fix_advice": "check INSERT OR IGNORE / INSERT OR REPLACE in scrapers and build_fts5.merge_shards",
       "court": null,
       "extra": {
-        "total": 990417,
-        "distinct": 990417
+        "total": 990433,
+        "distinct": 990433
       }
     },
     {
       "name": "schema.corpus_total_count",
       "severity": "critical",
       "passed": true,
-      "metric_value": 990417,
+      "metric_value": 990433,
       "threshold": 950000,
-      "message": "corpus total: 990,417",
+      "message": "corpus total: 990,433",
       "sample_rows": [],
       "fix_advice": "check publish.py Step 2 build_fts5 logs; verify .tmp swap completed atomically",
       "court": null,
@@ -171,7 +171,7 @@
       "extra": {
         "distribution": {
           "de": 462207,
-          "fr": 446469,
+          "fr": 446485,
           "it": 81741
         }
       }
@@ -180,7 +180,7 @@
       "name": "languages.distribution_plausible",
       "severity": "critical",
       "passed": true,
-      "metric_value": 46.6679186645625,
+      "metric_value": 46.66716476530972,
       "threshold": 30.0,
       "message": "DE 46.7% / FR 45.1% / IT 8.3% / RM 0.00%",
       "sample_rows": [],
@@ -188,7 +188,7 @@
       "court": null,
       "extra": {
         "de": 462207,
-        "fr": 446469,
+        "fr": 446485,
         "it": 81741
       }
     },
