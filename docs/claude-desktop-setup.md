@@ -47,6 +47,8 @@ The new connector appears under **Drafts**; open it to see the tools pulled from
 
 **To use in a chat:** click the **+** button → **Developer mode** → select **Swiss Caselaw**. ChatGPT shows a confirmation prompt before any write action — opencaselaw is read-only, so all of its tools are safe to allow.
 
+> **Which ChatGPT models can use it:** custom connectors work with the **Instant** and **Thinking** models (incl. Thinking High / "extended"). They do **not** work with **Pro** models — OpenAI does not pass custom connectors/actions to the Pro models (or the o-series). So if the connector "disappears" or is never called, check the model picker: switch from **Pro** to **Thinking** for heavy reasoning over Swiss law with the connector attached. This is an OpenAI platform limitation, not an opencaselaw one.
+
 > **Transport:** ChatGPT supports both SSE and Streamable HTTP; the URL above serves SSE and connects directly. No API key — the server is public.
 
 > **ChatGPT Deep Research is supported.** The server exposes the two read-only tools deep research requires — `search` (query → ranked `{id, title, url}` results) and `fetch` (id → full decision text) — alongside the richer `search_decisions` / `get_decision` that regular chats use. Add the connector the same way (Developer mode, above), then select it as a source in a Deep Research prompt. (Deep research only calls `search`/`fetch`; in a normal chat ChatGPT uses the full tool set.)
