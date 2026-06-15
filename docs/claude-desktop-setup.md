@@ -31,17 +31,25 @@ claude mcp add swiss-caselaw --transport sse https://mcp.opencaselaw.ch
 
 ### ChatGPT
 
-**Plan required:** Plus, Pro, Team, Enterprise, or Edu.
+Custom remote MCP servers connect through ChatGPT's **Developer mode** (full MCP connector support, currently in beta). This exposes opencaselaw's full tool surface (`search_decisions`, `get_decision`, `get_law`, …) in a normal chat.
+
+**Plan required:** Plus, Pro, Business, Enterprise, or Education (web only). On Enterprise/Education an admin/owner must turn Developer mode on for the workspace first.
 
 **One-time setup:**
 
-1. Open **Settings** → **Apps** → scroll to **Advanced settings** → enable **Developer mode**
-2. Click **Create app** (appears next to Advanced settings once Developer mode is on)
+1. Open **Settings** → **Apps & Connectors** → **Advanced settings** → enable **Developer mode**
+2. Back on **Apps & Connectors**, click **Create** (next to Advanced settings)
 3. Enter name: `Swiss Caselaw`
-4. Paste URL: `https://mcp.opencaselaw.ch`
-5. Set authentication to **None** → click **Create**
+4. Paste MCP server URL: `https://mcp.opencaselaw.ch`
+5. Set authentication to **No authentication** → click **Create**
 
-**To use in a chat:** click the **+** button → **Developer mode** → select **Swiss Caselaw**.
+The new connector appears under **Drafts**; open it to see the tools pulled from the server, and use **Refresh** there if the tool list ever changes.
+
+**To use in a chat:** click the **+** button → **Developer mode** → select **Swiss Caselaw**. ChatGPT shows a confirmation prompt before any write action — opencaselaw is read-only, so all of its tools are safe to allow.
+
+> **Transport:** ChatGPT supports both SSE and Streamable HTTP; the URL above serves SSE and connects directly. No API key — the server is public.
+
+> **ChatGPT Deep Research / "company knowledge" is NOT supported yet.** Deep-research connectors only call MCP servers that expose two specifically-named read-only tools, `search` and `fetch`, in OpenAI's exact result schema (`search` → `{results:[{id,title,url}]}`, `fetch` → `{id,title,text,url}`). opencaselaw's tools (`search_decisions`, `get_decision`, …) use a richer Swiss-legal schema instead, so selecting it as a Deep Research source will fail. Use the **Developer mode** connector above in a regular chat (or the API) for now; native Deep Research support is tracked as a planned addition.
 
 ### Gemini CLI
 
