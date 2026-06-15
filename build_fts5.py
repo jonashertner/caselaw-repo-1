@@ -1456,7 +1456,43 @@ def insert_decision(conn: sqlite3.Connection, row: dict) -> bool:
         if existing is None:
             return False  # defensive: shouldn't happen on real collisions
         if existing[0] == row.get("canonical_key"):
-            return False  # case (i): true duplicate, by design
+            # case (i): same decision already stored (direct shard won via
+            # direct-first ordering). Normally a true duplicate to skip —
+            # BUT if THIS copy carries substantially richer full_text,
+            # upgrade the stored text in place. The Ticino truncation
+            # (measured 2026-06-15): the direct ti_gerichte scraper stores
+            # ~1.5K of truncated PDF text while es_ti_gerichte holds the
+            # full 20K+; ~40K decisions corpus-wide (98.5% Ticino) were
+            # served truncated. We keep the existing row's metadata
+            # (chamber labels — the reason for direct-first; same
+            # canonical_key ⇒ court/docket/date identical) and only swap in
+            # the longer text (+ regeste if the stored row lacks one). The
+            # decisions_au trigger reindexes decisions_fts, so search recall
+            # gets the restored text too. Threshold matches the audit:
+            # incoming >2x longer AND +1000 chars.
+            incoming_ft = row.get("full_text") or ""
+            cur = conn.execute(
+                "SELECT full_text, regeste FROM decisions WHERE decision_id = ?",
+                (row["decision_id"],),
+            ).fetchone()
+            existing_len = len(cur[0] or "") if cur else 0
+            if (len(incoming_ft) > existing_len * 2
+                    and len(incoming_ft) - existing_len > 1000):
+                final_regeste = (cur[1] if cur and cur[1] else None) or row.get("regeste")
+                new_hash = _compute_row_content_hash_inline(final_regeste, incoming_ft)
+                conn.execute(
+                    "UPDATE decisions SET full_text = ?, regeste = ?, "
+                    "content_hash = ? WHERE decision_id = ?",
+                    (incoming_ft, final_regeste, new_hash, row["decision_id"]),
+                )
+                logger.info(
+                    "text-upgrade: %s %s — full_text %d -> %d chars "
+                    "(richer shard copy)",
+                    row.get("court"), row.get("docket_number"),
+                    existing_len, len(incoming_ft),
+                )
+                return True
+            return False  # true duplicate, no richer text — skip as before
         # case (ii): same id but different (court, docket, date) tuple
         date_str = str(row.get("decision_date") or "").replace("-", "")
         if not date_str or len(date_str) != 8:
