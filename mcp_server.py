@@ -16516,6 +16516,56 @@ def _list_tools() -> list[Tool]:
     return [
         Tool(
             annotations=_READ_ONLY,
+            name="search",
+            description=(
+                "ChatGPT Deep Research compatibility tool. Returns a ranked "
+                "list of Swiss court decisions matching a query, each as "
+                "{id, title, url, snippet}. Pair with `fetch` to retrieve a "
+                "decision's full text by id. General (non-deep-research) "
+                "clients should prefer `search_decisions`, which exposes "
+                "filters (court, canton, date, language) and richer metadata."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": "Natural-language or keyword query.",
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "description": "Max results (default 10, max 50).",
+                        "default": 10,
+                    },
+                },
+                "required": ["query"],
+            },
+        ),
+        Tool(
+            annotations=_READ_ONLY,
+            name="fetch",
+            description=(
+                "ChatGPT Deep Research compatibility tool. Fetches one Swiss "
+                "decision's full text by id, returning {id, title, text, url, "
+                "metadata}. The id comes from a `search` result (a "
+                "decision_id like bger_6B_1234_2025; a docket number or BGE "
+                "reference also resolves). General clients should prefer "
+                "`get_decision`."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "Decision id from a search result "
+                                       "(decision_id, docket, or BGE reference).",
+                    },
+                },
+                "required": ["id"],
+            },
+        ),
+        Tool(
+            annotations=_READ_ONLY,
             name="search_decisions",
             description=(
                 "Search Swiss court decisions AND European Court of Human "
@@ -18150,9 +18200,84 @@ _OPEN_ACCESS_NOTE = (
 )
 
 
+# ── ChatGPT Deep Research compatibility: search + fetch ───────────────────
+# OpenAI's deep-research / "company knowledge" models ONLY call MCP servers
+# that expose two read-only tools named exactly `search` and `fetch`, in a
+# fixed schema (search -> {results:[{id,title,url}]}, fetch -> {id,title,
+# text,url,metadata}). Our rich tools (search_decisions / get_decision) use
+# a Swiss-legal schema deep research can't consume — hence the historical
+# 87 % error rate on the old "search" alias. These thin shims map onto the
+# existing search + decision-fetch internals so deep research works, while
+# general clients keep using search_decisions / get_decision.
+# R1/R6: title + url come from _build_citation_strings (never constructed).
+DEEP_RESEARCH_SEARCH_LIMIT = 10
+_FETCH_TEXT_CAP = 200_000
+
+
+def _deep_research_search(query: str, limit: int = DEEP_RESEARCH_SEARCH_LIMIT) -> dict:
+    """OpenAI deep-research `search`: query -> {results:[{id,title,url,...}]}."""
+    rows, _total = search_fts5(query=query, limit=max(1, min(limit, 50)))
+    results = []
+    for r in rows:
+        cit = _build_citation_strings(r)
+        label = (cit.get("citation_string_de")
+                 or _clean_docket(r.get("docket_number"))
+                 or r.get("decision_id", ""))
+        title = f"{label} — {r['title']}" if r.get("title") else label
+        snippet = (r.get("snippet") or r.get("regeste") or "")
+        if snippet:
+            snippet = snippet.replace("<mark>", "").replace("</mark>", "")
+        results.append({
+            "id": r.get("decision_id", ""),
+            "title": title,
+            "url": cit.get("canonical_url") or _canonical_decision_url(r.get("decision_id", "")),
+            "snippet": snippet[:300],
+        })
+    return {"results": results}
+
+
+def _deep_research_fetch(doc_id: str) -> dict:
+    """OpenAI deep-research `fetch`: id -> {id,title,text,url,metadata}."""
+    if not doc_id:
+        return {"id": "", "title": "", "text": "", "url": "",
+                "metadata": {"error": "missing_id"}}
+    canonical = _resolve_decision_id(doc_id)
+    dec = get_decision_by_id(canonical)
+    if not dec:
+        return {"id": doc_id, "title": doc_id, "text": "", "url": "",
+                "metadata": {"error": "not_found"}}
+    cit = _build_citation_strings(dec)
+    label = (cit.get("citation_string_de")
+             or _clean_docket(dec.get("docket_number")) or canonical)
+    title = f"{label} — {dec['title']}" if dec.get("title") else label
+    full = dec.get("full_text") or ""
+    if len(full) > _FETCH_TEXT_CAP:
+        full = full[:_FETCH_TEXT_CAP]
+    return {
+        "id": canonical,
+        "title": title,
+        "text": full,
+        "url": cit.get("canonical_url") or _canonical_decision_url(canonical),
+        "metadata": {
+            "court": dec.get("court"),
+            "decision_date": dec.get("decision_date"),
+            "docket_number": dec.get("docket_number"),
+            "language": dec.get("language"),
+            "citation_string_de": cit.get("citation_string_de"),
+            "citation_string_fr": cit.get("citation_string_fr"),
+            "citation_string_it": cit.get("citation_string_it"),
+        },
+    }
+
+
 @server.call_tool()
-async def _handle_call_tool_wrapper(name: str, arguments: dict) -> list[TextContent]:
+async def _handle_call_tool_wrapper(name: str, arguments: dict):
     result = await _handle_call_tool_inner(name, arguments)
+    # Deep-research search/fetch return a (content, structuredContent) tuple —
+    # pass through verbatim. The open-access note must NOT be appended (it
+    # would corrupt the JSON payload deep research parses).
+    if isinstance(result, tuple):
+        return result
     # Append open-access note for commercial platforms (not Claude, ChatGPT, Gemini)
     ua = _ctx_client_ua.get("")
     if ua and not _KNOWN_FREE_CLIENTS.search(ua) and result:
@@ -18173,7 +18298,9 @@ async def _handle_call_tool_wrapper(name: str, arguments: dict) -> list[TextCont
 # doctrine, commentaries) are NOT aliased — adding them would silently
 # swallow client mistakes that should surface.
 _TOOL_NAME_ALIASES = {
-    "search":     "search_decisions",   # 249 calls / 87% err → legacy short name
+    # "search" is no longer aliased — it is now a real ChatGPT-deep-research
+    # tool (search/fetch shim). Aliasing it to search_decisions caused the
+    # 87% error rate (deep research got the wrong schema). See _list_tools.
     "courts":     "list_courts",         # 258 calls / 0.4% err → kebab/short form
     "statistics": "get_statistics",      # 260 calls / 0% err → drop the get_ prefix
     "attest":     "attest_response",     # 269 calls / 11.5% err → Word add-in short name
@@ -18207,6 +18334,32 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
     try:
         if REMOTE_MODE and name in ("update_database", "check_update_status"):
             return [TextContent(type="text", text="This tool is not available on the remote server.")]
+
+        if name == "search":
+            # ChatGPT deep-research search shim → (content JSON, structuredContent)
+            structured = await asyncio.to_thread(
+                _deep_research_search,
+                arguments.get("query", ""),
+                int(arguments.get("limit", DEEP_RESEARCH_SEARCH_LIMIT)),
+            )
+            _record_query(arguments.get("query", ""))
+            return (
+                [TextContent(type="text",
+                             text=json.dumps(structured, ensure_ascii=False))],
+                structured,
+            )
+
+        if name == "fetch":
+            # ChatGPT deep-research fetch shim → (content JSON, structuredContent)
+            structured = await asyncio.to_thread(
+                _deep_research_fetch,
+                arguments.get("id") or arguments.get("decision_id") or "",
+            )
+            return (
+                [TextContent(type="text",
+                             text=json.dumps(structured, ensure_ascii=False))],
+                structured,
+            )
 
         if name == "search_decisions":
             req_offset = int(arguments.get("offset", 0))
