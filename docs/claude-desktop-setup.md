@@ -49,7 +49,7 @@ The new connector appears under **Drafts**; open it to see the tools pulled from
 
 > **Transport:** ChatGPT supports both SSE and Streamable HTTP; the URL above serves SSE and connects directly. No API key — the server is public.
 
-> **ChatGPT Deep Research / "company knowledge" is NOT supported yet.** Deep-research connectors only call MCP servers that expose two specifically-named read-only tools, `search` and `fetch`, in OpenAI's exact result schema (`search` → `{results:[{id,title,url}]}`, `fetch` → `{id,title,text,url}`). opencaselaw's tools (`search_decisions`, `get_decision`, …) use a richer Swiss-legal schema instead, so selecting it as a Deep Research source will fail. Use the **Developer mode** connector above in a regular chat (or the API) for now; native Deep Research support is tracked as a planned addition.
+> **ChatGPT Deep Research is supported.** The server exposes the two read-only tools deep research requires — `search` (query → ranked `{id, title, url}` results) and `fetch` (id → full decision text) — alongside the richer `search_decisions` / `get_decision` that regular chats use. Add the connector the same way (Developer mode, above), then select it as a source in a Deep Research prompt. (Deep research only calls `search`/`fetch`; in a normal chat ChatGPT uses the full tool set.)
 
 ### Gemini CLI
 
