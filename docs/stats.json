@@ -2273,7 +2273,7 @@
     "2026-05": 1273,
     "2026-06": 107
   },
-  "generated_at": "2026-06-15T11:34:09.215970+00:00",
+  "generated_at": "2026-06-15T17:02:20.096998+00:00",
   "scraper_health": {
     "run_at": "2026-06-15T02:06:08.490706+00:00",
     "run_duration_s": 3906.3,
@@ -2735,7 +2735,7 @@
         "note": null,
         "state_count": 96874,
         "jsonl_size_mb": 1460.2,
-        "jsonl_mtime": "2026-06-15T11:05:24.887855+00:00"
+        "jsonl_mtime": "2026-06-15T16:05:01.468972+00:00"
       },
       "bge": {
         "success": true,
@@ -3279,7 +3279,7 @@
         "note": "1863 listed on portal but content not downloadable (empty page or missing PDF)",
         "state_count": 1510,
         "jsonl_size_mb": 91.1,
-        "jsonl_mtime": "2026-06-15T01:59:04.596329+00:00"
+        "jsonl_mtime": "2026-06-15T14:56:31.580954+00:00"
       },
       "ti_gerichte": {
         "success": true,
@@ -3352,20 +3352,20 @@
       "ZH": 135
     },
     "commentaries": 1131,
-    "scholarship_publications": 25633,
+    "scholarship_publications": 25172,
     "scholarship_by_source": {
       "boris_law": 7319,
       "e_periodica_law": 3041,
       "zhaw_digitalcollection": 3040,
       "e_periodica_polsci": 2957,
       "libra_unine": 1982,
-      "unige_law": 1850,
       "eth_research_collection": 1760,
+      "unige_law": 1388,
       "e_periodica_pubadmin": 855,
       "fhnw_irf": 496,
       "onlinekommentar": 377,
       "edoc_unibas_law": 324,
-      "sui_generis": 290,
+      "sui_generis": 291,
       "medialex": 271,
       "eizpublishing": 255,
       "leges": 204,
@@ -3379,18 +3379,18 @@
       "alexandria_law": 13
     },
     "scholarship_by_type": {
-      "article": 19366,
-      "book": 4488,
-      "dissertation": 651,
-      "report": 435,
+      "article": 19166,
+      "book": 4246,
+      "dissertation": 633,
+      "report": 434,
       "commentary": 407,
       "working_paper": 173,
       "guidance": 70,
       "reference_article": 40,
       "bachelor_thesis": 3
     },
-    "citation_edges": 8877795,
-    "statute_edges": 11474469
+    "citation_edges": 8878369,
+    "statute_edges": 11474860
   },
   "interesting_stats": {
     "most_cited_decision": {
@@ -3401,7 +3401,7 @@
     "most_cited_statute": {
       "law_code": "LTF",
       "article": "100",
-      "ref_count": 180646
+      "ref_count": 180647
     },
     "oldest_decision": {
       "docket": "1_I_3",
@@ -3413,17 +3413,17 @@
       "de_pct": 46.7,
       "fr_pct": 45.1,
       "it_pct": 8.3,
-      "total": 990433
+      "total": 990475
     },
     "regeste_coverage": {
       "pct": 35.6,
       "with_regeste": 352734,
-      "total": 990433
+      "total": 990475
     },
     "graph_size": {
-      "decision_edges": 8307185,
-      "statute_edges": 11474469,
-      "total": 19781654
+      "decision_edges": 8307916,
+      "statute_edges": 11474860,
+      "total": 19782776
     },
     "echr_switzerland": {
       "total": 2830,
@@ -3472,27 +3472,27 @@
       {
         "law_code": "LTF",
         "article": "100",
-        "ref_count": 180646
+        "ref_count": 180647
       },
       {
         "law_code": "LTF",
         "article": "113",
-        "ref_count": 110831
+        "ref_count": 110832
       },
       {
         "law_code": "LTF",
         "article": "42",
-        "ref_count": 105189
+        "ref_count": 105193
       },
       {
         "law_code": "BGG",
         "article": "42",
-        "ref_count": 92887
+        "ref_count": 92897
       },
       {
         "law_code": "BGG",
         "article": "66",
-        "ref_count": 59605
+        "ref_count": 59622
       }
     ],
     "materialien_coverage": {
@@ -4150,7 +4150,10 @@
       "bger": 42
     },
     "by_canton": {},
-    "corpus": {},
+    "corpus": {
+      "citation_edges": 574,
+      "statute_edges": 391
+    },
     "previous_generated_at": "2026-06-14T16:35:42.919677+00:00"
   }
 }
