@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/de.xml</link>
     <description>Latest published Swiss court decisions in Deutsch.</description>
     <language>de-CH</language>
-    <lastBuildDate>Sun, 14 Jun 2026 11:18:11 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 15 Jun 2026 11:24:52 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/de.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -383,6 +383,34 @@ Einwohnergeme…</description>
       <category>be_verwaltungsgericht</category>
     </item>
     <item>
+      <title>Bundesgericht 6G_2/2026 vom 2026-06-03</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_6G_2_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+6G_2/2026
+
+Urteil vom 3. Juni 2026
+
+I. strafrechtliche Abteilung
+
+Besetzung
+
+Bundesrichter von Felten, als präsidierendes Mitglied,
+
+Gerichtsschreiberin Arquint Hill.
+
+Verfahrensb…</description>
+      <pubDate>Wed, 03 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:6G_2.2026</guid>
+      <category>bger</category>
+    </item>
+    <item>
       <title>Bundesverwaltungsgericht A-4770/2024 vom 2026-06-03</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_A-4770_2024</link>
       <description>Zölle</description>
@@ -478,6 +506,36 @@ Gegenstand Summarisches …</description>
       <pubDate>Tue, 02 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ag_handelsgericht_HSU.2026.26</guid>
       <category>ag_handelsgericht</category>
+    </item>
+    <item>
+      <title>Bundesgericht 8C_307/2026 vom 2026-06-02</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_8C_307_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+8C_307/2026
+
+Urteil vom 2. Juni 2026
+
+IV. öffentlich-rechtliche Abteilung
+
+Besetzung
+
+Bundesrichterin Viscione, Präsidentin,
+
+Gerichtsschreiber Grünvogel.
+
+Verfahrensbeteiligte
+
+A…</description>
+      <pubDate>Tue, 02 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:8C_307.2026</guid>
+      <category>bger</category>
     </item>
     <item>
       <title>Bundesverwaltungsgericht D-1221/2026 vom 2026-06-02</title>
@@ -697,22 +755,6 @@ Bas…</description>
       <description>Asyl und Wegweisung (Wiedererwägung)</description>
       <pubDate>Mon, 01 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-5505.2021</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht D-6887/2024 vom 2026-06-01</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-6887_2024</link>
-      <description>Asyl (ohne Wegweisungsvollzug) (beschleunigtes Verfahren)</description>
-      <pubDate>Mon, 01 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-6887.2024</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht E-5526/2021 vom 2026-06-01</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-5526_2021</link>
-      <description>Asyl und Wegweisung</description>
-      <pubDate>Mon, 01 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-5526.2021</guid>
       <category>bvger</category>
     </item>
   </channel>
