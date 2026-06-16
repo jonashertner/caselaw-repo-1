@@ -148,3 +148,54 @@ def test_near_matching_portal_count_suppresses_fast_zero_new_warning(tmp_path):
     assert result.returncode == 0
     assert "possible API outage" not in result.stdout
     assert "All checks passed" in result.stdout
+
+
+# ── A4: registry-vs-health reconciliation ────────────────────────────────
+
+
+def _full_health_scrapers(drop=()):
+    """A 'full run' health dict = every registered scraper minus `drop`, each
+    a clean success (our_count<1000 + duration>30s avoid the silent-skip and
+    STALE heuristics so the only signal under test is the reconciliation)."""
+    from run_scraper import SCRAPERS
+    return {
+        s: {"success": True, "new_count": 0, "our_count": 50, "duration_s": 90}
+        for s in SCRAPERS if s not in drop
+    }
+
+
+def _run_monitor(tmp_path, scrapers):
+    health_file = tmp_path / "scraper_health.json"
+    _write_health(health_file, run_at=datetime.now(timezone.utc), scrapers=scrapers)
+    env = {**os.environ, "OCL_COVERAGE_DB": str(tmp_path / "nonexistent.db")}
+    return subprocess.run(
+        [sys.executable, "scripts/check_scraper_freshness.py",
+         "--health-file", str(health_file), "--alert-log", str(tmp_path / "a.log"),
+         "--state-dir", str(tmp_path), "--no-ntfy"],
+        cwd=Path(__file__).resolve().parent.parent, env=env,
+        text=True, capture_output=True, check=False,
+    )
+
+
+def test_reconciliation_flags_missing_registered_scraper(tmp_path):
+    # bvger is registered, not dead, not es-only — silently dropping it from a
+    # full run must surface (the be_steuerrekurs blind-spot class)
+    res = _run_monitor(tmp_path, _full_health_scrapers(drop=("bvger",)))
+    assert res.returncode == 0
+    assert "bvger: registered scraper absent from a full" in res.stdout
+
+
+def test_reconciliation_quiet_for_known_dead_missing(tmp_path):
+    # a KNOWN_DEAD scraper (ow_gerichte) absent from health is expected — silent
+    res = _run_monitor(tmp_path, _full_health_scrapers(drop=("ow_gerichte",)))
+    assert res.returncode == 0
+    assert "registered scraper absent" not in res.stdout
+
+
+def test_reconciliation_skipped_on_partial_run(tmp_path):
+    # <20 scrapers = a partial/manual run; reconciliation must NOT fire (else
+    # ~58 false WARNs). This is also what keeps the 1-court tests above green.
+    res = _run_monitor(tmp_path, {
+        "bger": {"success": True, "new_count": 0, "our_count": 50, "duration_s": 90}})
+    assert res.returncode == 0
+    assert "registered scraper absent" not in res.stdout

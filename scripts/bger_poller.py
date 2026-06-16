@@ -402,10 +402,52 @@ def _trigger_scraper():
     return qp_ok
 
 
+PUBLISH_UNIT = "opencaselaw-publish.service"
+
+
+def _full_publish_running() -> bool:
+    """True while the nightly full publish is active OR in its post-swap
+    I/O-heavy tail (parquet / HuggingFace upload / reference-graph / stats).
+
+    Why ActiveState and NOT ``systemctl is-active --quiet``: opencaselaw-publish
+    is a *oneshot* unit, so for the entire ~6-15 h run its ActiveState is
+    "activating", which ``is-active --quiet`` reports as NOT active (exit 3) —
+    a false negative that would silently defeat this guard. Why not the publish
+    *lock*: publish.py releases it at OCL_SWAP_DONE, before the I/O-heavy tail.
+    Reading ActiveState directly covers the whole pipeline incl. the tail.
+    Fail-open (return False) on any probe error: never block the dashboard
+    refresh on an absent systemd or a probe timeout."""
+    try:
+        r = subprocess.run(
+            ["systemctl", "show", "-p", "ActiveState", "--value", PUBLISH_UNIT],
+            capture_output=True, text=True, timeout=10,
+        )
+    except Exception as e:  # FileNotFoundError (no systemd), timeout, etc.
+        logger.warning("could not probe %s state: %s", PUBLISH_UNIT, e)
+        return False
+    return r.stdout.strip() in {"active", "activating", "reloading", "deactivating"}
+
+
 def _maybe_update_stats(new_decisions: int) -> None:
     """Regenerate stats.json + git push when quick_publish inserted rows."""
     if new_decisions <= 0:
         logger.info("No new decisions inserted — skipping stats.json refresh")
+        return
+
+    # Don't fire the ~22-min generate_stats while the nightly full publish is
+    # running: its parquet/HF/graph/stats tail saturates the data volume and
+    # our scan over the ~69 GB decisions.db goes D-state (the build/serve
+    # I/O-coupling stall the post-mortems warn about). The publish regenerates
+    # stats.json itself (Step 5), and the +N rows are already searchable via
+    # quick_publish, so skipping here loses only a little dashboard freshness
+    # on the rare publish-overlap polls.
+    if _full_publish_running():
+        logger.info(
+            "Full publish (%s) is running — skipping stats.json refresh "
+            "(+%d new rows already searchable via quick_publish; the nightly "
+            "Step 5 will regenerate stats.json)",
+            PUBLISH_UNIT, new_decisions,
+        )
         return
 
     # Single-flight lock: a 22-min generate_stats can outlive the 15-min

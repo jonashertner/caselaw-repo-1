@@ -48,6 +48,37 @@ MANIFEST_PATH_IN_REPO = "artifacts/manifest.json"
 MANIFEST_SCHEMA = "swiss-caselaw-artifacts-v1"
 SQLITE_SNAPSHOT_SCHEMA_VERSION = 1
 
+# How many dated build subdirs to retain under build_dir/{snapshot,delta}.
+# Older ones are pruned at the start of each build. Before this, only the
+# CURRENT date's dir was removed, so dated dirs accumulated one per nightly
+# run without bound — the scratch tree grew to ~17 GB on the root disk and was
+# the suspected cause of the 2026-06-15 root-fill publish failure.
+BUILD_DIR_RETENTION = 3
+
+
+def _prune_old_build_dirs(parent: _Path, keep: str,
+                          retain: int = BUILD_DIR_RETENTION) -> None:
+    """Keep only the ``retain`` newest dated subdirs under ``parent``, always
+    retaining ``keep`` (the date about to be built). Subdir names are
+    YYYY-MM-DD, so a lexicographic sort is chronological. Bounds the delta /
+    snapshot scratch tree, which otherwise grew without limit."""
+    if not parent.exists():
+        return
+    dated = sorted((c for c in parent.iterdir() if c.is_dir()), key=lambda c: c.name)
+    survivors = {keep}
+    for child in reversed(dated):
+        if len(survivors) >= retain:
+            break
+        survivors.add(child.name)
+    for child in dated:
+        if child.name in survivors:
+            continue
+        try:
+            _shutil.rmtree(child)
+            log.info("pruned stale build dir %s", child)
+        except OSError as e:
+            log.warning("prune failed for %s: %s", child, e)
+
 # Courts classified as federal-level for the `level` column.
 FEDERAL_COURTS = frozenset({
     "bger", "bge", "bvger", "bstger", "bpatger", "mkg",
@@ -537,6 +568,7 @@ def build_sqlite_snapshot(
     """
     source_meta = _validate_snapshot_source(db_path)
 
+    _prune_old_build_dirs(build_dir / "snapshot", keep=date)
     work = build_dir / "snapshot" / date
     if work.exists():
         _shutil.rmtree(work)
@@ -680,6 +712,7 @@ def build_delta(
 
     Returns dict with local paths + row count.
     """
+    _prune_old_build_dirs(build_dir / "delta", keep=date)
     work = build_dir / "delta" / date
     if work.exists():
         _shutil.rmtree(work)
@@ -814,8 +847,10 @@ def _cli() -> None:
                    default=_dt.date.today().isoformat(),
                    help="YYYY-MM-DD (UTC day to publish delta for). Default: today.")
     p.add_argument("--build-dir", type=_Path,
-                   default=_Path("/tmp/caselaw_delta_build"),
-                   help="Scratch directory for build artifacts")
+                   default=_Path("/mnt/HC_Volume_104655575/caselaw_delta_build"),
+                   help="Scratch directory for build artifacts (on the data "
+                        "volume, not root /tmp — keeps root-disk pressure off "
+                        "the nightly publish; bounded by BUILD_DIR_RETENTION)")
     p.add_argument("--snapshot", type=_Path,
                    default=_Path("/opt/caselaw/repo/state/hf_delta_snapshot.json"),
                    help="Path to local id-snapshot state file")

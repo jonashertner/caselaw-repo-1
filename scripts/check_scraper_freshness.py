@@ -364,6 +364,38 @@ def main():
             health = json.loads(health_path.read_text())
             scrapers = health.get("scrapers", {})
 
+            # Registry-vs-health reconciliation (2026-06-16). The health dict is
+            # built only from scrapers that actually RAN, so a scraper that
+            # silently stops appearing (breaks, is dropped, or is skipped) just
+            # vanishes from every check below instead of failing one — the exact
+            # class that hid be_steuerrekurs for ~4 months before it was finally
+            # classified in KNOWN_DEAD_SOURCES. Surface any REGISTERED scraper
+            # missing from a FULL run, except those we intentionally don't expect
+            # (KNOWN_DEAD_SOURCES) or that never run as direct scrapers
+            # (ENTSCHEIDSUCHE_ONLY). The len>=20 guard skips partial/manual runs
+            # (e.g. `run_all_scrapers --only bger`), which legitimately contain
+            # few scrapers and must not raise dozens of false WARNs.
+            if len(scrapers) >= 20:
+                try:
+                    # run_scraper.py lives at the repo root; when this script is
+                    # invoked as `python3 scripts/check_scraper_freshness.py`,
+                    # sys.path[0] is scripts/, not REPO — put REPO on the path.
+                    if str(REPO) not in sys.path:
+                        sys.path.insert(0, str(REPO))
+                    from run_scraper import SCRAPERS as _REGISTERED
+                    missing = sorted(
+                        set(_REGISTERED) - set(scrapers)
+                        - KNOWN_DEAD_SOURCES - ENTSCHEIDSUCHE_ONLY
+                    )
+                    for k in missing:
+                        alerts.append(
+                            f"WARN {k}: registered scraper absent from a full "
+                            f"scraper_health.json run (silently skipped or "
+                            f"never ran)"
+                        )
+                except Exception as e:
+                    alerts.append(f"WARN registry reconciliation failed: {e}")
+
             # Failed scrapers
             failed = [(k, v) for k, v in scrapers.items() if not v.get("success")]
             for k, v in failed:

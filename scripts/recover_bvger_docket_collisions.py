@@ -48,7 +48,7 @@ import logging
 import sqlite3
 import sys
 import time
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -258,7 +258,7 @@ def find_missing_decisions(
                         "regeste": None,
                         "source_url": f"https://bvger.weblaw.ch/cache?id={leid}&guiLanguage={language}",
                         "cited_decisions": [],
-                        "scraped_at": datetime.utcnow().isoformat() + "Z",
+                        "scraped_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
                         "_recovery_source": "recover_bvger_docket_collisions.py",
                         "_recovery_leid": leid,
                     })

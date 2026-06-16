@@ -47,6 +47,25 @@ logger = logging.getLogger("build_fts5")
 # workers serve the swapped inode immediately.
 SWAP_MIN_RETAIN_FRACTION = 0.95
 
+# Per-court pre-swap gate. The GLOBAL gate above is blind to a per-court
+# collapse: the SG alphabetical dedup-collision class (es_sg_publikationen
+# winning INSERT OR IGNORE over the direct sg_* shards — see
+# memory/sg_anomaly_root_cause_2026_04_30.md) once dropped 89-92% of
+# individual chambers while netting only ~-181 rows corpus-wide, invisible to
+# a 5% global floor (5% of ~990k ≈ 49.5k rows). Enforce a per-court retain
+# fraction, but only on courts large enough that a big proportional drop is
+# unambiguously a bug (the sub-50-row micro-courts like zh_mietgericht=1 would
+# false-trip a bare percentage). Calibration 2026-06-16: across the last 10
+# published snapshots the largest legitimate per-court drop on a court ≥500
+# rows was -0.0% (bger -20), so 0.80 has zero false-trip history; and an
+# aborted swap fails SAFE (workers keep serving the last-good DB). Coverage
+# verified 2026-06-16: the SG-collision chambers (sg_publikationen 643,
+# sg_kantonsgericht 1,077, sg_verwaltungsrekurskommission 1,173) all sit ≥500,
+# so the floor catches the motivating incident; the 45 sub-500 micro-courts
+# (~4,917 rows, 0.5% of corpus) are left to the global gate by design.
+PER_COURT_MIN_RETAIN_FRACTION = 0.80
+PER_COURT_MIN_SIZE = 500
+
 
 def _date_inversion_guard_inline(decision_date, publication_date):
     """Gross date-inversion guard: a court cannot publish a decision MORE THAN
@@ -91,6 +110,40 @@ def _check_swap_row_gate(new_count: int, old_count: int,
             f"inspection. Set OCL_SKIP_SWAP_GATE=1 to force an intentional "
             f"shrink."
         )
+
+
+def _check_swap_per_court_gate(
+        new_by_court: dict, live_by_court: dict,
+        fraction: float = PER_COURT_MIN_RETAIN_FRACTION,
+        min_live_rows: int = PER_COURT_MIN_SIZE) -> None:
+    """Raise RuntimeError if ANY court with >= ``min_live_rows`` live rows would
+    shrink below ``fraction`` of its live count in the new build. Catches a
+    per-court collapse (the SG dedup-collision class) that the global
+    _check_swap_row_gate cannot see. No-op when there is no readable live DB yet
+    (``live_by_court`` empty), mirroring the global gate's old_count<=0
+    short-circuit. Honours the SAME OCL_SKIP_SWAP_GATE=1 escape hatch — a
+    deliberate court retirement/rename trips this by design and is the intended
+    operator-override case. New courts (present in new_by_court, absent from
+    live_by_court) are correctly ignored: the loop iterates over live_by_court."""
+    if not live_by_court:
+        return
+    if os.environ.get("OCL_SKIP_SWAP_GATE") == "1":
+        logger.warning(
+            "pre-swap per-court gate OVERRIDDEN via OCL_SKIP_SWAP_GATE")
+        return
+    for court, live_n in sorted(live_by_court.items()):
+        if live_n < min_live_rows:
+            continue
+        new_n = new_by_court.get(court, 0)
+        if new_n < live_n * fraction:
+            raise RuntimeError(
+                f"pre-swap per-court gate: refusing to swap — court "
+                f"{court!r} collapsed {live_n:,} → {new_n:,} rows "
+                f"({(new_n / live_n) if live_n else 0:.1%} of live, "
+                f"< {fraction:.0%}). Live DB left untouched; temp DB kept for "
+                f"inspection. Set OCL_SKIP_SWAP_GATE=1 to force an intentional "
+                f"per-court shrink (e.g. a court retirement)."
+            )
 
 
 # ── Per-phase timing instrumentation ──────────────────────────
@@ -1916,6 +1969,9 @@ def build_database(
     courts = conn.execute(
         "SELECT court, COUNT(*) as n FROM decisions GROUP BY court ORDER BY n DESC"
     ).fetchall()
+    # Per-court map of the NEW build, captured BEFORE conn.close() below — the
+    # per-court pre-swap gate can't re-query the temp DB after it's closed.
+    new_by_court = {c: n for c, n in courts}
 
     # Switch from WAL to DELETE mode before closing (immutable=1 compat)
     conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
@@ -1939,6 +1995,7 @@ def build_database(
         # Pre-swap row-count gate: never replace a healthy live DB with a
         # catastrophically shrunken build (see _check_swap_row_gate).
         live_row_count = 0
+        live_by_court: dict = {}
         if final_db_path.exists():
             try:
                 _oc = sqlite3.connect(
@@ -1946,13 +2003,22 @@ def build_database(
                 try:
                     live_row_count = _oc.execute(
                         "SELECT COUNT(*) FROM decisions").fetchone()[0]
+                    live_by_court = {
+                        c: n for c, n in _oc.execute(
+                            "SELECT court, COUNT(*) FROM decisions "
+                            "GROUP BY court")
+                    }
                 finally:
                     _oc.close()
             except sqlite3.Error:
                 live_row_count = 0  # unreadable live DB → don't block recovery
+                live_by_court = {}
         _check_swap_row_gate(new_row_count, live_row_count)
+        _check_swap_per_court_gate(new_by_court, live_by_court)
         logger.info("pre-swap row gate OK: new=%d, live=%d",
                     new_row_count, live_row_count)
+        logger.info("pre-swap per-court gate OK: %d live courts checked "
+                    "(≥ %d rows)", len(live_by_court), PER_COURT_MIN_SIZE)
         logger.info(f"Swapping {db_path} → {final_db_path}")
         os.replace(str(db_path), str(final_db_path))
         # Clean up leftover WAL/SHM on BOTH sides of the swap:

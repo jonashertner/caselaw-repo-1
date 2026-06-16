@@ -20,7 +20,7 @@ import sys
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 
 REPO = Path(__file__).resolve().parent.parent
 SSH = ["ssh", "-i", str(Path.home() / ".ssh" / "caselaw"),
@@ -401,7 +401,7 @@ def main():
     med = [f for f in rep.findings if f.severity == "MED"]
     low = [f for f in rep.findings if f.severity == "LOW"]
 
-    print(f"\n{'=' * 70}\n  DEBUG SUITE RESULTS — {datetime.utcnow():%Y-%m-%d %H:%M UTC}\n{'=' * 70}")
+    print(f"\n{'=' * 70}\n  DEBUG SUITE RESULTS — {datetime.now(timezone.utc):%Y-%m-%d %H:%M UTC}\n{'=' * 70}")
     print(f"  HIGH: {len(high)}   MED: {len(med)}   LOW: {len(low)}   "
            f"(ran in {time.time()-start:.0f}s)")
     for f in rep.findings:
@@ -411,9 +411,9 @@ def main():
                 print(f"        {line[:120]}")
 
     # ── Write Markdown report ──
-    out = REPO / "docs" / "reports" / f"{datetime.utcnow():%Y-%m-%d}-debug-suite.md"
+    out = REPO / "docs" / "reports" / f"{datetime.now(timezone.utc):%Y-%m-%d}-debug-suite.md"
     out.parent.mkdir(parents=True, exist_ok=True)
-    md = [f"# Debug Suite Report — {datetime.utcnow():%Y-%m-%d %H:%M UTC}\n"]
+    md = [f"# Debug Suite Report — {datetime.now(timezone.utc):%Y-%m-%d %H:%M UTC}\n"]
     md.append(f"**Summary:** HIGH={len(high)}, MED={len(med)}, LOW={len(low)}")
     md.append(f"  runtime {time.time()-start:.0f}s\n")
     md.append("## Findings (by severity)\n")

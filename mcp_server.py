@@ -7940,13 +7940,14 @@ server = Server(
         "HUDOC.CH, plus ECtHR Chamber / Committee / Grand Chamber direct), "
         "5,516 federal laws (Fedlex SPARQL), 15,722 cantonal laws (direct "
         "portal scraping for 19 cantons + LexFind fallback for the rest), "
-        "1,058 scholarly commentaries, a verbatim Federal Council Botschaft "
-        "corpus (5,974 documents, ~407K FTS5-indexed paragraphs), "
-        "26,000+ open-access scholarship records from 23 Swiss legal sources "
+        "1,100+ scholarly commentaries, a verbatim Federal Council Botschaft "
+        "corpus (5,900+ documents, ~409K FTS5-indexed paragraphs), "
+        "25,000+ open-access scholarship records from 23 Swiss legal sources "
         "(thousands with full-text — see find_scholarship_citing_decision and "
         "find_scholarship_citing_statute for the bidirectional bridge), "
         "structured federal decisions (Sachverhalt/Erwägungen/Dispositiv), "
-        "and the citation graph (8.09M resolved edges). Updated daily. "
+        "and the citation graph (8.3M resolved decision-to-decision edges from "
+        "8.9M extracted citations). Updated daily. "
         "Languages: DE, FR, IT — tools handle cross-language matching "
         "automatically.\n\n"
 
@@ -19748,8 +19749,8 @@ setInterval(load, 30000);
         title="OpenCaseLaw API",
         description=(
             "Swiss court decisions, statutes, commentaries, scholarship, and citation graph. "
-            "974,000+ published decisions from Swiss federal, cantonal, and regulatory bodies, "
-            "5,516 federal laws, 15,722 cantonal acts, 1,058 commentaries, 26,000+ OA scholarship records."
+            "990,000+ published decisions from Swiss federal, cantonal, and regulatory bodies, "
+            "5,516 federal laws, 15,722 cantonal acts, 1,100+ commentaries, 25,000+ OA scholarship records."
         ),
         version="1.0.0",
         docs_url="/docs",

@@ -15,7 +15,7 @@ update all listed consumers in the same commit.
 | Concept | Use when | Examples |
 |---|---|---|
 | **Paper snapshot** | Anything in the v3 paper or `docs/paper/v3/tables/*.json` | "971,992 decisions, snapshot 2026-05-13" |
-| **Live** | Dashboards / README / dataset card | "972,000+ decisions" (rounded; grows daily) |
+| **Live** | Dashboards / README / dataset card | "990,000+ decisions" (rounded; grows daily) |
 
 ## The numbers
 
@@ -23,8 +23,8 @@ update all listed consumers in the same commit.
 
 | Quantity | Snapshot value (paper) | Live value | Source of truth | Consumers |
 |---|---:|---|---|---|
-| Decisions | **971,992** | **~972k** | `docs/paper/v3/tables/corpus_graph_stats.json::total_decisions` | paper §3 abstract, dataset_card.md, README.md, methodology.html, index.html |
-| Courts | 108 | 108 | same JSON | all |
+| Decisions | **971,992** | **~990k** | `docs/paper/v3/tables/corpus_graph_stats.json::total_decisions` (live: `decisions.db`) | paper §3 abstract, dataset_card.md, README.md, methodology.html, index.html |
+| Courts | 108 | 109 | same JSON (live: `decisions.db`) | all |
 | Cantons | 26 | 26 | constant | all |
 | Languages | DE 449,575 (46.3 %), FR 441,158 (45.4 %), IT 80,704 (8.3 %) | same | corpus_overview.tex | paper §3, methodology.html |
 | Date range | 1875–2026 | 1875–2026 | constant | all |
@@ -34,8 +34,10 @@ update all listed consumers in the same commit.
 
 | Quantity | Value | Source | Consumers |
 |---|---:|---|---|
-| Citation edges (raw) | 8,649,879 | `corpus_graph_stats.json::rg_citation_edges` | paper §4, dataset_card |
-| Resolved edges | 8,089,112 (93.5 %) | same | all |
+| Citation edges extracted (paper snapshot) | 8,649,879 | `corpus_graph_stats.json::rg_citation_edges` | paper §4 |
+| Resolved edges (paper snapshot) | 8,089,112 (93.5 %) | same | paper |
+| **Citation edges extracted (live)** | **~8.9M** | `reference_graph.db::decision_citations` | README, dataset_card, dashboards |
+| **Resolved edges (live)** | **~8.3M** | `reference_graph.db::citation_targets` | README, dataset_card, dashboards |
 | Cited ≥ 100 times | 10,874 | `in_degree_buckets` | paper Table 2 |
 | Cited ≥ 1,000 times | 999 | same | paper |
 | Cited ≥ 10,000 times | **47** | same | paper §4, citation_graph.tex |
@@ -46,7 +48,8 @@ update all listed consumers in the same commit.
 
 | Quantity | Value | Source | Consumers |
 |---|---:|---|---|
-| Decision–statute edges | 11,261,717 | `corpus_graph_stats.json::rg_statute_edges` | all |
+| Decision–statute edges (paper snapshot) | 11,261,717 | `corpus_graph_stats.json::rg_statute_edges` | paper |
+| **Decision–statute edges (live)** | **~11.47M** | `reference_graph.db::decision_statutes` | README, dataset_card, dashboards |
 | Distinct provisions | 283,119 | `rg_distinct_statutes` | all |
 | Federal SR laws | 5,516 | constant (Fedlex) | all |
 | Federal articles | 400,405 (across DE/FR/IT) | constant | all |
@@ -60,15 +63,17 @@ update all listed consumers in the same commit.
 
 | Quantity | Value | Source | Consumers |
 |---|---:|---|---|
-| Botschaft documents | 5,292 | `corpus_graph_stats.json` | paper §4, dataset_card |
-| Paragraphs | 381,711 | same | paper |
+| Botschaft documents (paper snapshot) | 5,292 | `corpus_graph_stats.json` | paper §4 |
+| Botschaft documents (live) | **5,900+** | `botschaft.db` | dataset_card, README, dashboards |
+| Paragraphs (paper snapshot) | 381,711 | same | paper |
+| Paragraphs (live) | **~409K** | `botschaft.db` | dataset_card, README |
 | Article-anchored links | 8,124 | same | paper |
 
 ### Commentaries
 
 | Quantity | Value | Source |
 |---|---:|---|
-| Total commentaries | 1,058 (OnlineKommentar 362 + OpenLegalCommentary 696) | `ok_commentaries.db` |
+| Total commentaries (live) | 1,100+ (~1,131; OnlineKommentar + OpenLegalCommentary) | `ok_commentaries.db` |
 | Paper citation | 362 (OnlineKommentar only) | paper §4 simplifies to the CC-BY count |
 
 ### MCP tool counts
@@ -77,13 +82,13 @@ update all listed consumers in the same commit.
 
 | Mode | Tools | Where used |
 |---|---:|---|
-| **Public / remote mode** (deployed at `mcp.opencaselaw.ch`) | **39** | public-facing dashboards, live API |
-| **Local mode** (running on operator's machine with `update_database` + `check_update_status`) | **41** | README internal docs, local dev guides |
+| **Public / remote mode** (deployed at `mcp.opencaselaw.ch`) | **41** | public-facing dashboards, live API |
+| **Local mode** (running on operator's machine with `update_database` + `check_update_status`) | **43** | README internal docs, local dev guides |
 | **Local-only delta** | 2 (`update_database`, `check_update_status`) | technical references |
 
-Standard phrasing: *"41 MCP tools (39 remote in public mode + 2 local-only)"* or simply *"39 tools"* when only the public surface matters.
+Standard phrasing: *"43 MCP tools (41 remote in public mode + 2 local-only)"* or simply *"41 tools"* when only the public surface matters. (Verified 2026-06-16: 43 `Tool(` registrations in mcp_server.py; 2 hidden under REMOTE_MODE.)
 
-**Paper note**: paper v3 (snapshot 2026-05-13) cites 33 tools; that figure is frozen for the snapshot. Public surface has since grown by 6 scholarship tools (`search_scholarship`, `get_scholarship`, `find_scholarship_citing_statute`, `find_scholarship_citing_decision`, `list_scholarship_sources`, `get_scholarship_full_text`) — bringing the live count to 39.
+**Paper note**: paper v3 (snapshot 2026-05-13) cites 33 tools; that figure is frozen for the snapshot. Public surface has since grown by 6 scholarship tools (`search_scholarship`, `get_scholarship`, `find_scholarship_citing_statute`, `find_scholarship_citing_decision`, `list_scholarship_sources`, `get_scholarship_full_text`) plus the 2 ChatGPT Deep-Research tools (`search`, `fetch`) — bringing the live public count to 41.
 
 ### Search-quality numbers
 
@@ -157,4 +162,4 @@ Source: `analytics.db::weekly_reach` (after 2026-05-18 cohort-derivation upgrade
 3. Grep this doc + every consumer for the old number; update them.
 4. Bump the "Last verified" line below.
 
-**Last verified:** 2026-05-18 (this commit).
+**Last verified:** 2026-06-16 (live-figure sweep: decisions ~990k, courts 109, citation edges 8.3M resolved / 8.9M extracted, statute 11.47M, Botschaft 5,900+/~409K, commentaries 1,100+, tools 43/41/2; paper-snapshot rows unchanged).

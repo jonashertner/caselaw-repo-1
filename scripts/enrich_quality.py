@@ -1,14 +1,23 @@
 #!/usr/bin/env python3
 """
-enrich_quality.py — Post-FTS5 data quality enrichment
-======================================================
+enrich_quality.py — Post-FTS5 data quality report
+==================================================
 
-Runs against the FTS5 SQLite database to fill metadata gaps:
-  1. Title backfill   — extract from full_text (Gegenstand/Objet/Oggetto)
-  2. Regeste backfill  — extract from full_text (Regeste/Regesto header)
-  3. Date repair       — fix NULL/invalid dates from docket or full_text
-  4. Content hash      — compute MD5(full_text) for dedup
-  5. Dedup report      — flag duplicates (metadata + content hash)
+READ-ONLY since 2026-06-16 (see run()). Step 2d runs AFTER the atomic swap, so
+it opens the LIVE served decisions.db with mode=ro&immutable=1 and emits ONLY
+the dedup report. The in-place UPDATE substeps (1-4 below) are disabled: they
+wrote the served DB (immutable/atomic-swap invariant violation + lock race —
+the recurring "database is locked" nightly failure), and they were redundant —
+build_fts5 already fills regeste + a SHA-256 content_hash for every row, and
+enrich's date substep was a worse year-placeholder. The one non-redundant
+piece, title backfill, is moving pre-swap into build_fts5 (gated, separate).
+
+Substeps:
+  1. Title backfill   — extract from full_text (Gegenstand/Objet/Oggetto)  [disabled — moving to build_fts5]
+  2. Regeste backfill  — extract from full_text (Regeste/Regesto header)    [disabled — redundant with build_fts5]
+  3. Date repair       — fix NULL/invalid dates from docket or full_text    [disabled — build_fts5 is higher-precision]
+  4. Content hash      — compute MD5(full_text) for dedup                    [disabled — build_fts5 fills SHA-256]
+  5. Dedup report      — flag duplicates (metadata + content hash)           [ACTIVE, read-only]
 
 Usage:
     python3 scripts/enrich_quality.py --db output/decisions.db
@@ -482,9 +491,21 @@ def run(
         logger.error(f"Database not found: {db_path}")
         sys.exit(1)
 
-    conn = sqlite3.connect(str(db_path))
-    conn.execute("PRAGMA journal_mode=WAL")
+    # Open READ-ONLY (immutable=1). Step 2d runs AFTER the atomic swap, so
+    # db_path here is the LIVE served decisions.db — opening it for WRITE (the
+    # old PRAGMA journal_mode=WAL) violated the immutable + atomic-swap
+    # invariants and lost the lock race against live MCP readers (the recurring
+    # "database is locked" that exited the nightly publish `failed` for weeks).
+    # The in-place UPDATE substeps are also redundant: build_fts5 already fills
+    # regeste + a SHA-256 content_hash for every row during the build (enrich's
+    # MD5 matched zero rows), and enrich's date substep is a low-quality year
+    # placeholder vs build_fts5's high-precision recovery. The one
+    # non-redundant substep — title backfill — belongs pre-swap inside
+    # build_fts5 (tracked separately; gated). So Step 2d is read-only now and
+    # emits only the (read-only) dedup_report.
+    conn = sqlite3.connect(f"file:{db_path}?mode=ro&immutable=1", uri=True)
     conn.execute("PRAGMA busy_timeout=30000")
+    skip_titles = skip_regeste = skip_dates = skip_hashes = True
 
     # ── Checkpoint: skip if no new decisions ──
     row = conn.execute("SELECT COUNT(*), MAX(rowid) FROM decisions").fetchone()

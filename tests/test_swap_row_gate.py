@@ -56,3 +56,65 @@ def test_noop_when_no_live_db():
 def test_override_env(monkeypatch):
     monkeypatch.setenv("OCL_SKIP_SWAP_GATE", "1")
     build_fts5._check_swap_row_gate(1, 990_000)  # overridden — no raise
+
+
+# ── Per-court pre-swap gate ──────────────────────────────────
+# The global gate above only sees the corpus total; a per-court collapse (the
+# SG alphabetical dedup-collision: ~90% loss of a chamber, ~-181 rows net) is
+# <5% of 990k and sails through it. _check_swap_per_court_gate is the floor for
+# that class. Calibration 2026-06-16: max legitimate per-court drop on a court
+# ≥500 rows across the last 10 snapshots was -0.0%, so 0.80 won't false-trip.
+
+
+def test_per_court_collapse_blocks():
+    # SG-collision class: a large chamber loses ~91%
+    live = {"bger": 190_000, "sg_kantonsgericht": 7_559, "ti_gerichte": 59_000}
+    new = {"bger": 190_050, "sg_kantonsgericht": 680, "ti_gerichte": 59_100}
+    with pytest.raises(RuntimeError, match="per-court gate"):
+        build_fts5._check_swap_per_court_gate(new, live)
+
+
+def test_per_court_small_court_drop_allowed():
+    # sub-500-row micro-courts can drop freely (below min_live_rows)
+    live = {"bger": 190_000, "zh_mietgericht": 1, "tg_anwaltskommission": 5}
+    new = {"bger": 190_000, "zh_mietgericht": 0, "tg_anwaltskommission": 0}
+    build_fts5._check_swap_per_court_gate(new, live)  # no raise
+
+
+def test_per_court_growth_allowed():
+    build_fts5._check_swap_per_court_gate(
+        {"bger": 191_000, "ti_gerichte": 60_000},
+        {"bger": 190_000, "ti_gerichte": 59_000})
+
+
+def test_per_court_within_tolerance_passes():
+    # 85% retained on a large court — legitimate churn, clears the 0.80 floor
+    build_fts5._check_swap_per_court_gate({"bger": int(190_000 * 0.85)}, {"bger": 190_000})
+
+
+def test_per_court_boundary_80pct():
+    build_fts5._check_swap_per_court_gate({"bger": 80_001}, {"bger": 100_000})  # >80% passes
+    with pytest.raises(RuntimeError):
+        build_fts5._check_swap_per_court_gate({"bger": 79_000}, {"bger": 100_000})  # <80% fails
+
+
+def test_per_court_new_court_ignored():
+    # a court present only in the new build is not a regression
+    build_fts5._check_swap_per_court_gate(
+        {"bger": 190_000, "new_court": 1_200}, {"bger": 190_000})
+
+
+def test_per_court_whole_court_vanish_blocks():
+    # an entire large court dropping to zero is the catastrophic case
+    with pytest.raises(RuntimeError, match="vd_gerichte"):
+        build_fts5._check_swap_per_court_gate(
+            {"bger": 190_000}, {"bger": 190_000, "vd_gerichte": 53_000})
+
+
+def test_per_court_noop_when_no_live_db():
+    build_fts5._check_swap_per_court_gate({"bger": 5}, {})  # first build ever — no raise
+
+
+def test_per_court_override_env(monkeypatch):
+    monkeypatch.setenv("OCL_SKIP_SWAP_GATE", "1")
+    build_fts5._check_swap_per_court_gate({"bger": 0}, {"bger": 190_000})  # overridden

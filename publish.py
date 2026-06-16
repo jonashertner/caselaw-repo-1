@@ -908,7 +908,11 @@ def step_7_publish_delta(dry_run: bool = False) -> bool:
     cmd = [
         sys.executable, "-m", "search_stack.publish_delta",
         "--db", str(DB_PATH),
-        "--build-dir", "/tmp/caselaw_delta_build",
+        # Scratch on the data volume (168G+ free), not root /tmp — the
+        # unbounded /tmp/caselaw_delta_build growth was the suspected cause of
+        # the 2026-06-15 root-fill publish failure. publish_delta also bounds
+        # it to the last BUILD_DIR_RETENTION dated dirs.
+        "--build-dir", "/mnt/HC_Volume_104655575/caselaw_delta_build",
     ]
     if publish_delta_enabled:
         cmd += ["--snapshot", str(snapshot_path)]

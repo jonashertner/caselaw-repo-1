@@ -161,3 +161,69 @@ def test_save_state_failing_defaults_empty(tmp_path, monkeypatch):
     bp._save_state("2026-06-11", set())
     saved = json.loads((tmp_path / "state.json").read_text())
     assert saved["failing"] == {}
+
+
+# ── G5: poller publish-window guard (build/serve I/O-coupling stall) ──────
+
+
+class _FakeProc:
+    def __init__(self, stdout):
+        self.stdout = stdout
+
+
+def _patch_systemctl(monkeypatch, state):
+    monkeypatch.setattr(
+        bp.subprocess, "run",
+        lambda *a, **k: _FakeProc(state + "\n"))
+
+
+def test_publish_running_true_when_activating(monkeypatch):
+    # the publish is a oneshot unit → ActiveState=activating for its whole run;
+    # `is-active --quiet` would wrongly report not-active here (the bug we avoid)
+    _patch_systemctl(monkeypatch, "activating")
+    assert bp._full_publish_running() is True
+
+
+def test_publish_running_true_when_active(monkeypatch):
+    _patch_systemctl(monkeypatch, "active")
+    assert bp._full_publish_running() is True
+
+
+def test_publish_running_false_when_inactive(monkeypatch):
+    _patch_systemctl(monkeypatch, "inactive")
+    assert bp._full_publish_running() is False
+
+
+def test_publish_running_false_when_failed(monkeypatch):
+    _patch_systemctl(monkeypatch, "failed")
+    assert bp._full_publish_running() is False
+
+
+def test_publish_running_fail_open_on_probe_error(monkeypatch):
+    def boom(*a, **k):
+        raise FileNotFoundError("no systemctl")
+    monkeypatch.setattr(bp.subprocess, "run", boom)
+    assert bp._full_publish_running() is False  # fail-open, never blocks refresh
+
+
+def test_maybe_update_stats_skips_during_publish(monkeypatch):
+    # publish running → return BEFORE the flock / generate_stats / git spawn
+    monkeypatch.setattr(bp, "_full_publish_running", lambda: True)
+    called = {"run": False}
+
+    def fake_run(*a, **k):
+        called["run"] = True
+        return _FakeProc("")
+
+    monkeypatch.setattr(bp.subprocess, "run", fake_run)
+    bp._maybe_update_stats(5)          # 5 new rows, but publish active → skip
+    assert called["run"] is False       # nothing spawned
+
+
+def test_maybe_update_stats_zero_new_never_probes(monkeypatch):
+    # the pre-existing guard fires first: 0 new rows → no publish probe at all
+    def must_not_probe():
+        raise AssertionError("should not probe publish state when 0 new rows")
+
+    monkeypatch.setattr(bp, "_full_publish_running", must_not_probe)
+    bp._maybe_update_stats(0)           # returns at the new_decisions<=0 check
