@@ -168,16 +168,17 @@ def check_null_dates_floor(conn: sqlite3.Connection, **_):
         )
 
 
-# Baseline for publication_date < decision_date inversions, measured
-# 2026-06-13 (46,190). A court CANNOT publish a decision before it rules,
-# so every one is a mislabel or date-parse error (decision_date — the
-# header ruling date — is trusted; publication_date is optional and the
-# suspect field). WARNING + baseline so the known backlog doesn't
-# false-block the pipeline, but a scraper regression that ADDS inversions
-# trips it. DRIVE DOWN: scripts/fix_date_inversions.py (swap when that
-# makes pub>=dec, else NULL the optional pub_date) + a build_fts5 forward
-# guard — then lower this baseline toward 0.
-PUB_BEFORE_DEC_BASELINE = 47000
+# Baseline for publication_date < decision_date inversions. A court CANNOT
+# publish before it rules, so every one is a mislabel/parse error
+# (decision_date — the header ruling date — is trusted; publication_date is
+# optional and the suspect field). As of 2026-06-16 build_fts5 has a GROSS
+# forward guard (_date_inversion_guard_inline) that NULLs any pub_date >31
+# days before the ruling — it removes the ~21,603 gross inversions on every
+# full rebuild, leaving only the ~24,587 small-band (0-3 day / days-to-1mo,
+# possible dispatch dates) which are intentionally NOT corrected. Baseline
+# set with headroom above that; a scraper regression that re-introduces
+# gross inversions trips it. WARNING (alerts, doesn't block).
+PUB_BEFORE_DEC_BASELINE = 28000
 
 
 def check_publication_before_decision(conn: sqlite3.Connection, **_) -> CheckResult:

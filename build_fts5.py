@@ -29,7 +29,7 @@ import re
 import sqlite3
 import time
 from collections import defaultdict
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 from db_schema import COVERAGE_SCHEMA_SQL, INSERT_COLUMNS, INSERT_OR_IGNORE_SQL, SCHEMA_SQL
@@ -46,6 +46,27 @@ logger = logging.getLogger("build_fts5")
 # so a >5% drop is always a bug; the post-swap zero-row check is too late —
 # workers serve the swapped inode immediately.
 SWAP_MIN_RETAIN_FRACTION = 0.95
+
+
+def _date_inversion_guard_inline(decision_date, publication_date):
+    """Gross date-inversion guard: a court cannot publish a decision MORE THAN
+    A MONTH before it rules. When publication_date is >31 days before
+    decision_date, the publication_date is a mislabel or date-parse error —
+    NULL it (decision_date, the header ruling date, is the trusted/mandatory
+    field; publication_date is optional). Only the GROSS band (>31 days) is
+    corrected — the 0-3 day band may be a dispatch/Versanddatum and is left
+    intact. Idempotent + self-healing on every full rebuild. See
+    quality/checks/dates.py::check_publication_before_decision."""
+    if not decision_date or not publication_date:
+        return publication_date
+    try:
+        d = date.fromisoformat(str(decision_date)[:10])
+        p = date.fromisoformat(str(publication_date)[:10])
+    except ValueError:
+        return publication_date
+    if (p - d).days < -31:
+        return None
+    return publication_date
 
 
 def _check_swap_row_gate(new_count: int, old_count: int,
@@ -1402,6 +1423,12 @@ def insert_decision(conn: sqlite3.Connection, row: dict) -> bool:
             recovered = _date_recover_inline(court, row.get("full_text"))
             if recovered:
                 row["decision_date"] = recovered
+
+        # gross date-inversion guard: NULL a publication_date that precedes
+        # the ruling by >1 month (impossible → mislabel/parse error). Runs
+        # after decision_date is finalised so the comparison is reliable.
+        row["publication_date"] = _date_inversion_guard_inline(
+            row.get("decision_date"), row.get("publication_date"))
 
         # short full_text → regeste migration (König P7)
         if (
