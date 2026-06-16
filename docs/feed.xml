@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feed.xml</link>
     <description>Latest published decisions across all Swiss courts indexed by OpenCaseLaw.</description>
     <language>de-CH</language>
-    <lastBuildDate>Mon, 15 Jun 2026 11:22:05 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 16 Jun 2026 12:26:40 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feed.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -248,6 +248,23 @@ Pré…</description>
       <pubDate>Mon, 15 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">fr_gerichte_608 2025 122</guid>
       <category>fr_gerichte</category>
+    </item>
+    <item>
+      <title>gr_gerichte SBK 2025 94 vom 2026-06-15</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_SBK%202025%2094</link>
+      <description>Obergericht des Kantons Graubünden
+Dretgira superiura dal chantun Grischun
+Tribunale d'appello del Cantone dei Grigioni
+Entscheid vom 27. Mai 2026
+mitgeteilt am 1. Juni 2026
+Referenz
+SBK 25 94
+Instanz
+Schuldbetreibungs- und Konkurskammer
+als Aufsicht…</description>
+      <pubDate>Mon, 15 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">gr_gerichte_SBK 2025 94</guid>
+      <category>gr_gerichte</category>
     </item>
     <item>
       <title>fr_gerichte 604 2024 135 vom 2026-06-12</title>
@@ -695,6 +712,38 @@ représenté par Me …</description>
       <category>be_verwaltungsgericht</category>
     </item>
     <item>
+      <title>Bundesgericht 5A_391/2026 vom 2026-06-05</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_391_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+5A_391/2026
+
+Arrêt du 5 juin 2026
+
+IIe Cour de droit civil
+
+Composition
+
+M. le Juge fédéral Bovey, Président.
+
+Greffière : Mme Mairot.
+
+Participants à la procédure
+
+A.________,
+
+r…</description>
+      <pubDate>Fri, 05 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_391.2026</guid>
+      <category>bger</category>
+    </item>
+    <item>
       <title>bs_appellationsgericht AUS.2026.47 vom 2026-06-05</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bs_appellationsgericht_AUS.2026.47</link>
       <description>Appellationsgericht
@@ -791,6 +840,18 @@ Richter-…</description>
       <category>gr_gerichte</category>
     </item>
     <item>
+      <title>ne_gerichte CDP.2025.122 vom 2026-06-05</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ne_gerichte_CDP.2025.122</link>
+      <description>A.A.________,
+né en 1964, sans formation, ayant exercé en dernier lieu lactivité de
+polisseur, a déposé une demande de prestations (mesures professionnelles/rente)
+auprès de lOffice de lassurance-invalidité du canton de Neuchâtel (ci-après :
+O…</description>
+      <pubDate>Fri, 05 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ne_gerichte_CDP.2025.122</guid>
+      <category>ne_gerichte</category>
+    </item>
+    <item>
       <title>be_verwaltungsgericht 200 2026 20 vom 2026-06-04</title>
       <link>https://mcp.opencaselaw.ch/entscheid/be_verwaltungsgericht_200%202026%2020</link>
       <description>IV 200 2026 20
@@ -805,6 +866,64 @@ gesetzlich vertreten durch ihre Elte…</description>
       <pubDate>Thu, 04 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">be_verwaltungsgericht_200 2026 20</guid>
       <category>be_verwaltungsgericht</category>
+    </item>
+    <item>
+      <title>Bundesgericht 5A_384/2026 vom 2026-06-04</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_384_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+5A_384/2026
+
+Arrêt du 4 juin 2026
+
+IIe Cour de droit civil
+
+Composition
+
+MM. et Mme les Juges fédéraux Bovey, Président,
+
+De Rossa et Josi.
+
+Greffière : Mme de Poret Bortolaso.
+
+P…</description>
+      <pubDate>Thu, 04 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_384.2026</guid>
+      <category>bger</category>
+    </item>
+    <item>
+      <title>Bundesgericht 5F_14/2026 vom 2026-06-04</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_5F_14_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+5F_14/2026
+
+Arrêt du 4 juin 2026
+
+IIe Cour de droit civil
+
+Composition
+
+MM. et Mme les Juges fédéraux Bovey, Président,
+
+Herrmann et De Rossa.
+
+Greffière : Mme de Poret Bortolaso.…</description>
+      <pubDate>Thu, 04 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:5F_14.2026</guid>
+      <category>bger</category>
     </item>
     <item>
       <title>bs_appellationsgericht AUS.2026.48 vom 2026-06-04</title>
@@ -842,48 +961,6 @@ Bas…</description>
       <pubDate>Thu, 04 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:B-5554.2024</guid>
       <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht C-1246/2024 vom 2026-06-04</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-1246_2024</link>
-      <description>Aufsichtsmittel</description>
-      <pubDate>Thu, 04 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-1246.2024</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht E-2911/2026 vom 2026-06-04</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-2911_2026</link>
-      <description>Asyl und Wegweisung</description>
-      <pubDate>Thu, 04 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-2911.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht F-3132/2026 vom 2026-06-04</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-3132_2026</link>
-      <description>Nichteintreten auf Asylgesuch und Wegweisung (Dublin-Verfahren - Art. 31a Abs. 1 Bst. b AsylG)</description>
-      <pubDate>Thu, 04 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-3132.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>ecthr_chamber 15994/20 vom 2026-06-04</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ecthr_chamber_15994_20</link>
-      <description>Partiellement irrecevable (Art. 35) Conditions de recevabilité;(Art. 35-1) Épuisement des voies de recours internes;(Art. 35-3-a) Manifestement mal fondé;Violation de l'article 3 - Interdiction de la torture (Article 3 - Traitement dégradant;Traitement inhumain) (Volet matériel);Violation de l'article 5 - Droit à la liberté et à la sûreté (Article 5-1 - Arrestation ou détention régulières);Violation de l'article 5 - Droit à la liberté et à la sûreté (Article 5-4 - Contrôle de la légalité de la détention);Préjudice moral - réparation (Article 41 - Préjudice moral;Satisfaction équitable); Violation: 3;5;5-1;5-4</description>
-      <pubDate>Thu, 04 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ecthr_chamber_15994_20</guid>
-      <category>ecthr_chamber</category>
-      <category>CEDH / Droits humains</category>
-    </item>
-    <item>
-      <title>ecthr_chamber 368/21 vom 2026-06-04</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ecthr_chamber_368_21</link>
-      <description>Partiellement irrecevable (Art. 35) Conditions de recevabilité;(Art 35-1) Délai de quatre mois (précédemment six mois);Violation de l'article 3 - Interdiction de la torture (Article 3 - Traitement dégradant;Traitement inhumain) (Volet matériel);Non-violation de l'article 5 - Droit à la liberté et à la sûreté (Article 5-1 - Arrestation ou détention régulières;Voies légales;Article 5-1-c - Nécessité raisonnable d'empêcher une infraction);Violation de l'article 5 - Droit à la liberté et à la sûreté (Article 5-1 - Arrestation ou détention régulières;Article 5-1-e - Aliéné);Violation de l'article 5 - Droit à la liberté et à la sûreté (Article 5-1 - Arrestation ou détention régulières);Non-violation de l'article 5 - Droit à la liberté et à la sûreté (Article 5-5 - Réparation);Violation de l'article 6 - Droit à un procès équitable (Article 6 - Procédure pénale;Article 6-1 - Accès à un tribunal);Violation de l'article 34 - Requêtes individuelles (Article 34 - Entraver l'exercice du droit de recours);Etat défendeur tenu de prendre des mesures générales (Article 46 - Problème structurel;Article 46-2 - Mesures générales);Préjudice moral - réparation (Article 41 - Préjudice moral;Satisfaction équitable); Violation: 3;5;5-1;5-1-e;6;6-1;34; No violation: 5;5-1;5-1-c;5-5</description>
-      <pubDate>Thu, 04 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ecthr_chamber_368_21</guid>
-      <category>ecthr_chamber</category>
-      <category>CEDH / Droits humains</category>
     </item>
   </channel>
 </rss>
