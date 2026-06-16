@@ -38,6 +38,40 @@ from models import make_canonical_key
 logger = logging.getLogger("build_fts5")
 
 
+# Pre-swap safety gate: a freshly-built temp DB must retain at least this
+# fraction of the live DB's row count before it can atomically replace it.
+# Guards against an empty / partial / corrupt build (the 2026-05 ENOSPC +
+# WAL-corruption incidents produced near-empty .tmp builds) silently
+# swapping over a healthy 990k-row production corpus. The corpus only grows,
+# so a >5% drop is always a bug; the post-swap zero-row check is too late —
+# workers serve the swapped inode immediately.
+SWAP_MIN_RETAIN_FRACTION = 0.95
+
+
+def _check_swap_row_gate(new_count: int, old_count: int,
+                         fraction: float = SWAP_MIN_RETAIN_FRACTION) -> None:
+    """Raise RuntimeError if swapping a temp DB with ``new_count`` rows over a
+    live DB with ``old_count`` rows would shrink the corpus below ``fraction``
+    of its current size. No-op when there is no readable live DB yet
+    (old_count <= 0). Set OCL_SKIP_SWAP_GATE=1 to force an intentional large
+    shrink (e.g. a deliberate mass purge)."""
+    if old_count <= 0:
+        return
+    if os.environ.get("OCL_SKIP_SWAP_GATE") == "1":
+        logger.warning(
+            "pre-swap row gate OVERRIDDEN via OCL_SKIP_SWAP_GATE "
+            "(new=%d, live=%d)", new_count, old_count)
+        return
+    if new_count < old_count * fraction:
+        raise RuntimeError(
+            f"pre-swap gate: refusing to swap — new build has {new_count:,} "
+            f"rows = {new_count / old_count:.1%} of live {old_count:,} "
+            f"(< {fraction:.0%}). Live DB left untouched; temp DB kept for "
+            f"inspection. Set OCL_SKIP_SWAP_GATE=1 to force an intentional "
+            f"shrink."
+        )
+
+
 # ── Per-phase timing instrumentation ──────────────────────────
 #
 # Step 2 of publish.py is a 4–10 h black-box. Without per-phase
@@ -1868,11 +1902,30 @@ def build_database(
     _db_generation = int(time.time())
     conn.execute(f"PRAGMA user_version = {_db_generation}")
     logger.info(f"db_generation set to {_db_generation}")
+    # Capture the built row count BEFORE close — the pre-swap gate below
+    # can't query the temp DB after the connection is closed.
+    new_row_count = conn.execute("SELECT COUNT(*) FROM decisions").fetchone()[0]
     conn.close()
 
     # Full rebuild: atomically swap temp DB into place
     if final_db_path is not None:
-        import os
+        # Pre-swap row-count gate: never replace a healthy live DB with a
+        # catastrophically shrunken build (see _check_swap_row_gate).
+        live_row_count = 0
+        if final_db_path.exists():
+            try:
+                _oc = sqlite3.connect(
+                    f"file:{final_db_path}?mode=ro&immutable=1", uri=True)
+                try:
+                    live_row_count = _oc.execute(
+                        "SELECT COUNT(*) FROM decisions").fetchone()[0]
+                finally:
+                    _oc.close()
+            except sqlite3.Error:
+                live_row_count = 0  # unreadable live DB → don't block recovery
+        _check_swap_row_gate(new_row_count, live_row_count)
+        logger.info("pre-swap row gate OK: new=%d, live=%d",
+                    new_row_count, live_row_count)
         logger.info(f"Swapping {db_path} → {final_db_path}")
         os.replace(str(db_path), str(final_db_path))
         # Clean up leftover WAL/SHM on BOTH sides of the swap:
