@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/fr.xml</link>
     <description>Latest published Swiss court decisions in Français.</description>
     <language>de-CH</language>
-    <lastBuildDate>Tue, 16 Jun 2026 12:26:47 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 17 Jun 2026 11:53:00 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/fr.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -172,6 +172,45 @@ Prési…</description>
       <category>fr_gerichte</category>
     </item>
     <item>
+      <title>ecthr_chamber 79795/17 vom 2026-06-16</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ecthr_chamber_79795_17</link>
+      <description>Violation de l'article 5 - Droit à la liberté et à la sûreté (Article 5-1 - Arrestation ou détention régulières;Article 5-1-c - Raisons plausibles de soupçonner);Violation de l'article 5 - Droit à la liberté et à la sûreté (Article 5-3 - Caractère raisonnable de la détention provisoire);Violation de l'article 10 - Liberté d'expression - {général} (Article 10-1 - Liberté d'expression); Violation: 5;5-1;5-1-c;5-3;10;10-1</description>
+      <pubDate>Tue, 16 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ecthr_chamber_79795_17</guid>
+      <category>ecthr_chamber</category>
+      <category>CEDH / Droits humains</category>
+    </item>
+    <item>
+      <title>ecthr_committee 64910/19 vom 2026-06-16</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ecthr_committee_64910_19</link>
+      <description>Violation de l'article 6 - Droit à un procès équitable (Article 6 - Procédure pénale;Article 6-1 - Accès à un tribunal); Violation: 6;6-1</description>
+      <pubDate>Tue, 16 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ecthr_committee_64910_19</guid>
+      <category>ecthr_committee</category>
+      <category>CEDH / Droits humains</category>
+    </item>
+    <item>
+      <title>fr_gerichte 101 2026 107 vom 2026-06-16</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_101%202026%20107</link>
+      <description>Tribunal cantonal TC
+Kantonsgericht KG
+Rue des Augustins 3, case postale 630, 1701 Fribourg
+T +41 26 304 15 00
+www.fr.ch/tc
+—
+Pouvoir Judiciaire PJ
+Gerichtsbehörden GB
+101 2026 107
+Arrêt du 29 mai 2026
+Ie Cour d’appel civil
+Composition
+Président :
+Jé…</description>
+      <pubDate>Tue, 16 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">fr_gerichte_101 2026 107</guid>
+      <category>fr_gerichte</category>
+    </item>
+    <item>
       <title>fr_gerichte 501 2025 157 vom 2026-06-15</title>
       <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_501%202025%20157</link>
       <description>Tribunal cantonal TC
@@ -299,6 +338,17 @@ représenté par …</description>
       <category>CEDH / Droits humains</category>
     </item>
     <item>
+      <title>ne_gerichte CDP.2025.255 vom 2026-06-11</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ne_gerichte_CDP.2025.255</link>
+      <description>A.A.________ sest inscrit comme demandeur
+demploi auprès de l'ORP-ProEmployés, relevant de lOffice du marché du travail
+du Service de lemploi, dès le 2 décembre 2024. Auparavant, il était au
+bénéfice dun contrat de travail de durée indétermin…</description>
+      <pubDate>Thu, 11 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ne_gerichte_CDP.2025.255</guid>
+      <category>ne_gerichte</category>
+    </item>
+    <item>
       <title>fr_gerichte 501 2024 73 vom 2026-06-10</title>
       <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_501%202024%2073</link>
       <description>Tribunal cantonal TC
@@ -318,6 +368,23 @@ Michel…</description>
       <pubDate>Wed, 10 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">fr_gerichte_501 2024 73</guid>
       <category>fr_gerichte</category>
+    </item>
+    <item>
+      <title>ju_gerichte CON 2025 4 vom 2026-06-10</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ju_gerichte_CON%202025%204</link>
+      <description>RÉPUBLIQUE ET CANTON DU JURA
+TRIBUNAL CANTONAL
+COUR CONSTITUTIONNELLE
+CST 2025 4
+Mes. Prov. CST 2025 5
+Présidente : Sylviane Liniger Odiet
+Juges : Jean Crevoisier et Pascal Chappuis
+Greffière : Mélanie Farine
+ARRÊT DU 10 JUIN 2026
+dans la procédure l…</description>
+      <pubDate>Wed, 10 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ju_gerichte_CON 2025 4</guid>
+      <category>ju_gerichte</category>
     </item>
     <item>
       <title>ecthr_chamber 56007/21 vom 2026-06-09</title>
@@ -857,105 +924,6 @@ A.________,…</description>
       <pubDate>Tue, 02 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-5380.2023</guid>
       <category>bvger</category>
-    </item>
-    <item>
-      <title>fr_gerichte 605 2025 98 vom 2026-06-02</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_605%202025%2098</link>
-      <description>Tribunal cantonal TC
-Kantonsgericht KG
-Rue des Augustins 3, case postale 630, 1701 Fribourg
-T +41 26 304 15 00
-www.fr.ch/tc
-—
-Pouvoir Judiciaire PJ
-Gerichtsbehörden GB
-605 2025 98
-Arrêt du 26 mai 2026
-Ie Cour des assurances sociales
-Composition
-Prési…</description>
-      <pubDate>Tue, 02 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">fr_gerichte_605 2025 98</guid>
-      <category>fr_gerichte</category>
-    </item>
-    <item>
-      <title>ge_gerichte ACJC/924/2026 vom 2026-06-02</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ge_gerichte_ACJC_924_2026</link>
-      <description>Le présent arrêt est communiqué aux parties, ainsi qu’au Registre foncier, par plis 
-recommandés du 2 juin 2026. 
- 
-REPUBLIQUE ET 
- 
-CANTON DE GENEVE 
-POUVOIR JUDICIAIRE 
-C/24673/2025 
-ACJC/924/2026 
-ARRÊT 
-DE LA COUR DE JUSTICE 
-Chambre civile 
-DU M…</description>
-      <pubDate>Tue, 02 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ge_gerichte_ACJC_924_2026</guid>
-      <category>ge_gerichte</category>
-    </item>
-    <item>
-      <title>ju_gerichte ASS 2025 61 vom 2026-06-02</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ju_gerichte_ASS%202025%2061</link>
-      <description>RÉPUBLIQUE ET CANTON DU JURA
-TRIBUNAL CANTONAL
-COUR DES ASSURANCES
-AA 61 / 2025
-Présidente : Anne-Françoise Boillat
-Juges : Carine Guenat et Jean Crevoisier
-Greffière e.o. : Océane Migliore
-ARRÊT DU 29 MAI 2026
-en la cause liée entre
-A.________,
-reco…</description>
-      <pubDate>Tue, 02 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ju_gerichte_ASS 2025 61</guid>
-      <category>ju_gerichte</category>
-    </item>
-    <item>
-      <title>ne_gerichte CDP.2025.228 vom 2026-06-02</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ne_gerichte_CDP.2025.228</link>
-      <description>A.Le 13 février 2025, le Cercle scolaire de Colombier
-et environs (ci-après : CESCOLE) a publié sur la plateforme www.simap.ch un
-appel d'offres, en procédure ouverte, portant sur la «Réalisation
-déchafaudages de façade, en 3 phases, pour les bât…</description>
-      <pubDate>Tue, 02 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ne_gerichte_CDP.2025.228</guid>
-      <category>ne_gerichte</category>
-    </item>
-    <item>
-      <title>Bundesgericht 5A_249/2026 vom 2026-06-01</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_249_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-5A_249/2026
-
-Arrêt du 1er juin 2026
-
-IIe Cour de droit civil
-
-Composition
-
-M. le Juge fédéral Bovey, Président.
-
-Greffière : Mme Hildbrand.
-
-Participants à la procédure
-
-A._______…</description>
-      <pubDate>Mon, 01 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_249.2026</guid>
-      <category>bger</category>
     </item>
   </channel>
 </rss>

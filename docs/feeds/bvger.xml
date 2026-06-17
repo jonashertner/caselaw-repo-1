@@ -5,9 +5,17 @@
     <link>https://opencaselaw.ch/feeds/bvger.xml</link>
     <description>Latest published Bundesverwaltungsgericht decisions.</description>
     <language>de-CH</language>
-    <lastBuildDate>Tue, 16 Jun 2026 12:26:45 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 17 Jun 2026 11:52:57 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/bvger.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Bundesverwaltungsgericht C-2430/2021 vom 2026-06-05</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-2430_2021</link>
+      <description>Rentenanspruch</description>
+      <pubDate>Fri, 05 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-2430.2021</guid>
+      <category>bvger</category>
+    </item>
     <item>
       <title>Bundesverwaltungsgericht F-3841/2026 vom 2026-06-05</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-3841_2026</link>
@@ -329,11 +337,27 @@
       <category>bvger</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht E-6112/2022 vom 2026-06-01</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-6112_2022</link>
+      <description>Exécution du renvoi</description>
+      <pubDate>Mon, 01 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-6112.2022</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>Bundesverwaltungsgericht E-7188/2025 vom 2026-06-01</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-7188_2025</link>
       <description>Exécution du renvoi</description>
       <pubDate>Mon, 01 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-7188.2025</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht E-7704/2025 vom 2026-06-01</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-7704_2025</link>
+      <description>Vollzug der Wegweisung</description>
+      <pubDate>Mon, 01 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-7704.2025</guid>
       <category>bvger</category>
     </item>
     <item>
@@ -382,30 +406,6 @@
       <description>Visa national</description>
       <pubDate>Mon, 01 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-4973.2025</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht B-4685/2025 vom 2026-05-29</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_B-4685_2025</link>
-      <description>Milch, Milchprodukte, Speiseöle und -fette</description>
-      <pubDate>Fri, 29 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:B-4685.2025</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht D-2073/2025 vom 2026-05-29</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-2073_2025</link>
-      <description>Asyl und Wegweisung</description>
-      <pubDate>Fri, 29 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-2073.2025</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht D-2434/2026 vom 2026-05-29</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-2434_2026</link>
-      <description>Asyl und Wegweisung</description>
-      <pubDate>Fri, 29 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-2434.2026</guid>
       <category>bvger</category>
     </item>
   </channel>

@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/de.xml</link>
     <description>Latest published Swiss court decisions in Deutsch.</description>
     <language>de-CH</language>
-    <lastBuildDate>Tue, 16 Jun 2026 12:26:46 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 17 Jun 2026 11:52:59 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/de.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -45,6 +45,23 @@ Präsiden…</description>
       <pubDate>Mon, 22 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">fr_gerichte_605 2025 74</guid>
       <category>fr_gerichte</category>
+    </item>
+    <item>
+      <title>gr_gerichte SV1 2026 22 vom 2026-06-16</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_SV1%202026%2022</link>
+      <description>Obergericht des Kantons Graubünden
+Dretgira superiura dal chantun Grischun
+Tribunale d'appello del Cantone dei Grigioni
+Urteil vom 27. Mai 2026
+mitgeteilt am 2. Juni 2026
+Referenz
+SV1 26 22
+Instanz
+Erste sozialversicherungsrechtliche Kammer
+Besetzung…</description>
+      <pubDate>Tue, 16 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">gr_gerichte_SV1 2026 22</guid>
+      <category>gr_gerichte</category>
     </item>
     <item>
       <title>gr_gerichte SBK 2025 94 vom 2026-06-15</title>
@@ -97,6 +114,37 @@ Erste verfassungs- und verwaltungsrechtliche Kammer
       <pubDate>Wed, 10 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">gr_gerichte_VR1 2026 20</guid>
       <category>gr_gerichte</category>
+    </item>
+    <item>
+      <title>so_gerichte SCBES.2026.29 vom 2026-06-10</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/so_gerichte_SCBES.2026.29</link>
+      <description>Urteilvom10. Juni 2026
+
+Es wirken mit:
+
+Oberrichterin Obrecht Steiner
+
+Gerichtsschreiber Schaller
+
+In Sachen
+
+A.___,
+
+Beschwerdeführer
+
+gegen
+
+Betreibungsamt Dorneck-Thierstein,
+
+Beschwerdegegner
+
+betreffendBerechnung
+des Existenzminimums
+
+zieht die…</description>
+      <pubDate>Wed, 10 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">so_gerichte_SCBES.2026.29</guid>
+      <category>so_gerichte</category>
     </item>
     <item>
       <title>zg_verwaltungsgericht S 2025 62 vom 2026-06-10</title>
@@ -154,6 +202,37 @@ Bas…</description>
       <pubDate>Tue, 09 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">bs_appellationsgericht_AUS.2026.51</guid>
       <category>bs_appellationsgericht</category>
+    </item>
+    <item>
+      <title>so_gerichte SCBES.2026.24 vom 2026-06-09</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/so_gerichte_SCBES.2026.24</link>
+      <description>Urteilvom9. Juni 2026
+
+Es wirken mit:
+
+Oberrichterin Obrecht Steiner
+
+Gerichtsschreiber Schaller
+
+In Sachen
+
+A.___,
+
+Beschwerdeführerin
+
+gegen
+
+Betreibungsamt Dorneck-Thierstein,
+
+Beschwerdegegner
+
+betreffendPfändungsankündigung
+(Pfändung [...])
+
+zi…</description>
+      <pubDate>Tue, 09 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">so_gerichte_SCBES.2026.24</guid>
+      <category>so_gerichte</category>
     </item>
     <item>
       <title>be_verwaltungsgericht 200 2025 648 vom 2026-06-08</title>
@@ -276,6 +355,51 @@ Seile…</description>
       <category>gr_gerichte</category>
     </item>
     <item>
+      <title>so_gerichte SCBES.2026.42 vom 2026-06-08</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/so_gerichte_SCBES.2026.42</link>
+      <description>Urteilvom8. Juni 2026
+
+Es wirken mit:
+
+Oberrichter Rauber
+
+Gerichtsschreiberin Schenker
+
+In Sachen
+
+1.A.___
+
+2.B.___
+
+Beschwerdeführer
+
+gegen
+
+Betreibungsamt Olten-Gösgen,
+
+Beschwerdegegner
+
+betreffendBerechnung
+des Existenzminimums
+
+zieht die Aufsi…</description>
+      <pubDate>Mon, 08 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">so_gerichte_SCBES.2026.42</guid>
+      <category>so_gerichte</category>
+    </item>
+    <item>
+      <title>zh_bezirksgericht_zuerich MJ250054-L vom 2026-06-08</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/zh_bezirksgericht_zuerich_MJ250054-L</link>
+      <description>ZMP 2026 Nr. 9
+Art. 267 und 267a OR; Art. 259 OR. Rückgabe der Mietsache. Schadenersatz.
+Reparaturkosten und Minderwert. Kleiner Unterhalt. Mängelrüge. Frist. Ver-
+steckte Mängel. Vereinbarte Nachreinigung.
+Bei der Rückgabe der Sache haftet der Miete…</description>
+      <pubDate>Mon, 08 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">zh_bezirksgericht_zuerich_MJ250054-L</guid>
+      <category>zh_bezirksgericht_zuerich</category>
+    </item>
+    <item>
       <title>bs_appellationsgericht AUS.2026.47 vom 2026-06-05</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bs_appellationsgericht_AUS.2026.47</link>
       <description>Appellationsgericht
@@ -303,6 +427,43 @@ Bas…</description>
       <pubDate>Fri, 05 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">bs_appellationsgericht_AUS.2026.47</guid>
       <category>bs_appellationsgericht</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht C-2430/2021 vom 2026-06-05</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-2430_2021</link>
+      <description>Rentenanspruch</description>
+      <pubDate>Fri, 05 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-2430.2021</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>so_gerichte ZKEIV.2026.6 vom 2026-06-05</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/so_gerichte_ZKEIV.2026.6</link>
+      <description>Urteilvom5. Juni 2026
+
+Es wirken mit:
+
+Oberrichter
+Schibli, Vorsitz
+
+Oberrichter Thomann
+
+Oberrichter Flückiger
+
+Oberrichter Thomann
+
+Gerichtsschreiber Schaller
+
+In Sachen
+
+A.___, vertreten durch Rechtsanwältin Nicole Allemann,
+
+Gesuchsteller
+
+gegen…</description>
+      <pubDate>Fri, 05 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">so_gerichte_ZKEIV.2026.6</guid>
+      <category>so_gerichte</category>
     </item>
     <item>
       <title>be_verwaltungsgericht 200 2026 20 vom 2026-06-04</title>
@@ -388,6 +549,23 @@ Bas…</description>
       <pubDate>Thu, 04 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-3132.2026</guid>
       <category>bvger</category>
+    </item>
+    <item>
+      <title>ag_strafgericht SBE.2026.25 vom 2026-06-03</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ag_strafgericht_SBE.2026.25</link>
+      <description>Obergericht
+Beschwerdekammer in Strafsachen
+SBE.2026.25 (vormals SBK.2026.67)
+(ST.2025.84; STA.2025.3130)
+Art. 239
+Entscheid vom 3. Juni 2026
+Besetzung Oberrichterin Merkofer, Vizepräsidentin
+Gerichtsschreiber Gasser
+Beschwerde- A._____,
+führerin […]…</description>
+      <pubDate>Wed, 03 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ag_strafgericht_SBE.2026.25</guid>
+      <category>ag_strafgericht</category>
     </item>
     <item>
       <title>be_verwaltungsgericht 200 2026 45 vom 2026-06-03</title>
@@ -541,6 +719,107 @@ Besetzung…</description>
       <category>gr_gerichte</category>
     </item>
     <item>
+      <title>so_gerichte SCBES.2026.60 vom 2026-06-03</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/so_gerichte_SCBES.2026.60</link>
+      <description>Urteilvom3. Juni 2026
+
+Es wirken mit:
+
+Oberrichterin Obrecht Steiner
+
+Oberrichter Rauber
+
+Gerichtsschreiber Isch
+
+In Sachen
+
+A.___ GmbH,
+
+Beschwerdeführerin
+
+gegen
+
+Betreibungsamt Thal-Gäu,
+
+Beschwerdegegner
+
+betreffendKonkursandrohung
+
+zieht die Auf…</description>
+      <pubDate>Wed, 03 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">so_gerichte_SCBES.2026.60</guid>
+      <category>so_gerichte</category>
+    </item>
+    <item>
+      <title>so_gerichte ZKBER.2026.23 vom 2026-06-03</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/so_gerichte_ZKBER.2026.23</link>
+      <description>Urteilvom3. Juni 2026
+
+Es wirken mit:
+
+Vizepräsident
+Hagmann
+
+Oberrichter Schibli
+
+Oberrichter Rauber
+
+Gerichtsschreiber Schaller
+
+In Sachen
+
+A.___,
+
+Berufungsklägerin
+
+gegen
+
+B.___,
+
+Berufungsbeklagte
+
+betreffendvorsorglicher
+Persönlichkeitsschutz…</description>
+      <pubDate>Wed, 03 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">so_gerichte_ZKBER.2026.23</guid>
+      <category>so_gerichte</category>
+    </item>
+    <item>
+      <title>so_gerichte ZKBES.2026.182 vom 2026-06-03</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/so_gerichte_ZKBES.2026.182</link>
+      <description>Beschlussvom3. Juni 2026
+
+Es wirken mit:
+
+Vizepräsident
+Hagmann
+
+Oberrichter Schibli
+
+Oberrichter Flückiger
+
+Rechtspraktikantin Zenker
+
+In Sachen
+
+A.___,
+
+Beschwerdeführer
+
+gegen
+
+B.___AG,
+
+Beschwerdegegnerin
+
+betreffendRechtsöffnung
+
+hat die Zivilk…</description>
+      <pubDate>Wed, 03 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">so_gerichte_ZKBES.2026.182</guid>
+      <category>so_gerichte</category>
+    </item>
+    <item>
       <title>sz_gerichte STK 2025 37 vom 2026-06-03</title>
       <link>https://mcp.opencaselaw.ch/entscheid/sz_gerichte_STK%202025%2037</link>
       <description>Kantonsgericht Schwyz
@@ -573,155 +852,19 @@ Gegenstand Summarisches …</description>
       <category>ag_handelsgericht</category>
     </item>
     <item>
-      <title>Bundesgericht 5A_128/2026 vom 2026-06-02</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_128_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-5A_128/2026
-
+      <title>be_verwaltungsgericht 200 2025 366 vom 2026-06-02</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/be_verwaltungsgericht_200%202025%20366</link>
+      <description>UV 200 2025 366
+ISD/FRJ/STA
+Verwaltungsgericht des Kantons Bern
+Sozialversicherungsrechtliche Abteilung
 Urteil vom 2. Juni 2026
-
-II. zivilrechtliche Abteilung
-
-Besetzung
-
-Bundesrichter Bovey, Präsident,
-
-Bundesrichter Hartmann, Josi,
-
-Gerichtsschreiberin Lang.
-
-Verfahre…</description>
+Verwaltungsrichter Isliker, Kammerpräsident
+Verwaltungsrichterin Frey, Verwaltungsrichter Jakob
+Gerichtsschreiberin Frésar…</description>
       <pubDate>Tue, 02 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_128.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 8C_307/2026 vom 2026-06-02</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_8C_307_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-8C_307/2026
-
-Urteil vom 2. Juni 2026
-
-IV. öffentlich-rechtliche Abteilung
-
-Besetzung
-
-Bundesrichterin Viscione, Präsidentin,
-
-Gerichtsschreiber Grünvogel.
-
-Verfahrensbeteiligte
-
-A…</description>
-      <pubDate>Tue, 02 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:8C_307.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht D-1221/2026 vom 2026-06-02</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-1221_2026</link>
-      <description>Asyl und Wegweisung</description>
-      <pubDate>Tue, 02 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-1221.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht D-1453/2026 vom 2026-06-02</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-1453_2026</link>
-      <description>Vollzug der Wegweisung</description>
-      <pubDate>Tue, 02 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-1453.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht D-3082/2025 vom 2026-06-02</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-3082_2025</link>
-      <description>Asyl und Wegweisung</description>
-      <pubDate>Tue, 02 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-3082.2025</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht D-3715/2026 vom 2026-06-02</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-3715_2026</link>
-      <description>Asyl und Wegweisung (beschleunigtes Verfahren)</description>
-      <pubDate>Tue, 02 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-3715.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht D-7389/2024 vom 2026-06-02</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-7389_2024</link>
-      <description>Asyl und Wegweisung</description>
-      <pubDate>Tue, 02 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-7389.2024</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht E-3195/2026 vom 2026-06-02</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-3195_2026</link>
-      <description>Asyl und Wegweisung (Wiedererwägung)</description>
-      <pubDate>Tue, 02 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-3195.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht E-8404/2025 vom 2026-06-02</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-8404_2025</link>
-      <description>Verweigerung vorübergehender Schutz</description>
-      <pubDate>Tue, 02 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-8404.2025</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht F-3593/2026 vom 2026-06-02</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-3593_2026</link>
-      <description>Nichteintreten auf Asylgesuch und Wegweisung (Dublin-Verfahren - Art. 31a Abs. 1 Bst. b AsylG)</description>
-      <pubDate>Tue, 02 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-3593.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>gr_gerichte VR2 2026 11 vom 2026-06-02</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_VR2%202026%2011</link>
-      <description>Obergericht des Kantons Graubünden
-Dretgira superiura dal chantun Grischun
-Tribunale d'appello del Cantone dei Grigioni
-Urteil vom 30. April 2026
-mitgeteilt am 6. Mai 2026
-Referenz
-VR2 26 11
-Instanz
-Zweite verwaltungsrechtliche Kammer
-Besetzung
-Righe…</description>
-      <pubDate>Tue, 02 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">gr_gerichte_VR2 2026 11</guid>
-      <category>gr_gerichte</category>
-    </item>
-    <item>
-      <title>sh_gerichte Nr. 51/2025/15/D vom 2026-06-02</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/sh_gerichte_Nr.%2051_2025_15_D</link>
-      <description>Beim Entscheid der Staatsanwaltschaft betreffend Entschädigung und Genugtuung handelt es sich um einen Ermessensentscheid, weshalb sich das Obergericht trotz voller Überprüfungsbefugnis eine gewisse Zurückhaltung aufzuerlegen hat (E. 2).
-Als übliches…</description>
-      <pubDate>Tue, 02 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">sh_gerichte_Nr. 51_2025_15_D</guid>
-      <category>sh_gerichte</category>
+      <guid isPermaLink="false">be_verwaltungsgericht_200 2025 366</guid>
+      <category>be_verwaltungsgericht</category>
     </item>
   </channel>
 </rss>
