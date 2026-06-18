@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="google-site-verification" content="5eTv5mgNKw8M8vENzS4KPG4aJKYm_zKZJhL3TbQpOGs">
 <title>MCP-Server verbinden — Claude, ChatGPT, Cursor, Gemini · OpenCaseLaw.ch</title>
-<meta name="description" content="OpenCaseLaw bietet einen öffentlichen MCP-Server mit 33 Tools für Schweizer Rechtsrecherche. Anleitung für Claude Desktop, Claude Code, ChatGPT, Cursor und Gemini. Keine API-Keys.">
+<meta name="description" content="OpenCaseLaw bietet einen öffentlichen MCP-Server mit 41 Tools für Schweizer Rechtsrecherche. Anleitung für Claude Desktop, Claude Code, ChatGPT, Cursor und Gemini. Keine API-Keys.">
 <meta name="robots" content="index, follow">
 <meta name="author" content="Jonas Hertner">
 <link rel="canonical" href="https://opencaselaw.ch/">
@@ -17,8 +17,8 @@
 <link rel="alternate" hreflang="x-default" href="https://opencaselaw.ch/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://opencaselaw.ch/">
-<meta property="og:title" content="Swiss Case Law Open Dataset — 972,000+ Court Decisions">
-<meta property="og:description" content="OpenCaseLaw publishes 972,000+ Swiss federal, cantonal, and regulatory decisions with full text, structured metadata, and 8.65 million extracted case-citation references (8.09 M resolved).">
+<meta property="og:title" content="Swiss Case Law Open Dataset — 990,000+ Court Decisions">
+<meta property="og:description" content="OpenCaseLaw publishes 990,000+ Swiss federal, cantonal, and regulatory decisions with full text, structured metadata, and 8.9 million extracted case-citation references (8.3 M resolved).">
 <meta property="og:image" content="https://opencaselaw.ch/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -29,8 +29,8 @@
 <meta property="og:locale:alternate" content="fr_CH">
 <meta property="og:locale:alternate" content="it_CH">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Swiss Case Law Open Dataset — 972,000+ Court Decisions">
-<meta name="twitter:description" content="972,000+ Swiss federal, cantonal, and regulatory decisions with full text and 8.65 million extracted case-citation references (8.09 M resolved).">
+<meta name="twitter:title" content="Swiss Case Law Open Dataset — 990,000+ Court Decisions">
+<meta name="twitter:description" content="990,000+ Swiss federal, cantonal, and regulatory decisions with full text and 8.9 million extracted case-citation references (8.3 M resolved).">
 <meta name="twitter:image" content="https://opencaselaw.ch/og-image.png">
 <meta name="twitter:image:alt" content="OpenCaseLaw.ch — Swiss Court Decisions Open Dataset">
 <script type="application/ld+json">
@@ -40,7 +40,7 @@
     "@type": "Dataset",
     "name": "Swiss Case Law Open Dataset",
     "alternateName": "OpenCaseLaw",
-    "description": "OpenCaseLaw publishes 972,000+ Swiss federal, cantonal, and regulatory decisions with full text, structured metadata, and 8.65 million extracted case-citation references (8.09 M resolved). Updated daily. Searchable via MCP.",
+    "description": "OpenCaseLaw publishes 990,000+ Swiss federal, cantonal, and regulatory decisions with full text, structured metadata, and 8.9 million extracted case-citation references (8.3 M resolved). Updated daily. Searchable via MCP.",
     "url": "https://opencaselaw.ch/",
     "license": "https://creativecommons.org/publicdomain/zero/1.0/",
     "isAccessibleForFree": true,
@@ -1288,21 +1288,21 @@ footer:not(.site) .foot-links a:hover { border-bottom-color: var(--ac); text-dec
       <span class="logo">+</span> <span class="wordmark">opencaselaw.ch</span>
     </a>
     <nav id="primary-nav" aria-label="Primary">
-      <a href="/search/" data-t="nav_search" data-nav-key="search">Search</a>
-      <a href="/courts/" data-t="nav_courts" data-nav-key="courts">Courts</a>
-      <a href="/laws/" data-t="nav_laws" data-nav-key="laws">Laws</a>
-      <a href="/word/" data-t="nav_word" data-nav-key="word">Word</a>
-      <a href="/mcp/" data-t="nav_mcp" class="active" data-nav-key="mcp">MCP</a>
+      <a href="/search/" data-nav-key="search">Search</a>
+      <a href="/courts/" data-nav-key="courts">Courts</a>
+      <a href="/laws/" data-nav-key="laws">Laws</a>
+      <a href="/word/" data-nav-key="word">Word</a>
+      <a href="/mcp/" class="active" data-nav-key="mcp">MCP</a>
       <a href="/api/" data-nav-key="api">API</a>
       <a href="/standards/" data-nav-key="standards">Standards</a>
       <a href="/integrity/" data-nav-key="integrity">Integrity</a>
-      <a href="/quality.html" data-t="nav_quality" data-nav-key="quality">Quality</a>
+      <a href="/quality.html" data-nav-key="quality">Quality</a>
       <span class="lang-sw" role="group" aria-label="Language">
-        <a href="/?lang=de" data-l="de">DE</a>
-        <a href="/?lang=fr" data-l="fr">FR</a>
-        <a href="/?lang=it" data-l="it">IT</a>
-        <a href="/?lang=rm" data-l="rm">RM</a>
-        <a href="/?lang=en" data-l="en">EN</a>
+        <a href="?lang=de" data-l="de">DE</a>
+        <a href="?lang=fr" data-l="fr">FR</a>
+        <a href="?lang=it" data-l="it">IT</a>
+        <a href="?lang=rm" data-l="rm">RM</a>
+        <a href="?lang=en" data-l="en">EN</a>
       </span>
     </nav>
     <button class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="primary-nav">
@@ -1315,25 +1315,25 @@ footer:not(.site) .foot-links a:hover { border-bottom-color: var(--ac); text-dec
 <main id="main" class="container" style="padding-top: var(--s-6); padding-bottom: var(--s-7);">
   <p class="eyebrow" data-i18n="hero.eyebrow">AI · MCP server</p>
   <h1 data-t="mcp_h1">KI-Agenten verbinden</h1>
-  <p class="lede" data-t="mcp_sub">Der öffentliche MCP-Server von OpenCaseLaw gibt Sprachmodellen direkten Zugriff auf 972'000+ Schweizer Gerichtsentscheide, den Zitationsgraph, Bundesgesetze und kantonale Erlasse. 38 spezialisierte Tools, keine Anmeldung, keine API-Keys.</p>
+  <p class="lede" data-t="mcp_sub">Der öffentliche MCP-Server von OpenCaseLaw gibt Sprachmodellen direkten Zugriff auf 990'000+ Schweizer Gerichtsentscheide, den Zitationsgraph, Bundesgesetze und kantonale Erlasse. 41 spezialisierte Tools, keine Anmeldung, keine API-Keys.</p>
 
   <nav class="page-toc" aria-label="On this page">
     <span class="page-toc-label" data-t="page_toc">On this page</span>
-    <a href="#mcp-modes">Betriebsmodi</a>
-    <a href="#mcp-setup">Einrichtung</a>
-    <a href="#mcp-tools">Tools</a>
-    <a href="#mcp-tech">Technisches</a>
+    <a href="#mcp-modes" data-t="mcp_toc_modes">Betriebsmodi</a>
+    <a href="#mcp-setup" data-t="mcp_toc_setup">Einrichtung</a>
+    <a href="#mcp-tools" data-t="mcp_toc_tools">Tools</a>
+    <a href="#mcp-tech" data-t="mcp_toc_tech">Technisches</a>
   </nav>
 
   <!-- Remote vs Local -->
   <section id="mcp-modes" class="section-card" open style="margin-bottom:24px">
     <div class="section-body" style="padding:28px 32px">
-      <h2 style="margin:0 0 16px; font-size:22px">Zwei Betriebsmodi</h2>
+      <h2 style="margin:0 0 16px; font-size:22px" data-t="mcp_modes_heading">Zwei Betriebsmodi</h2>
       <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:16px">
         <div style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:18px 20px">
           <div style="display:flex; align-items:baseline; gap:8px; margin-bottom:6px">
             <strong>Remote</strong>
-            <span class="leg-badge">empfohlen</span>
+            <span class="leg-badge" data-t="mcp_badge_recommended">empfohlen</span>
           </div>
           <p style="font-size:14px; color:var(--tx2); line-height:1.55; margin:0 0 10px" data-t="mcp_remote_desc">
             Sofort verfügbar, immer aktuell. Kein Download nötig. Server-Endpunkt:
@@ -1342,10 +1342,10 @@ footer:not(.site) .foot-links a:hover { border-bottom-color: var(--ac); text-dec
         </div>
         <div style="background:var(--bg2); border:1px solid var(--brd2); border-radius:6px; padding:18px 20px">
           <div style="display:flex; align-items:baseline; gap:8px; margin-bottom:6px">
-            <strong>Lokal</strong>
+            <strong data-t="mcp_mode_local_label">Lokal</strong>
             <span class="leg-badge">offline</span>
           </div>
-          <p style="font-size:14px; color:var(--tx2); line-height:1.55; margin:0">
+          <p style="font-size:14px; color:var(--tx2); line-height:1.55; margin:0" data-t="mcp_local_desc">
             Volle Kontrolle, funktioniert offline. ~65 GB Speicher, einmalige Einrichtung ca. 30–60 Minuten.
             Siehe <a href="https://github.com/jonashertner/caselaw-repo-1#local-setup" style="color:var(--ac)">README</a>.
           </p>
@@ -1437,14 +1437,14 @@ footer:not(.site) .foot-links a:hover { border-bottom-color: var(--ac); text-dec
   <!-- Tool list -->
   <section id="mcp-tools" class="section-card" open style="margin-bottom:24px">
     <div class="section-body" style="padding:28px 32px">
-      <h2 style="margin:0 0 12px; font-size:22px" data-t="mcp_tools_heading">33 öffentliche Tools (+ 2 lokale Admin-Tools)</h2>
+      <h2 style="margin:0 0 12px; font-size:22px" data-t="mcp_tools_heading">41 öffentliche Tools (+ 2 lokale Admin-Tools)</h2>
       <p style="font-size:14px; color:var(--tx2); margin:0 0 20px; max-width:68ch" data-t="mcp_tools_desc">
         Jedes Tool ist für einen spezifischen Rechercheanwendungsfall optimiert. Volle Schemas via MCP-Protokoll-<code>tools/list</code> abrufbar. Lokal-Modus zusätzlich mit <code>update_database</code> und <code>check_update_status</code> für Datenbank-Wartung.
       </p>
 
       <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:16px 24px; font-size:13px">
         <div>
-          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500">Entscheide suchen &amp; abrufen</div>
+          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500" data-t="mcp_grp_search">Entscheide suchen &amp; abrufen</div>
           <div style="font-family:var(--f-mono); line-height:1.9">
             search_decisions<br>
             get_decision<br>
@@ -1454,15 +1454,16 @@ footer:not(.site) .foot-links a:hover { border-bottom-color: var(--ac); text-dec
           </div>
         </div>
         <div>
-          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500">Entscheidstruktur (Bund)</div>
+          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500" data-t="mcp_grp_structure">Entscheidstruktur (Bund)</div>
           <div style="font-family:var(--f-mono); line-height:1.9">
             get_decision_structure<br>
             get_erwaegung<br>
-            get_regeste
+            get_regeste<br>
+            find_relevant_erwaegung
           </div>
         </div>
         <div>
-          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500">Zitationsgraph</div>
+          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500" data-t="mcp_grp_citation">Zitationsgraph</div>
           <div style="font-family:var(--f-mono); line-height:1.9">
             find_citations<br>
             find_appeal_chain<br>
@@ -1471,17 +1472,19 @@ footer:not(.site) .foot-links a:hover { border-bottom-color: var(--ac); text-dec
           </div>
         </div>
         <div>
-          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500">Gesetzestext</div>
+          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500" data-t="mcp_grp_statutes">Gesetzestext</div>
           <div style="font-family:var(--f-mono); line-height:1.9">
             get_law<br>
             search_laws<br>
             get_legislation<br>
             search_legislation<br>
-            browse_legislation_changes
+            browse_legislation_changes<br>
+            get_article_history<br>
+            get_article_purpose
           </div>
         </div>
         <div>
-          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500">Doktrin &amp; Kommentare</div>
+          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500" data-t="mcp_grp_doctrine">Doktrin &amp; Kommentare</div>
           <div style="font-family:var(--f-mono); line-height:1.9">
             get_doctrine<br>
             get_commentary<br>
@@ -1489,14 +1492,26 @@ footer:not(.site) .foot-links a:hover { border-bottom-color: var(--ac); text-dec
           </div>
         </div>
         <div>
-          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500">Materialien (Botschaften)</div>
+          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500" data-t="mcp_grp_scholarship">Rechtswissenschaft (Open Access)</div>
           <div style="font-family:var(--f-mono); line-height:1.9">
-            get_materialien<br>
-            search_materialien
+            search_scholarship<br>
+            get_scholarship<br>
+            get_scholarship_full_text<br>
+            list_scholarship_sources<br>
+            find_scholarship_citing_statute<br>
+            find_scholarship_citing_decision
           </div>
         </div>
         <div>
-          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500">Verifikation &amp; Zitation</div>
+          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500" data-t="mcp_grp_materials">Materialien (Botschaften)</div>
+          <div style="font-family:var(--f-mono); line-height:1.9">
+            get_materialien<br>
+            search_materialien<br>
+            search_botschaft
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500" data-t="mcp_grp_verify">Verifikation &amp; Zitation</div>
           <div style="font-family:var(--f-mono); line-height:1.9">
             check_claim_support<br>
             attest_response<br>
@@ -1504,21 +1519,28 @@ footer:not(.site) .foot-links a:hover { border-bottom-color: var(--ac); text-dec
           </div>
         </div>
         <div>
-          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500">Verwaltungspraxis (Bund)</div>
+          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500" data-t="mcp_grp_practice">Verwaltungspraxis (Bund)</div>
           <div style="font-family:var(--f-mono); line-height:1.9">
             search_practice<br>
             get_practice
           </div>
         </div>
         <div>
-          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500">Drafting &amp; Studium</div>
+          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500" data-t="mcp_grp_drafting">Drafting &amp; Studium</div>
           <div style="font-family:var(--f-mono); line-height:1.9">
             generate_exam_question<br>
             draft_mock_decision
           </div>
         </div>
         <div>
-          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500">Lokal-Modus (Wartung)</div>
+          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500" data-t="mcp_grp_openai">ChatGPT Deep Research (Aliase)</div>
+          <div style="font-family:var(--f-mono); line-height:1.9; color:var(--tx3)">
+            search<br>
+            fetch
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--tx3); margin-bottom:6px; font-weight:500" data-t="mcp_grp_local">Lokal-Modus (Wartung)</div>
           <div style="font-family:var(--f-mono); line-height:1.9; color:var(--tx3)">
             update_database<br>
             check_update_status
@@ -1536,7 +1558,7 @@ footer:not(.site) .foot-links a:hover { border-bottom-color: var(--ac); text-dec
         <li data-t="mcp_tech_transport">Transport: Server-Sent Events (SSE) + Streamable HTTP, kompatibel mit allen gängigen MCP-Clients</li>
         <li data-t="mcp_tech_tls">TLS via Let's Encrypt, nginx Rate-Limiting, Health-Endpoint: <a href="https://mcp.opencaselaw.ch/health" style="color:var(--ac)">/health</a></li>
         <li data-t="mcp_tech_workers">4× uvicorn-Worker hinter Load-Balancer, automatisches Failover</li>
-        <li data-t="mcp_tech_backend">Backend: 972'000+ Entscheide in SQLite FTS5 mit BM25+RRF-Ranking, Graph DB mit 8,64 Mio Zitationskanten (6,50 Mio aufgelöst)</li>
+        <li data-t="mcp_tech_backend">Backend: 990'000+ Entscheide in SQLite FTS5 mit BM25+RRF-Ranking, Graph DB mit 8,9 Mio Zitationskanten (8,3 Mio aufgelöst)</li>
         <li data-t="mcp_tech_data">Daten aus öffentlichen Quellen (Bundesgerichte, kantonale Gerichte, Fedlex, LexFind), täglich aktualisiert</li>
       </ul>
     </div>
@@ -1559,14 +1581,14 @@ footer:not(.site) .foot-links a:hover { border-bottom-color: var(--ac); text-dec
         <li><a href="/entscheide/" data-t="nav_entscheide">Decisions</a></li>
         <li><a href="/gesetze/" data-t="nav_gesetze">Laws</a></li>
         <li><a href="/quality.html">Quality</a></li>
-        <li><a href="/coverage/" data-t="footer_coverage">Coverage</a></li>
+        <li><a href="/coverage/" data-i18n="footer.coverage">Coverage</a></li>
         <li><a href="https://huggingface.co/datasets/voilaj/swiss-caselaw" rel="noopener">HuggingFace</a></li>
       </ul>
     </div>
     <div>
       <h4 data-i18n="footer.access">Access</h4>
       <ul>
-        <li><a href="/word/" data-t="nav_word">Word add-in</a></li>
+        <li><a href="/word/" data-i18n="footer.word">Word add-in</a></li>
         <li><a href="/mcp/">MCP server</a></li>
         <li><a href="/api/">REST API</a></li>
         <li><a href="/feed.xml" type="application/rss+xml">RSS feed</a></li>
@@ -1609,16 +1631,16 @@ const I18N = {
     nav_overview:'\u00dcbersicht', nav_coverage:'Abdeckung', nav_federal:'Bund', nav_cantonal:'Kantonal', nav_cantons:'Kantone', nav_browse:'Durchsuchen', nav_access:'Zugang',
     nav_entscheide:'Entscheide', nav_gesetze:'Gesetze', nav_mcp:'Verbinden', nav_ueber:'\u00dcber uns',
     landing_title:'Schweizer Rechtsprechung &amp; Gesetze,<br>gebaut f\u00fcr KI-Agenten.',
-    landing_sub:'Ein offener Datensatz der publizierten Schweizer Gerichtsentscheide (972\u2019000+) und die erste LLM-taugliche Schnittstelle zu Bundes- und kantonalen Gesetzen. Frei nutzbar \u2014 per MCP-Server, HuggingFace-Download oder REST-API.',
+    landing_sub:'Ein offener Datensatz der publizierten Schweizer Gerichtsentscheide (990\u2019000+) und die erste LLM-taugliche Schnittstelle zu Bundes- und kantonalen Gesetzen. Frei nutzbar \u2014 per MCP-Server, HuggingFace-Download oder REST-API.',
     landing_card_entscheide_title:'Entscheide',
-    landing_card_entscheide_desc:'972\u2019000+ Gerichtsentscheide aller Bundesgerichte und 26 Kantone, t\u00e4glich aktualisiert. Volltextsuche, Zitationsgraph (8,77 Mio Kanten), mehrsprachig (DE/FR/IT).',
+    landing_card_entscheide_desc:'990\u2019000+ Gerichtsentscheide aller Bundesgerichte und 26 Kantone, t\u00e4glich aktualisiert. Volltextsuche, Zitationsgraph (8,77 Mio Kanten), mehrsprachig (DE/FR/IT).',
     landing_card_entscheide_cta:'Datensatz erkunden \u2192',
     landing_card_mcp_title:'Verbinden',
-    landing_card_mcp_desc:'38 MCP-Tools f\u00fcr Claude, ChatGPT, Cursor und Gemini. Remote-Server (<code style="font-size:0.9em">mcp.opencaselaw.ch</code>) oder lokal. Einrichtung \u00fcber MCP-URL.',
+    landing_card_mcp_desc:'41 MCP-Tools f\u00fcr Claude, ChatGPT, Cursor und Gemini. Remote-Server (<code style="font-size:0.9em">mcp.opencaselaw.ch</code>) oder lokal. Einrichtung \u00fcber MCP-URL.',
     landing_card_mcp_cta:'MCP-Setup \u2192',
     landing_what_title:'Was ist OpenCaseLaw?',
     landing_what_1:'OpenCaseLaw sammelt, dedupliziert und publiziert <strong>jeden ver\u00f6ffentlichten Schweizer Gerichtsentscheid</strong> sowie den aktuellen Text aller einschl\u00e4gigen Bundesgesetze und der 26\u2019000+ kantonalen Erlasse. Der Datensatz wird t\u00e4glich aktualisiert und steht unter CC0 (Daten) und MIT (Code) zur freien Verf\u00fcgung.',
-    landing_what_2:'Die gleiche Infrastruktur treibt einen \u00f6ffentlichen MCP-Server an, der Sprachmodellen 38 spezialisierte Tools f\u00fcr Schweizer Rechtsrecherche bereitstellt \u2014 von der Volltextsuche \u00fcber die Zitationsanalyse bis zum Abruf von Gesetzesartikeln. Keine Anmeldung, keine API-Keys, keine Paywall.',
+    landing_what_2:'Die gleiche Infrastruktur treibt einen \u00f6ffentlichen MCP-Server an, der Sprachmodellen 41 spezialisierte Tools f\u00fcr Schweizer Rechtsrecherche bereitstellt \u2014 von der Volltextsuche \u00fcber die Zitationsanalyse bis zum Abruf von Gesetzesartikeln. Keine Anmeldung, keine API-Keys, keine Paywall.',
     landing_stat_decisions:'Entscheide', landing_stat_courts:'Gerichte', landing_stat_laws:'Bundesgesetze', landing_stat_cantonal:'kantonale Erlasse', landing_stat_citations:'Zitationsgraph', landing_stat_updated:'T\u00e4glich aktualisiert',
     word_desc:'Schweizer Rechtsprechung direkt in Ihrem Word-Dokument. Suchen, zitieren und einf\u00fcgen ohne Copy-Paste aus dem Browser \u2014 mit automatischer Quellenangabe.',
     word_cta:'Installation \u2192',
@@ -1636,7 +1658,7 @@ const I18N = {
     hero_fact_span:'Zeitraum', hero_fact_federal:'Bund', hero_fact_cantonal:'Kantone', hero_fact_cantons:'Kantone', hero_fact_new:'neu seit gestern',
     cap_entscheide_desc:'Jeder publizierte Schweizer Gerichtsentscheid. Volltextsuche, Zitationsgraph, mehrsprachig (DE/FR/IT). T\u00e4glich aktualisiert.',
     cap_gesetze_desc:'Lokaler Fedlex-SPARQL-Spiegel: 5\u2019510 Bundesgesetze, 132\u2019586 Artikel in DE/FR/IT, monatlich synchronisiert. 15\u2019722 kantonale Erlasse: direkter HTML-Spiegel von 19 Kantonsportalen (LexWork+SIL) plus LexFind-PDF-Fallback f\u00fcr die \u00fcbrigen 7 Kantone. F\u00f6derierte FTS5-Volltextsuche, Artikel-Lookup <1 ms.',
-    cap_mcp_desc:'38 MCP-Tools f\u00fcr Claude, ChatGPT, Cursor und Gemini. Remote oder lokal. Einrichtung \u00fcber MCP-URL.',
+    cap_mcp_desc:'41 MCP-Tools f\u00fcr Claude, ChatGPT, Cursor und Gemini. Remote oder lokal. Einrichtung \u00fcber MCP-URL.',
     cap_cta_entscheide:'Datensatz \u2192', cap_cta_gesetze:'Gesetze \u2192', cap_cta_mcp:'MCP-Setup \u2192',
     capabilities_heading:'Drei Wege hinein',
     what_heading:'Was ist OpenCaseLaw?',
@@ -1652,7 +1674,7 @@ const I18N = {
     gesetze_h1:'Schweizer Bundes- und kantonale Gesetzgebung',
     gesetze_sub:'~5\u2019000 Schweizer Bundesgesetze (125\u2019000+ Artikel in drei Amtssprachen, vollst\u00e4ndige \u00c4nderungshistorie) aus dem Fedlex-SPARQL-Endpunkt, monatlich lokal gespiegelt. 26\u2019000+ kantonale und interkantonale Erlasse, lokal aus LexFind gespiegelt, monatlich refreshed. Stateless MCP-Calls f\u00fcr Artikel-Lookup, Volltextsuche, Versionsgeschichte und \u00c4nderungsverlauf.',
     mcp_h1:'KI-Agenten verbinden',
-    mcp_sub:'Der \u00f6ffentliche MCP-Server von OpenCaseLaw gibt Sprachmodellen direkten Zugriff auf 972\u2019000+ Schweizer Gerichtsentscheide, den Zitationsgraph, Bundesgesetze und kantonale Erlasse. 38 spezialisierte Tools, keine Anmeldung, keine API-Keys.',
+    mcp_sub:'Der \u00f6ffentliche MCP-Server von OpenCaseLaw gibt Sprachmodellen direkten Zugriff auf 990\u2019000+ Schweizer Gerichtsentscheide, den Zitationsgraph, Bundesgesetze und kantonale Erlasse. 41 spezialisierte Tools, keine Anmeldung, keine API-Keys.',
     ueber_h1:'\u00dcber OpenCaseLaw',
     ueber_sub:'OpenCaseLaw ist der gr\u00f6sste offene Datensatz Schweizer Gerichtsentscheide und die erste LLM-taugliche Schnittstelle zu Bundes- und kantonalen Gesetzen. Frei nutzbar, t\u00e4glich aktualisiert, unabh\u00e4ngig finanziert.',
     search_placeholder:'Gerichte suchen...', csv_export:'CSV',
@@ -1662,7 +1684,7 @@ const I18N = {
     quick_api:'API', quick_api_desc:'Den Datensatz programmatisch via REST API abfragen',
     access_webui_desc:'Lokale Chat-Oberfl\u00e4che \u2014 Fragen in nat\u00fcrlicher Sprache stellen, Antworten mit zitierten Entscheiden erhalten. L\u00e4uft lokal mit Claude, OpenAI, Gemini oder lokalen Modellen via Ollama (kein API-Schl\u00fcssel n\u00f6tig).',
     access_featured_title:'Mit KI durchsuchen',
-    access_featured_desc:'\u00dcber 972\u2019000+ Schweizer Gerichtsentscheide in nat\u00fcrlicher Sprache durchsuchen. Relevante Urteile finden, Zitationen zwischen Entscheiden nachverfolgen, Rechtsprechungstrends analysieren und Recherche-Notizen erstellen.',
+    access_featured_desc:'\u00dcber 990\u2019000+ Schweizer Gerichtsentscheide in nat\u00fcrlicher Sprache durchsuchen. Relevante Urteile finden, Zitationen zwischen Entscheiden nachverfolgen, Rechtsprechungstrends analysieren und Recherche-Notizen erstellen.',
     access_setup_desktop:'Claude Desktop',
     access_setup_code:'Claude Code',
     access_remote_label:'Remote (empfohlen)', access_local_label:'Lokal (offline)',
@@ -1710,6 +1732,26 @@ const I18N = {
     nav_health:'Status', health_title:'Scraper-Status', th_status:'Status', th_new:'Neu', th_duration:'Dauer', th_state:'Bekannt', th_jsonl_size:'JSONL', th_last_data:'Letzte Daten', health_run_at:'Letzter Lauf', health_ok:'OK', health_fail:'Fehler', health_investigating:'In Abkl\u00e4rung', health_running:'L\u00e4uft noch', health_stale:'Veraltet', health_errors:'Fehler', health_unavail:'\u00fcbersprungen', health_unavail_tip:'Entscheide im Portal-Index aufgef\u00fchrt, aber Inhalt nicht abrufbar (leere Seite oder fehlendes PDF)', health_disk:'Speicher', health_disk_free:'frei',
   
     mcp_remote_desc: 'Sofort verfügbar, immer aktuell. Kein Download nötig. Server-Endpunkt:',
+    mcp_toc_modes: 'Betriebsmodi',
+    mcp_toc_setup: 'Einrichtung',
+    mcp_toc_tools: 'Tools',
+    mcp_toc_tech: 'Technisches',
+    mcp_modes_heading: 'Zwei Betriebsmodi',
+    mcp_badge_recommended: 'empfohlen',
+    mcp_mode_local_label: 'Lokal',
+    mcp_local_desc: 'Volle Kontrolle, funktioniert offline. ~65 GB Speicher, einmalige Einrichtung ca. 30–60 Minuten. Siehe <a href="https://github.com/jonashertner/caselaw-repo-1#local-setup" style="color:var(--ac)">README</a>.',
+    mcp_grp_search: 'Entscheide suchen & abrufen',
+    mcp_grp_structure: 'Entscheidstruktur (Bund)',
+    mcp_grp_citation: 'Zitationsgraph',
+    mcp_grp_statutes: 'Gesetzestext',
+    mcp_grp_doctrine: 'Doktrin & Kommentare',
+    mcp_grp_materials: 'Materialien (Botschaften)',
+    mcp_grp_verify: 'Verifikation & Zitation',
+    mcp_grp_practice: 'Verwaltungspraxis (Bund)',
+    mcp_grp_drafting: 'Drafting & Studium',
+    mcp_grp_scholarship: 'Rechtswissenschaft (Open Access)',
+    mcp_grp_openai: 'ChatGPT Deep Research (Aliase)',
+    mcp_grp_local: 'Lokal-Modus (Wartung)',
     mcp_setup_heading: 'Einrichtung nach Client',
     mcp_setup_intro: 'Endpunkt <code style="font-size:12px">https://mcp.opencaselaw.ch</code> · Streamable HTTP (empfohlen) und SSE · keine Authentifizierung · Werkzeuge sind nur-lesend.',
     mcp_claudeai_step: '<strong>Customize</strong> (Anpassen · Personnaliser · Personalizza) → <strong>Connectors</strong> → „+" → „Add custom connector" → URL einfügen. Alternativ direkt: <a href="https://claude.ai/settings/connectors?modal=add-custom-connector" style="color:var(--ac)">claude.ai/settings/connectors</a>. Verfügbar in Free (max. 1 Connector), Pro, Max, Team, Enterprise. Bei Team/Enterprise muss zuerst der Owner unter <em>Organization Settings → Connectors → Add → Custom → Web</em> freischalten.',
@@ -1719,7 +1761,7 @@ const I18N = {
     mcp_copilot_step: 'Agent → Tools → Add a tool → New tool → „Model Context Protocol". Server-Name „Swiss Caselaw" + URL eintragen, Auth: None. Nur Streamable HTTP (SSE seit August 2025 nicht mehr unterstützt).',
     mcp_other_heading: 'Andere MCP-Clients',
     mcp_other_step: 'Funktioniert mit jedem MCP-fähigen Client (Continue, Zed, Cody, Windsurf, …) über Streamable HTTP an <code style="font-size:13px">https://mcp.opencaselaw.ch</code>. SSE ist ebenfalls unter <code style="font-size:13px">/sse</code> erreichbar, aber MCP-spec-seitig veraltet.',
-    mcp_tools_heading: '33 öffentliche Tools (+ 2 lokale Admin-Tools)',
+    mcp_tools_heading: '41 öffentliche Tools (+ 2 lokale Admin-Tools)',
     mcp_tools_desc: 'Jedes Tool ist für einen spezifischen Rechercheanwendungsfall optimiert. Volle Schemas via MCP-Protokoll-<code>tools/list</code>, hier gruppiert nach Funktion.',
     mcp_arch_transport: '<strong>Transport:</strong> Streamable HTTP (empfohlen) + Server-Sent Events (SSE, deprecated), kompatibel mit Claude, ChatGPT, Cursor, Gemini CLI, Copilot Studio.',
     mcp_arch_data: '<strong>Daten:</strong> Aus öffentlichen Quellen (Bundesgerichte, kantonale Gerichte, Fedlex, LexFind), täglich aktualisiert.',
@@ -1727,7 +1769,7 @@ const I18N = {
     mcp_tech_transport: 'Transport: Server-Sent Events (SSE) + Streamable HTTP, kompatibel mit allen gängigen MCP-Clients',
     mcp_tech_tls: 'TLS via Let\'s Encrypt, nginx Rate-Limiting, Health-Endpoint: <a href="https://mcp.opencaselaw.ch/health" style="color:var(--ac)">/health</a>',
     mcp_tech_workers: '4× uvicorn-Worker hinter Load-Balancer, automatisches Failover',
-    mcp_tech_backend: 'Backend: 965\'000+ Entscheide in SQLite FTS5 mit BM25+RRF-Ranking, Graph-DB mit 8,64 Mio Zitationskanten (6,50 Mio aufgelöst)',
+    mcp_tech_backend: 'Backend: 990\'000+ Entscheide in SQLite FTS5 mit BM25+RRF-Ranking, Graph-DB mit 8,9 Mio Zitationskanten (8,3 Mio aufgelöst)',
     mcp_tech_data: 'Daten aus öffentlichen Quellen (Bundesgerichte, kantonale Gerichte, Fedlex, LexFind), täglich aktualisiert',
   
     copy: 'Kopieren',
@@ -1758,16 +1800,16 @@ const I18N = {
     nav_overview:'Aper\u00e7u', nav_coverage:'Couverture', nav_federal:'F\u00e9d\u00e9ral', nav_cantonal:'Cantonal', nav_cantons:'Cantons', nav_browse:'Parcourir', nav_access:'Acc\u00e8s',
     nav_entscheide:'D\u00e9cisions', nav_gesetze:'L\u00e9gislation', nav_mcp:'Connexion', nav_ueber:'\u00c0 propos',
     landing_title:'Jurisprudence et l\u00e9gislation suisses,<br>con\u00e7ues pour les agents IA.',
-    landing_sub:'Un corpus ouvert des d\u00e9cisions judiciaires suisses publi\u00e9es (972\u2019000+) et la premi\u00e8re interface adapt\u00e9e aux LLM pour la l\u00e9gislation f\u00e9d\u00e9rale et cantonale. Libre d\'acc\u00e8s \u2014 via serveur MCP, t\u00e9l\u00e9chargement HuggingFace ou API REST.',
+    landing_sub:'Un corpus ouvert des d\u00e9cisions judiciaires suisses publi\u00e9es (990\u2019000+) et la premi\u00e8re interface adapt\u00e9e aux LLM pour la l\u00e9gislation f\u00e9d\u00e9rale et cantonale. Libre d\'acc\u00e8s \u2014 via serveur MCP, t\u00e9l\u00e9chargement HuggingFace ou API REST.',
     landing_card_entscheide_title:'D\u00e9cisions',
-    landing_card_entscheide_desc:'Plus de 972\u2019000 d\u00e9cisions judiciaires de tous les tribunaux f\u00e9d\u00e9raux et des 26 cantons, mises \u00e0 jour quotidiennement. Recherche plein texte, graphe de citations (8,77 M arr\u00eates), multilingue (DE/FR/IT).',
+    landing_card_entscheide_desc:'Plus de 990\u2019000 d\u00e9cisions judiciaires de tous les tribunaux f\u00e9d\u00e9raux et des 26 cantons, mises \u00e0 jour quotidiennement. Recherche plein texte, graphe de citations (8,77 M arr\u00eates), multilingue (DE/FR/IT).',
     landing_card_entscheide_cta:'Explorer le dataset \u2192',
     landing_card_mcp_title:'Connexion',
-    landing_card_mcp_desc:'33 outils MCP pour Claude, ChatGPT, Cursor et Gemini. Serveur distant (<code style="font-size:0.9em">mcp.opencaselaw.ch</code>) ou local. Configuration via URL MCP.',
+    landing_card_mcp_desc:'41 outils MCP pour Claude, ChatGPT, Cursor et Gemini. Serveur distant (<code style="font-size:0.9em">mcp.opencaselaw.ch</code>) ou local. Configuration via URL MCP.',
     landing_card_mcp_cta:'Configuration MCP \u2192',
     landing_what_title:'Qu\'est-ce qu\'OpenCaseLaw?',
     landing_what_1:'OpenCaseLaw collecte, d\u00e9duplique et publie <strong>chaque d\u00e9cision judiciaire suisse publi\u00e9e</strong> ainsi que le texte actuel de toutes les lois f\u00e9d\u00e9rales pertinentes et des 30\u2019000+ textes cantonaux. Le dataset est mis \u00e0 jour quotidiennement et disponible gratuitement sous CC0 (donn\u00e9es) et MIT (code).',
-    landing_what_2:'La m\u00eame infrastructure alimente un serveur MCP public qui fournit aux mod\u00e8les de langage 33 outils sp\u00e9cialis\u00e9s pour la recherche juridique suisse \u2014 de la recherche plein texte \u00e0 l\'analyse des citations jusqu\'\u00e0 l\'acc\u00e8s aux articles de loi. Aucune inscription, aucune cl\u00e9 API, aucun paywall.',
+    landing_what_2:'La m\u00eame infrastructure alimente un serveur MCP public qui fournit aux mod\u00e8les de langage 41 outils sp\u00e9cialis\u00e9s pour la recherche juridique suisse \u2014 de la recherche plein texte \u00e0 l\'analyse des citations jusqu\'\u00e0 l\'acc\u00e8s aux articles de loi. Aucune inscription, aucune cl\u00e9 API, aucun paywall.',
     landing_stat_decisions:'d\u00e9cisions', landing_stat_courts:'tribunaux', landing_stat_laws:'lois f\u00e9d\u00e9rales', landing_stat_cantonal:'textes cantonaux', landing_stat_citations:'liens de citation', landing_stat_updated:'Mise \u00e0 jour quotidienne',
     word_desc:'Jurisprudence suisse directement dans votre document Word. Rechercher, citer et ins\u00e9rer sans copier-coller depuis le navigateur \u2014 avec attribution automatique.',
     word_cta:'Installation \u2192',
@@ -1785,7 +1827,7 @@ const I18N = {
     hero_fact_span:'p\u00e9riode', hero_fact_federal:'f\u00e9d\u00e9ral', hero_fact_cantonal:'cantonal', hero_fact_cantons:'cantons', hero_fact_new:'nouveaux hier',
     cap_entscheide_desc:'Chaque d\u00e9cision judiciaire suisse publi\u00e9e. Recherche plein texte, graphe de citations, multilingue (DE/FR/IT). Mise \u00e0 jour quotidienne.',
     cap_gesetze_desc:'Miroir SPARQL local de Fedlex : ~5 000 lois f\u00e9d\u00e9rales, 125\u2019000+ articles en DE/FR/IT, synchronis\u00e9s chaque mois. Miroir LexFind pour 15 722 textes cantonaux. Recherche plein texte FTS5, consultation d\'article en <1 ms.',
-    cap_mcp_desc:'33 outils MCP pour Claude, ChatGPT, Cursor et Gemini. Distant ou local. Configuration via URL MCP.',
+    cap_mcp_desc:'41 outils MCP pour Claude, ChatGPT, Cursor et Gemini. Distant ou local. Configuration via URL MCP.',
     cap_cta_entscheide:'Dataset \u2192', cap_cta_gesetze:'L\u00e9gislation \u2192', cap_cta_mcp:'Configuration MCP \u2192',
     capabilities_heading:'Trois points d\'entr\u00e9e',
     what_heading:'Qu\'est-ce qu\'OpenCaseLaw?',
@@ -1801,7 +1843,7 @@ const I18N = {
     gesetze_h1:'L\u00e9gislation f\u00e9d\u00e9rale et cantonale suisse',
     gesetze_sub:'~5 000 lois f\u00e9d\u00e9rales suisses (125 000+ articles en trois langues officielles, historique complet des amendements) depuis l\'endpoint SPARQL Fedlex, mises en miroir localement chaque mois. Plus de 15 722 actes cantonaux et intercantonaux via l\'agr\u00e9gateur LexFind. Appels MCP stateless pour la consultation d\'article, la recherche plein texte, l\'historique et les modifications.',
     mcp_h1:'Connecter des agents IA',
-    mcp_sub:'Le serveur MCP public d\'OpenCaseLaw donne aux mod\u00e8les de langage un acc\u00e8s direct \u00e0 plus de 972\u2019000 d\u00e9cisions judiciaires suisses, au graphe de citations, aux lois f\u00e9d\u00e9rales et aux actes cantonaux. 33 outils sp\u00e9cialis\u00e9s, aucune inscription, aucune cl\u00e9 API.',
+    mcp_sub:'Le serveur MCP public d\'OpenCaseLaw donne aux mod\u00e8les de langage un acc\u00e8s direct \u00e0 plus de 990\u2019000 d\u00e9cisions judiciaires suisses, au graphe de citations, aux lois f\u00e9d\u00e9rales et aux actes cantonaux. 41 outils sp\u00e9cialis\u00e9s, aucune inscription, aucune cl\u00e9 API.',
     ueber_h1:'\u00c0 propos d\'OpenCaseLaw',
     ueber_sub:'OpenCaseLaw est le plus grand jeu de donn\u00e9es ouvert de la jurisprudence suisse et la premi\u00e8re interface adapt\u00e9e aux LLM pour la l\u00e9gislation f\u00e9d\u00e9rale et cantonale. Libre d\'utilisation, mis \u00e0 jour quotidiennement, financ\u00e9 ind\u00e9pendamment.',
     search_placeholder:'Rechercher...', csv_export:'CSV',
@@ -1811,7 +1853,7 @@ const I18N = {
     quick_api:'API', quick_api_desc:'Interroger le dataset par programmation via l\'API REST',
     access_webui_desc:'Interface de chat locale \u2014 posez des questions en langage naturel, obtenez des r\u00e9ponses avec des d\u00e9cisions cit\u00e9es. Fonctionne sur votre machine avec Claude, OpenAI, Gemini ou des mod\u00e8les locaux via Ollama (sans cl\u00e9 API).',
     access_featured_title:'Recherche avec IA',
-    access_featured_desc:'Recherchez plus de 965 000 décisions judiciaires suisses en langage naturel. Trouvez les arrêts pertinents, tracez les citations entre décisions, analysez les tendances jurisprudentielles et rédigez des notes de recherche.',
+    access_featured_desc:'Recherchez plus de 990 000 décisions judiciaires suisses en langage naturel. Trouvez les arrêts pertinents, tracez les citations entre décisions, analysez les tendances jurisprudentielles et rédigez des notes de recherche.',
     access_setup_desktop:'Claude Desktop',
     access_setup_code:'Claude Code',
     access_remote_label:'Distant (recommand\u00e9)', access_local_label:'Local (hors ligne)',
@@ -1861,7 +1903,7 @@ const I18N = {
     mcp_remote_desc: 'Immédiatement disponible, toujours à jour. Aucun téléchargement requis. Endpoint serveur :',
     mcp_chatgpt_note: 'Pris en charge via Streamable HTTP + CORS. Utilise les annotations <code style="font-size:11px">readOnlyHint</code>. Compatible avec <strong>GPT-5.3</strong> ; pour GPT-5.4, voir la solution de contournement ci-dessus.',
     mcp_other_note: 'Fonctionne avec tout client compatible MCP via le transport SSE standard. Endpoint : <code style="font-size:11px">https://mcp.opencaselaw.ch/sse</code>',
-    mcp_tools_heading: 'Aperçu des 33 outils publics (+ 2 outils locaux d\'administration)',
+    mcp_tools_heading: 'Aperçu des 41 outils publics (+ 2 outils locaux d\'administration)',
     mcp_tools_desc: 'Chaque outil est optimisé pour un cas d\'usage de recherche spécifique. Schémas complets via <code>tools/list</code> du protocole MCP, regroupés ici par fonction.',
     mcp_arch_transport: '<strong>Transport :</strong> Server-Sent Events (SSE) + Streamable HTTP, compatible avec tous les clients MCP courants (Claude Desktop, ChatGPT, Cursor, Gemini).',
     mcp_arch_data: '<strong>Données :</strong> sources publiques (tribunaux fédéraux, juridictions cantonales, Fedlex, LexFind), mises à jour quotidiennement.',
@@ -1871,7 +1913,7 @@ const I18N = {
     mcp_tech_transport: 'Transport : Server-Sent Events (SSE) + Streamable HTTP, compatible avec tous les clients MCP courants',
     mcp_tech_tls: 'TLS via Let\'s Encrypt, rate-limiting nginx, endpoint de santé : <a href="https://mcp.opencaselaw.ch/health" style="color:var(--ac)">/health</a>',
     mcp_tech_workers: '4× workers uvicorn derrière un load balancer, failover automatique',
-    mcp_tech_backend: 'Backend : 965 000+ décisions dans SQLite FTS5 avec ranking BM25+RRF, graphe de citations de 8,8 M d\'arêtes',
+    mcp_tech_backend: 'Backend : 990 000+ décisions dans SQLite FTS5 avec ranking BM25+RRF, graphe de citations de 8,9 M d\'arêtes (8,3 M résolues)',
     mcp_tech_data: 'Données issues de sources publiques (tribunaux fédéraux, juridictions cantonales, Fedlex, LexFind), mises à jour quotidiennement',
   
     copy: 'Copier',
@@ -1902,16 +1944,16 @@ const I18N = {
     nav_overview:'Panoramica', nav_coverage:'Copertura', nav_federal:'Federale', nav_cantonal:'Cantonale', nav_cantons:'Cantoni', nav_browse:'Sfoglia', nav_access:'Accesso',
     nav_entscheide:'Decisioni', nav_gesetze:'Legislazione', nav_mcp:'Connessione', nav_ueber:'Chi siamo',
     landing_title:'Giurisprudenza e legislazione svizzera,<br>per agenti IA.',
-    landing_sub:'Un corpus aperto delle decisioni giudiziarie svizzere pubblicate (972\u2019000+) e la prima interfaccia adatta ai LLM per la legislazione federale e cantonale. Libero accesso \u2014 tramite server MCP, download HuggingFace o API REST.',
+    landing_sub:'Un corpus aperto delle decisioni giudiziarie svizzere pubblicate (990\u2019000+) e la prima interfaccia adatta ai LLM per la legislazione federale e cantonale. Libero accesso \u2014 tramite server MCP, download HuggingFace o API REST.',
     landing_card_entscheide_title:'Decisioni',
-    landing_card_entscheide_desc:'Oltre 972\u2019000 decisioni giudiziarie di tutti i tribunali federali e dei 26 cantoni, aggiornate quotidianamente. Ricerca full-text, grafo delle citazioni (8,77 mln), multilingue (DE/FR/IT).',
+    landing_card_entscheide_desc:'Oltre 990\u2019000 decisioni giudiziarie di tutti i tribunali federali e dei 26 cantoni, aggiornate quotidianamente. Ricerca full-text, grafo delle citazioni (8,77 mln), multilingue (DE/FR/IT).',
     landing_card_entscheide_cta:'Esplora il dataset \u2192',
     landing_card_mcp_title:'Connessione',
-    landing_card_mcp_desc:'33 strumenti MCP per Claude, ChatGPT, Cursor e Gemini. Server remoto (<code style="font-size:0.9em">mcp.opencaselaw.ch</code>) o locale. Configurazione via URL MCP.',
+    landing_card_mcp_desc:'41 strumenti MCP per Claude, ChatGPT, Cursor e Gemini. Server remoto (<code style="font-size:0.9em">mcp.opencaselaw.ch</code>) o locale. Configurazione via URL MCP.',
     landing_card_mcp_cta:'Configurazione MCP \u2192',
     landing_what_title:'Cos\'\u00e8 OpenCaseLaw?',
     landing_what_1:'OpenCaseLaw raccoglie, deduplica e pubblica <strong>ogni decisione giudiziaria svizzera pubblicata</strong> nonch\u00e9 il testo attuale di tutte le leggi federali rilevanti e dei 26\u2019000+ testi cantonali. Il dataset viene aggiornato quotidianamente ed \u00e8 liberamente disponibile sotto CC0 (dati) e MIT (codice).',
-    landing_what_2:'La stessa infrastruttura alimenta un server MCP pubblico che fornisce ai modelli linguistici 33 strumenti specializzati per la ricerca giuridica svizzera \u2014 dalla ricerca full-text all\'analisi delle citazioni fino al recupero degli articoli di legge. Nessuna registrazione, nessuna chiave API, nessun paywall.',
+    landing_what_2:'La stessa infrastruttura alimenta un server MCP pubblico che fornisce ai modelli linguistici 41 strumenti specializzati per la ricerca giuridica svizzera \u2014 dalla ricerca full-text all\'analisi delle citazioni fino al recupero degli articoli di legge. Nessuna registrazione, nessuna chiave API, nessun paywall.',
     landing_stat_decisions:'decisioni', landing_stat_courts:'tribunali', landing_stat_laws:'leggi federali', landing_stat_cantonal:'testi cantonali', landing_stat_citations:'link di citazione', landing_stat_updated:'Aggiornato quotidianamente',
     word_desc:'Giurisprudenza svizzera direttamente nel vostro documento Word. Cercare, citare e inserire senza copia-incolla dal browser \u2014 con attribuzione automatica.',
     word_cta:'Installazione \u2192',
@@ -1929,7 +1971,7 @@ const I18N = {
     hero_fact_span:'periodo', hero_fact_federal:'federale', hero_fact_cantonal:'cantonale', hero_fact_cantons:'cantoni', hero_fact_new:'nuove da ieri',
     cap_entscheide_desc:'Ogni decisione giudiziaria svizzera pubblicata. Ricerca full-text, grafo delle citazioni, multilingue (DE/FR/IT). Aggiornato quotidianamente.',
     cap_gesetze_desc:'Mirror SPARQL locale di Fedlex: ~5\u2019000 leggi federali, 125\u2019000+ articoli in DE/FR/IT, sincronizzati ogni mese. Mirror LexFind per 26\u2019000+ testi cantonali. Ricerca full-text FTS5, lookup di articolo in <1 ms.',
-    cap_mcp_desc:'33 strumenti MCP per Claude, ChatGPT, Cursor e Gemini. Remoto o locale. Configurazione via URL MCP.',
+    cap_mcp_desc:'41 strumenti MCP per Claude, ChatGPT, Cursor e Gemini. Remoto o locale. Configurazione via URL MCP.',
     cap_cta_entscheide:'Dataset \u2192', cap_cta_gesetze:'Legislazione \u2192', cap_cta_mcp:'Configurazione MCP \u2192',
     capabilities_heading:'Tre punti d\'ingresso',
     what_heading:'Cos\'\u00e8 OpenCaseLaw?',
@@ -1945,7 +1987,7 @@ const I18N = {
     gesetze_h1:'Legislazione federale e cantonale svizzera',
     gesetze_sub:'~5\u2019000 leggi federali svizzere (125\u2019000+ articoli in tre lingue ufficiali, cronologia completa delle modifiche) dall\'endpoint SPARQL Fedlex, rispecchiate localmente ogni mese. Oltre 30\u2019000 atti cantonali e intercantonali tramite l\'aggregatore LexFind. Chiamate MCP stateless per lookup di articolo, ricerca full-text, storia delle versioni e modifiche.',
     mcp_h1:'Collegare agenti IA',
-    mcp_sub:'Il server MCP pubblico di OpenCaseLaw d\u00e0 ai modelli linguistici accesso diretto a oltre 972\u2019000 decisioni giudiziarie svizzere, al grafo delle citazioni, alle leggi federali e agli atti cantonali. 33 strumenti specializzati, nessuna registrazione, nessuna chiave API.',
+    mcp_sub:'Il server MCP pubblico di OpenCaseLaw d\u00e0 ai modelli linguistici accesso diretto a oltre 990\u2019000 decisioni giudiziarie svizzere, al grafo delle citazioni, alle leggi federali e agli atti cantonali. 41 strumenti specializzati, nessuna registrazione, nessuna chiave API.',
     ueber_h1:'Chi siamo',
     ueber_sub:'OpenCaseLaw \u00e8 il pi\u00f9 grande dataset aperto della giurisprudenza svizzera e la prima interfaccia adatta ai LLM per la legislazione federale e cantonale. Libero utilizzo, aggiornato quotidianamente, finanziato in modo indipendente.',
     search_placeholder:'Cerca tribunali...', csv_export:'CSV',
@@ -1955,7 +1997,7 @@ const I18N = {
     quick_api:'API', quick_api_desc:'Interroga il dataset via API REST',
     access_webui_desc:'Interfaccia chat locale \u2014 fai domande in linguaggio naturale, ottieni risposte con decisioni citate. Funziona sulla tua macchina con Claude, OpenAI, Gemini o modelli locali via Ollama (senza chiave API).',
     access_featured_title:'Ricerca con IA',
-    access_featured_desc:'Cerca oltre 972\u2019000+ decisioni giudiziarie svizzere in linguaggio naturale. Trova sentenze pertinenti, traccia le citazioni tra decisioni, analizza le tendenze giurisprudenziali e redigi note di ricerca.',
+    access_featured_desc:'Cerca oltre 990\u2019000+ decisioni giudiziarie svizzere in linguaggio naturale. Trova sentenze pertinenti, traccia le citazioni tra decisioni, analizza le tendenze giurisprudenziali e redigi note di ricerca.',
     access_setup_desktop:'Claude Desktop',
     access_setup_code:'Claude Code',
     access_remote_label:'Remoto (consigliato)', access_local_label:'Locale (offline)',
@@ -2005,7 +2047,7 @@ const I18N = {
     mcp_remote_desc: 'Immediatamente disponibile, sempre aggiornato. Nessun download richiesto. Endpoint server:',
     mcp_chatgpt_note: 'Supportato tramite Streamable HTTP + CORS. Usa le annotazioni <code style="font-size:11px">readOnlyHint</code>. Compatibile con <strong>GPT-5.3</strong>; per GPT-5.4 vedi il workaround sopra.',
     mcp_other_note: 'Funziona con ogni client compatibile MCP tramite il trasporto SSE standard. Endpoint: <code style="font-size:11px">https://mcp.opencaselaw.ch/sse</code>',
-    mcp_tools_heading: '33 strumenti pubblici in sintesi (+ 2 strumenti locali di amministrazione)',
+    mcp_tools_heading: '41 strumenti pubblici in sintesi (+ 2 strumenti locali di amministrazione)',
     mcp_tools_desc: 'Ogni strumento è ottimizzato per uno specifico caso d\'uso di ricerca. Schemi completi via <code>tools/list</code> del protocollo MCP, qui raggruppati per funzione.',
     mcp_arch_transport: '<strong>Trasporto:</strong> Server-Sent Events (SSE) + Streamable HTTP, compatibile con tutti i client MCP comuni (Claude Desktop, ChatGPT, Cursor, Gemini).',
     mcp_arch_data: '<strong>Dati:</strong> da fonti pubbliche (tribunali federali, tribunali cantonali, Fedlex, LexFind), aggiornati quotidianamente.',
@@ -2015,7 +2057,7 @@ const I18N = {
     mcp_tech_transport: 'Trasporto: Server-Sent Events (SSE) + Streamable HTTP, compatibile con tutti i client MCP comuni',
     mcp_tech_tls: 'TLS tramite Let\'s Encrypt, rate limiting nginx, endpoint di health: <a href="https://mcp.opencaselaw.ch/health" style="color:var(--ac)">/health</a>',
     mcp_tech_workers: '4× worker uvicorn dietro load balancer, failover automatico',
-    mcp_tech_backend: 'Backend: 965\'000+ decisioni in SQLite FTS5 con ranking BM25+RRF, grafo di citazioni di 8,8 M di archi',
+    mcp_tech_backend: 'Backend: 990\'000+ decisioni in SQLite FTS5 con ranking BM25+RRF, grafo di citazioni di 8,9 M di archi (8,3 M risolti)',
     mcp_tech_data: 'Dati da fonti pubbliche (tribunali federali, tribunali cantonali, Fedlex, LexFind), aggiornati quotidianamente',
   
     copy: 'Copia',
@@ -2046,16 +2088,16 @@ const I18N = {
     nav_overview:'Survista', nav_coverage:'Cuvretga', nav_federal:'Federal', nav_cantonal:'Chantunal', nav_cantons:'Chantuns', nav_browse:'Navigar', nav_access:'Access',
     nav_entscheide:'Decisiuns', nav_gesetze:'Leschas', nav_mcp:'Connectar', nav_ueber:'Davart',
     landing_title:'Giurisprudenza svizra &amp; leschas,<br>per agents AI.',
-    landing_sub:'In corpus avert da las decisiuns giudizialas svizras publitgadas (972\u2019000+) e la emprima interfatscha adattada als LLM per la legislaziun federala e chantunala. Liber access \u2014 via server MCP, telechargiada HuggingFace u API REST.',
+    landing_sub:'In corpus avert da las decisiuns giudizialas svizras publitgadas (990\u2019000+) e la emprima interfatscha adattada als LLM per la legislaziun federala e chantunala. Liber access \u2014 via server MCP, telechargiada HuggingFace u API REST.',
     landing_card_entscheide_title:'Decisiuns',
-    landing_card_entscheide_desc:'972\u2019000+ decisiuns giudizialas da tut las dretgiras federalas e dals 26 chantuns, actualisadas mintga di. Tschertga full-text, grafic da citaziuns (8,77 mio), plurilingual (DE/FR/IT).',
+    landing_card_entscheide_desc:'990\u2019000+ decisiuns giudizialas da tut las dretgiras federalas e dals 26 chantuns, actualisadas mintga di. Tschertga full-text, grafic da citaziuns (8,77 mio), plurilingual (DE/FR/IT).',
     landing_card_entscheide_cta:'Explorar il dataset \u2192',
     landing_card_mcp_title:'Connectar',
-    landing_card_mcp_desc:'33 utensils MCP per Claude, ChatGPT, Cursor e Gemini. Server distant (<code style="font-size:0.9em">mcp.opencaselaw.ch</code>) u local. Setup en 30 secundas.',
+    landing_card_mcp_desc:'41 utensils MCP per Claude, ChatGPT, Cursor e Gemini. Server distant (<code style="font-size:0.9em">mcp.opencaselaw.ch</code>) u local. Setup en 30 secundas.',
     landing_card_mcp_cta:'MCP-Setup \u2192',
     landing_what_title:'Tge \u00e8 OpenCaseLaw?',
     landing_what_1:'OpenCaseLaw collecziunescha, deduplichescha e publitgescha <strong>mintga decisiun giudiziala svizra publitgada</strong> sco era il text actual da tut las leschas federalas relevantas e dals 26\u2019000+ texts chantunals. Il dataset vegn actualisch\u00e0 mintga di e \u00e8 a disposiziun libra sut CC0 (datas) e MIT (code).',
-    landing_what_2:'La medema infrastructura operescha in server MCP public che porscha als models linguistics 33 utensils spezialis\u00e0s per la retschertga giuridica svizra \u2014 da la tschertga full-text sur l\'analisa da las citaziuns fin al recup\u00e4rar d\'artitgels da lescha. Nagina registraziun, nagins API keys, nagin paywall.',
+    landing_what_2:'La medema infrastructura operescha in server MCP public che porscha als models linguistics 41 utensils spezialis\u00e0s per la retschertga giuridica svizra \u2014 da la tschertga full-text sur l\'analisa da las citaziuns fin al recup\u00e4rar d\'artitgels da lescha. Nagina registraziun, nagins API keys, nagin paywall.',
     landing_stat_decisions:'decisiuns', landing_stat_courts:'dretgiras', landing_stat_laws:'leschas federalas', landing_stat_cantonal:'texts chantunals', landing_stat_citations:'links da citaziun', landing_stat_updated:'Actualis\u00e0 mintga di',
     word_desc:'Giurisprudenza svizra directamain en Voss document da Word. Tschertgar, citar ed inserir senza copi-incolla dal navigatur \u2014 cun attribuziun automatica.',
     word_cta:'Installaziun \u2192',
@@ -2073,7 +2115,7 @@ const I18N = {
     hero_fact_span:'perioda', hero_fact_federal:'federal', hero_fact_cantonal:'chantunal', hero_fact_cantons:'chantuns', hero_fact_new:'novas dapi ier',
     cap_entscheide_desc:'Mintga decisiun giudiziala svizra publitgada. Tschertga full-text, grafic da citaziuns, plurilingual (DE/FR/IT). Actualis\u00e0 mintga di.',
     cap_gesetze_desc:'Spievel SPARQL local da Fedlex: ~5\u2019000 leschas federalas, 125\u2019000+ artitgels en DE/FR/IT, sincronis\u00e0 mintga mais. Spievel LexFind per 26\u2019000+ texts chantunals. Tschertga full-text FTS5, lookup d\'artitgels en <1 ms.',
-    cap_mcp_desc:'33 utensils MCP per Claude, ChatGPT, Cursor e Gemini. Distant u local. Setup en 30 secundas.',
+    cap_mcp_desc:'41 utensils MCP per Claude, ChatGPT, Cursor e Gemini. Distant u local. Setup en 30 secundas.',
     cap_cta_entscheide:'Dataset \u2192', cap_cta_gesetze:'Leschas \u2192', cap_cta_mcp:'MCP-Setup \u2192',
     capabilities_heading:'Trais entradas',
     what_heading:'Tge \u00e8 OpenCaseLaw?',
@@ -2089,7 +2131,7 @@ const I18N = {
     gesetze_h1:'Legislaziun federala e chantunala svizra',
     gesetze_sub:'~5\u2019000 leschas federalas svizras (125\u2019000+ artitgels en trais linguas uffizialas, cronologia cumpletta da midadas) da l\'endpoint SPARQL Fedlex, spiegladas local mintga mais. Passa 30\u2019000 acts chantunals ed interchantunals via l\'aggregatur LexFind. MCP-Calls stateless per lookup d\'artitgels, tschertga full-text, cronologia e midadas.',
     mcp_h1:'Connectar agents AI',
-    mcp_sub:'Il server MCP public da OpenCaseLaw d\u00e0 als models linguistics access direct a passa 972\u2019000 decisiuns giudizialas svizras, al grafic da citaziuns, a las leschas federalas ed als acts chantunals. 33 utensils specialis\u00e0s, nagina registraziun, nagins API keys.',
+    mcp_sub:'Il server MCP public da OpenCaseLaw d\u00e0 als models linguistics access direct a passa 990\u2019000 decisiuns giudizialas svizras, al grafic da citaziuns, a las leschas federalas ed als acts chantunals. 41 utensils specialis\u00e0s, nagina registraziun, nagins API keys.',
     ueber_h1:'Davart OpenCaseLaw',
     ueber_sub:'OpenCaseLaw \u00e8 la pli gronda collecziun averta da giurisprudenza svizra e la emprima interfatscha adattada als LLM per la legislaziun federala e chantunala. Liber d\'utilisar, actualis\u00e0 mintga di, finanzi\u00e0 independentamain.',
     search_placeholder:'Tschertgar dretgiras...', csv_export:'CSV',
@@ -2099,7 +2141,7 @@ const I18N = {
     quick_api:'API', quick_api_desc:'Dumandar il set da datas programmaticamain via API REST',
     access_webui_desc:'Interfatscha da chat locala \u2014 far dumondas en lingua natirala, obtegnir respostas cun decisiuns citadas. Funcziuna sin tes computer cun Claude, OpenAI, Gemini u models locals via Ollama (senza clav API).',
     access_featured_title:'Tschertgar cun AI',
-    access_featured_desc:'Tschertgar sur 972\u2019000+ decisiuns giudizialas svizras en lingua natirala. Chattar sentenziuns relevantas, persequitar citaziuns tranter decisiuns, analisar tendenzas giurisprudenzialas e rediger notizias da perscrutaziun.',
+    access_featured_desc:'Tschertgar sur 990\u2019000+ decisiuns giudizialas svizras en lingua natirala. Chattar sentenziuns relevantas, persequitar citaziuns tranter decisiuns, analisar tendenzas giurisprudenzialas e rediger notizias da perscrutaziun.',
     access_setup_desktop:'Claude Desktop',
     access_setup_code:'Claude Code',
     access_remote_label:'Remote (recumandà)', access_local_label:'Local (offline)',
@@ -2149,7 +2191,7 @@ const I18N = {
     mcp_remote_desc: 'Immediat disponibel, adina actual. Nagin download necessari. Endpoint dal server:',
     mcp_chatgpt_note: 'Sustegnì via Streamable HTTP + CORS. Utilisescha annotaziuns <code style="font-size:11px">readOnlyHint</code>. Cumpatibel cun <strong>GPT-5.3</strong>; per GPT-5.4 guarda il workaround survart.',
     mcp_other_note: 'Funcziuna cun mintga client cumpatibel MCP via il transport SSE standard. Endpoint: <code style="font-size:11px">https://mcp.opencaselaw.ch/sse</code>',
-    mcp_tools_heading: '33 utensils publics (+ 2 utensils locals d'administraziun)',
+    mcp_tools_heading: '41 utensils publics (+ 2 utensils locals d\'administraziun)',
     mcp_tools_desc: 'Mintga utensil è optimà per in cas spezific da retschertga. Schemas cumplets via <code>tools/list</code> dal protocol MCP, qua gruppads tenor funcziun.',
     mcp_arch_transport: '<strong>Transport:</strong> Server-Sent Events (SSE) + Streamable HTTP, cumpatibel cun tut ils clients MCP usitads (Claude Desktop, ChatGPT, Cursor, Gemini).',
     mcp_arch_data: '<strong>Datas:</strong> da funtaunas publicas (dretgiras federalas, dretgiras chantunalas, Fedlex, LexFind), actualisadas mintga di.',
@@ -2159,7 +2201,7 @@ const I18N = {
     mcp_tech_transport: 'Transport: Server-Sent Events (SSE) + Streamable HTTP, cumpatibel cun tut ils clients MCP usitads',
     mcp_tech_tls: 'TLS via Let\'s Encrypt, rate-limiting nginx, endpoint da sanadad: <a href="https://mcp.opencaselaw.ch/health" style="color:var(--ac)">/health</a>',
     mcp_tech_workers: '4× workers uvicorn davos load-balancer, failover automatic',
-    mcp_tech_backend: 'Backend: 965\'000+ decisiuns en SQLite FTS5 cun ranking BM25+RRF, graf da citaziuns cun 8,8 mio. charnieras',
+    mcp_tech_backend: 'Backend: 990\'000+ decisiuns en SQLite FTS5 cun ranking BM25+RRF, graf da citaziuns cun 8,9 mio. charnieras',
     mcp_tech_data: 'Datas da funtaunas publicas (dretgiras federalas, dretgiras chantunalas, Fedlex, LexFind), actualisadas mintga di',
   
     copy: 'Copiar',
@@ -2190,12 +2232,12 @@ const I18N = {
     nav_overview:'Overview', nav_coverage:'Coverage', nav_federal:'Federal', nav_cantonal:'Cantonal', nav_cantons:'Cantons', nav_browse:'Browse', nav_access:'Access',
     nav_entscheide:'Decisions', nav_gesetze:'Legislation', nav_mcp:'Connect', nav_ueber:'About',
     landing_title:'Swiss case law &amp; legislation,<br>built for AI agents.',
-    landing_sub:'An open dataset of published Swiss court decisions (972,000+) and the first LLM-ready interface to federal and cantonal legislation. Free to use \u2014 via MCP server, HuggingFace download or REST API.',
+    landing_sub:'An open dataset of published Swiss court decisions (990,000+) and the first LLM-ready interface to federal and cantonal legislation. Free to use \u2014 via MCP server, HuggingFace download or REST API.',
     landing_card_entscheide_title:'Decisions',
-    landing_card_entscheide_desc:'972,000+ court decisions from every federal court and all 26 cantons, updated daily. Full-text search, citation graph (8.65M edges), multilingual (DE/FR/IT).',
+    landing_card_entscheide_desc:'990,000+ court decisions from every federal court and all 26 cantons, updated daily. Full-text search, citation graph (8.9M edges), multilingual (DE/FR/IT).',
     landing_card_entscheide_cta:'Explore the dataset \u2192',
     landing_card_mcp_title:'Connect',
-    landing_card_mcp_desc:'38 MCP tools for Claude, ChatGPT, Cursor and Gemini. Remote server (<code style="font-size:0.9em">mcp.opencaselaw.ch</code>) or run locally. Configuration via MCP URL.',
+    landing_card_mcp_desc:'41 MCP tools for Claude, ChatGPT, Cursor and Gemini. Remote server (<code style="font-size:0.9em">mcp.opencaselaw.ch</code>) or run locally. Configuration via MCP URL.',
     landing_card_mcp_cta:'MCP setup \u2192',
     landing_what_title:'What is OpenCaseLaw?',
     landing_what_1:'OpenCaseLaw collects, deduplicates and publishes <strong>every published Swiss court decision</strong> alongside the current text of all relevant federal laws and 15,722 cantonal acts. The dataset is updated daily and freely available under CC0 (data) and MIT (code).',
@@ -2217,7 +2259,7 @@ const I18N = {
     hero_fact_span:'span', hero_fact_federal:'federal', hero_fact_cantonal:'cantonal', hero_fact_cantons:'cantons', hero_fact_new:'new since yesterday',
     cap_entscheide_desc:'Every published Swiss court decision. Full-text search, citation graph, multilingual (DE/FR/IT). Updated daily.',
     cap_gesetze_desc:'Local Fedlex SPARQL mirror: 5,516 federal laws, ~133,468 articles in DE/FR/IT, synced monthly. 15,722 cantonal acts: direct HTML scrape from 19 cantonal portals (LexWork+SIL) plus LexFind PDF fallback for the remaining 4 (JU, SZ, UR, VD). FTS5 full-text search, article lookup in <1 ms.',
-    cap_mcp_desc:'38 MCP tools for Claude, ChatGPT, Cursor and Gemini. Remote or local. Configuration via MCP URL.',
+    cap_mcp_desc:'41 MCP tools for Claude, ChatGPT, Cursor and Gemini. Remote or local. Configuration via MCP URL.',
     cap_cta_entscheide:'Dataset \u2192', cap_cta_gesetze:'Legislation \u2192', cap_cta_mcp:'MCP setup \u2192',
     capabilities_heading:'Three ways in',
     what_heading:'What is OpenCaseLaw?',
@@ -2233,7 +2275,7 @@ const I18N = {
     gesetze_h1:'Swiss federal and cantonal legislation',
     gesetze_sub:'5,000+ Swiss federal laws (~133,468 articles in three official languages, full amendment history) from the Fedlex SPARQL endpoint, mirrored locally each month. 15,722 cantonal and intercantonal acts locally mirrored from LexFind, monthly refresh. Stateless MCP calls for article lookup, full-text search, version history and amendments.',
     mcp_h1:'Connect AI agents',
-    mcp_sub:'OpenCaseLaw\'s public MCP server gives language models direct access to 972,000+ Swiss court decisions, the citation graph, federal laws and cantonal acts. 38 specialized tools, no sign-up, no API keys.',
+    mcp_sub:'OpenCaseLaw\'s public MCP server gives language models direct access to 990,000+ Swiss court decisions, the citation graph, federal laws and cantonal acts. 41 specialized tools, no sign-up, no API keys.',
     ueber_h1:'About OpenCaseLaw',
     ueber_sub:'OpenCaseLaw is the largest open dataset of Swiss case law and the first LLM-ready interface to federal and cantonal legislation. Free to use, updated daily, independently funded.',
     search_placeholder:'Search courts...', csv_export:'CSV',
@@ -2243,7 +2285,7 @@ const I18N = {
     quick_api:'API', quick_api_desc:'Query the dataset programmatically via REST API',
     access_webui_desc:'Local chat interface \u2014 ask questions in natural language, get answers with cited decisions. Runs on your machine with Claude, OpenAI, Gemini, or local models via Ollama (no API key needed).',
     access_featured_title:'Search with AI',
-    access_featured_desc:'Search over 972,000 Swiss court decisions in natural language. Find relevant cases, trace citations between decisions, analyze legal trends, and draft research memos.',
+    access_featured_desc:'Search over 990,000 Swiss court decisions in natural language. Find relevant cases, trace citations between decisions, analyze legal trends, and draft research memos.',
     access_setup_desktop:'Claude Desktop',
     access_setup_code:'Claude Code',
     access_remote_label:'Remote (recommended)', access_local_label:'Local (offline)',
@@ -2291,6 +2333,26 @@ const I18N = {
     nav_health:'Health', health_title:'Scraper Health', th_status:'Status', th_new:'New', th_duration:'Duration', th_state:'Total Known', th_jsonl_size:'JSONL', th_last_data:'Last Data', health_run_at:'Last run', health_ok:'OK', health_fail:'Failed', health_investigating:'Investigating', health_running:'Still running', health_stale:'Stale', health_errors:'errors', health_unavail:'skipped', health_unavail_tip:'Decisions listed in portal index but content not downloadable (empty page or missing PDF)', health_disk:'Storage', health_disk_free:'free',
   
     mcp_remote_desc: 'Immediately available, always up to date. No download required. Server endpoint:',
+    mcp_toc_modes: 'Operating modes',
+    mcp_toc_setup: 'Setup',
+    mcp_toc_tools: 'Tools',
+    mcp_toc_tech: 'Technical',
+    mcp_modes_heading: 'Two operating modes',
+    mcp_badge_recommended: 'recommended',
+    mcp_mode_local_label: 'Local',
+    mcp_local_desc: 'Full control, works offline. ~65 GB storage, one-time setup approx. 30-60 minutes. See <a href="https://github.com/jonashertner/caselaw-repo-1#local-setup" style="color:var(--ac)">README</a>.',
+    mcp_grp_search: 'Search & retrieve decisions',
+    mcp_grp_structure: 'Decision structure (federal)',
+    mcp_grp_citation: 'Citation graph',
+    mcp_grp_statutes: 'Statute text',
+    mcp_grp_doctrine: 'Doctrine & commentary',
+    mcp_grp_materials: 'Preparatory materials (dispatches)',
+    mcp_grp_verify: 'Verification & citation',
+    mcp_grp_practice: 'Administrative practice (federal)',
+    mcp_grp_drafting: 'Drafting & study',
+    mcp_grp_scholarship: 'Legal scholarship (open access)',
+    mcp_grp_openai: 'ChatGPT Deep Research (aliases)',
+    mcp_grp_local: 'Local mode (maintenance)',
     mcp_setup_heading: 'Setup per client',
     mcp_setup_intro: 'Endpoint <code style="font-size:12px">https://mcp.opencaselaw.ch</code> · Streamable HTTP (recommended) and SSE · no authentication · tools are read-only.',
     mcp_claudeai_step: '<strong>Customize</strong> (Anpassen · Personnaliser · Personalizza) → <strong>Connectors</strong> → "+" → "Add custom connector" → paste the URL. Or direct: <a href="https://claude.ai/settings/connectors?modal=add-custom-connector" style="color:var(--ac)">claude.ai/settings/connectors</a>. Available on Free (max. 1 connector), Pro, Max, Team, Enterprise. On Team/Enterprise the Owner must first enable it via <em>Organization Settings → Connectors → Add → Custom → Web</em>.',
@@ -2300,7 +2362,7 @@ const I18N = {
     mcp_copilot_step: 'Agent → Tools → Add a tool → New tool → "Model Context Protocol". Server name "Swiss Caselaw" and URL, auth: None. Streamable HTTP only (SSE no longer supported since August 2025).',
     mcp_other_heading: 'Other MCP clients',
     mcp_other_step: 'Works with any MCP-capable client (Continue, Zed, Cody, Windsurf, …) over Streamable HTTP at <code style="font-size:13px">https://mcp.opencaselaw.ch</code>. SSE is also reachable at <code style="font-size:13px">/sse</code> but is deprecated by the MCP spec.',
-    mcp_tools_heading: '33 public tools at a glance (+ 2 local admin tools)',
+    mcp_tools_heading: '41 public tools at a glance (+ 2 local admin tools)',
     mcp_tools_desc: 'Each tool is optimised for a specific research use case. Full schemas via the MCP protocol <code>tools/list</code>, grouped here by function.',
     mcp_arch_transport: '<strong>Transport:</strong> Streamable HTTP (recommended) + Server-Sent Events (SSE, deprecated), compatible with Claude, ChatGPT, Cursor, Gemini CLI, Copilot Studio.',
     mcp_arch_data: '<strong>Data:</strong> from public sources (federal courts, cantonal courts, Fedlex, LexFind), updated daily.',
@@ -2308,7 +2370,7 @@ const I18N = {
     mcp_tech_transport: 'Transport: Server-Sent Events (SSE) + Streamable HTTP, compatible with every common MCP client',
     mcp_tech_tls: 'TLS via Let\'s Encrypt, nginx rate limiting, health endpoint: <a href="https://mcp.opencaselaw.ch/health" style="color:var(--ac)">/health</a>',
     mcp_tech_workers: '4× uvicorn workers behind a load balancer, automatic failover',
-    mcp_tech_backend: 'Backend: 972,000+ decisions in SQLite FTS5 with BM25+RRF ranking, citation graph of 9.0M edges',
+    mcp_tech_backend: 'Backend: 990,000+ decisions in SQLite FTS5 with BM25+RRF ranking, citation graph of 8.9M edges (8.3M resolved)',
     mcp_tech_data: 'Data from public sources (federal courts, cantonal courts, Fedlex, LexFind), updated daily',
   
     copy: 'Copy',
@@ -2324,7 +2386,28 @@ const I18N = {
   },
 };
 
-let curLang = localStorage.getItem('lang') || 'de';
+// Language detection (issue #24). Honor ?lang, then a stored choice, then the
+// browser language for the fully-translated pages (de, en), else default to en
+// (the MCP page's audience is international; fr/it/rm body keys are not yet
+// synced, so those browsers get the complete English page until they are).
+// Previously this was `localStorage.getItem('lang') || 'de'` with no browser
+// detection, so an English-browser visitor always landed on German.
+function _detectLang() {
+  var qs = (location.search.match(/[?&]lang=([a-z]{2})/) || [])[1];
+  var stored = null;
+  try { stored = localStorage.getItem('lang'); } catch (_) {}
+  var complete = { de: 1, en: 1 };
+  var nav = (navigator.language || navigator.userLanguage || '').slice(0, 2).toLowerCase();
+  var browserLang = complete[nav] ? nav : null;
+  if (qs) { try { localStorage.setItem('lang', qs); } catch (_) {} }
+  return qs || stored || browserLang || 'en';
+}
+let curLang = _detectLang();
+// Expose curLang as a live window accessor so the shared language-switcher
+// handler (footer IIFE) can drive an in-place switch: it sets window.curLang
+// then calls window.applyI18n(). Without this the body kept its load-time
+// language on switch (nav/footer changed, body text did not).
+try { Object.defineProperty(window, 'curLang', { configurable: true, get() { return curLang; }, set(v) { curLang = v; } }); } catch (_) {}
 function t(key) { return (I18N[curLang]||I18N.de)[key] || I18N.de[key] || key; }
 
 function applyI18n() {
@@ -2342,6 +2425,7 @@ function applyI18n() {
     if (typeof renderCorpusSnapshot === 'function') renderCorpusSnapshot(window._statsData);
   }
 }
+window.applyI18n = applyI18n;  // let the shared switcher handler re-translate the body in place
 
 document.querySelectorAll('.lang-sw button').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -3328,8 +3412,12 @@ window.I18N_PAGE = {
   var qs = (location.search.match(/[?&]lang=([a-z]{2})/) || [])[1];
   var stored = null;
   try { stored = localStorage.getItem('lang'); } catch (_) {}
-  var html = (document.documentElement.lang || '').slice(0, 2);
-  var lang = qs || stored || html || 'en';
+  // issue #24: honor the browser language for the complete pages (de, en),
+  // not the static <html lang="de"> (which always forced German); default en.
+  var _complete = { de: 1, en: 1 };
+  var _nav = (navigator.language || navigator.userLanguage || '').slice(0, 2).toLowerCase();
+  var _browserLang = _complete[_nav] ? _nav : null;
+  var lang = qs || stored || _browserLang || 'en';
   if (qs) { try { localStorage.setItem('lang', qs); } catch (_) {} }
   applyNavLang(lang);
   document.querySelectorAll('.lang-sw [data-l]').forEach(function (el) {
