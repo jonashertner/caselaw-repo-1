@@ -20658,6 +20658,7 @@ setInterval(load, 30000);
                               "until has_more is false to retrieve the complete list.")
     async def api_search_decisions(
         query: str = Query(None, description="Search query (FTS5 syntax: keywords, \"phrases\", AND/OR/NOT)"),
+        q: str = Query(None, description="Alias for `query` (the short name used in the public docs / by most clients). `query` wins if both are given."),
         court: str = Query(None, description="Filter by court code (e.g., bger, bvger, zh_obergericht)"),
         canton: str = Query(None, description="Filter by canton (CH, ZH, BE, GE, etc.)"),
         language: str = Query(None, description="Filter by language: de, fr, it, rm"),
@@ -20670,6 +20671,13 @@ setInterval(load, 30000);
         sort: str = Query(None, description="Sort: relevance (default), date_desc, date_asc"),
         fields: str = Query("full", description="Detail level: full or compact"),
     ):
+        # Accept `q` as a forgiving alias for `query`. The public docs + most HTTP
+        # clients use the short name `q`; FastAPI binds by parameter name, so a
+        # bare `?q=...` was silently dropped and the search ran unfiltered,
+        # returning the entire corpus (reported by an integrator 2026-06-18).
+        # `query` takes precedence when both are supplied.
+        if not query and q:
+            query = q
         results, total = await asyncio.to_thread(
             search_fts5, query=query or "", court=court, canton=canton,
             language=language, date_from=date_from, date_to=date_to,
