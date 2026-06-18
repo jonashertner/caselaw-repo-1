@@ -199,8 +199,8 @@
       <tr><th>Param</th><th>Used by</th><th>Notes</th></tr>
     </thead>
     <tbody>
-      <tr><td class="name">q</td><td>/decisions</td><td>Free-text query (alias: <code>query</code>). Relevance-ranked — <code>total</code> is the ranked candidate set, not every match; use <code>court</code>/<code>canton</code>/<code>date_from</code> filters to enumerate all. Boolean operators (AND, OR, NOT), exact phrases ("…"), docket numbers, BGE references.</td></tr>
-      <tr><td class="name">query</td><td>/decisions · /laws/search · /commentaries/search · /legislation/search</td><td>Free-text query. On <code>/decisions</code> it is the canonical name for <code>q</code>.</td></tr>
+      <tr><td class="name">q</td><td>all search endpoints</td><td>Free-text query, interchangeable with <code>query</code> (on <code>/decisions</code>, <code>/laws/search</code>, <code>/commentaries/search</code>, <code>/scholarship/search</code>, <code>/legislation/search</code>, <code>/materialien</code>, <code>/search-botschaft</code>). On <code>/decisions</code> it is relevance-ranked — <code>total</code> is the ranked candidate set, not every match; use <code>court</code>/<code>canton</code>/<code>date_from</code> filters to enumerate all. Boolean operators (AND, OR, NOT), exact phrases ("…"), docket numbers, BGE references.</td></tr>
+      <tr><td class="name">query</td><td>all search endpoints</td><td>Canonical name for the free-text query; <code>q</code> is an accepted alias everywhere.</td></tr>
       <tr><td class="name">limit</td><td>everywhere</td><td>1–50, default 10 (decisions) / 20 (laws).</td></tr>
       <tr><td class="name">offset</td><td>/decisions · /laws/search</td><td>For pagination. <code>?offset=20&amp;limit=20</code> = page 2.</td></tr>
       <tr><td class="name">language</td><td>/decisions</td><td><code>de</code> / <code>fr</code> / <code>it</code>. Filters by decision language.</td></tr>

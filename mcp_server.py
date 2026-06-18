@@ -21004,7 +21004,8 @@ setInterval(load, 30000);
                   description="Unified FTS5 search across statutes.db (federal) "
                               "and cantonal_laws.db (all 26 cantons).")
     async def api_search_laws(
-        query: str = Query(..., description="Search query"),
+        query: str = Query(None, description="Search query"),
+        q: str = Query(None, description="Alias for `query`."),
         sr_number: str = Query(None, description="Restrict to specific federal law by SR"),
         canton: str = Query(None, description="Restrict to canton (ZH, BE, …, CH=federal)"),
         jurisdiction: str = Query("all", description="all | federal | cantonal"),
@@ -21016,6 +21017,9 @@ setInterval(load, 30000);
         )),
         limit: int = Query(10, ge=1, le=50, description="Max results"),
     ):
+        query = query or q
+        if not query:
+            raise HTTPException(status_code=422, detail="A search query is required; pass it as `query` or `q`.")
         return await asyncio.to_thread(
             search_laws, query=query, sr_number=sr_number, canton=canton,
             jurisdiction=jurisdiction, language=language, limit=limit,
@@ -21215,11 +21219,15 @@ setInterval(load, 30000);
                   summary="Search commentaries",
                   description="Search OnlineKommentar.ch scholarly commentaries on Swiss law.")
     async def api_search_commentaries(
-        query: str = Query(..., description="Search query"),
+        query: str = Query(None, description="Search query"),
+        q: str = Query(None, description="Alias for `query`."),
         abbreviation: str = Query(None, description="Filter by law abbreviation"),
         language: str = Query(None, description="Filter by language"),
         limit: int = Query(10, ge=1, le=50, description="Max results"),
     ):
+        query = query or q
+        if not query:
+            raise HTTPException(status_code=422, detail="A search query is required; pass it as `query` or `q`.")
         return await asyncio.to_thread(
             search_commentaries, query=query, abbreviation=abbreviation,
             language=language, limit=limit,
@@ -21251,7 +21259,8 @@ setInterval(load, 30000);
                       "license terms — preserve when re-using)."
                   ))
     async def api_search_scholarship(
-        query: str = Query(..., description="Search query (FTS5 syntax)"),
+        query: str = Query(None, description="Search query (FTS5 syntax)"),
+        q: str = Query(None, description="Alias for `query`."),
         source: str = Query(None, description="Filter by source slug"),
         pub_type: str = Query(None, description="Filter by publication type"),
         language: str = Query(None, description="Language filter (de/fr/it/en)"),
@@ -21259,6 +21268,9 @@ setInterval(load, 30000);
         year_max: int = Query(None, description="Latest publication year"),
         limit: int = Query(10, ge=1, le=50, description="Max results"),
     ):
+        query = query or q
+        if not query:
+            raise HTTPException(status_code=422, detail="A search query is required; pass it as `query` or `q`.")
         return await asyncio.to_thread(
             search_scholarship, query=query, source=source, pub_type=pub_type,
             language=language, year_min=year_min, year_max=year_max, limit=limit,
@@ -21389,10 +21401,14 @@ setInterval(load, 30000);
                   summary="Search preparatory materials",
                   description="Full-text search across all Botschaft data.")
     async def api_search_materialien(
-        query: str = Query(..., description="Search query"),
+        query: str = Query(None, description="Search query"),
+        q: str = Query(None, description="Alias for `query`."),
         law_code: str = Query(None, description="Filter by law code"),
         limit: int = Query(10, ge=1, le=50, description="Max results"),
     ):
+        query = query or q
+        if not query:
+            raise HTTPException(status_code=422, detail="A search query is required; pass it as `query` or `q`.")
         return await asyncio.to_thread(
             search_materialien, query=query, law_code=law_code, limit=limit,
         )
@@ -21404,7 +21420,8 @@ setInterval(load, 30000);
                   description="Search Swiss legislation (federal + all 26 cantons) by keyword. "
                               "Covers 33,000+ legislative texts from LexFind.ch.")
     async def api_search_legislation(
-        query: str = Query(..., description="Search query"),
+        query: str = Query(None, description="Search query"),
+        q: str = Query(None, description="Alias for `query`."),
         canton: str = Query(None, description="Filter by canton (CH, ZH, BE, etc.)"),
         language: str = Query(None, description=(
             "OPTIONAL filter (de/fr/it). Omit to return whichever language "
@@ -21417,6 +21434,9 @@ setInterval(load, 30000);
         fetch_top_n_texts: int = Query(0, ge=0, le=10,
             description="If > 0, enrich top N results with parsed full text (max 10)"),
     ):
+        query = query or q
+        if not query:
+            raise HTTPException(status_code=422, detail="A search query is required; pass it as `query` or `q`.")
         return await asyncio.to_thread(
             _search_legislation, query=query, canton=canton, language=language,
             limit=limit, active_only=active_only, search_in_content=search_in_content,
@@ -21819,7 +21839,8 @@ setInterval(load, 30000);
                               "where the parser could identify one. FTS5 syntax supported: "
                               "quoted phrases, AND/OR/NOT operators, prefix queries.")
     async def api_search_botschaft(
-        query: str = Query(..., description="Search terms (FTS5 syntax)"),
+        query: str = Query(None, description="Search terms (FTS5 syntax)"),
+        q: str = Query(None, description="Alias for `query`."),
         language: str = Query(
             None, regex="^(de|fr|it)$",
             description=(
@@ -21829,6 +21850,9 @@ setInterval(load, 30000);
         ),
         limit: int = Query(20, ge=1, le=50),
     ):
+        query = query or q
+        if not query:
+            raise HTTPException(status_code=422, detail="A search query is required; pass it as `query` or `q`.")
         return await asyncio.to_thread(
             _handle_search_botschaft,
             query=query, language=language, limit=limit,
