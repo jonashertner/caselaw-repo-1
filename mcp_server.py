@@ -264,12 +264,14 @@ CROSS_ENCODER_MODEL = os.environ.get(
 )
 CROSS_ENCODER_TOP_N = max(1, int(os.environ.get("SWISS_CASELAW_CROSS_ENCODER_TOP_N", "30")))
 CROSS_ENCODER_WEIGHT = float(os.environ.get("SWISS_CASELAW_CROSS_ENCODER_WEIGHT", "1.4"))
-# Token cap for the cross-encoder rerank. Unset = model default (512). The L12
-# model on CPU costs ~linearly in sequence length, so long procedural texts
-# dominate broad-query latency (rerank was 5-15s); 256 ~halves it while keeping
-# the relevance-dense head (title + regeste + snippet + early text). Env-tunable
-# so the speed/relevance trade can be validated + adjusted without a redeploy.
-CROSS_ENCODER_MAX_LENGTH = os.environ.get("SWISS_CASELAW_CROSS_ENCODER_MAX_LENGTH", "").strip()
+# Token cap for the cross-encoder rerank. The L12 model on CPU costs ~linearly
+# in sequence length, so long procedural texts dominated broad-query latency
+# (rerank was 5-15s). 256 was validated on the 150-query cross-lingual MRR bench
+# (2026-06-18): MRR 0.653 -> 0.649 (within noise, Hit@10 identical) while avg
+# search latency dropped ~26%. Default 256; set to "" or "512" to restore the
+# model default. Env-tunable so the speed/relevance trade can be re-checked
+# against the bench without a redeploy.
+CROSS_ENCODER_MAX_LENGTH = os.environ.get("SWISS_CASELAW_CROSS_ENCODER_MAX_LENGTH", "256").strip()
 
 # ── LLM usage / cost logging ──────────────────────────────────────
 # Append-only JSONL receipt per Anthropic API call so daily Sonnet/Haiku
