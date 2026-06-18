@@ -166,7 +166,7 @@
   <pre class="code">curl -s "https://mcp.opencaselaw.ch/api/decisions?q=Mietrecht+K%C3%BCndigung&amp;limit=5"</pre>
   <p style="font-size: var(--t-sm); color: var(--text-2);">Returns:</p>
   <pre class="response">{
-  "total": 108,
+  "total": 1006,
   "returned": 5,
   "results": [
     { "decision_id": "bge_BGE_140_III_86", "court": "bge",
@@ -177,7 +177,7 @@
   ],
   "limit": 5, "offset": 0, "has_more": true, "next_offset": 5
 }</pre>
-  <p style="font-size: var(--t-sm); color: var(--text-2);">A text search (<code>q</code>, or equivalently <code>query</code>) is <strong>relevance-ranked</strong>: <code>total</code> is the size of the ranked candidate set — the most relevant matches — not every decision that contains the words. To enumerate <strong>every</strong> decision on a topic, filter by <code>court</code>, <code>canton</code>, <code>date_from</code>/<code>date_to</code> or <code>language</code>; those return the <em>exact</em> total and page fully via <code>offset</code> (e.g. <code>?court=bger&amp;date_from=2024-01-01</code> &rarr; 17,707 decisions).</p>
+  <p style="font-size: var(--t-sm); color: var(--text-2);"><code>total</code> is the <strong>exact</strong> number of decisions matching your query (capped at 10,000 — broader text searches report <code>10000</code> as a floor). Results are <strong>relevance-ranked</strong>: the most relevant come first, and you can page the top matches via <code>offset</code> until <code>has_more</code> is false. To retrieve <strong>every</strong> decision of a very large result set, narrow with <code>court</code>, <code>canton</code>, <code>date_from</code>/<code>date_to</code> or <code>language</code> filters — those give exact totals and page through the full set (e.g. <code>?court=bger&amp;date_from=2024-01-01</code> &rarr; 17,707 decisions).</p>
 
   <h2>Quickstart — look up an article</h2>
   <pre class="code">curl -s "https://mcp.opencaselaw.ch/api/laws/OR?article=41"</pre>
@@ -199,7 +199,7 @@
       <tr><th>Param</th><th>Used by</th><th>Notes</th></tr>
     </thead>
     <tbody>
-      <tr><td class="name">q</td><td>all search endpoints</td><td>Free-text query, interchangeable with <code>query</code> (on <code>/decisions</code>, <code>/laws/search</code>, <code>/commentaries/search</code>, <code>/scholarship/search</code>, <code>/legislation/search</code>, <code>/materialien</code>, <code>/search-botschaft</code>). On <code>/decisions</code> it is relevance-ranked — <code>total</code> is the ranked candidate set, not every match; use <code>court</code>/<code>canton</code>/<code>date_from</code> filters to enumerate all. Boolean operators (AND, OR, NOT), exact phrases ("…"), docket numbers, BGE references.</td></tr>
+      <tr><td class="name">q</td><td>all search endpoints</td><td>Free-text query, interchangeable with <code>query</code> (on <code>/decisions</code>, <code>/laws/search</code>, <code>/commentaries/search</code>, <code>/scholarship/search</code>, <code>/legislation/search</code>, <code>/materialien</code>, <code>/search-botschaft</code>). On <code>/decisions</code> it is relevance-ranked; <code>total</code> is the exact match count (capped at 10,000), and filters (<code>court</code>/<code>canton</code>/<code>date_from</code>) page through the full set. Boolean operators (AND, OR, NOT), exact phrases ("…"), docket numbers, BGE references.</td></tr>
       <tr><td class="name">query</td><td>all search endpoints</td><td>Canonical name for the free-text query; <code>q</code> is an accepted alias everywhere.</td></tr>
       <tr><td class="name">limit</td><td>everywhere</td><td>1–50, default 10 (decisions) / 20 (laws).</td></tr>
       <tr><td class="name">offset</td><td>/decisions · /laws/search</td><td>For pagination. <code>?offset=20&amp;limit=20</code> = page 2.</td></tr>
