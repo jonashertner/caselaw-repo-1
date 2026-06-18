@@ -2079,6 +2079,54 @@ def _sanitize_fts5(query: str) -> str:
     return " ".join(out_tokens)
 
 
+# Exact match-count for the `total` field on text searches. The reranked path
+# returns a bounded candidate POOL, so its size is not the true number of
+# matching decisions: it scales with `limit` and caps at MAX_RERANK_CANDIDATES.
+# This computes the real count of decisions matching the sanitized FTS query
+# (+ the same filters), so `total` is honest and pagination is meaningful — the
+# results themselves (and their ranking) are unchanged. Cached per
+# (db_generation, query, filters); db_generation is part of the key, so a
+# nightly atomic swap invalidates stale counts automatically.
+_FTS_TOTAL_CACHE: dict = {}
+_FTS_TOTAL_CACHE_MAX = 2048
+
+
+def _exact_fts_total(conn, fts_query: str, where: str, params: list):
+    """Exact count of decisions matching `fts_query` + filters, or None on any
+    error (caller then falls back to the candidate-pool size). Unfiltered
+    queries count the FTS index directly (no table join) for speed."""
+    if not fts_query or not fts_query.strip():
+        return None
+    try:
+        gen = conn.execute("PRAGMA user_version").fetchone()[0]
+    except Exception:
+        gen = 0
+    key = (gen, fts_query, where, tuple(params))
+    hit = _FTS_TOTAL_CACHE.get(key)
+    if hit is not None:
+        return hit
+    try:
+        if where:
+            row = conn.execute(
+                "SELECT count(*) FROM decisions_fts JOIN decisions d "
+                "ON d.rowid = decisions_fts.rowid "
+                f"WHERE decisions_fts MATCH ?{where}",
+                [fts_query] + list(params),
+            ).fetchone()
+        else:
+            row = conn.execute(
+                "SELECT count(*) FROM decisions_fts WHERE decisions_fts MATCH ?",
+                [fts_query],
+            ).fetchone()
+        total = int(row[0]) if row and row[0] is not None else 0
+    except Exception:
+        return None
+    if len(_FTS_TOTAL_CACHE) >= _FTS_TOTAL_CACHE_MAX:
+        _FTS_TOTAL_CACHE.clear()
+    _FTS_TOTAL_CACHE[key] = total
+    return total
+
+
 def search_fts5(
     query: str,
     court: str | None = None,
@@ -2751,7 +2799,12 @@ def _search_fts5_inner(
         _trace["timestamp"] = datetime.now(timezone.utc).isoformat()
         _log_search_trace(_trace)
 
-        return reranked, total_candidates
+        # Honest `total`: exact count of decisions matching the query + filters,
+        # not the reranked candidate-pool size. max() keeps total >= what is
+        # returned when query-expansion surfaces candidates beyond the base match.
+        _exact_total = _exact_fts_total(conn, fts_query, where, params)
+        total_out = max(_exact_total, total_candidates) if _exact_total is not None else total_candidates
+        return reranked, total_out
 
     if had_success:
         if inline_docket_results:
@@ -20710,7 +20763,8 @@ setInterval(load, 30000);
                 results = results[:COMPACT_PAGE_MAX]
                 note = ((note + " ") if note else "") + (
                     f"Showing {COMPACT_PAGE_MAX} per page — page with offset until has_more is "
-                    f"false to retrieve all {total} matching cases.")
+                    f"false. A relevance-ranked text query returns the top matches; to retrieve "
+                    f"every one of the {total}, narrow with court / canton / date filters.")
         else:
             results = [_enrich_with_citation(r) for r in results]
             # Auto-pinpoint top-5 results so the JSON payload carries a
@@ -20719,7 +20773,15 @@ setInterval(load, 30000);
                 _pinpoint_enrich_results, results, query or "", top_n=5
             )
         returned = len(results)
-        has_more = (offset + returned) < total
+        # has_more reflects what is RETRIEVABLE, not just the exact total. A
+        # relevance-ranked text search returns the top-ranked subset (a bounded
+        # candidate pool), so pagination must terminate when a page comes back
+        # short even though `total` (the exact match count) is larger — otherwise
+        # a client would loop forever on empty pages. Filter-only / exact-count
+        # queries keep returning full pages until the true end, so those still
+        # enumerate completely.
+        page_cap = min(limit, COMPACT_PAGE_MAX) if fields == "compact" else limit
+        has_more = returned >= page_cap and (offset + returned) < total
         resp = {
             "total": total, "returned": returned, "results": results,
             "limit": limit, "offset": offset,
