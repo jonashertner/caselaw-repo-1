@@ -241,7 +241,7 @@ MIN_CANDIDATE_POOL = 60
 TARGET_POOL_MULTIPLIER = 4
 DOCKET_MIN_CANDIDATE_POOL = 80
 RRF_RANK_CONSTANT = 60
-FULL_TEXT_RERANK_CHARS = 1400
+FULL_TEXT_RERANK_CHARS = int(os.environ.get("SWISS_CASELAW_FULL_TEXT_RERANK_CHARS", "1400"))
 PASSAGE_SENTENCE_WINDOW = 4
 
 CROSS_ENCODER_ENABLED = os.environ.get("SWISS_CASELAW_CROSS_ENCODER", "0").lower() in {
@@ -264,6 +264,12 @@ CROSS_ENCODER_MODEL = os.environ.get(
 )
 CROSS_ENCODER_TOP_N = max(1, int(os.environ.get("SWISS_CASELAW_CROSS_ENCODER_TOP_N", "30")))
 CROSS_ENCODER_WEIGHT = float(os.environ.get("SWISS_CASELAW_CROSS_ENCODER_WEIGHT", "1.4"))
+# Token cap for the cross-encoder rerank. Unset = model default (512). The L12
+# model on CPU costs ~linearly in sequence length, so long procedural texts
+# dominate broad-query latency (rerank was 5-15s); 256 ~halves it while keeping
+# the relevance-dense head (title + regeste + snippet + early text). Env-tunable
+# so the speed/relevance trade can be validated + adjusted without a redeploy.
+CROSS_ENCODER_MAX_LENGTH = os.environ.get("SWISS_CASELAW_CROSS_ENCODER_MAX_LENGTH", "").strip()
 
 # ── LLM usage / cost logging ──────────────────────────────────────
 # Append-only JSONL receipt per Anthropic API call so daily Sonnet/Haiku
@@ -5589,7 +5595,10 @@ def _get_cross_encoder():
         return None
 
     try:
-        _CROSS_ENCODER = CrossEncoder(CROSS_ENCODER_MODEL)
+        if CROSS_ENCODER_MAX_LENGTH:
+            _CROSS_ENCODER = CrossEncoder(CROSS_ENCODER_MODEL, max_length=int(CROSS_ENCODER_MAX_LENGTH))
+        else:
+            _CROSS_ENCODER = CrossEncoder(CROSS_ENCODER_MODEL)
         return _CROSS_ENCODER
     except Exception as e:
         logger.debug("Cross-encoder model load failed (%s): %s", CROSS_ENCODER_MODEL, e)
