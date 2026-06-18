@@ -2089,12 +2089,21 @@ def _sanitize_fts5(query: str) -> str:
 # nightly atomic swap invalidates stale counts automatically.
 _FTS_TOTAL_CACHE: dict = {}
 _FTS_TOTAL_CACHE_MAX = 2048
+# An unbounded FTS5 COUNT walks the whole doclist — 10-15s for a 300k-match word
+# like "Verfahren". So the count is BOUNDED via a LIMIT subquery (the LIMIT
+# short-circuits the FTS scan): exact up to the cap, reported as the cap (a
+# floor) beyond it. The reranked text path only returns ~MAX_RERANK_CANDIDATES
+# anyway, and structural filters (court/canton/date) give exact totals + full
+# enumeration well past this — so the cap costs nothing real.
+_FTS_TOTAL_CAP = 10000
 
 
 def _exact_fts_total(conn, fts_query: str, where: str, params: list):
-    """Exact count of decisions matching `fts_query` + filters, or None on any
-    error (caller then falls back to the candidate-pool size). Unfiltered
-    queries count the FTS index directly (no table join) for speed."""
+    """Count of decisions matching `fts_query` + filters, or None on any error
+    (caller then falls back to the candidate-pool size). Bounded by
+    _FTS_TOTAL_CAP — exact up to the cap, the cap as a floor beyond it — so a
+    broad term cannot make COUNT walk the whole doclist. Unfiltered queries count
+    the FTS index directly (no table join) for speed."""
     if not fts_query or not fts_query.strip():
         return None
     try:
@@ -2105,20 +2114,22 @@ def _exact_fts_total(conn, fts_query: str, where: str, params: list):
     hit = _FTS_TOTAL_CACHE.get(key)
     if hit is not None:
         return hit
+    cap1 = _FTS_TOTAL_CAP + 1  # LIMIT short-circuits the FTS scan → bounded latency
     try:
         if where:
             row = conn.execute(
-                "SELECT count(*) FROM decisions_fts JOIN decisions d "
-                "ON d.rowid = decisions_fts.rowid "
-                f"WHERE decisions_fts MATCH ?{where}",
-                [fts_query] + list(params),
+                "SELECT count(*) FROM (SELECT 1 FROM decisions_fts "
+                "JOIN decisions d ON d.rowid = decisions_fts.rowid "
+                f"WHERE decisions_fts MATCH ?{where} LIMIT ?)",
+                [fts_query] + list(params) + [cap1],
             ).fetchone()
         else:
             row = conn.execute(
-                "SELECT count(*) FROM decisions_fts WHERE decisions_fts MATCH ?",
-                [fts_query],
+                "SELECT count(*) FROM (SELECT 1 FROM decisions_fts "
+                "WHERE decisions_fts MATCH ? LIMIT ?)",
+                [fts_query, cap1],
             ).fetchone()
-        total = int(row[0]) if row and row[0] is not None else 0
+        total = min(int(row[0]), _FTS_TOTAL_CAP) if row and row[0] is not None else 0
     except Exception:
         return None
     if len(_FTS_TOTAL_CACHE) >= _FTS_TOTAL_CACHE_MAX:

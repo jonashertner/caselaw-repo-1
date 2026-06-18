@@ -71,6 +71,20 @@ def test_exact_fts_total_matches_direct_count():
     assert mcp_server._exact_fts_total(conn, "Nichttreffer", "", []) == 0
 
 
+def test_total_is_bounded_by_cap(monkeypatch):
+    """Beyond _FTS_TOTAL_CAP the count is reported as the cap (a floor) and the
+    underlying FTS scan is LIMIT-ed, so a broad term cannot walk the whole
+    doclist."""
+    conn = _conn_with_n_matches(7)
+    monkeypatch.setattr(mcp_server, "_FTS_TOTAL_CAP", 3)
+    assert mcp_server._exact_fts_total(conn, "Notwehr", "", []) == 3
+    # cap is a constant in production (not part of the cache key); clear the
+    # cache before re-counting under a different cap in this test.
+    mcp_server._FTS_TOTAL_CACHE.clear()
+    monkeypatch.setattr(mcp_server, "_FTS_TOTAL_CAP", 100)
+    assert mcp_server._exact_fts_total(conn, "Notwehr", "", []) == 7
+
+
 def test_text_total_is_exact_not_pool_and_limit_independent(monkeypatch):
     conn = _conn_with_n_matches(4)
     _wire(monkeypatch)
