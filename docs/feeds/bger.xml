@@ -5,9 +5,36 @@
     <link>https://opencaselaw.ch/feeds/bger.xml</link>
     <description>Latest published Bundesgericht decisions.</description>
     <language>de-CH</language>
-    <lastBuildDate>Thu, 18 Jun 2026 12:25:01 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 19 Jun 2026 14:54:48 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/bger.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Bundesgericht 1C_733/2025 vom 2026-06-17</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_1C_733_2025</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+1C_733/2025, 1C_734/2025, 1C_61/2026
+
+Urteil vom 17. Juni 2026
+
+I. öffentlich-rechtliche Abteilung
+
+Besetzung
+
+Bundesrichter Haag, Präsident,
+
+Bundesrichter Chaix, Kneubühler, Mül…</description>
+      <pubDate>Wed, 17 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:1C_733.2025</guid>
+      <category>bger</category>
+      <category>Politische Rechte</category>
+    </item>
     <item>
       <title>Bundesgericht 12T_3/2025 vom 2026-06-15</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bger_12T_3_2025</link>
@@ -1483,36 +1510,6 @@ A.________,
 …</description>
       <pubDate>Mon, 01 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_4.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 5A_611/2025 vom 2026-06-01</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_611_2025</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-5A_611/2025
-
-Urteil vom 1. Juni 2026
-
-II. zivilrechtliche Abteilung
-
-Besetzung
-
-Bundesrichter Bovey, Präsident,
-
-Bundesrichter Herrmann, Josi,
-
-Gerichtsschreiberin Lang.
-
-Verfahre…</description>
-      <pubDate>Mon, 01 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_611.2025</guid>
       <category>bger</category>
     </item>
   </channel>

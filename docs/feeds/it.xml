@@ -5,9 +5,17 @@
     <link>https://opencaselaw.ch/feeds/it.xml</link>
     <description>Latest published Swiss court decisions in Italiano.</description>
     <language>de-CH</language>
-    <lastBuildDate>Thu, 18 Jun 2026 12:28:35 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 19 Jun 2026 14:58:05 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/it.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Bundesverwaltungsgericht F-3995/2026 vom 2026-06-10</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-3995_2026</link>
+      <description>Asilo (non entrata nel merito) ed allontanamento (procedura Dublino - art. 31a cpv. 1 lett. b LAsi)</description>
+      <pubDate>Wed, 10 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-3995.2026</guid>
+      <category>bvger</category>
+    </item>
     <item>
       <title>gr_gerichte SV2 2025 69 vom 2026-06-09</title>
       <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_SV2%202025%2069</link>
@@ -93,6 +101,14 @@ Richte…</description>
       <pubDate>Wed, 03 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">gr_gerichte_SR2 2025 87</guid>
       <category>gr_gerichte</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht B-8078/2025 vom 2026-06-02</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_B-8078_2025</link>
+      <description>Acquisti pubblici</description>
+      <pubDate>Tue, 02 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:B-8078.2025</guid>
+      <category>bvger</category>
     </item>
     <item>
       <title>Bundesgericht 5A_456/2026 vom 2026-05-29</title>
@@ -908,44 +924,6 @@ Parteci…</description>
       <pubDate>Mon, 11 May 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BGer:2026:6B_898.2024</guid>
       <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 8C_702/2025 vom 2026-05-11</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_8C_702_2025</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-8C_702/2025
-
-Sentenza dell'11 maggio 2026
-
-IV Corte di diritto pubblico
-
-Composizione
-
-Giudice federale Viscione, Presidente,
-
-Cancelliere Colombi.
-
-Partecipanti al procedimento
-
-…</description>
-      <pubDate>Mon, 11 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:8C_702.2025</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht D-2651/2026 vom 2026-05-11</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-2651_2026</link>
-      <description>Asilo (non entrata nel merito) ed allontanamento (paese terzo sicuro - art. 31a cpv. 1 lett. a LAsi)</description>
-      <pubDate>Mon, 11 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-2651.2026</guid>
-      <category>bvger</category>
     </item>
   </channel>
 </rss>

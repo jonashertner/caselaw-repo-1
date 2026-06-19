@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/de.xml</link>
     <description>Latest published Swiss court decisions in Deutsch.</description>
     <language>de-CH</language>
-    <lastBuildDate>Thu, 18 Jun 2026 12:28:33 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 19 Jun 2026 14:58:04 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/de.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -65,6 +65,67 @@ Präsiden…</description>
       <pubDate>Mon, 22 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">fr_gerichte_605 2025 74</guid>
       <category>fr_gerichte</category>
+    </item>
+    <item>
+      <title>be_verwaltungsgericht 200 2026 230 vom 2026-06-18</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/be_verwaltungsgericht_200%202026%20230</link>
+      <description>KV 200 2026 230
+FRC/COC/STA
+Verwaltungsgericht des Kantons Bern
+Sozialversicherungsrechtliche Abteilung
+Urteil der Einzelrichterin vom 20. Mai 2026
+Verwaltungsrichterin Frey
+Gerichtsschreiberin Collatz
+A.________
+gesetzlich vertreten durch B.________…</description>
+      <pubDate>Thu, 18 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">be_verwaltungsgericht_200 2026 230</guid>
+      <category>be_verwaltungsgericht</category>
+    </item>
+    <item>
+      <title>gr_gerichte ZR2 2026 24 vom 2026-06-18</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_ZR2%202026%2024</link>
+      <description>Obergericht des Kantons Graubünden
+Dretgira superiura dal chantun Grischun
+Tribunale d'appello del Cantone dei Grigioni
+Urteil vom 10. Juni 2026
+mitgeteilt am 11. Juni 2026
+Referenz
+ZR2 26 24
+Instanz
+Zweite zivilrechtliche Kammer
+Besetzung
+Bergamin, …</description>
+      <pubDate>Thu, 18 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">gr_gerichte_ZR2 2026 24</guid>
+      <category>gr_gerichte</category>
+    </item>
+    <item>
+      <title>Bundesgericht 1C_733/2025 vom 2026-06-17</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_1C_733_2025</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+1C_733/2025, 1C_734/2025, 1C_61/2026
+
+Urteil vom 17. Juni 2026
+
+I. öffentlich-rechtliche Abteilung
+
+Besetzung
+
+Bundesrichter Haag, Präsident,
+
+Bundesrichter Chaix, Kneubühler, Mül…</description>
+      <pubDate>Wed, 17 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:1C_733.2025</guid>
+      <category>bger</category>
+      <category>Politische Rechte</category>
     </item>
     <item>
       <title>fr_gerichte 604 2025 171 vom 2026-06-17</title>
@@ -188,6 +249,46 @@ als Aufsicht…</description>
       <category>gr_gerichte</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht C-2940/2026 vom 2026-06-11</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-2940_2026</link>
+      <description>Krankheits- und Unfallbekämpfung</description>
+      <pubDate>Thu, 11 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-2940.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht C-3673/2026 vom 2026-06-11</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-3673_2026</link>
+      <description>Rente</description>
+      <pubDate>Thu, 11 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-3673.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht C-9938/2025 vom 2026-06-11</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-9938_2025</link>
+      <description>Befreiung Versicherungspflicht</description>
+      <pubDate>Thu, 11 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-9938.2025</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht E-4536/2021 vom 2026-06-11</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-4536_2021</link>
+      <description>Asyl und Wegweisung</description>
+      <pubDate>Thu, 11 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-4536.2021</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht F-3918/2026 vom 2026-06-11</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-3918_2026</link>
+      <description>Nichteintreten auf Asylgesuch und Wegweisung (Dublin-Verfahren - Art. 31a Abs. 1 Bst. b AsylG)</description>
+      <pubDate>Thu, 11 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-3918.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>gr_gerichte ZR1 2025 167 vom 2026-06-11</title>
       <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_ZR1%202025%20167</link>
       <description>Obergericht des Kantons Graubünden
@@ -243,6 +344,30 @@ Peter Balzer,
       <pubDate>Wed, 10 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BGer:2026:1C_325.2026</guid>
       <category>bger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht B-7483/2025 vom 2026-06-10</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_B-7483_2025</link>
+      <description>Öffentliches Beschaffungswesen</description>
+      <pubDate>Wed, 10 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:B-7483.2025</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht E-8393/2025 vom 2026-06-10</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-8393_2025</link>
+      <description>Verweigerung vorübergehender Schutz</description>
+      <pubDate>Wed, 10 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-8393.2025</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht F-2071/2026 vom 2026-06-10</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-2071_2026</link>
+      <description>Rechtsverzögerung/Rechtsverweigerung</description>
+      <pubDate>Wed, 10 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-2071.2026</guid>
+      <category>bvger</category>
     </item>
     <item>
       <title>gr_gerichte VR1 2026 20 vom 2026-06-10</title>
@@ -356,6 +481,24 @@ Bas…</description>
       <pubDate>Tue, 09 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-2229.2024</guid>
       <category>bvger</category>
+    </item>
+    <item>
+      <title>gr_gerichte SR2 2025 98 vom 2026-06-09</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_SR2%202025%2098</link>
+      <description>Obergericht des Kantons Graubünden
+Dretgira superiura dal chantun Grischun
+Tribunale d'appello del Cantone dei Grigioni
+Verfügung vom 9. Juni 2026
+mitgeteilt am 11. Juni 2026
+Referenz
+SR2 25 98
+Instanz
+Zweite strafrechtliche Kammer
+Besetzung
+Hubert, …</description>
+      <pubDate>Tue, 09 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">gr_gerichte_SR2 2025 98</guid>
+      <category>gr_gerichte</category>
     </item>
     <item>
       <title>gr_gerichte VR1 2026 9 vom 2026-06-09</title>
@@ -512,6 +655,22 @@ Bas…</description>
       <pubDate>Mon, 08 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">bs_appellationsgericht_AUS.2026.49</guid>
       <category>bs_appellationsgericht</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht F-2271/2026 vom 2026-06-08</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-2271_2026</link>
+      <description>Nationales Visum</description>
+      <pubDate>Mon, 08 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-2271.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht F-4161/2025 vom 2026-06-08</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-4161_2025</link>
+      <description>Erleichterte Einbürgerung</description>
+      <pubDate>Mon, 08 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-4161.2025</guid>
+      <category>bvger</category>
     </item>
     <item>
       <title>fr_gerichte 102 2026 71 vom 2026-06-08</title>
@@ -824,322 +983,6 @@ A.________,
 Besch…</description>
       <pubDate>Fri, 05 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_356.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 5A_482/2026 vom 2026-06-05</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_482_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-5A_482/2026
-
-Urteil vom 5. Juni 2026
-
-II. zivilrechtliche Abteilung
-
-Besetzung
-
-Bundesrichter Bovey, Präsident,
-
-Bundesrichter Hartmann, Bundesrichterin De Rossa,
-
-Gerichtsschreib…</description>
-      <pubDate>Fri, 05 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_482.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 8C_314/2026 vom 2026-06-05</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_8C_314_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-8C_314/2026
-
-Urteil vom 5. Juni 2026
-
-IV. öffentlich-rechtliche Abteilung
-
-Besetzung
-
-Bundesrichterin Viscione, Präsidentin,
-
-Gerichtsschreiberin Berger Götz.
-
-Verfahrensbeteiligt…</description>
-      <pubDate>Fri, 05 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:8C_314.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>bs_appellationsgericht AUS.2026.47 vom 2026-06-05</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bs_appellationsgericht_AUS.2026.47</link>
-      <description>Appellationsgericht
-
-des Kantons Basel-Stadt
-
-als Verwaltungsgericht
-
-Einzelrichterfür Zwangsmassnahmen imAusländerrecht
-
-AUS.2026.47
-
-URTEIL
-
-vom5.
-Juni 2026
-
-Beteiligte
-
-Migrationsamt des Kantons
-Basel-Stadt,
-
-Spiegelgasse 12, Postfach, 4001
-Bas…</description>
-      <pubDate>Fri, 05 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">bs_appellationsgericht_AUS.2026.47</guid>
-      <category>bs_appellationsgericht</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht B-750/2026 vom 2026-06-05</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_B-750_2026</link>
-      <description>Eidgenössische Technische Hochschule (Ohne Personal)</description>
-      <pubDate>Fri, 05 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:B-750.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht C-2430/2021 vom 2026-06-05</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-2430_2021</link>
-      <description>Rentenanspruch</description>
-      <pubDate>Fri, 05 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-2430.2021</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht D-6494/2024 vom 2026-06-05</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-6494_2024</link>
-      <description>Asyl und Wegweisung (Mehrfachgesuch)</description>
-      <pubDate>Fri, 05 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-6494.2024</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht F-3458/2026 vom 2026-06-05</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-3458_2026</link>
-      <description>Nichteintreten auf Asylgesuch und Wegweisung (sicherer Drittstaat - Art. 31a Abs. 1 Bst. a AsylG)</description>
-      <pubDate>Fri, 05 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-3458.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>so_gerichte ZKEIV.2026.6 vom 2026-06-05</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/so_gerichte_ZKEIV.2026.6</link>
-      <description>Urteilvom5. Juni 2026
-
-Es wirken mit:
-
-Oberrichter
-Schibli, Vorsitz
-
-Oberrichter Thomann
-
-Oberrichter Flückiger
-
-Oberrichter Thomann
-
-Gerichtsschreiber Schaller
-
-In Sachen
-
-A.___, vertreten durch Rechtsanwältin Nicole Allemann,
-
-Gesuchsteller
-
-gegen…</description>
-      <pubDate>Fri, 05 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">so_gerichte_ZKEIV.2026.6</guid>
-      <category>so_gerichte</category>
-    </item>
-    <item>
-      <title>be_verwaltungsgericht 200 2026 20 vom 2026-06-04</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/be_verwaltungsgericht_200%202026%2020</link>
-      <description>IV 200 2026 20
-SCI/FRJ/LAB
-Verwaltungsgericht des Kantons Bern
-Sozialversicherungsrechtliche Abteilung
-Urteil des Einzelrichters vom 12. Mai 2026
-Verwaltungsrichter Schwegler
-Gerichtsschreiberin Frésard
-A.________
-gesetzlich vertreten durch ihre Elte…</description>
-      <pubDate>Thu, 04 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">be_verwaltungsgericht_200 2026 20</guid>
-      <category>be_verwaltungsgericht</category>
-    </item>
-    <item>
-      <title>Bundesgericht 5A_467/2026 vom 2026-06-04</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_467_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-5A_467/2026
-
-Urteil vom 4. Juni 2026
-
-II. zivilrechtliche Abteilung
-
-Besetzung
-
-Bundesrichter Bovey, Präsident,
-
-Bundesrichter Herrmann, Josi,
-
-Gerichtsschreiber Möckli.
-
-Verfahre…</description>
-      <pubDate>Thu, 04 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_467.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 5A_476/2026 vom 2026-06-04</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_476_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-5A_476/2026
-
-Urteil vom 4. Juni 2026
-
-II. zivilrechtliche Abteilung
-
-Besetzung
-
-Bundesrichter Bovey, Präsident,
-
-Gerichtsschreiber Möckli.
-
-Verfahrensbeteiligte
-
-A.________,
-
-Besc…</description>
-      <pubDate>Thu, 04 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_476.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 5A_479/2026 vom 2026-06-04</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_479_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-5A_479/2026
-
-Urteil vom 4. Juni 2026
-
-II. zivilrechtliche Abteilung
-
-Besetzung
-
-Bundesrichter Bovey, Präsident,
-
-Gerichtsschreiber Möckli.
-
-Verfahrensbeteiligte
-
-A.________,
-
-Besc…</description>
-      <pubDate>Thu, 04 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_479.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 5A_483/2026 vom 2026-06-04</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_483_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-5A_483/2026
-
-Urteil vom 4. Juni 2026
-
-II. zivilrechtliche Abteilung
-
-Besetzung
-
-Bundesrichter Bovey, Präsident,
-
-Bundesrichter Hartmann, Bundesrichterin De Rossa,
-
-Gerichtsschreib…</description>
-      <pubDate>Thu, 04 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_483.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 5A_499/2026 vom 2026-06-04</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_499_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-5A_499/2026
-
-Urteil vom 4. Juni 2026
-
-II. zivilrechtliche Abteilung
-
-Besetzung
-
-Bundesrichter Bovey, Präsident,
-
-Gerichtsschreiber Möckli.
-
-Verfahrensbeteiligte
-
-A.________,
-
-Besc…</description>
-      <pubDate>Thu, 04 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_499.2026</guid>
       <category>bger</category>
     </item>
   </channel>
