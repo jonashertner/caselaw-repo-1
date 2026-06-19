@@ -138,6 +138,7 @@ SCRAPERS = {
     "comcom": ("scrapers.comcom", "ComComScraper"),
     # Federal — customs and tax administration
     "bazg": ("scrapers.bazg", "BAZGScraper"),
+    "estv": ("scrapers.estv", "ESTVScraper"),
     # Federal — military
     "mkg": ("scrapers.militaerkassationsgericht", "MilitaerkassationsgerichtScraper"),
     # Cantonal — implemented

@@ -248,7 +248,7 @@ Full 34-field Parquet export schema: [`export_parquet.py`](https://github.com/jo
 
 ## Court Coverage
 
-### Federal Courts (20)
+### Federal Courts (21)
 
 | Court | Code | Decisions | Period |
 |-------|------|-----------|--------|
@@ -260,6 +260,7 @@ Full 34-field Parquet export schema: [`export_parquet.py`](https://github.com/jo
 | Federal Criminal Court (BStGer) | `bstger` | ~11,400 | 2004–present |
 | EDÖB (Data Protection) | `edoeb` | ~1,800 | 1994–present |
 | FINMA | `finma` | ~405 | 2008–present |
+| ESTV — Federal Tax Admin. (Kreisschreiben, DE/FR/IT) | `estv` | ~282 | 1980–present |
 | ECHR (Swiss cases, BGer-published) | `bge_egmr` | ~475 | 1974–present |
 | ECHR Switzerland (HUDOC) | `hudoc_ch` | 834 | 1959–present |
 | ECtHR Chamber judgments | `ecthr_chamber` | 193 (growing) | 1959–present |
