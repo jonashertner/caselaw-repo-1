@@ -249,7 +249,11 @@ class ESTVScraper(BaseScraper):
             try:
                 response = self.get(source["url"])
             except Exception as e:  # noqa: BLE001 — log and move to next source
-                logger.error("[estv] Failed to fetch listing %s: %s", source["url"], e)
+                # Phrase as "Search page … failed" so run_all_scrapers' discovery-
+                # error detector counts an all-pages-down ESTV outage; otherwise a
+                # total outage reads like a normal "no new circulars" run and the
+                # health monitor stays green (silent-success false negative).
+                logger.error("[estv] Search page %s failed: %s", source["url"], e)
                 continue
 
             soup = BeautifulSoup(response.text, "html.parser")
