@@ -14635,17 +14635,28 @@ def get_law(
             "language": language,
         }
 
+        # Issue #22: include the verbatim Akoma Ntoso XML fragment (enumerations,
+        # footnotes, sub-paragraphs) alongside the flattened text. The `xml`
+        # column exists after a statutes.db rebuild; gracefully omitted on
+        # older DBs so the API never errors during a staged rollout.
+        _art_cols = "article_num, heading, text"
+        try:
+            if any(r[1] == "xml" for r in conn.execute("PRAGMA table_info(articles)")):
+                _art_cols += ", xml"
+        except sqlite3.Error:
+            pass
+
         if article:
             # Fetch specific article
             articles = conn.execute(
-                """SELECT article_num, heading, text FROM articles
+                f"""SELECT {_art_cols} FROM articles
                    WHERE sr_number = ? AND article_num = ? AND lang = ?""",
                 (sr_number, article, language),
             ).fetchall()
             if not articles:
                 # Try matching with normalization (e.g., "41a" matches "41a")
                 articles = conn.execute(
-                    """SELECT article_num, heading, text FROM articles
+                    f"""SELECT {_art_cols} FROM articles
                        WHERE sr_number = ? AND lang = ?
                        AND (article_num = ? OR article_num LIKE ?)""",
                     (sr_number, language, article, f"{article}%"),
@@ -21120,13 +21131,26 @@ setInterval(load, 30000);
         language: str = Query("de", description="Language: de, fr, it"),
         canton: str = Query("CH", description="Canton code (CH=federal, ZH, BE, …)"),
         as_of: str = Query(None, description="ISO date (e.g., 2020-01-01) for a historical version from Fedlex"),
+        format: str = Query("json", description="json (default) or xml — for a single federal article, returns its verbatim Akoma Ntoso XML (application/xml). Issue #22."),
     ):
         abbr = None if abbreviation == "_" else abbreviation
-        return await asyncio.to_thread(
+        result = await asyncio.to_thread(
             get_law, sr_number=sr_number, abbreviation=abbr,
             article=article, language=language, canton=canton,
             as_of=as_of,
         )
+        if (format or "").lower() == "xml":
+            from fastapi import Response, HTTPException
+            arts = (result or {}).get("articles") or []
+            frag = arts[0].get("xml") if arts else None
+            if not frag:
+                raise HTTPException(
+                    status_code=404,
+                    detail="No Akoma Ntoso XML for this request — request a single "
+                           "federal article (?article=…); rebuild statutes.db to populate it.",
+                )
+            return Response(content=frag, media_type="application/xml")
+        return result
 
     # In-process validity cache for /amendment-ref. Keyed by
     # (ref_type, year, page). Avoids re-asking Fedlex SPARQL on every

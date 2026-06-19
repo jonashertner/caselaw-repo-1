@@ -40,6 +40,10 @@ OUTPUT_DB = Path(os.environ.get("STATUTES_DB", "output/statutes.db"))
 # Akoma Ntoso namespace
 AKN_NS = "http://docs.oasis-open.org/legaldocml/ns/akn/3.0"
 NS = {"akn": AKN_NS}
+# Serialize article subtrees back to clean Akoma Ntoso XML (declare akn as the
+# default namespace so fragments read <article xmlns="...">…</article> rather
+# than with ElementTree's ns0: prefixes). Issue #22.
+ET.register_namespace("", AKN_NS)
 
 
 def create_schema(conn: sqlite3.Connection):
@@ -64,6 +68,7 @@ def create_schema(conn: sqlite3.Connection):
             heading TEXT,
             footnote TEXT,
             text TEXT NOT NULL,
+            xml TEXT,
             lang TEXT NOT NULL,
             FOREIGN KEY (sr_number) REFERENCES laws(sr_number)
         );
@@ -240,6 +245,9 @@ def parse_xml(xml_path: Path) -> list[dict]:
             "heading": heading,
             "text": text,
             "footnote": footnote,
+            # Issue #22: verbatim AN XML subtree (enumerations, footnotes,
+            # sub-paragraphs) for structured rendering, alongside the text.
+            "xml": ET.tostring(art_elem, encoding="unicode"),
         })
 
     return articles
@@ -330,9 +338,10 @@ def build_db():
             articles = parse_xml(xml_path)
             for art in articles:
                 conn.execute(
-                    """INSERT INTO articles (sr_number, article_num, heading, footnote, text, lang)
-                       VALUES (?, ?, ?, ?, ?, ?)""",
-                    (sr_number, art["article_num"], art["heading"], art.get("footnote"), art["text"], lang),
+                    """INSERT INTO articles (sr_number, article_num, heading, footnote, text, xml, lang)
+                       VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                    (sr_number, art["article_num"], art["heading"], art.get("footnote"),
+                     art["text"], art.get("xml"), lang),
                 )
                 law_article_count += 1
 
