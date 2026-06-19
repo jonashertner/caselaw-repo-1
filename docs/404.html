@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Not found — OpenCaseLaw</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0c0c0d" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add('js');</script>
+<link rel="stylesheet" href="/static/css/site.css?v=1">
+<style>
+  .nf{min-height:54vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 0}
+  .nf-code{font-family:var(--f-mono);font-weight:600;font-size:clamp(56px,12vw,120px);letter-spacing:-.04em;line-height:.9;color:var(--red)}
+  .nf-h{font-weight:600;font-size:clamp(22px,3vw,30px);letter-spacing:-.02em;margin:18px 0 0}
+  .nf-p{color:var(--t2);margin:14px 0 0;max-width:46ch;line-height:1.55}
+  .nf-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin:30px 0 0}
+</style>
+</head>
+<body>
+<a href="#main" class="skip" data-t="skip">Skip to content</a>
+<div data-nav></div>
+<main id="main">
+  <div class="wrap nf">
+    <div class="nf-code">404</div>
+    <h1 class="nf-h" data-t="nf_h">Page not found</h1>
+    <p class="nf-p" data-t="nf_p">This page does not exist. The corpus, however, does — search it or return home.</p>
+    <div class="nf-actions">
+      <a href="/search/" class="btn btn-primary"><span data-t="nf_search">Search the corpus</span> <span aria-hidden="true">→</span></a>
+      <a href="/" class="btn btn-ghost" data-t="nf_home">Home</a>
+    </div>
+  </div>
+</main>
+<div data-foot></div>
+<script src="/static/js/site.js?v=1"></script>
+<script>
+OCL.init({active:'',i18n:{
+  de:{nf_h:'Seite nicht gefunden',nf_p:'Diese Seite existiert nicht. Der Korpus schon — durchsuchen Sie ihn oder kehren Sie zur Startseite zurück.',nf_search:'Korpus durchsuchen',nf_home:'Startseite'},
+  fr:{nf_h:'Page introuvable',nf_p:'Cette page n\'existe pas. Le corpus, lui, existe — recherchez-le ou revenez à l\'accueil.',nf_search:'Rechercher le corpus',nf_home:'Accueil'},
+  it:{nf_h:'Pagina non trovata',nf_p:'Questa pagina non esiste. Il corpus sì — cercatelo o tornate alla pagina iniziale.',nf_search:'Cerca nel corpus',nf_home:'Home'},
+  rm:{nf_h:'Pagina betg chattada',nf_p:'Questa pagina n\'exista betg. Il corpus gia — tschertgai el u turnai a la pagina da partenza.',nf_search:'Tschertgar el corpus',nf_home:'Pagina da partenza'},
+  en:{nf_h:'Page not found',nf_p:'This page does not exist. The corpus, however, does — search it or return home.',nf_search:'Search the corpus',nf_home:'Home'}
+}});
+</script>
+</body>
+</html>

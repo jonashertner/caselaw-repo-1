@@ -2,456 +2,272 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<title>Integrity / Provenienz — OpenCaseLaw</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="Kryptografische Provenienz für das Schweizer Caselaw-Korpus. Tägliche Merkle-Wurzel, Bitcoin-verankert über OpenTimestamps. Bestimmung 06 der Open Law Standards.">
-<link rel="icon" type="image/svg+xml" href="/favicon.svg">
-<link rel="stylesheet" href="/static/css/design-system.css?v=22">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Integrity &amp; provenance — OpenCaseLaw</title>
+<meta name="description" content="Cryptographic provenance for the Swiss case-law corpus: a daily RFC-6962 Merkle root over every decision, committed to the public repository and Bitcoin-anchored via OpenTimestamps. Verify any decision without trusting opencaselaw.ch.">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0c0c0d" media="(prefers-color-scheme: dark)">
+<link rel="canonical" href="https://opencaselaw.ch/integrity/">
+<link rel="alternate" hreflang="de" href="https://opencaselaw.ch/integrity/?lang=de">
+<link rel="alternate" hreflang="fr" href="https://opencaselaw.ch/integrity/?lang=fr">
+<link rel="alternate" hreflang="it" href="https://opencaselaw.ch/integrity/?lang=it">
+<link rel="alternate" hreflang="rm" href="https://opencaselaw.ch/integrity/?lang=rm">
+<link rel="alternate" hreflang="en" href="https://opencaselaw.ch/integrity/?lang=en">
+<link rel="alternate" hreflang="x-default" href="https://opencaselaw.ch/integrity/">
+<link rel="icon" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add('js');</script>
+<link rel="stylesheet" href="/static/css/site.css?v=1">
 <style>
-  /* Page-scoped spacing. The shared design-system.css (v22) defines neither
-     .section-card nor .hero-standards, and <main class="container"> is the full
-     site width, so this page rendered cramped on laptop (edge-to-edge prose,
-     tightly stacked sections). Constrain to a comfortable reading column and
-     loosen the vertical rhythm here, without touching the shared stylesheet. */
-  main.container { max-width: 52rem; }
-  .hero-standards { margin: 0.5rem 0 2.5rem; }
-  .hero-standards .lead { line-height: 1.7; }
-  .section-card { margin: 0 0 2.5rem; }
-  .section-card h2 { margin: 0 0 0.9rem; }
-  .section-card p { line-height: 1.7; margin: 0 0 1rem; }
-  .section-card ul { line-height: 1.7; padding-left: 1.25rem; }
-  .section-card li { margin-bottom: 0.5rem; }
-  .pre-root { font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.85rem; word-break: break-all; }
-  .root-card { padding: 1.5rem; background: var(--surface-2, #f4f4f5); border-radius: var(--radius-md, 8px); margin: 1.25rem 0; }
-  .root-card .label { display: block; opacity: 0.75; font-size: 0.8rem; margin-bottom: 0.5rem; }
-  .root-card .meta { margin-top: 0.5rem; font-size: 0.85rem; opacity: 0.75; }
-  .step { padding: 1rem 0; line-height: 1.6; border-bottom: 1px solid var(--border, #e5e7eb); }
-  .step:last-child { border-bottom: 0; }
-  .step .num { display: inline-block; min-width: 1.5rem; font-weight: 700; opacity: 0.6; }
-  pre { padding: 1rem 1.15rem; line-height: 1.55; overflow-x: auto; background: var(--surface-2, #f4f4f5); border-radius: var(--radius-md, 8px); }
+  .root-card{margin:40px 0 8px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--paper)}
+  .root-card .bar{height:3px;background:var(--red)}
+  .root-card .inner{padding:clamp(22px,4vw,34px)}
+  .root-label{font-family:var(--f-mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin:0 0 14px;display:flex;align-items:center;gap:9px}
+  .root-hash{font-family:var(--f-mono);font-weight:500;font-size:clamp(15px,2.6vw,24px);line-height:1.5;letter-spacing:.01em;
+    color:var(--t1);word-break:break-all;margin:0}
+  .root-meta{font-family:var(--f-mono);font-size:12.5px;color:var(--t2);margin:18px 0 0}
+  .root-files{margin:16px 0 0;font-size:13.5px;display:flex;flex-wrap:wrap;gap:6px 14px}
+  .root-files a{color:var(--red);text-decoration:underline;text-underline-offset:3px}
+  .leaf{font-family:var(--f-mono);font-size:13px;line-height:1.6;background:var(--paper-2);border:1px solid var(--line);
+    border-radius:10px;padding:16px 18px;overflow-x:auto;margin:20px 0;color:var(--t1)}
+  .leaf .c{color:var(--t3)}
+  .steps{margin:36px 0 0;counter-reset:s;border-top:1px solid var(--line)}
+  .step{display:grid;grid-template-columns:34px 1fr;gap:14px;padding:18px 0;border-bottom:1px solid var(--line-2);line-height:1.6;color:var(--t2)}
+  .step::before{counter-increment:s;content:counter(s);font-family:var(--f-mono);font-weight:600;color:var(--red);font-size:14px;padding-top:1px}
+  .step code,.prose code,.root-meta code{font-family:var(--f-mono);font-size:.86em;background:var(--paper-2);border:1px solid var(--line);border-radius:5px;padding:1px 5px;color:var(--t1);word-break:break-word}
+  .prose code a{color:var(--red)}
 </style>
 </head>
 <body>
-<header class="site">
-  <div class="container row">
-    <a href="/" class="brand">
-      <span class="brand-mark">+</span>
-      <span class="brand-text">opencaselaw.ch</span>
-    </a>
-    <nav id="primary-nav" aria-label="Primary">
-      <a href="/search/" data-nav-key="search">Search</a>
-      <a href="/courts/" data-nav-key="courts">Courts</a>
-      <a href="/laws/" data-nav-key="laws">Laws</a>
-      <a href="/word/" data-nav-key="word">Word</a>
-      <a href="/mcp/" data-nav-key="mcp">MCP</a>
-      <a href="/api/" data-nav-key="api">API</a>
-      <a href="/standards/" data-nav-key="standards">Standards</a>
-      <a href="/integrity/" data-nav-key="integrity" aria-current="page">Integrity</a>
-      <a href="/quality.html" data-nav-key="quality">Quality</a>
-      <span class="lang-sw" role="group" aria-label="Language">
-        <a href="/integrity/?lang=de" data-l="de">DE</a>
-        <a href="/integrity/?lang=fr" data-l="fr">FR</a>
-        <a href="/integrity/?lang=it" data-l="it">IT</a>
-        <a href="/integrity/?lang=rm" data-l="rm">RM</a>
-        <a href="/integrity/?lang=en" data-l="en">EN</a>
-      </span>
-    </nav>
-    <button class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="primary-nav">
-      <svg class="icon-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
-      <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M6 18L18 6"/></svg>
-    </button>
-  </div>
-</header>
+<a href="#main" class="skip" data-t="skip">Skip to content</a>
+<div data-nav></div>
 
-<main class="container">
+<main id="main">
+  <section class="page-head first">
+    <div class="wrap">
+      <p class="page-kicker"><b data-t="kicker">Provision 06 · cryptographic provenance</b></p>
+      <h1 class="page-h1" data-t="h1">Integrity &amp; provenance</h1>
+      <p class="page-lead" data-t="lead"></p>
+    </div>
+  </section>
 
-<section class="hero-standards">
-  <p class="kicker" data-t="kicker">Bestimmung 06 · Live ab 2026-05-21</p>
-  <h1 data-t="h1">Integrity / Provenienz</h1>
-  <p class="lead" data-t="lead">
-    Bei jedem Publish des Korpus berechnen wir eine <strong>Merkle-Wurzel</strong> über alle Entscheide. Die Wurzel wird im öffentlichen Repository committet und (sobald aktiviert) via <a href="https://opentimestamps.org/">OpenTimestamps</a> auf der Bitcoin-Blockchain verankert. Damit ist jeder einzelne Entscheid kryptografisch nachprüfbar — auch dann, wenn opencaselaw.ch dereinst nicht mehr existieren sollte.
-  </p>
-</section>
+  <section class="wrap" style="padding-bottom:clamp(64px,9vw,112px);max-width:860px">
+    <p class="sec-tag"><span class="n">§01</span> <span data-t="cur_h2">Current root</span></p>
+    <div class="root-card">
+      <div class="bar"></div>
+      <div class="inner">
+        <p class="root-label"><span class="dot" aria-hidden="true"></span> latest.root</p>
+        <p class="root-hash" id="latest-root">—</p>
+        <p class="root-meta" id="root-meta"></p>
+        <p class="root-files">
+          <a href="/integrity/latest.json" data-t="cur_link_manifest">latest.json</a>
+          <a href="/integrity/latest.root" data-t="cur_link_hex">latest.root</a>
+          <a href="/integrity/latest.root.ots" data-t="cur_link_ots">latest.root.ots</a>
+        </p>
+      </div>
+    </div>
 
-<section class="section-card">
-  <h2 data-t="cur_h2">Aktuelle Wurzel</h2>
-  <p class="sub" data-t="cur_sub">Letzte Publish-Periode</p>
-  <div class="root-card">
-    <span class="label">latest.root</span>
-    <code class="pre-root" id="latest-root">— wird beim Aufruf geladen —</code>
-    <p class="meta" id="root-meta"></p>
-    <p style="margin-top: 0.75rem; opacity: 0.8;"><a href="/integrity/latest.json" data-t="cur_link_manifest">latest.json (Manifest)</a> · <a href="/integrity/latest.root" data-t="cur_link_hex">latest.root (nur Hex)</a> · <a href="/integrity/latest.root.ots" data-t="cur_link_ots">latest.root.ots (OpenTimestamps-Anker)</a></p>
-  </div>
-  <script>
-    /* meta labels live in window.I18N so the line follows the chosen language.
-       Re-rendered on language switch via the augmented window.applyI18n. */
-    window._integrityData = null;
-    function _renderRootMeta() {
-      var d = window._integrityData;
-      if (!d) return;
-      var dict = (window.I18N && (window.I18N[window.curLang] || window.I18N.de)) || {};
-      var locale = { de: 'de-CH', fr: 'fr-CH', it: 'it-CH', rm: 'de-CH', en: 'en-CH' }[window.curLang] || 'de-CH';
-      var meta = document.getElementById('root-meta');
-      meta.textContent = (dict.meta_date || 'Datum') + ': ' + d.date + ' · ' +
-        (dict.meta_decisions || 'Entscheide') + ': ' + d.decisions_count.toLocaleString(locale) +
-        ' · ' + (dict.meta_algorithm || 'Algorithmus') + ': ' + d.algorithm;
-    }
-    window._renderRootMeta = _renderRootMeta;
-    fetch('/integrity/latest.json').then(r => r.json()).then(d => {
-      window._integrityData = d;
-      document.getElementById('latest-root').textContent = d.root;
-      _renderRootMeta();
-    }).catch(function(){});
-  </script>
-</section>
-
-<section class="section-card">
-  <h2 data-t="prom_h2">Was die Wurzel verspricht</h2>
-  <p data-t="prom_p1">Für jeden einzelnen Entscheid wird ein <strong>Blattwert</strong> nach dem folgenden Schema gebildet und SHA-256-gehasht:</p>
-  <pre>decision_id
+    <div style="margin-top:clamp(56px,8vw,88px)">
+      <p class="sec-tag"><span class="n">§02</span> <span data-t="prom_label">The leaf</span></p>
+      <h2 class="sec-h" data-t="prom_h2">What the root promises</h2>
+      <div class="prose" style="margin-top:18px">
+        <p data-t="prom_p1"></p>
+        <pre class="leaf">decision_id
 cli:ch
 ECLI
-content_hash       (SHA-256 über regeste || full_text)
+content_hash       <span class="c">(SHA-256 over regeste || full_text)</span>
 decision_date</pre>
-  <p data-t="prom_p2">
-    Die Blätter werden in alphabetischer Reihenfolge nach <code>decision_id</code> in einen <strong>RFC-6962-Merkle-Baum</strong> eingelesen (gleiche Konvention wie Certificate Transparency). Die Wurzel ist 32 Bytes (64 Hex-Zeichen) und commitet sich zu jedem einzelnen Entscheid mit dieser <code>decision_id</code>, diesem <code>content_hash</code>, diesen Identifikatoren, an diesem Datum.
-  </p>
-  <p data-t="prom_p3">
-    Ein Verifizierer kann mit der Wurzel + einem <em>Inklusions-Beweispfad</em> (log₂ N Geschwister-Hashes, ~20 für 972k Entscheide) kryptografisch beweisen, dass ein bestimmter Entscheid Teil des Korpus war — ohne opencaselaw.ch zu vertrauen.
-  </p>
-</section>
+        <p data-t="prom_p2"></p>
+        <p data-t="prom_p3"></p>
+      </div>
+    </div>
 
-<section class="section-card">
-  <h2 data-t="vp_h2">Verifikationspfad</h2>
-  <div class="step"><span class="num">1.</span> <span data-t="vp_s1">Sie haben einen Entscheid mit <code>decision_id</code>, <code>content_hash</code>, <code>cli:ch</code>, <code>ECLI</code>, <code>decision_date</code>.</span></div>
-  <div class="step"><span class="num">2.</span> <span data-t="vp_s2">Sie bilden das Blatt: <code>decision_id\ncli:ch\nECLI\ncontent_hash\ndecision_date</code></span></div>
-  <div class="step"><span class="num">3.</span> <span data-t="vp_s3">Sie hashen das Blatt: <code>SHA-256(0x00 || leaf_bytes)</code></span></div>
-  <div class="step"><span class="num">4.</span> <span data-t="vp_s4">Sie holen den Inklusions-Beweispfad (API-Endpunkt — Roadmap) für diesen Entscheid an einem bestimmten Datum.</span></div>
-  <div class="step"><span class="num">5.</span> <span data-t="vp_s5">Sie rekonstruieren die Wurzel: jeder Schritt im Beweispfad ist ein <code>SHA-256(0x01 || left || right)</code>.</span></div>
-  <div class="step"><span class="num">6.</span> <span data-t="vp_s6">Sie vergleichen die rekonstruierte Wurzel mit <code>docs/integrity/&lt;datum&gt;.root</code> im Git-Repository.</span></div>
-  <div class="step"><span class="num">7.</span> <span data-t="vp_s7">Optional: Sie verifizieren das OpenTimestamps-<code>.ots</code>-Proof gegen die Bitcoin-Blockchain — damit gilt die Wurzel als <em>zu einem bestimmten Zeitpunkt</em> existiert.</span></div>
-</section>
+    <div style="margin-top:clamp(56px,8vw,88px)">
+      <p class="sec-tag"><span class="n">§03</span> <span data-t="vp_label">Verify</span></p>
+      <h2 class="sec-h" data-t="vp_h2">Verification path</h2>
+      <div class="steps">
+        <div class="step"><span data-t="vp_s1"></span></div>
+        <div class="step"><span data-t="vp_s2"></span></div>
+        <div class="step"><span data-t="vp_s3"></span></div>
+        <div class="step"><span data-t="vp_s4"></span></div>
+        <div class="step"><span data-t="vp_s5"></span></div>
+        <div class="step"><span data-t="vp_s6"></span></div>
+        <div class="step"><span data-t="vp_s7"></span></div>
+      </div>
+    </div>
 
-<section class="section-card">
-  <h2 data-t="rm_h2">Roadmap</h2>
-  <ul>
-    <li data-t="rm_li1"><strong>Live</strong>: tägliche Merkle-Wurzel + Manifest publiziert als <code>docs/integrity/&lt;YYYY-MM-DD&gt;.{root,json}</code>.</li>
-    <li data-t="rm_li2"><strong>Live</strong>: <a href="https://opentimestamps.org/">OpenTimestamps</a>-Anker via <code>ots stamp</code>. Die <code>.root.ots</code>-Datei wird täglich neben dem Root abgelegt und kann nach ~1 Bitcoin-Block (1–6 Std.) zu einem voll Bitcoin-verankerten Beweis aufgewertet werden (<code>ots upgrade</code>).</li>
-    <li data-t="rm_li3"><strong>Live</strong>: API-Endpunkt <code>GET <a href="/api/integrity/bge_BGE_140_III_86">/api/integrity/&lt;decision_id&gt;</a></code> liefert den RFC-6962 Inklusions-Beweispfad einer Entscheidung gegen die aktuellste Wurzel. Lazy-geladene Sub-Tree-Memoisierung (~3 s First-Call, danach &lt;1 ms pro Beweis).</li>
-    <li data-t="rm_li4"><strong>Optional</strong>: Cross-Anchoring zu weiteren Zeitstempel-Diensten (Sigsum, RFC 3161 TSA) für Defense-in-Depth.</li>
-  </ul>
-  <p data-t="rm_p1">Das ist Teil der <a href="/standards/">Open Law Standards</a> (Bestimmung 06 · Provenienz).</p>
-</section>
+    <div style="margin-top:clamp(56px,8vw,88px)">
+      <p class="sec-tag"><span class="n">§04</span> <span data-t="rm_label">Status</span></p>
+      <h2 class="sec-h" data-t="rm_h2">Roadmap</h2>
+      <div class="prose" style="margin-top:18px">
+        <ul>
+          <li data-t="rm_li1"></li>
+          <li data-t="rm_li2"></li>
+          <li data-t="rm_li3"></li>
+          <li data-t="rm_li4"></li>
+        </ul>
+        <p data-t="rm_p1"></p>
+      </div>
+    </div>
 
-<section class="section-card">
-  <h2 data-t="ri_h2">Referenz-Implementierung</h2>
-  <ul>
-    <li data-t="ri_li1"><a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/integrity.py">integrity.py</a> — pure-function Merkle-Bibliothek (RFC 6962). Public-domain.</li>
-    <li data-t="ri_li2"><a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/scripts/build_integrity_root.py">build_integrity_root.py</a> — täglich aus der FTS5-Datenbank gebaut, integrierbar in jede Publish-Pipeline.</li>
-  </ul>
-</section>
-
+    <div style="margin-top:clamp(56px,8vw,88px)">
+      <p class="sec-tag"><span class="n">§05</span> <span data-t="ri_label">Code</span></p>
+      <h2 class="sec-h" data-t="ri_h2">Reference implementation</h2>
+      <div class="prose" style="margin-top:18px">
+        <ul>
+          <li data-t="ri_li1"></li>
+          <li data-t="ri_li2"></li>
+        </ul>
+      </div>
+    </div>
+  </section>
 </main>
 
-<footer class="site">
-  <div class="container">
-    <p style="font-size: 12px; color: var(--text-3); text-align: center; margin: 32px 0;" data-t="footer_line">
-      OpenCaseLaw.ch · Offener Datensatz Schweizer Gerichtsentscheide · Code MIT, Daten CC0
-    </p>
-  </div>
-</footer>
-
+<div data-foot></div>
+<script src="/static/js/site.js?v=1"></script>
 <script>
-/* Per-page i18n table. Rich values (containing HTML tags) are injected via
-   innerHTML by applyI18n(); plain values via textContent. Technical
-   identifiers, hashes, URLs and <pre> code blocks are intentionally NOT
-   translated. The meta_* keys feed the dynamically rendered root-meta line
-   (see _renderRootMeta above). */
-window.I18N = {
-  de: {
-    kicker: 'Bestimmung 06 · Live ab 2026-05-21',
-    h1: 'Integrity / Provenienz',
-    lead: 'Bei jedem Publish des Korpus berechnen wir eine <strong>Merkle-Wurzel</strong> über alle Entscheide. Die Wurzel wird im öffentlichen Repository committet und (sobald aktiviert) via <a href="https://opentimestamps.org/">OpenTimestamps</a> auf der Bitcoin-Blockchain verankert. Damit ist jeder einzelne Entscheid kryptografisch nachprüfbar — auch dann, wenn opencaselaw.ch dereinst nicht mehr existieren sollte.',
-    cur_h2: 'Aktuelle Wurzel',
-    cur_sub: 'Letzte Publish-Periode',
-    cur_link_manifest: 'latest.json (Manifest)',
-    cur_link_hex: 'latest.root (nur Hex)',
-    cur_link_ots: 'latest.root.ots (OpenTimestamps-Anker)',
-    meta_date: 'Datum',
-    meta_decisions: 'Entscheide',
-    meta_algorithm: 'Algorithmus',
-    prom_h2: 'Was die Wurzel verspricht',
-    prom_p1: 'Für jeden einzelnen Entscheid wird ein <strong>Blattwert</strong> nach dem folgenden Schema gebildet und SHA-256-gehasht:',
-    prom_p2: 'Die Blätter werden in alphabetischer Reihenfolge nach <code>decision_id</code> in einen <strong>RFC-6962-Merkle-Baum</strong> eingelesen (gleiche Konvention wie Certificate Transparency). Die Wurzel ist 32 Bytes (64 Hex-Zeichen) und commitet sich zu jedem einzelnen Entscheid mit dieser <code>decision_id</code>, diesem <code>content_hash</code>, diesen Identifikatoren, an diesem Datum.',
-    prom_p3: 'Ein Verifizierer kann mit der Wurzel + einem <em>Inklusions-Beweispfad</em> (log₂ N Geschwister-Hashes, ~20 für 972k Entscheide) kryptografisch beweisen, dass ein bestimmter Entscheid Teil des Korpus war — ohne opencaselaw.ch zu vertrauen.',
-    vp_h2: 'Verifikationspfad',
-    vp_s1: 'Sie haben einen Entscheid mit <code>decision_id</code>, <code>content_hash</code>, <code>cli:ch</code>, <code>ECLI</code>, <code>decision_date</code>.',
-    vp_s2: 'Sie bilden das Blatt: <code>decision_id\\ncli:ch\\nECLI\\ncontent_hash\\ndecision_date</code>',
-    vp_s3: 'Sie hashen das Blatt: <code>SHA-256(0x00 || leaf_bytes)</code>',
-    vp_s4: 'Sie holen den Inklusions-Beweispfad (API-Endpunkt — Roadmap) für diesen Entscheid an einem bestimmten Datum.',
-    vp_s5: 'Sie rekonstruieren die Wurzel: jeder Schritt im Beweispfad ist ein <code>SHA-256(0x01 || left || right)</code>.',
-    vp_s6: 'Sie vergleichen die rekonstruierte Wurzel mit <code>docs/integrity/&lt;datum&gt;.root</code> im Git-Repository.',
-    vp_s7: 'Optional: Sie verifizieren das OpenTimestamps-<code>.ots</code>-Proof gegen die Bitcoin-Blockchain — damit gilt die Wurzel als <em>zu einem bestimmten Zeitpunkt</em> existiert.',
-    rm_h2: 'Roadmap',
-    rm_li1: '<strong>Live</strong>: tägliche Merkle-Wurzel + Manifest publiziert als <code>docs/integrity/&lt;YYYY-MM-DD&gt;.{root,json}</code>.',
-    rm_li2: '<strong>Live</strong>: <a href="https://opentimestamps.org/">OpenTimestamps</a>-Anker via <code>ots stamp</code>. Die <code>.root.ots</code>-Datei wird täglich neben dem Root abgelegt und kann nach ~1 Bitcoin-Block (1–6 Std.) zu einem voll Bitcoin-verankerten Beweis aufgewertet werden (<code>ots upgrade</code>).',
-    rm_li3: '<strong>Live</strong>: API-Endpunkt <code>GET <a href="/api/integrity/bge_BGE_140_III_86">/api/integrity/&lt;decision_id&gt;</a></code> liefert den RFC-6962 Inklusions-Beweispfad einer Entscheidung gegen die aktuellste Wurzel. Lazy-geladene Sub-Tree-Memoisierung (~3 s First-Call, danach &lt;1 ms pro Beweis).',
-    rm_li4: '<strong>Optional</strong>: Cross-Anchoring zu weiteren Zeitstempel-Diensten (Sigsum, RFC 3161 TSA) für Defense-in-Depth.',
-    rm_p1: 'Das ist Teil der <a href="/standards/">Open Law Standards</a> (Bestimmung 06 · Provenienz).',
-    ri_h2: 'Referenz-Implementierung',
-    ri_li1: '<a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/integrity.py">integrity.py</a> — pure-function Merkle-Bibliothek (RFC 6962). Public-domain.',
-    ri_li2: '<a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/scripts/build_integrity_root.py">build_integrity_root.py</a> — täglich aus der FTS5-Datenbank gebaut, integrierbar in jede Publish-Pipeline.',
-    footer_line: 'OpenCaseLaw.ch · Offener Datensatz Schweizer Gerichtsentscheide · Code MIT, Daten CC0'
+OCL.init({
+  active:'',
+  i18n:{
+    de:{kicker:'Bestimmung 06 · kryptografische Provenienz',h1:'Integrität & Provenienz',
+      lead:'Bei jedem Publish des Korpus berechnen wir eine Merkle-Wurzel über alle Entscheide. Die Wurzel wird im öffentlichen Repository committet und via OpenTimestamps auf der Bitcoin-Blockchain verankert. Damit ist jeder einzelne Entscheid kryptografisch nachprüfbar — auch dann, wenn opencaselaw.ch dereinst nicht mehr existieren sollte.',
+      cur_h2:'Aktuelle Wurzel',cur_link_manifest:'latest.json (Manifest)',cur_link_hex:'latest.root (Hex)',cur_link_ots:'latest.root.ots (OpenTimestamps)',
+      meta_date:'Datum',meta_decisions:'Entscheide',meta_algorithm:'Algorithmus',
+      prom_label:'Das Blatt',prom_h2:'Was die Wurzel verspricht',
+      prom_p1:'Für jeden einzelnen Entscheid wird ein <strong>Blattwert</strong> nach folgendem Schema gebildet und SHA-256-gehasht:',
+      prom_p2:'Die Blätter werden in alphabetischer Reihenfolge nach <code>decision_id</code> in einen <strong>RFC-6962-Merkle-Baum</strong> eingelesen (gleiche Konvention wie Certificate Transparency). Die Wurzel ist 32 Bytes (64 Hex-Zeichen) und commitet sich zu jedem Entscheid mit dieser <code>decision_id</code>, diesem <code>content_hash</code>, diesen Identifikatoren, an diesem Datum.',
+      prom_p3:'Mit der Wurzel und einem <em>Inklusions-Beweispfad</em> (log₂ N Geschwister-Hashes, ~20 für rund 991k Entscheide) lässt sich kryptografisch beweisen, dass ein bestimmter Entscheid Teil des Korpus war — ohne opencaselaw.ch zu vertrauen.',
+      vp_label:'Prüfen',vp_h2:'Verifikationspfad',
+      vp_s1:'Sie haben einen Entscheid mit <code>decision_id</code>, <code>content_hash</code>, <code>cli:ch</code>, <code>ECLI</code>, <code>decision_date</code>.',
+      vp_s2:'Sie bilden das Blatt: <code>decision_id\\ncli:ch\\nECLI\\ncontent_hash\\ndecision_date</code>',
+      vp_s3:'Sie hashen das Blatt: <code>SHA-256(0x00 || leaf_bytes)</code>',
+      vp_s4:'Sie holen den Inklusions-Beweispfad für diesen Entscheid an einem bestimmten Datum.',
+      vp_s5:'Sie rekonstruieren die Wurzel: jeder Schritt ist ein <code>SHA-256(0x01 || left || right)</code>.',
+      vp_s6:'Sie vergleichen die rekonstruierte Wurzel mit <code>docs/integrity/&lt;datum&gt;.root</code> im Git-Repository.',
+      vp_s7:'Optional: Sie verifizieren das OpenTimestamps-<code>.ots</code>-Proof gegen die Bitcoin-Blockchain — damit gilt die Wurzel als <em>zu einem bestimmten Zeitpunkt</em> existiert.',
+      rm_label:'Status',rm_h2:'Roadmap',
+      rm_li1:'<strong>Live</strong>: tägliche Merkle-Wurzel + Manifest als <code>docs/integrity/&lt;YYYY-MM-DD&gt;.{root,json}</code>.',
+      rm_li2:'<strong>Live</strong>: <a href="https://opentimestamps.org/">OpenTimestamps</a>-Anker via <code>ots stamp</code>; nach ~1 Bitcoin-Block (1–6 Std.) zu vollem Bitcoin-Anker aufwertbar (<code>ots upgrade</code>).',
+      rm_li3:'<strong>Live</strong>: <code>GET <a href="/api/integrity/bge_BGE_140_III_86">/api/integrity/&lt;decision_id&gt;</a></code> liefert den RFC-6962 Inklusions-Beweispfad gegen die aktuellste Wurzel.',
+      rm_li4:'<strong>Optional</strong>: Cross-Anchoring zu weiteren Zeitstempel-Diensten (Sigsum, RFC 3161 TSA).',
+      rm_p1:'Teil der <a href="/standards/">Open Law Standards</a> (Bestimmung 06 · Provenienz).',
+      ri_label:'Code',ri_h2:'Referenz-Implementierung',
+      ri_li1:'<a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/integrity.py">integrity.py</a> — Merkle-Bibliothek (RFC 6962), public-domain.',
+      ri_li2:'<a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/scripts/build_integrity_root.py">build_integrity_root.py</a> — täglich aus der FTS5-Datenbank gebaut.'},
+    fr:{kicker:'Disposition 06 · provenance cryptographique',h1:'Intégrité & provenance',
+      lead:'À chaque publication du corpus, nous calculons une racine de Merkle sur toutes les décisions. La racine est committée dans le dépôt public et ancrée sur la blockchain Bitcoin via OpenTimestamps. Chaque décision est ainsi vérifiable cryptographiquement — même si opencaselaw.ch venait un jour à disparaître.',
+      cur_h2:'Racine actuelle',cur_link_manifest:'latest.json (manifeste)',cur_link_hex:'latest.root (hex)',cur_link_ots:'latest.root.ots (OpenTimestamps)',
+      meta_date:'Date',meta_decisions:'Décisions',meta_algorithm:'Algorithme',
+      prom_label:'La feuille',prom_h2:'Ce que promet la racine',
+      prom_p1:'Pour chaque décision, une <strong>valeur de feuille</strong> est formée selon le schéma suivant puis hachée en SHA-256 :',
+      prom_p2:'Les feuilles sont lues dans un <strong>arbre de Merkle RFC-6962</strong> par ordre alphabétique de <code>decision_id</code> (même convention que Certificate Transparency). La racine fait 32 octets (64 caractères hex) et s\'engage sur chaque décision avec ce <code>decision_id</code>, ce <code>content_hash</code>, ces identifiants, à cette date.',
+      prom_p3:'Avec la racine et un <em>chemin de preuve d\'inclusion</em> (log₂ N hachages frères, ~20 pour environ 991k décisions), on peut prouver cryptographiquement qu\'une décision donnée faisait partie du corpus — sans faire confiance à opencaselaw.ch.',
+      vp_label:'Vérifier',vp_h2:'Chemin de vérification',
+      vp_s1:'Vous disposez d\'une décision avec <code>decision_id</code>, <code>content_hash</code>, <code>cli:ch</code>, <code>ECLI</code>, <code>decision_date</code>.',
+      vp_s2:'Vous formez la feuille : <code>decision_id\\ncli:ch\\nECLI\\ncontent_hash\\ndecision_date</code>',
+      vp_s3:'Vous hachez la feuille : <code>SHA-256(0x00 || leaf_bytes)</code>',
+      vp_s4:'Vous récupérez le chemin de preuve d\'inclusion pour cette décision à une date donnée.',
+      vp_s5:'Vous reconstruisez la racine : chaque étape est un <code>SHA-256(0x01 || left || right)</code>.',
+      vp_s6:'Vous comparez la racine reconstruite avec <code>docs/integrity/&lt;date&gt;.root</code> dans le dépôt Git.',
+      vp_s7:'En option : vous vérifiez la preuve OpenTimestamps <code>.ots</code> contre la blockchain Bitcoin — la racine est alors réputée avoir existé <em>à un instant donné</em>.',
+      rm_label:'Statut',rm_h2:'Feuille de route',
+      rm_li1:'<strong>En production</strong> : racine de Merkle quotidienne + manifeste comme <code>docs/integrity/&lt;YYYY-MM-DD&gt;.{root,json}</code>.',
+      rm_li2:'<strong>En production</strong> : ancre <a href="https://opentimestamps.org/">OpenTimestamps</a> via <code>ots stamp</code> ; consolidable après ~1 bloc Bitcoin (1–6 h) (<code>ots upgrade</code>).',
+      rm_li3:'<strong>En production</strong> : <code>GET <a href="/api/integrity/bge_BGE_140_III_86">/api/integrity/&lt;decision_id&gt;</a></code> livre le chemin de preuve d\'inclusion RFC-6962 contre la racine la plus récente.',
+      rm_li4:'<strong>Optionnel</strong> : ancrage croisé vers d\'autres services d\'horodatage (Sigsum, RFC 3161 TSA).',
+      rm_p1:'Fait partie des <a href="/standards/">Open Law Standards</a> (disposition 06 · provenance).',
+      ri_label:'Code',ri_h2:'Implémentation de référence',
+      ri_li1:'<a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/integrity.py">integrity.py</a> — bibliothèque de Merkle (RFC 6962), domaine public.',
+      ri_li2:'<a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/scripts/build_integrity_root.py">build_integrity_root.py</a> — construit quotidiennement à partir de la base FTS5.'},
+    it:{kicker:'Disposizione 06 · provenienza crittografica',h1:'Integrità & provenienza',
+      lead:'A ogni pubblicazione del corpus calcoliamo una radice di Merkle su tutte le decisioni. La radice viene committata nel repository pubblico e ancorata sulla blockchain Bitcoin tramite OpenTimestamps. Ogni decisione è così verificabile crittograficamente — anche qualora un giorno opencaselaw.ch non dovesse più esistere.',
+      cur_h2:'Radice attuale',cur_link_manifest:'latest.json (manifesto)',cur_link_hex:'latest.root (hex)',cur_link_ots:'latest.root.ots (OpenTimestamps)',
+      meta_date:'Data',meta_decisions:'Decisioni',meta_algorithm:'Algoritmo',
+      prom_label:'La foglia',prom_h2:'Cosa promette la radice',
+      prom_p1:'Per ogni decisione viene formato un <strong>valore di foglia</strong> secondo il seguente schema e sottoposto a hash SHA-256:',
+      prom_p2:'Le foglie vengono lette in un <strong>albero di Merkle RFC-6962</strong> in ordine alfabetico per <code>decision_id</code> (stessa convenzione di Certificate Transparency). La radice è di 32 byte (64 caratteri hex) e si impegna su ogni decisione con questo <code>decision_id</code>, questo <code>content_hash</code>, questi identificatori, a questa data.',
+      prom_p3:'Con la radice e un <em>percorso di prova di inclusione</em> (log₂ N hash fratelli, ~20 per circa 991k decisioni) si può dimostrare crittograficamente che una decisione faceva parte del corpus — senza fidarsi di opencaselaw.ch.',
+      vp_label:'Verificare',vp_h2:'Percorso di verifica',
+      vp_s1:'Disponete di una decisione con <code>decision_id</code>, <code>content_hash</code>, <code>cli:ch</code>, <code>ECLI</code>, <code>decision_date</code>.',
+      vp_s2:'Formate la foglia: <code>decision_id\\ncli:ch\\nECLI\\ncontent_hash\\ndecision_date</code>',
+      vp_s3:'Sottoponete la foglia a hash: <code>SHA-256(0x00 || leaf_bytes)</code>',
+      vp_s4:'Recuperate il percorso di prova di inclusione per questa decisione a una data determinata.',
+      vp_s5:'Ricostruite la radice: ogni passo è un <code>SHA-256(0x01 || left || right)</code>.',
+      vp_s6:'Confrontate la radice ricostruita con <code>docs/integrity/&lt;data&gt;.root</code> nel repository Git.',
+      vp_s7:'Facoltativo: verificate la prova OpenTimestamps <code>.ots</code> contro la blockchain Bitcoin — la radice risulta così esistita <em>a un determinato momento</em>.',
+      rm_label:'Stato',rm_h2:'Roadmap',
+      rm_li1:'<strong>In produzione</strong>: radice di Merkle quotidiana + manifesto come <code>docs/integrity/&lt;YYYY-MM-DD&gt;.{root,json}</code>.',
+      rm_li2:'<strong>In produzione</strong>: ancora <a href="https://opentimestamps.org/">OpenTimestamps</a> tramite <code>ots stamp</code>; consolidabile dopo ~1 blocco Bitcoin (1–6 h) (<code>ots upgrade</code>).',
+      rm_li3:'<strong>In produzione</strong>: <code>GET <a href="/api/integrity/bge_BGE_140_III_86">/api/integrity/&lt;decision_id&gt;</a></code> fornisce il percorso di prova di inclusione RFC-6962 contro la radice più recente.',
+      rm_li4:'<strong>Facoltativo</strong>: ancoraggio incrociato verso altri servizi di marca temporale (Sigsum, RFC 3161 TSA).',
+      rm_p1:'Fa parte degli <a href="/standards/">Open Law Standards</a> (disposizione 06 · provenienza).',
+      ri_label:'Code',ri_h2:'Implementazione di riferimento',
+      ri_li1:'<a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/integrity.py">integrity.py</a> — libreria di Merkle (RFC 6962), di pubblico dominio.',
+      ri_li2:'<a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/scripts/build_integrity_root.py">build_integrity_root.py</a> — costruito quotidianamente dalla banca dati FTS5.'},
+    rm:{kicker:'Disposiziun 06 · provegnientscha criptografica',h1:'Integritad & provegnientscha',
+      lead:'A mintga publicaziun dal corpus calculain nus ina ragisch da Merkle sur tut las decisiuns. La ragisch vegn committada en il repositori public ed ancorada sin la blockchain Bitcoin via OpenTimestamps. Uschia è mintga singula decisiun verifitgabla criptograficamain — er sche opencaselaw.ch na duess ina giada betg pli exister.',
+      cur_h2:'Ragisch actuala',cur_link_manifest:'latest.json (manifest)',cur_link_hex:'latest.root (hex)',cur_link_ots:'latest.root.ots (OpenTimestamps)',
+      meta_date:'Data',meta_decisions:'Decisiuns',meta_algorithm:'Algoritmus',
+      prom_label:'La feglia',prom_h2:'Tge che la ragisch empermetta',
+      prom_p1:'Per mintga decisiun vegn furmà in <strong>valur da feglia</strong> tenor il suandant schema e fatg in hash SHA-256:',
+      prom_p2:'Las feglias vegnan legidas en in <strong>arbre da Merkle RFC-6962</strong> en urden alfabetic tenor <code>decision_id</code> (la medema convenziun sco Certificate Transparency). La ragisch è 32 bytes (64 caracters hex) e s\'engascha sin mintga decisiun cun quest <code>decision_id</code>, quest <code>content_hash</code>, quests identificaturs, a questa data.',
+      prom_p3:'Cun la ragisch ed in <em>percurs da cumprova d\'inclusiun</em> (log₂ N hashs fragliuns, ~20 per radund 991k decisiuns) sa lascha cumprovar criptograficamain ch\'ina tscherta decisiun era part dal corpus — senza confidar ad opencaselaw.ch.',
+      vp_label:'Verifitgar',vp_h2:'Percurs da verificaziun',
+      vp_s1:'Vus avais ina decisiun cun <code>decision_id</code>, <code>content_hash</code>, <code>cli:ch</code>, <code>ECLI</code>, <code>decision_date</code>.',
+      vp_s2:'Vus furmais la feglia: <code>decision_id\\ncli:ch\\nECLI\\ncontent_hash\\ndecision_date</code>',
+      vp_s3:'Vus fais in hash da la feglia: <code>SHA-256(0x00 || leaf_bytes)</code>',
+      vp_s4:'Vus retgivais il percurs da cumprova d\'inclusiun per questa decisiun ad ina tscherta data.',
+      vp_s5:'Vus reconstruis la ragisch: mintga pass è in <code>SHA-256(0x01 || left || right)</code>.',
+      vp_s6:'Vus cumparegliais la ragisch reconstruida cun <code>docs/integrity/&lt;data&gt;.root</code> en il repositori Git.',
+      vp_s7:'Opziunal: vus verifitgais la cumprova OpenTimestamps <code>.ots</code> cunter la blockchain Bitcoin — uschia vala la ragisch sco existida <em>ad in tschert mument</em>.',
+      rm_label:'Status',rm_h2:'Roadmap',
+      rm_li1:'<strong>En producziun</strong>: ragisch da Merkle mintga di + manifest sco <code>docs/integrity/&lt;YYYY-MM-DD&gt;.{root,json}</code>.',
+      rm_li2:'<strong>En producziun</strong>: ancura <a href="https://opentimestamps.org/">OpenTimestamps</a> via <code>ots stamp</code>; consolidabel suenter ~1 bloc Bitcoin (1–6 uras) (<code>ots upgrade</code>).',
+      rm_li3:'<strong>En producziun</strong>: <code>GET <a href="/api/integrity/bge_BGE_140_III_86">/api/integrity/&lt;decision_id&gt;</a></code> furnescha il percurs da cumprova d\'inclusiun RFC-6962 cunter la ragisch la pli actuala.',
+      rm_li4:'<strong>Opziunal</strong>: ancoraziun crusada vers auters servetschs da marcas temporalas (Sigsum, RFC 3161 TSA).',
+      rm_p1:'Part dals <a href="/standards/">Open Law Standards</a> (disposiziun 06 · provegnientscha).',
+      ri_label:'Code',ri_h2:'Implementaziun da referenza',
+      ri_li1:'<a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/integrity.py">integrity.py</a> — biblioteca da Merkle (RFC 6962), public-domain.',
+      ri_li2:'<a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/scripts/build_integrity_root.py">build_integrity_root.py</a> — construì mintga di da la banca da datas FTS5.'},
+    en:{kicker:'Provision 06 · cryptographic provenance',h1:'Integrity & provenance',
+      lead:'At every publish of the corpus we compute a Merkle root over all decisions. The root is committed to the public repository and anchored on the Bitcoin blockchain via OpenTimestamps. Every single decision is thus cryptographically verifiable — even if opencaselaw.ch should one day no longer exist.',
+      cur_h2:'Current root',cur_link_manifest:'latest.json (manifest)',cur_link_hex:'latest.root (hex)',cur_link_ots:'latest.root.ots (OpenTimestamps)',
+      meta_date:'Date',meta_decisions:'Decisions',meta_algorithm:'Algorithm',
+      prom_label:'The leaf',prom_h2:'What the root promises',
+      prom_p1:'For each decision, a <strong>leaf value</strong> is formed according to the following schema and SHA-256-hashed:',
+      prom_p2:'The leaves are read into an <strong>RFC-6962 Merkle tree</strong> in alphabetical order by <code>decision_id</code> (same convention as Certificate Transparency). The root is 32 bytes (64 hex characters) and commits to every decision with this <code>decision_id</code>, this <code>content_hash</code>, these identifiers, on this date.',
+      prom_p3:'With the root and an <em>inclusion proof path</em> (log₂ N sibling hashes, ~20 for roughly 991k decisions) one can cryptographically prove that a given decision was part of the corpus — without trusting opencaselaw.ch.',
+      vp_label:'Verify',vp_h2:'Verification path',
+      vp_s1:'You have a decision with <code>decision_id</code>, <code>content_hash</code>, <code>cli:ch</code>, <code>ECLI</code>, <code>decision_date</code>.',
+      vp_s2:'You form the leaf: <code>decision_id\\ncli:ch\\nECLI\\ncontent_hash\\ndecision_date</code>',
+      vp_s3:'You hash the leaf: <code>SHA-256(0x00 || leaf_bytes)</code>',
+      vp_s4:'You fetch the inclusion proof path for this decision at a given date.',
+      vp_s5:'You reconstruct the root: each step is a <code>SHA-256(0x01 || left || right)</code>.',
+      vp_s6:'You compare the reconstructed root with <code>docs/integrity/&lt;date&gt;.root</code> in the Git repository.',
+      vp_s7:'Optional: you verify the OpenTimestamps <code>.ots</code> proof against the Bitcoin blockchain — the root is then deemed to have existed <em>at a given point in time</em>.',
+      rm_label:'Status',rm_h2:'Roadmap',
+      rm_li1:'<strong>Live</strong>: daily Merkle root + manifest as <code>docs/integrity/&lt;YYYY-MM-DD&gt;.{root,json}</code>.',
+      rm_li2:'<strong>Live</strong>: <a href="https://opentimestamps.org/">OpenTimestamps</a> anchor via <code>ots stamp</code>; upgradable to a full Bitcoin anchor after ~1 Bitcoin block (1–6 h) (<code>ots upgrade</code>).',
+      rm_li3:'<strong>Live</strong>: <code>GET <a href="/api/integrity/bge_BGE_140_III_86">/api/integrity/&lt;decision_id&gt;</a></code> delivers the RFC-6962 inclusion proof path against the most recent root.',
+      rm_li4:'<strong>Optional</strong>: cross-anchoring to further timestamping services (Sigsum, RFC 3161 TSA).',
+      rm_p1:'Part of the <a href="/standards/">Open Law Standards</a> (provision 06 · provenance).',
+      ri_label:'Code',ri_h2:'Reference implementation',
+      ri_li1:'<a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/integrity.py">integrity.py</a> — Merkle library (RFC 6962), public domain.',
+      ri_li2:'<a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/scripts/build_integrity_root.py">build_integrity_root.py</a> — built daily from the FTS5 database.'}
   },
-  fr: {
-    kicker: 'Disposition 06 · En production dès le 2026-05-21',
-    h1: 'Intégrité / Provenance',
-    lead: 'À chaque publication du corpus, nous calculons une <strong>racine de Merkle</strong> sur toutes les décisions. La racine est committée dans le dépôt public et (dès activation) ancrée sur la blockchain Bitcoin via <a href="https://opentimestamps.org/">OpenTimestamps</a>. Chaque décision est ainsi cryptographiquement vérifiable — même si opencaselaw.ch venait un jour à disparaître.',
-    cur_h2: 'Racine actuelle',
-    cur_sub: 'Dernière période de publication',
-    cur_link_manifest: 'latest.json (manifeste)',
-    cur_link_hex: 'latest.root (hex uniquement)',
-    cur_link_ots: 'latest.root.ots (ancre OpenTimestamps)',
-    meta_date: 'Date',
-    meta_decisions: 'Décisions',
-    meta_algorithm: 'Algorithme',
-    prom_h2: 'Ce que promet la racine',
-    prom_p1: 'Pour chaque décision individuelle, une <strong>valeur de feuille</strong> est formée selon le schéma suivant puis hachée en SHA-256 :',
-    prom_p2: 'Les feuilles sont lues dans un <strong>arbre de Merkle RFC-6962</strong> par ordre alphabétique de <code>decision_id</code> (même convention que Certificate Transparency). La racine fait 32 octets (64 caractères hex) et s\'engage sur chaque décision individuelle avec ce <code>decision_id</code>, ce <code>content_hash</code>, ces identifiants, à cette date.',
-    prom_p3: 'Avec la racine + un <em>chemin de preuve d\'inclusion</em> (log₂ N hachages frères, ~20 pour 972k décisions), un vérificateur peut prouver cryptographiquement qu\'une décision donnée faisait partie du corpus — sans faire confiance à opencaselaw.ch.',
-    vp_h2: 'Chemin de vérification',
-    vp_s1: 'Vous disposez d\'une décision avec <code>decision_id</code>, <code>content_hash</code>, <code>cli:ch</code>, <code>ECLI</code>, <code>decision_date</code>.',
-    vp_s2: 'Vous formez la feuille : <code>decision_id\\ncli:ch\\nECLI\\ncontent_hash\\ndecision_date</code>',
-    vp_s3: 'Vous hachez la feuille : <code>SHA-256(0x00 || leaf_bytes)</code>',
-    vp_s4: 'Vous récupérez le chemin de preuve d\'inclusion (endpoint API — feuille de route) pour cette décision à une date donnée.',
-    vp_s5: 'Vous reconstruisez la racine : chaque étape du chemin de preuve est un <code>SHA-256(0x01 || left || right)</code>.',
-    vp_s6: 'Vous comparez la racine reconstruite avec <code>docs/integrity/&lt;date&gt;.root</code> dans le dépôt Git.',
-    vp_s7: 'En option : vous vérifiez la preuve OpenTimestamps <code>.ots</code> contre la blockchain Bitcoin — la racine est alors réputée avoir existé <em>à un instant donné</em>.',
-    rm_h2: 'Feuille de route',
-    rm_li1: '<strong>En production</strong> : racine de Merkle quotidienne + manifeste publiés comme <code>docs/integrity/&lt;YYYY-MM-DD&gt;.{root,json}</code>.',
-    rm_li2: '<strong>En production</strong> : ancre <a href="https://opentimestamps.org/">OpenTimestamps</a> via <code>ots stamp</code>. Le fichier <code>.root.ots</code> est déposé chaque jour à côté de la racine et peut être consolidé en une preuve pleinement ancrée sur Bitcoin après ~1 bloc Bitcoin (1–6 h) (<code>ots upgrade</code>).',
-    rm_li3: '<strong>En production</strong> : l\'endpoint API <code>GET <a href="/api/integrity/bge_BGE_140_III_86">/api/integrity/&lt;decision_id&gt;</a></code> livre le chemin de preuve d\'inclusion RFC-6962 d\'une décision contre la racine la plus récente. Mémoïsation paresseuse des sous-arbres (~3 s au premier appel, puis &lt;1 ms par preuve).',
-    rm_li4: '<strong>Optionnel</strong> : ancrage croisé vers d\'autres services d\'horodatage (Sigsum, RFC 3161 TSA) pour une défense en profondeur.',
-    rm_p1: 'Cela fait partie des <a href="/standards/">Open Law Standards</a> (disposition 06 · provenance).',
-    ri_h2: 'Implémentation de référence',
-    ri_li1: '<a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/integrity.py">integrity.py</a> — bibliothèque de Merkle à fonctions pures (RFC 6962). Domaine public.',
-    ri_li2: '<a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/scripts/build_integrity_root.py">build_integrity_root.py</a> — construit quotidiennement à partir de la base FTS5, intégrable dans toute pipeline de publication.',
-    footer_line: 'OpenCaseLaw.ch · Jeu de données ouvert des décisions judiciaires suisses · Code MIT, Données CC0'
-  },
-  it: {
-    kicker: 'Disposizione 06 · In produzione dal 2026-05-21',
-    h1: 'Integrità / Provenienza',
-    lead: 'A ogni pubblicazione del corpus calcoliamo una <strong>radice di Merkle</strong> su tutte le decisioni. La radice viene committata nel repository pubblico e (una volta attivata) ancorata sulla blockchain Bitcoin tramite <a href="https://opentimestamps.org/">OpenTimestamps</a>. Ogni singola decisione è così verificabile crittograficamente — anche qualora un giorno opencaselaw.ch non dovesse più esistere.',
-    cur_h2: 'Radice attuale',
-    cur_sub: 'Ultimo periodo di pubblicazione',
-    cur_link_manifest: 'latest.json (manifesto)',
-    cur_link_hex: 'latest.root (solo hex)',
-    cur_link_ots: 'latest.root.ots (ancora OpenTimestamps)',
-    meta_date: 'Data',
-    meta_decisions: 'Decisioni',
-    meta_algorithm: 'Algoritmo',
-    prom_h2: 'Cosa promette la radice',
-    prom_p1: 'Per ogni singola decisione viene formato un <strong>valore di foglia</strong> secondo il seguente schema e sottoposto a hash SHA-256:',
-    prom_p2: 'Le foglie vengono lette in un <strong>albero di Merkle RFC-6962</strong> in ordine alfabetico per <code>decision_id</code> (stessa convenzione di Certificate Transparency). La radice è di 32 byte (64 caratteri hex) e si impegna su ogni singola decisione con questo <code>decision_id</code>, questo <code>content_hash</code>, questi identificatori, a questa data.',
-    prom_p3: 'Con la radice + un <em>percorso di prova di inclusione</em> (log₂ N hash fratelli, ~20 per 972k decisioni) un verificatore può dimostrare crittograficamente che una determinata decisione faceva parte del corpus — senza fidarsi di opencaselaw.ch.',
-    vp_h2: 'Percorso di verifica',
-    vp_s1: 'Disponete di una decisione con <code>decision_id</code>, <code>content_hash</code>, <code>cli:ch</code>, <code>ECLI</code>, <code>decision_date</code>.',
-    vp_s2: 'Formate la foglia: <code>decision_id\\ncli:ch\\nECLI\\ncontent_hash\\ndecision_date</code>',
-    vp_s3: 'Sottoponete la foglia a hash: <code>SHA-256(0x00 || leaf_bytes)</code>',
-    vp_s4: 'Recuperate il percorso di prova di inclusione (endpoint API — roadmap) per questa decisione a una determinata data.',
-    vp_s5: 'Ricostruite la radice: ogni passo nel percorso di prova è un <code>SHA-256(0x01 || left || right)</code>.',
-    vp_s6: 'Confrontate la radice ricostruita con <code>docs/integrity/&lt;data&gt;.root</code> nel repository Git.',
-    vp_s7: 'Facoltativo: verificate la prova OpenTimestamps <code>.ots</code> contro la blockchain Bitcoin — la radice risulta così esistita <em>a un determinato momento</em>.',
-    rm_h2: 'Roadmap',
-    rm_li1: '<strong>In produzione</strong>: radice di Merkle quotidiana + manifesto pubblicati come <code>docs/integrity/&lt;YYYY-MM-DD&gt;.{root,json}</code>.',
-    rm_li2: '<strong>In produzione</strong>: ancora <a href="https://opentimestamps.org/">OpenTimestamps</a> tramite <code>ots stamp</code>. Il file <code>.root.ots</code> viene depositato ogni giorno accanto alla radice e può essere consolidato in una prova pienamente ancorata a Bitcoin dopo ~1 blocco Bitcoin (1–6 h) (<code>ots upgrade</code>).',
-    rm_li3: '<strong>In produzione</strong>: l\'endpoint API <code>GET <a href="/api/integrity/bge_BGE_140_III_86">/api/integrity/&lt;decision_id&gt;</a></code> fornisce il percorso di prova di inclusione RFC-6962 di una decisione contro la radice più recente. Memoizzazione pigra dei sotto-alberi (~3 s alla prima chiamata, poi &lt;1 ms per prova).',
-    rm_li4: '<strong>Facoltativo</strong>: ancoraggio incrociato verso altri servizi di marca temporale (Sigsum, RFC 3161 TSA) per una difesa in profondità.',
-    rm_p1: 'Fa parte degli <a href="/standards/">Open Law Standards</a> (disposizione 06 · provenienza).',
-    ri_h2: 'Implementazione di riferimento',
-    ri_li1: '<a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/integrity.py">integrity.py</a> — libreria di Merkle a funzioni pure (RFC 6962). Di pubblico dominio.',
-    ri_li2: '<a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/scripts/build_integrity_root.py">build_integrity_root.py</a> — costruito quotidianamente dalla banca dati FTS5, integrabile in qualsiasi pipeline di pubblicazione.',
-    footer_line: 'OpenCaseLaw.ch · Set di dati aperto delle decisioni giudiziarie svizzere · Codice MIT, Dati CC0'
-  },
-  rm: {
-    kicker: 'Disposiziun 06 · En producziun a partir dals 2026-05-21',
-    h1: 'Integritad / Provegnientscha',
-    lead: 'A mintga publicaziun dal corpus calculain nus ina <strong>ragisch da Merkle</strong> sur tut las decisiuns. La ragisch vegn committada en il repositori public e (uschespert ch\'i è activà) ancorada sin la blockchain Bitcoin via <a href="https://opentimestamps.org/">OpenTimestamps</a>. Uschia è mintga singula decisiun verifitgabla criptograficamain — er sche opencaselaw.ch na duess ina giada betg pli exister.',
-    cur_h2: 'Ragisch actuala',
-    cur_sub: 'Ultima perioda da publicaziun',
-    cur_link_manifest: 'latest.json (manifest)',
-    cur_link_hex: 'latest.root (mo hex)',
-    cur_link_ots: 'latest.root.ots (ancura OpenTimestamps)',
-    meta_date: 'Data',
-    meta_decisions: 'Decisiuns',
-    meta_algorithm: 'Algoritmus',
-    prom_h2: 'Tge che la ragisch empermetta',
-    prom_p1: 'Per mintga singula decisiun vegn furmà in <strong>valur da feglia</strong> tenor il suandant schema e fatg in hash SHA-256:',
-    prom_p2: 'Las feglias vegnan legidas en in <strong>arbre da Merkle RFC-6962</strong> en urden alfabetic tenor <code>decision_id</code> (la medema convenziun sco Certificate Transparency). La ragisch è 32 bytes (64 caracters hex) e s\'engascha sin mintga singula decisiun cun quest <code>decision_id</code>, quest <code>content_hash</code>, quests identificaturs, a questa data.',
-    prom_p3: 'Cun la ragisch + in <em>percurs da cumprova d\'inclusiun</em> (log₂ N hashs fragliuns, ~20 per 972k decisiuns) po in verifitgader cumprovar criptograficamain ch\'ina tscherta decisiun era part dal corpus — senza confidar ad opencaselaw.ch.',
-    vp_h2: 'Percurs da verificaziun',
-    vp_s1: 'Vus avais ina decisiun cun <code>decision_id</code>, <code>content_hash</code>, <code>cli:ch</code>, <code>ECLI</code>, <code>decision_date</code>.',
-    vp_s2: 'Vus furmais la feglia: <code>decision_id\\ncli:ch\\nECLI\\ncontent_hash\\ndecision_date</code>',
-    vp_s3: 'Vus fais in hash da la feglia: <code>SHA-256(0x00 || leaf_bytes)</code>',
-    vp_s4: 'Vus retgivais il percurs da cumprova d\'inclusiun (endpoint API — roadmap) per questa decisiun ad ina tscherta data.',
-    vp_s5: 'Vus reconstruis la ragisch: mintga pass en il percurs da cumprova è in <code>SHA-256(0x01 || left || right)</code>.',
-    vp_s6: 'Vus cumparegliais la ragisch reconstruida cun <code>docs/integrity/&lt;data&gt;.root</code> en il repositori Git.',
-    vp_s7: 'Opziunal: vus verifitgais la cumprova OpenTimestamps <code>.ots</code> cunter la blockchain Bitcoin — uschia vala la ragisch sco existida <em>ad in tschert mument</em>.',
-    rm_h2: 'Roadmap',
-    rm_li1: '<strong>En producziun</strong>: ragisch da Merkle mintga di + manifest publitgads sco <code>docs/integrity/&lt;YYYY-MM-DD&gt;.{root,json}</code>.',
-    rm_li2: '<strong>En producziun</strong>: ancura <a href="https://opentimestamps.org/">OpenTimestamps</a> via <code>ots stamp</code>. La datoteca <code>.root.ots</code> vegn deponida mintga di sper la ragisch e po vegnir consolidada en ina cumprova entiramain ancorada en Bitcoin suenter ~1 bloc Bitcoin (1–6 uras) (<code>ots upgrade</code>).',
-    rm_li3: '<strong>En producziun</strong>: l\'endpoint API <code>GET <a href="/api/integrity/bge_BGE_140_III_86">/api/integrity/&lt;decision_id&gt;</a></code> furnescha il percurs da cumprova d\'inclusiun RFC-6962 d\'ina decisiun cunter la ragisch la pli actuala. Memoisaziun paronza dals sutarbres (~3 s al emprim clom, lura &lt;1 ms per cumprova).',
-    rm_li4: '<strong>Opziunal</strong>: ancoraziun crusada vers auters servetschs da marcas temporalas (Sigsum, RFC 3161 TSA) per ina defensiun en profunditad.',
-    rm_p1: 'Quai è part dals <a href="/standards/">Open Law Standards</a> (disposiziun 06 · provegnientscha).',
-    ri_h2: 'Implementaziun da referenza',
-    ri_li1: '<a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/integrity.py">integrity.py</a> — biblioteca da Merkle cun funcziuns piras (RFC 6962). Public-domain.',
-    ri_li2: '<a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/scripts/build_integrity_root.py">build_integrity_root.py</a> — construì mintga di da la banca da datas FTS5, integrabel en mintga pipeline da publicaziun.',
-    footer_line: 'OpenCaseLaw.ch · Set da datas avert da las decisiuns giudicialas svizras · Code MIT, Datas CC0'
-  },
-  en: {
-    kicker: 'Provision 06 · Live from 2026-05-21',
-    h1: 'Integrity / Provenance',
-    lead: 'At every publish of the corpus we compute a <strong>Merkle root</strong> over all decisions. The root is committed to the public repository and (once enabled) anchored on the Bitcoin blockchain via <a href="https://opentimestamps.org/">OpenTimestamps</a>. Every single decision is thus cryptographically verifiable — even if opencaselaw.ch should one day no longer exist.',
-    cur_h2: 'Current root',
-    cur_sub: 'Latest publish period',
-    cur_link_manifest: 'latest.json (manifest)',
-    cur_link_hex: 'latest.root (hex only)',
-    cur_link_ots: 'latest.root.ots (OpenTimestamps anchor)',
-    meta_date: 'Date',
-    meta_decisions: 'Decisions',
-    meta_algorithm: 'Algorithm',
-    prom_h2: 'What the root promises',
-    prom_p1: 'For each individual decision, a <strong>leaf value</strong> is formed according to the following schema and SHA-256-hashed:',
-    prom_p2: 'The leaves are read into an <strong>RFC-6962 Merkle tree</strong> in alphabetical order by <code>decision_id</code> (same convention as Certificate Transparency). The root is 32 bytes (64 hex characters) and commits to every individual decision with this <code>decision_id</code>, this <code>content_hash</code>, these identifiers, on this date.',
-    prom_p3: 'With the root + an <em>inclusion proof path</em> (log₂ N sibling hashes, ~20 for 972k decisions) a verifier can cryptographically prove that a given decision was part of the corpus — without trusting opencaselaw.ch.',
-    vp_h2: 'Verification path',
-    vp_s1: 'You have a decision with <code>decision_id</code>, <code>content_hash</code>, <code>cli:ch</code>, <code>ECLI</code>, <code>decision_date</code>.',
-    vp_s2: 'You form the leaf: <code>decision_id\\ncli:ch\\nECLI\\ncontent_hash\\ndecision_date</code>',
-    vp_s3: 'You hash the leaf: <code>SHA-256(0x00 || leaf_bytes)</code>',
-    vp_s4: 'You fetch the inclusion proof path (API endpoint — roadmap) for this decision at a given date.',
-    vp_s5: 'You reconstruct the root: each step in the proof path is a <code>SHA-256(0x01 || left || right)</code>.',
-    vp_s6: 'You compare the reconstructed root with <code>docs/integrity/&lt;date&gt;.root</code> in the Git repository.',
-    vp_s7: 'Optional: you verify the OpenTimestamps <code>.ots</code> proof against the Bitcoin blockchain — the root is then deemed to have existed <em>at a given point in time</em>.',
-    rm_h2: 'Roadmap',
-    rm_li1: '<strong>Live</strong>: daily Merkle root + manifest published as <code>docs/integrity/&lt;YYYY-MM-DD&gt;.{root,json}</code>.',
-    rm_li2: '<strong>Live</strong>: <a href="https://opentimestamps.org/">OpenTimestamps</a> anchor via <code>ots stamp</code>. The <code>.root.ots</code> file is placed next to the root daily and can be upgraded to a fully Bitcoin-anchored proof after ~1 Bitcoin block (1–6 h) (<code>ots upgrade</code>).',
-    rm_li3: '<strong>Live</strong>: API endpoint <code>GET <a href="/api/integrity/bge_BGE_140_III_86">/api/integrity/&lt;decision_id&gt;</a></code> delivers the RFC-6962 inclusion proof path of a decision against the most recent root. Lazily loaded sub-tree memoisation (~3 s first call, then &lt;1 ms per proof).',
-    rm_li4: '<strong>Optional</strong>: cross-anchoring to further timestamping services (Sigsum, RFC 3161 TSA) for defence in depth.',
-    rm_p1: 'This is part of the <a href="/standards/">Open Law Standards</a> (provision 06 · provenance).',
-    ri_h2: 'Reference implementation',
-    ri_li1: '<a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/integrity.py">integrity.py</a> — pure-function Merkle library (RFC 6962). Public domain.',
-    ri_li2: '<a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/scripts/build_integrity_root.py">build_integrity_root.py</a> — built daily from the FTS5 database, integrable into any publish pipeline.',
-    footer_line: 'OpenCaseLaw.ch · Open dataset of Swiss court decisions · Code MIT, Data CC0'
+  onReady:function(O){
+    var locale={de:'de-CH',fr:'fr-CH',it:'it-CH',rm:'de-CH',en:'en-CH'}[O.lang]||'de-CH';
+    fetch('/integrity/latest.json').then(function(r){return r.ok?r.json():null;}).then(function(d){
+      if(!d)return;
+      document.getElementById('latest-root').textContent=d.root||'—';
+      var n=(d.decisions_count!=null)?Number(d.decisions_count).toLocaleString(locale):'—';
+      document.getElementById('root-meta').textContent=
+        O.t('meta_date')+': '+(d.date||'—')+'  ·  '+O.t('meta_decisions')+': '+n+'  ·  '+O.t('meta_algorithm')+': '+(d.algorithm||'SHA-256 / RFC 6962');
+    }).catch(function(){});
   }
-};
+});
 </script>
-<script>
-/* Rich-text-capable in-place translator (mirrors the /standards/ and /mcp/
-   page mechanism): values containing an HTML tag are injected via innerHTML,
-   plain values via textContent. Exposed as window.applyI18n so the shared
-   switcher IIFE can re-translate the body when the user picks a language.
-   Also re-renders the dynamically loaded root-meta line. */
-(function () {
-  function _detectLang() {
-    var qs = (location.search.match(/[?&]lang=([a-z]{2})/) || [])[1];
-    var stored = null;
-    try { stored = localStorage.getItem('lang'); } catch (_) {}
-    var html = (document.documentElement.lang || '').slice(0, 2);
-    return qs || stored || html || 'de';
-  }
-  window.curLang = _detectLang();
-  function t(key) {
-    var dict = window.I18N[window.curLang] || window.I18N.de;
-    return dict[key] != null ? dict[key] : (window.I18N.de[key] != null ? window.I18N.de[key] : key);
-  }
-  window.applyI18n = function () {
-    document.documentElement.lang = window.curLang;
-    document.querySelectorAll('[data-t]').forEach(function (el) {
-      var val = t(el.dataset.t);
-      if (/<[a-z]/i.test(val)) el.innerHTML = val; else el.textContent = val;
-    });
-    if (typeof window._renderRootMeta === 'function') {
-      try { window._renderRootMeta(); } catch (_) {}
-    }
-  };
-  window.applyI18n();
-})();
-</script>
-<script>
-/* Shared lang-switch wiring (mirrors /standards/, /ueber/ and /mcp/).
-   - Reads locale from ?lang=, then localStorage, then <html lang>.
-   - Translates nav labels via NAV_I18N (keyed by data-nav-key).
-   - Highlights the matching .lang-sw [data-l] item with .on.
-   - Click is preventDefault'd so the user stays on the current page; the
-     choice persists via localStorage, and window.applyI18n() re-translates
-     the body in place. */
-(function () {
-  var NAV_I18N = {
-    search:    { de: 'Suche',     fr: 'Recherche', it: 'Ricerca',   rm: 'Tschertga', en: 'Search' },
-    courts:    { de: 'Gerichte',  fr: 'Tribunaux', it: 'Tribunali', rm: 'Dretgiras', en: 'Courts' },
-    laws:      { de: 'Gesetze',   fr: 'Lois',      it: 'Leggi',     rm: 'Leschas',   en: 'Laws' },
-    word:      { de: 'Word',      fr: 'Word',      it: 'Word',      rm: 'Word',      en: 'Word' },
-    mcp:       { de: 'MCP',       fr: 'MCP',       it: 'MCP',       rm: 'MCP',       en: 'MCP' },
-    api:       { de: 'API',       fr: 'API',       it: 'API',       rm: 'API',       en: 'API' },
-    standards: { de: 'Standards', fr: 'Standards', it: 'Standard',  rm: 'Standards', en: 'Standards' },
-    integrity: { de: 'Integrität', fr: 'Intégrité', it: 'Integrità', rm: 'Integritad', en: 'Integrity' },
-    quality:   { de: 'Qualität',  fr: 'Qualité',   it: 'Qualità',   rm: 'Qualitad',  en: 'Quality' }
-  };
-
-  function applyNavLang(lang) {
-    document.querySelectorAll('header.site nav > a[data-nav-key]').forEach(function (a) {
-      var dict = NAV_I18N[a.dataset.navKey];
-      if (dict && dict[lang]) a.textContent = dict[lang];
-    });
-    document.documentElement.setAttribute('lang', lang);
-  }
-
-  var qs = (location.search.match(/[?&]lang=([a-z]{2})/) || [])[1];
-  var stored = null;
-  try { stored = localStorage.getItem('lang'); } catch (_) {}
-  var html = (document.documentElement.lang || '').slice(0, 2);
-  var lang = qs || stored || html || 'de';
-  if (qs) { try { localStorage.setItem('lang', qs); } catch (_) {} }
-  applyNavLang(lang);
-  document.querySelectorAll('.lang-sw [data-l]').forEach(function (el) {
-    el.classList.toggle('on', el.dataset.l === lang);
-    el.addEventListener('click', function (e) {
-      e.preventDefault();
-      var l = el.dataset.l;
-      try { localStorage.setItem('lang', l); } catch (_) {}
-      document.querySelectorAll('.lang-sw [data-l]').forEach(function (b) {
-        b.classList.toggle('on', b.dataset.l === l);
-      });
-      applyNavLang(l);
-      if (typeof window.applyI18n === 'function') {
-        window.curLang = l;
-        try { window.applyI18n(); } catch (_) {}
-      }
-    });
-  });
-})();
-</script>
-<script>
-/* Mobile nav-toggle: <720px shows a hamburger that toggles body.nav-open. */
-(function () {
-  var btn = document.getElementById('nav-toggle');
-  if (!btn) return;
-  var nav = document.querySelector('header.site nav');
-  function setOpen(open) {
-    document.body.classList.toggle('nav-open', open);
-    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-  }
-  btn.addEventListener('click', function () {
-    setOpen(!document.body.classList.contains('nav-open'));
-  });
-  if (nav) nav.querySelectorAll('a').forEach(function (a) {
-    a.addEventListener('click', function () { setOpen(false); });
-  });
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') setOpen(false);
-  });
-})();
-</script>
-
 </body>
 </html>

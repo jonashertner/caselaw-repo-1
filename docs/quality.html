@@ -1,684 +1,512 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="google-site-verification" content="5eTv5mgNKw8M8vENzS4KPG4aJKYm_zKZJhL3TbQpOGs">
-<title>Data quality | OpenCaseLaw</title>
+<title>Data quality — OpenCaseLaw</title>
 <meta name="description" content="Live data-quality report for the OpenCaseLaw corpus. Updated on every nightly publish; gates the pipeline on critical regressions.">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0c0c0d" media="(prefers-color-scheme: dark)">
 <link rel="canonical" href="https://opencaselaw.ch/quality.html">
-<meta name="robots" content="index, follow">
-<!-- Shared design system: tokens, fonts, header/footer chrome.
-     Inline styles below only carry dashboard-specific layout. -->
-<link rel="stylesheet" href="/static/css/design-system.css?v=22">
-<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="alternate" hreflang="de" href="https://opencaselaw.ch/quality.html?lang=de">
+<link rel="alternate" hreflang="fr" href="https://opencaselaw.ch/quality.html?lang=fr">
+<link rel="alternate" hreflang="it" href="https://opencaselaw.ch/quality.html?lang=it">
+<link rel="alternate" hreflang="rm" href="https://opencaselaw.ch/quality.html?lang=rm">
+<link rel="alternate" hreflang="en" href="https://opencaselaw.ch/quality.html?lang=en">
+<link rel="alternate" hreflang="x-default" href="https://opencaselaw.ch/quality.html">
+<link rel="icon" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add('js');</script>
+<link rel="stylesheet" href="/static/css/site.css?v=1">
 <style>
-/* Tokens come from design-system.css. */
-* { box-sizing: border-box; }
-html { background: #fff; }
-/* Use design-system tokens so dark mode + brand accent flow through. */
-body {
-    margin: 0;
-    -webkit-font-smoothing: antialiased;
-    font-feature-settings: "kern" 1, "liga" 1, "tnum" 1;
-}
-main.container { max-width: var(--max-w); padding-top: var(--s-6); padding-bottom: var(--s-7); }
-.lede { color: var(--text-2); }
-h1 {
-    font-size: clamp(28px, 4vw, 36px);
-    font-weight: 100;
-    letter-spacing: -0.012em;
-    line-height: 1.1;
-    margin: 0 0 0.4rem 0;
-}
-.lede {
-    font-size: var(--t-base);
-    color: var(--text-2);
-    margin: 0 0 2.5rem 0; max-width: 640px;
-    line-height: 1.5;
-}
-.summary {
-    display: grid;
-    /* Auto-fit prevents the 4-cell jam at 600-800px where the long labels
-       break to 3 lines while the numbers compete for ~140px. */
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: var(--s-4);
-    margin: 0 0 3.5rem 0;
-}
-.summary-cell { padding: 0.4rem 0; }
-.summary-num {
-    font-family: var(--f-mono);
-    font-size: clamp(28px, 5vw, 44px);
-    font-weight: 400; line-height: 1; letter-spacing: -0.02em;
-    font-feature-settings: "tnum" 1;
-    margin-bottom: 0.4rem;
-    color: var(--text);
-}
-.summary-label { font-size: var(--t-sm); font-weight: 400; color: var(--text-2); }
-.summary-num.crit { color: var(--text); }
-.summary-num.warn { color: var(--text-2); }
-/* Active-improvement banner — always visible (independent of gate state),
-   communicates that the DB is being actively worked on while MCP workers
-   continue to serve the last successful build. */
-.active-banner {
-    display: flex; align-items: flex-start; gap: 0.85em;
-    margin: 1.5rem 0 2rem; padding: 1em 1.2em;
-    background: color-mix(in srgb, var(--accent) 6%, transparent);
-    border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
-    border-radius: 8px;
-    font-size: var(--t-sm); line-height: 1.55; color: var(--text);
-    max-width: 720px;
-}
-.active-banner-icon {
-    color: var(--accent); font-size: 18px; flex: 0 0 auto;
-    line-height: 1;
-}
-.active-banner strong { color: var(--text); display: block; margin-bottom: 0.25em; }
-.active-banner a { color: var(--accent); }
+  /* ── Active-improvement banner ── */
+  .banner{display:flex;align-items:flex-start;gap:12px;margin:36px 0 0;padding:16px 18px;
+    background:color-mix(in srgb,var(--red) 6%,transparent);
+    border:1px solid color-mix(in srgb,var(--red) 22%,transparent);border-radius:10px;
+    font-size:14px;line-height:1.55;color:var(--t1);max-width:var(--maxw-prose)}
+  .banner-ic{color:var(--red);font-size:17px;flex:0 0 auto;line-height:1.2}
+  .banner strong{color:var(--t1);display:block;margin-bottom:3px}
+  .banner a{color:var(--red);text-decoration:underline;text-underline-offset:2px}
 
-.gate {
-    display: flex; flex-direction: column; gap: 0.35em;
-    margin: 0 0 3rem 0; font-size: 14px; font-weight: 400;
-}
-.gate-row {
-    display: inline-flex; align-items: center; gap: 0.6em;
-}
-.gate-dot {
-    width: 10px; height: 10px; border-radius: 50%;
-    background: var(--text); flex: 0 0 auto;
-}
-.gate.ok      .gate-dot { background: var(--green); }
-.gate.blocked .gate-dot { background: var(--surface); border: 1.5px solid var(--accent); }
-.gate.stale   .gate-dot { background: var(--surface); border: 1.5px dashed var(--text-3); }
-.gate-sub {
-    font-size: var(--t-sm); color: var(--text-2); padding-left: 1.4em;
-    max-width: 640px;
-}
-.gate.stale  .gate-sub { color: var(--accent); }
-.gate.blocked .gate-sub { color: var(--accent); }
-.tabs {
-    display: flex; gap: var(--s-5); margin: 0 0 2rem 0;
-    font-size: var(--t-md); font-weight: 400;
-    flex-wrap: wrap;
-}
-.tab { cursor: pointer; padding: 0.2em 0; color: var(--text-2); user-select: none; }
-.tab.active { color: var(--text); font-weight: 500; border-bottom: 2px solid var(--accent); }
-.tab-count {
-    font-family: var(--f-mono); font-size: var(--t-xs); color: var(--text-3);
-    margin-left: 0.4em;
-}
-.category { margin: 0 0 2.4rem 0; }
-.category-name {
-    font-size: var(--t-xs); font-weight: 500; text-transform: uppercase;
-    letter-spacing: 0.08em; color: var(--text-3); margin: 0 0 0.6rem 0;
-}
-.checks { display: grid; grid-template-columns: 1fr; gap: 0; }
-.check {
-    display: grid; grid-template-columns: 80px minmax(0, 1fr) minmax(96px, 140px);
-    gap: var(--s-4); padding: 0.55rem 0; align-items: baseline;
-    font-size: var(--t-base);
-    border-bottom: 1px solid var(--border);
-}
-.check > * { min-width: 0; }
-.check:last-child { border-bottom: none; }
-.check-status {
-    font-family: var(--f-mono); font-size: var(--t-xs); font-weight: 500;
-    letter-spacing: 0.04em; padding-top: 1px;
-}
-.check-status.pass-info { color: var(--text-3); }
-.check-status.pass-warn { color: var(--text-2); }
-.check-status.pass-crit { color: var(--green); }
-.check-status.fail-info { color: var(--text-3); }
-.check-status.fail-warn { color: #b56b1f; }
-.check-status.fail-crit { color: var(--accent); }
-.check-name {
-    font-family: var(--f-mono); font-size: var(--t-sm); color: var(--text-2);
-    overflow-wrap: anywhere;
-}
-.check-message { font-size: var(--t-md); color: var(--text-2); margin-top: 0.15em; overflow-wrap: anywhere; }
-.check-metric {
-    font-family: var(--f-mono); font-size: var(--t-sm); color: var(--text-2);
-    text-align: right; font-feature-settings: "tnum" 1;
-    overflow-wrap: anywhere;
-}
-.check-detail {
-    grid-column: 1 / -1; margin: 0.5rem 0 0.4rem 0;
-    padding: 0.6rem 0 0.6rem 80px;
-    font-size: var(--t-sm); color: var(--text-2); display: none;
-}
-.check-detail.open { display: block; }
-.check-detail .advice { margin-bottom: 0.6em; }
-.check-detail .samples { font-family: var(--f-mono); font-size: var(--t-xs); }
-.check-detail .samples pre {
-    margin: 0.3em 0; padding: 0; background: none;
-    white-space: pre-wrap; word-break: break-all; color: var(--text-2);
-}
-.expand {
-    grid-column: 2 / 3; cursor: pointer; color: var(--text-3);
-    font-size: var(--t-sm); margin-top: 0.2em; user-select: none;
-}
-.expand:hover { color: var(--text); }
-.report-meta {
-    margin-top: var(--s-7);
-    padding-top: var(--s-4);
-    border-top: 1px solid var(--border);
-    font-size: var(--t-sm); color: var(--text-3); line-height: 1.6;
-}
-.report-meta p { margin: 0.4rem 0; }
+  /* ── Gate badge (three-state) ── */
+  .gate{display:flex;flex-direction:column;gap:6px;margin:32px 0 0;max-width:var(--maxw-prose)}
+  .gate-row{display:inline-flex;align-items:center;gap:10px;font-size:15px;font-weight:500;color:var(--t1)}
+  .gate-dot{width:10px;height:10px;border-radius:50%;background:var(--t3);flex:0 0 auto}
+  .gate.ok      .gate-dot{background:var(--green)}
+  .gate.blocked .gate-dot{background:var(--paper);border:1.5px solid var(--red)}
+  .gate.stale   .gate-dot{background:var(--paper);border:1.5px dashed var(--t3)}
+  .gate-sub{font-size:13.5px;color:var(--t2);padding-left:20px;line-height:1.55}
+  .gate.stale .gate-sub,.gate.blocked .gate-sub{color:var(--red)}
 
-@media (max-width: 720px) {
-    .check { grid-template-columns: 70px minmax(0, 1fr); }
-    .check-metric { grid-column: 2; text-align: left; padding-top: 0.2em; }
-    .check-detail { padding-left: 70px; }
-}
+  /* ── Filter tabs ── */
+  .qtabs{display:inline-flex;gap:3px;background:var(--paper-2);border:1px solid var(--line);border-radius:9px;
+    padding:4px;flex-wrap:wrap;margin:40px 0 0}
+  .qtabs button{display:inline-flex;align-items:center;gap:7px;padding:7px 14px;font:inherit;font-size:13px;
+    background:transparent;color:var(--t2);border:none;border-radius:6px;cursor:pointer;
+    transition:color .15s,background .15s;white-space:nowrap}
+  .qtabs button:hover{color:var(--t1)}
+  .qtabs button.on{background:var(--paper);color:var(--t1);box-shadow:0 1px 2px var(--line-2);font-weight:500}
+  .qtabs .tab-count{font-family:var(--f-mono);font-size:11px;color:var(--t3)}
+  .qtabs button.on .tab-count{color:var(--red)}
+
+  /* ── Check categories + rows ── */
+  .category{margin-top:36px}
+  .category-name{font-family:var(--f-mono);font-size:11px;font-weight:600;text-transform:uppercase;
+    letter-spacing:.08em;color:var(--t3);margin:0 0 8px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  .checks{display:grid;grid-template-columns:1fr}
+  .check{display:grid;grid-template-columns:78px minmax(0,1fr) minmax(96px,150px);
+    gap:18px;padding:13px 0;align-items:baseline;font-size:15px;border-bottom:1px solid var(--line-2)}
+  .check>*{min-width:0}
+  .check:last-child{border-bottom:none}
+  .check-status{font-family:var(--f-mono);font-size:11px;font-weight:600;letter-spacing:.04em;padding-top:1px}
+  .check-status.pass-info{color:var(--t3)}
+  .check-status.pass-warn{color:var(--t2)}
+  .check-status.pass-crit{color:var(--green)}
+  .check-status.fail-info{color:var(--t3)}
+  .check-status.fail-warn{color:#b56b1f}
+  .check-status.fail-crit{color:var(--red)}
+  .check-name{font-family:var(--f-mono);font-size:13px;color:var(--t2);overflow-wrap:anywhere}
+  .check-message{font-size:14px;color:var(--t2);margin-top:3px;overflow-wrap:anywhere;line-height:1.5}
+  .check-metric{font-family:var(--f-mono);font-size:13px;color:var(--t2);text-align:right;
+    font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+  .check-detail{grid-column:1/-1;margin:8px 0 6px;padding:10px 0 10px 78px;
+    font-size:13px;color:var(--t2);display:none}
+  .check-detail.open{display:block}
+  .check-detail .advice{margin-bottom:9px;line-height:1.55}
+  .check-detail .advice strong{color:var(--t1)}
+  .check-detail .samples{font-family:var(--f-mono);font-size:11px}
+  .check-detail .samples pre{margin:4px 0;padding:0;background:none;white-space:pre-wrap;
+    word-break:break-all;color:var(--t2)}
+  .expand{cursor:pointer;color:var(--t3);font-size:13px;margin-top:3px;user-select:none;display:inline-block}
+  .expand:hover{color:var(--red)}
+
+  /* ── Report meta ── */
+  .report-meta{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);
+    font-size:13px;color:var(--t3);line-height:1.7}
+  .report-meta p{margin:4px 0}
+  .report-meta a{color:var(--red);text-decoration:underline;text-underline-offset:2px}
+  .load-err{color:var(--red);font-weight:500}
+
+  @media(max-width:720px){
+    .check{grid-template-columns:64px minmax(0,1fr);gap:12px}
+    .check-metric{grid-column:2;text-align:left;padding-top:3px}
+    .check-detail{padding-left:64px}
+  }
 </style>
 </head>
 <body>
+<a href="#main" class="skip" data-t="skip">Skip to content</a>
+<div data-nav></div>
 
-<a class="skip-link" href="#main">Skip to content</a>
+<main id="main">
+  <section class="page-head first">
+    <div class="wrap">
+      <p class="page-kicker"><b data-t="kicker">Operational · live</b></p>
+      <h1 class="page-h1" data-t="h1">Data quality</h1>
+      <p class="page-lead" id="lede">
+        Every nightly publish runs <span id="check-count">…</span>
+        <span data-t="lede_body">integrity, schema and content checks against the full corpus before users see new data. A critical regression blocks the publish; users keep the previous successful corpus until investigation. The badge below distinguishes publish safe (today's data is live), publish blocked (gate fired today, refused to push), and quality report stale (gate has not run recently — corpus is correct but ageing).</span>
+        <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/quality/checks" data-t="methodology">Methodology</a>.
+      </p>
 
-<!-- Shared site header (matches / and /word) so the user keeps the same
-     mental model when navigating between landing, ops dashboards, and
-     decision pages. -->
-<header class="site">
-  <div class="container row">
-    <a class="brand" href="/">
-      <span class="logo">+</span> <span class="wordmark">opencaselaw.ch</span>
-    </a>
-    <nav id="primary-nav" aria-label="Primary">
-      <a href="/search/" data-nav-key="search">Search</a>
-      <a href="/courts/" data-nav-key="courts">Courts</a>
-      <a href="/laws/" data-nav-key="laws">Laws</a>
-      <a href="/word/" data-nav-key="word">Word</a>
-      <a href="/mcp/" data-nav-key="mcp">MCP</a>
-      <a href="/api/" data-nav-key="api">API</a>
-      <a href="/standards/" data-nav-key="standards">Standards</a>
-      <a href="/integrity/" data-nav-key="integrity">Integrity</a>
-      <a href="/quality.html" class="active" data-nav-key="quality">Quality</a>
-      <span class="lang-sw" role="group" aria-label="Language">
-        <a href="/?lang=de" data-l="de">DE</a>
-        <a href="/?lang=fr" data-l="fr">FR</a>
-        <a href="/?lang=it" data-l="it">IT</a>
-        <a href="/?lang=rm" data-l="rm">RM</a>
-        <a href="/?lang=en" data-l="en">EN</a>
-      </span>
-    </nav>
-    <button class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="primary-nav">
-      <svg class="icon-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
-      <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M6 18L18 6"/></svg>
-    </button>
-  </div>
-</header>
+      <div class="banner" role="status">
+        <span class="banner-ic" aria-hidden="true">⚙</span>
+        <div>
+          <strong data-t="banner_h">Database actively being improved to handle a growing number of requests.</strong>
+          <span data-t="banner_body">The MCP workers at</span>
+          <a href="https://mcp.opencaselaw.ch">mcp.opencaselaw.ch</a>
+          <span data-t="banner_body2">continue to function — search, citation graph, statute lookup and case briefs all serve the last successful build while we catch up.</span>
+        </div>
+      </div>
 
-<main class="container">
-<p class="eyebrow" data-i18n="hero.eyebrow">Operational · live</p>
-<h1 data-i18n="hero.h1">Data quality</h1>
-
-<div class="active-banner" role="status">
-  <span class="active-banner-icon" aria-hidden="true">⚙</span>
-  <div>
-    <strong>Database actively being improved to handle a growing number of requests.</strong>
-    The MCP workers at <a href="https://mcp.opencaselaw.ch">mcp.opencaselaw.ch</a>
-    continue to function — search, citation graph, statute lookup and case briefs
-    all serve the last successful build while we catch up.
-  </div>
-</div>
-
-<p class="lede">
-    Every nightly publish runs <span id="check-count">…</span> integrity, schema and content checks
-    against the full corpus before users see new data. A critical regression
-    blocks the publish; users keep the previous successful corpus until investigation.
-    The badge below distinguishes <em>publish safe</em> (today's data is live),
-    <em>publish blocked</em> (gate fired today, refused to push), and
-    <em>quality report stale</em> (gate has not run recently — corpus is correct
-    but ageing).
-    <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/quality/checks">Methodology</a>.
-</p>
-
-<div id="gate" class="gate">
-    <div class="gate-row">
-        <span class="gate-dot"></span>
-        <span id="gate-text">Loading…</span>
+      <div id="gate" class="gate">
+        <div class="gate-row">
+          <span class="gate-dot"></span>
+          <span id="gate-text" data-t="loading">Loading…</span>
+        </div>
+        <div id="gate-sub" class="gate-sub"></div>
+      </div>
     </div>
-    <div id="gate-sub" class="gate-sub"></div>
-</div>
+  </section>
 
-<div class="summary">
-    <div class="summary-cell">
-        <div class="summary-num" id="num-total">—</div>
-        <div class="summary-label">Total checks</div>
+  <section class="wrap" style="padding-bottom:clamp(64px,9vw,112px)">
+    <div class="stats" id="summary">
+      <div class="stat">
+        <div class="stat-n" id="num-total">—</div>
+        <div class="stat-l" data-t="s_total">Total checks</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n" id="num-passed">—</div>
+        <div class="stat-l" data-t="s_passed">Passed</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n" id="num-crit">—</div>
+        <div class="stat-l" data-t="s_crit">Critical (blocks publish)</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n" id="num-warn">—</div>
+        <div class="stat-l" data-t="s_warn">Warnings (alert)</div>
+      </div>
     </div>
-    <div class="summary-cell">
-        <div class="summary-num" id="num-passed">—</div>
-        <div class="summary-label">Passed</div>
-    </div>
-    <div class="summary-cell">
-        <div class="summary-num crit" id="num-crit">—</div>
-        <div class="summary-label">Critical (blocks publish)</div>
-    </div>
-    <div class="summary-cell">
-        <div class="summary-num warn" id="num-warn">—</div>
-        <div class="summary-label">Warnings (alert)</div>
-    </div>
-</div>
 
-<div class="tabs" id="tabs"></div>
-<div id="report"></div>
+    <div class="qtabs" id="tabs" role="group" aria-label="Filter checks"></div>
+    <div id="report"></div>
 
-<div class="report-meta">
-    <p>Last run <span id="ts">—</span>, took <span id="dur">—</span>. Source DB <span id="db">—</span>.</p>
-    <p>JSON: <a href="quality.json">quality.json</a>. Source: <a href="https://github.com/jonashertner/caselaw-repo-1/tree/main/quality">github.com/jonashertner/caselaw-repo-1/quality</a>.</p>
-</div>
-</main>
-
-<footer class="site">
-  <div class="container row">
-    <div>
-      <a class="brand" href="/"><span class="logo">+</span> <span class="wordmark">opencaselaw.ch</span></a>
-      <p style="margin-top: var(--s-3); max-width: 32ch; font-size: var(--t-sm); color: var(--text-2);">
-        Open Swiss case law. Dataset packaging CC0 · Code MIT. 4-layer quality framework. Public-good infrastructure.
+    <div class="report-meta">
+      <p>
+        <span data-t="meta_run">Last run</span> <span id="ts">—</span>,
+        <span data-t="meta_took">took</span> <span id="dur">—</span>.
+        <span data-t="meta_db">Source DB</span> <span id="db">—</span>.
+      </p>
+      <p>
+        <span data-t="meta_json">JSON:</span> <a href="quality.json">quality.json</a>.
+        <span data-t="meta_source">Source:</span>
+        <a href="https://github.com/jonashertner/caselaw-repo-1/tree/main/quality">github.com/jonashertner/caselaw-repo-1/quality</a>.
       </p>
     </div>
-    <div>
-      <h4 data-i18n="footer.data">Data</h4>
-      <ul>
-        <li><a href="/entscheide/">Decisions</a></li>
-        <li><a href="/gesetze/">Laws</a></li>
-        <li><a href="/quality.html">Quality</a></li>
-        <li><a href="/coverage/">Coverage</a></li>
-      </ul>
-    </div>
-    <div>
-      <h4 data-i18n="footer.access">Access</h4>
-      <ul>
-        <li><a href="/word/">Word add-in</a></li>
-        <li><a href="/mcp/">MCP server</a></li>
-        <li><a href="https://huggingface.co/datasets/voilaj/swiss-caselaw" rel="noopener">HuggingFace</a></li>
-        <li><a href="https://github.com/jonashertner/caselaw-repo-1" rel="noopener">GitHub</a></li>
-      </ul>
-    </div>
-    <div>
-      <h4 data-i18n="footer.about">About</h4>
-      <ul>
-        <li><a href="/ueber/">Mission</a></li>
-        <li><a href="/paper/">Research</a></li>
-        <li><a href="/datenschutz/">Privacy</a></li>
-        <li><a href="/governance-and-removal-policy.md">Governance</a></li>
-      </ul>
-    </div>
-  </div>
-  <div class="container" style="margin-top: var(--s-5); font-size: var(--t-xs); color: var(--text-3);">
-    © 2026 Jonas Hertner / OpenCaseLaw · Corpus CC0 · Code MIT
-  </div>
-</footer>
+  </section>
+</main>
 
+<div data-foot></div>
+<script src="/static/js/site.js?v=1"></script>
 <script>
-const TIER_LABEL = { critical: "FAIL", quarantine: "QUAR", warning: "WARN", info: "INFO" };
-const PASS_LABEL = "PASS";
-const FILTERS = [
-    { id: "all",  label: "All" },
-    { id: "fail", label: "Failures" },
-    { id: "crit", label: "Critical" },
-    { id: "warn", label: "Warnings" },
-    { id: "pass", label: "Passed" },
-];
-let DATA = null;
-let activeFilter = "all";
-
-function fmt(n) {
-    if (n === null || n === undefined || Number.isNaN(n)) return "\u2014";
-    if (typeof n !== "number") return String(n);
-    if (Number.isInteger(n)) return n.toLocaleString("en-US").replace(/,/g, "\u2019");
-    if (Math.abs(n) >= 100) return n.toFixed(0);
-    if (Math.abs(n) >= 10)  return n.toFixed(1);
-    return n.toFixed(2);
-}
-function fmtDate(s) {
-    if (!s) return "\u2014";
-    const d = new Date(s);
-    return d.toLocaleString("en-US", { dateStyle: "long", timeStyle: "short", timeZone: "UTC" });
-}
-function fmtDur(s) {
-    if (s === undefined || s === null) return "\u2014";
-    if (s < 60) return s.toFixed(1) + "s";
-    if (s < 3600) return (s/60).toFixed(1) + "m";
-    return (s/3600).toFixed(1) + "h";
-}
-function statusClass(r) {
-    return (r.passed ? "pass-" : "fail-") + r.severity.slice(0,4);
-}
-function statusLabel(r) {
-    return r.passed ? PASS_LABEL : TIER_LABEL[r.severity];
-}
-function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, function(c){
-        return ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c];
-    });
-}
-function categoryOf(name) { return name.split(".")[0]; }
-function checkPasses(r, f) {
-    if (f === "all")  return true;
-    if (f === "fail") return !r.passed;
-    if (f === "pass") return r.passed;
-    if (f === "crit") return !r.passed && r.severity === "critical";
-    if (f === "warn") return !r.passed && r.severity === "warning";
-    return true;
-}
-
-function renderTabs() {
-    const counts = {
-        all:  DATA.results.length,
-        fail: DATA.results.filter(function(r){return !r.passed;}).length,
-        pass: DATA.results.filter(function(r){return r.passed;}).length,
-        crit: DATA.results.filter(function(r){return !r.passed && r.severity === "critical";}).length,
-        warn: DATA.results.filter(function(r){return !r.passed && r.severity === "warning";}).length,
-    };
-    const tabsEl = document.getElementById("tabs");
-    while (tabsEl.firstChild) tabsEl.removeChild(tabsEl.firstChild);
-    FILTERS.forEach(function(f){
-        const span = document.createElement("span");
-        span.className = "tab" + (f.id === activeFilter ? " active" : "");
-        span.dataset.id = f.id;
-        span.textContent = f.label;
-        const count = document.createElement("span");
-        count.className = "tab-count";
-        count.textContent = counts[f.id];
-        span.appendChild(count);
-        span.onclick = function() {
-            activeFilter = f.id;
-            renderTabs();
-            renderResults();
-        };
-        tabsEl.appendChild(span);
-    });
-}
-
-function makeCheckRow(r) {
-    const row = document.createElement("div");
-    row.className = "check";
-    const subname = r.name.slice(categoryOf(r.name).length + 1);
-    const did = "c-" + r.name.replace(/[^a-z0-9]/gi, "_");
-    const hasDetail = !!(r.fix_advice || (r.sample_rows && r.sample_rows.length));
-
-    const status = document.createElement("div");
-    status.className = "check-status " + statusClass(r);
-    status.textContent = statusLabel(r);
-    row.appendChild(status);
-
-    const middle = document.createElement("div");
-    const nm = document.createElement("div");
-    nm.className = "check-name";
-    nm.textContent = subname;
-    middle.appendChild(nm);
-    const msg = document.createElement("div");
-    msg.className = "check-message";
-    msg.textContent = r.message || "";
-    middle.appendChild(msg);
-    if (hasDetail) {
-        const exp = document.createElement("div");
-        exp.className = "expand";
-        exp.dataset.target = did;
-        exp.textContent = "show detail \u2193";
-        middle.appendChild(exp);
+OCL.init({
+  active:'',
+  i18n:{
+    de:{
+      skip:'Zum Inhalt springen',
+      kicker:'Operativ · live', h1:'Datenqualität',
+      lede_body:'Integritäts-, Schema- und Inhaltsprüfungen gegen den vollständigen Korpus, bevor Nutzer neue Daten sehen. Eine kritische Regression blockiert den Publish; Nutzer behalten den letzten erfolgreichen Korpus bis zur Abklärung. Das Abzeichen unten unterscheidet Publish sicher (heutige Daten sind live), Publish blockiert (Gate hat heute ausgelöst, Push verweigert) und Qualitätsbericht veraltet (Gate ist kürzlich nicht gelaufen — Korpus ist korrekt, aber alternd).',
+      methodology:'Methodik',
+      banner_h:'Datenbank wird aktiv verbessert, um eine wachsende Zahl von Anfragen zu bewältigen.',
+      banner_body:'Die MCP-Worker auf', banner_body2:'funktionieren weiter — Suche, Zitationsgraph, Gesetzessuche und Fallbriefe liefern alle den letzten erfolgreichen Build, während wir aufholen.',
+      loading:'Wird geladen…',
+      s_total:'Prüfungen gesamt', s_passed:'Bestanden', s_crit:'Kritisch (blockiert Publish)', s_warn:'Warnungen (Alarm)',
+      f_all:'Alle', f_fail:'Fehler', f_crit:'Kritisch', f_warn:'Warnungen', f_pass:'Bestanden',
+      st_pass:'PASS', st_fail:'FAIL', st_quar:'QUAR', st_warn:'WARN', st_info:'INFO',
+      remediation:'Behebung. ', show_detail:'Detail zeigen ↓', hide_detail:'Detail verbergen ↑',
+      no_match:'(keine Ergebnisse für diesen Filter)',
+      meta_run:'Letzter Lauf', meta_took:'Dauer', meta_db:'Quell-DB', meta_json:'JSON:', meta_source:'Quelle:',
+      gate_stale_h:'Datenbank wird aktiv verbessert, um eine wachsende Zahl von Anfragen zu bewältigen',
+      gate_stale_sub:'Die Datenbank wird aktiv überarbeitet, um die Performance für eine wachsende Zahl von Anfragen zu verbessern. Die MCP-Worker auf mcp.opencaselaw.ch funktionieren weiter — Suche, Zitationsgraph, Gesetzessuche und Fallbriefe liefern alle den letzten erfolgreichen Build, während wir aufholen.',
+      gate_ok_h:'Publish sicher — alle {n} kritischen und Warn-Prüfungen bestanden',
+      gate_ok_sub:'Letzter Gate-Lauf {age}. Die heutigen Daten wurden auf opencaselaw.ch und den MCP-Server publiziert.',
+      gate_blocked_h:'Publish blockiert — {n} kritische Regression(en) erkannt',
+      gate_blocked_sub:'Letzter Gate-Lauf {age}. Der nächtliche Publish hat den Git-Push verweigert; Nutzer behalten den vorherigen erfolgreichen Korpus auf mcp.opencaselaw.ch.',
+      gate_unavail_h:'Qualitätsbericht nicht verfügbar',
+      gate_unavail_sub:'quality.json konnte nicht geladen werden. Das CDN verteilt möglicherweise noch den jüngsten Publish, oder die Berichtsdatei wurde nicht erzeugt.',
+      load_fail:'quality.json konnte nicht geladen werden: ', load_fail2:'Das Dashboard aktualisiert sich nach jedem nächtlichen Publish (etwa 04–07 UTC).',
+      age_min:'vor {n} Min.', age_h:'vor {n} Std.', age_d:'vor {n} T.', age_unknown:'unbekannt'
+    },
+    fr:{
+      skip:'Aller au contenu',
+      kicker:'Opérationnel · en direct', h1:'Qualité des données',
+      lede_body:'contrôles d’intégrité, de schéma et de contenu sur l’ensemble du corpus avant que les utilisateurs ne voient de nouvelles données. Une régression critique bloque la publication ; les utilisateurs conservent le dernier corpus valide jusqu’à investigation. Le badge ci-dessous distingue publication sûre (les données du jour sont en ligne), publication bloquée (le contrôle a déclenché aujourd’hui et refusé la mise en ligne), et rapport qualité périmé (le contrôle n’a pas tourné récemment — le corpus est correct mais vieillit).',
+      methodology:'Méthodologie',
+      banner_h:'Base de données activement améliorée pour gérer un nombre croissant de requêtes.',
+      banner_body:'Les workers MCP sur', banner_body2:'continuent de fonctionner — recherche, graphe de citations, consultation des lois et fiches d’arrêt servent tous le dernier build réussi pendant que nous rattrapons.',
+      loading:'Chargement…',
+      s_total:'Contrôles au total', s_passed:'Réussis', s_crit:'Critiques (bloquent la publication)', s_warn:'Avertissements (alerte)',
+      f_all:'Tous', f_fail:'Échecs', f_crit:'Critiques', f_warn:'Avertissements', f_pass:'Réussis',
+      st_pass:'PASS', st_fail:'FAIL', st_quar:'QUAR', st_warn:'WARN', st_info:'INFO',
+      remediation:'Remédiation. ', show_detail:'voir le détail ↓', hide_detail:'masquer le détail ↑',
+      no_match:'(aucun résultat pour ce filtre)',
+      meta_run:'Dernier lancement', meta_took:'durée', meta_db:'Base source', meta_json:'JSON :', meta_source:'Source :',
+      gate_stale_h:'Base de données activement améliorée pour gérer un nombre croissant de requêtes',
+      gate_stale_sub:'La base de données est activement retravaillée pour améliorer les performances face à un nombre croissant de requêtes. Les workers MCP sur mcp.opencaselaw.ch continuent de fonctionner — recherche, graphe de citations, consultation des lois et fiches d’arrêt servent tous le dernier build réussi pendant que nous rattrapons.',
+      gate_ok_h:'Publication sûre — les {n} contrôles critiques et d’avertissement ont réussi',
+      gate_ok_sub:'Dernier contrôle {age}. Les données du jour ont été publiées sur opencaselaw.ch et le serveur MCP.',
+      gate_blocked_h:'Publication bloquée — {n} régression(s) critique(s) détectée(s)',
+      gate_blocked_sub:'Dernier contrôle {age}. La publication nocturne a refusé le git push ; les utilisateurs conservent le corpus valide précédent sur mcp.opencaselaw.ch.',
+      gate_unavail_h:'Rapport qualité indisponible',
+      gate_unavail_sub:'Impossible de charger quality.json. Le CDN propage peut-être encore la dernière publication, ou le fichier de rapport n’a pas été généré.',
+      load_fail:'Échec du chargement de quality.json : ', load_fail2:'Le tableau de bord se rafraîchit après chaque publication nocturne (vers 04–07 UTC).',
+      age_min:'il y a {n} min', age_h:'il y a {n} h', age_d:'il y a {n} j', age_unknown:'inconnu'
+    },
+    it:{
+      skip:'Vai al contenuto',
+      kicker:'Operativo · live', h1:'Qualità dei dati',
+      lede_body:'controlli di integrità, schema e contenuto sull’intero corpus prima che gli utenti vedano nuovi dati. Una regressione critica blocca la pubblicazione; gli utenti mantengono l’ultimo corpus valido fino all’indagine. Il badge qui sotto distingue pubblicazione sicura (i dati di oggi sono live), pubblicazione bloccata (il controllo è scattato oggi e ha rifiutato il push) e rapporto qualità obsoleto (il controllo non è stato eseguito di recente — il corpus è corretto ma sta invecchiando).',
+      methodology:'Metodologia',
+      banner_h:'Database attivamente migliorato per gestire un numero crescente di richieste.',
+      banner_body:'I worker MCP su', banner_body2:'continuano a funzionare — ricerca, grafo delle citazioni, consultazione delle leggi e schede di sentenza servono tutti l’ultimo build riuscito mentre recuperiamo.',
+      loading:'Caricamento…',
+      s_total:'Controlli totali', s_passed:'Superati', s_crit:'Critici (bloccano la pubblicazione)', s_warn:'Avvisi (allerta)',
+      f_all:'Tutti', f_fail:'Errori', f_crit:'Critici', f_warn:'Avvisi', f_pass:'Superati',
+      st_pass:'PASS', st_fail:'FAIL', st_quar:'QUAR', st_warn:'WARN', st_info:'INFO',
+      remediation:'Rimedio. ', show_detail:'mostra dettaglio ↓', hide_detail:'nascondi dettaglio ↑',
+      no_match:'(nessun risultato per questo filtro)',
+      meta_run:'Ultima esecuzione', meta_took:'durata', meta_db:'DB sorgente', meta_json:'JSON:', meta_source:'Fonte:',
+      gate_stale_h:'Database attivamente migliorato per gestire un numero crescente di richieste',
+      gate_stale_sub:'Il database è attivamente in fase di rielaborazione per migliorare le prestazioni di fronte a un numero crescente di richieste. I worker MCP su mcp.opencaselaw.ch continuano a funzionare — ricerca, grafo delle citazioni, consultazione delle leggi e schede di sentenza servono tutti l’ultimo build riuscito mentre recuperiamo.',
+      gate_ok_h:'Pubblicazione sicura — superati tutti i {n} controlli critici e di avviso',
+      gate_ok_sub:'Ultimo controllo {age}. I dati di oggi sono stati pubblicati su opencaselaw.ch e sul server MCP.',
+      gate_blocked_h:'Pubblicazione bloccata — rilevate {n} regressione/i critica/he',
+      gate_blocked_sub:'Ultimo controllo {age}. La pubblicazione notturna ha rifiutato il git push; gli utenti mantengono il corpus valido precedente su mcp.opencaselaw.ch.',
+      gate_unavail_h:'Rapporto qualità non disponibile',
+      gate_unavail_sub:'Impossibile caricare quality.json. Il CDN potrebbe ancora propagare l’ultima pubblicazione, oppure il file di rapporto non è stato generato.',
+      load_fail:'Caricamento di quality.json non riuscito: ', load_fail2:'Il cruscotto si aggiorna dopo ogni pubblicazione notturna (verso le 04–07 UTC).',
+      age_min:'{n} min fa', age_h:'{n} h fa', age_d:'{n} g fa', age_unknown:'sconosciuto'
+    },
+    rm:{
+      skip:'Ir al cuntegn',
+      kicker:'Operativ · live', h1:'Qualitad da las datas',
+      lede_body:'controllas d’integritad, da schema e da cuntegn sin l’entir corpus avant ch’ils utilisaders vesan novas datas. Ina regressiun critica blocchescha la publicaziun; ils utilisaders mantegnan l’ultim corpus reussì enfin l’indagaziun. Il distinctiv sutvart distingua publicaziun segira (las datas dad oz èn live), publicaziun bloccada (la controlla è scrudada oz ed ha refusà il push) e rapport da qualitad antiquà (la controlla n’è betg ì là dacurt — il corpus è correct, ma vegn vegl).',
+      methodology:'Metodologia',
+      banner_h:'La banca da datas vegn meglierada activamain per gestir in dumber creschent da dumondas.',
+      banner_body:'Ils workers MCP sin', banner_body2:'funcziuneschan vinavant — tschertga, graf da citaziuns, consultaziun da leschas e fegls da cas furneschan tuts l’ultim build reussì entant che nus rattrapain.',
+      loading:'Chargiar…',
+      s_total:'Controllas en total', s_passed:'Surpassadas', s_crit:'Criticas (bloccheschan la publicaziun)', s_warn:'Avis (alarm)',
+      f_all:'Tuts', f_fail:'Errurs', f_crit:'Criticas', f_warn:'Avis', f_pass:'Surpassadas',
+      st_pass:'PASS', st_fail:'FAIL', st_quar:'QUAR', st_warn:'WARN', st_info:'INFO',
+      remediation:'Reparaziun. ', show_detail:'mussar il detagl ↓', hide_detail:'zuppentar il detagl ↑',
+      no_match:'(nagins resultats per quest filter)',
+      meta_run:'Ultima execuziun', meta_took:'durada', meta_db:'DB da funtauna', meta_json:'JSON:', meta_source:'Funtauna:',
+      gate_stale_h:'La banca da datas vegn meglierada activamain per gestir in dumber creschent da dumondas',
+      gate_stale_sub:'La banca da datas vegn retschertgada activamain per meglierar la prestaziun envers in dumber creschent da dumondas. Ils workers MCP sin mcp.opencaselaw.ch funcziuneschan vinavant — tschertga, graf da citaziuns, consultaziun da leschas e fegls da cas furneschan tuts l’ultim build reussì entant che nus rattrapain.',
+      gate_ok_h:'Publicaziun segira — tut las {n} controllas criticas ed avis èn surpassadas',
+      gate_ok_sub:'Ultima controlla {age}. Las datas dad oz èn vegnidas publitgadas sin opencaselaw.ch ed il server MCP.',
+      gate_blocked_h:'Publicaziun bloccada — {n} regressiun(s) critica(s) constatada(s)',
+      gate_blocked_sub:'Ultima controlla {age}. La publicaziun da notg ha refusà il git push; ils utilisaders mantegnan l’ultim corpus reussì sin mcp.opencaselaw.ch.',
+      gate_unavail_h:'Rapport da qualitad betg disponibel',
+      gate_unavail_sub:'quality.json n’ha betg pudì vegnir chargià. Il CDN distribuescha forsa anc l’ultima publicaziun, u il file da rapport n’è betg vegnì generà.',
+      load_fail:'Chargiar quality.json n’è betg reussì: ', load_fail2:'Il dashboard s’actualisescha suenter mintga publicaziun da notg (enturn 04–07 UTC).',
+      age_min:'avant {n} min', age_h:'avant {n} h', age_d:'avant {n} d', age_unknown:'nunenconuschent'
+    },
+    en:{
+      skip:'Skip to content',
+      kicker:'Operational · live', h1:'Data quality',
+      lede_body:'integrity, schema and content checks against the full corpus before users see new data. A critical regression blocks the publish; users keep the previous successful corpus until investigation. The badge below distinguishes publish safe (today’s data is live), publish blocked (gate fired today, refused to push), and quality report stale (gate has not run recently — corpus is correct but ageing).',
+      methodology:'Methodology',
+      banner_h:'Database actively being improved to handle a growing number of requests.',
+      banner_body:'The MCP workers at', banner_body2:'continue to function — search, citation graph, statute lookup and case briefs all serve the last successful build while we catch up.',
+      loading:'Loading…',
+      s_total:'Total checks', s_passed:'Passed', s_crit:'Critical (blocks publish)', s_warn:'Warnings (alert)',
+      f_all:'All', f_fail:'Failures', f_crit:'Critical', f_warn:'Warnings', f_pass:'Passed',
+      st_pass:'PASS', st_fail:'FAIL', st_quar:'QUAR', st_warn:'WARN', st_info:'INFO',
+      remediation:'Remediation. ', show_detail:'show detail ↓', hide_detail:'hide detail ↑',
+      no_match:'(no results match this filter)',
+      meta_run:'Last run', meta_took:'took', meta_db:'Source DB', meta_json:'JSON:', meta_source:'Source:',
+      gate_stale_h:'Database actively being improved to handle a growing number of requests',
+      gate_stale_sub:'The database is actively being worked on to improve performance for a growing number of requests. The MCP workers at mcp.opencaselaw.ch continue to function — search, citation graph, statute lookup and case briefs all serve the last successful build while we catch up.',
+      gate_ok_h:'Publish safe — all {n} critical and warning checks passed',
+      gate_ok_sub:'Last gate run {age}. Today’s data was published to opencaselaw.ch and the MCP server.',
+      gate_blocked_h:'Publish blocked — {n} critical regression(s) detected',
+      gate_blocked_sub:'Last gate run {age}. The nightly publish refused to advance to git push; users keep the previous successful corpus on mcp.opencaselaw.ch.',
+      gate_unavail_h:'Quality report unavailable',
+      gate_unavail_sub:'quality.json could not be loaded. The CDN may still be propagating the most recent publish, or the report file was not generated.',
+      load_fail:'Failed to load quality.json: ', load_fail2:'The dashboard refreshes after each nightly publish (around 04–07 UTC).',
+      age_min:'{n} min ago', age_h:'{n} h ago', age_d:'{n} d ago', age_unknown:'unknown'
     }
-    row.appendChild(middle);
+  },
+  onReady:function(O){
+    var STALE_HOURS_THRESHOLD = 30;
+    var TIER_KEY = { critical:'st_fail', quarantine:'st_quar', warning:'st_warn', info:'st_info' };
+    var FILTERS = [
+      { id:'all',  key:'f_all' },
+      { id:'fail', key:'f_fail' },
+      { id:'crit', key:'f_crit' },
+      { id:'warn', key:'f_warn' },
+      { id:'pass', key:'f_pass' }
+    ];
+    var DATA = null;
+    var activeFilter = 'all';
 
-    const metric = document.createElement("div");
-    metric.className = "check-metric";
-    metric.textContent = fmt(r.metric_value)
-        + (r.threshold !== null && r.threshold !== undefined ? " / " + fmt(r.threshold) : "");
-    row.appendChild(metric);
+    function T(k, v){ var s = O.t(k); if (v) for (var x in v) s = s.split('{'+x+'}').join(v[x]); return s; }
 
-    if (hasDetail) {
-        const detail = document.createElement("div");
-        detail.className = "check-detail";
-        detail.id = did;
+    // Locale-aware number formatting for non-integer metrics; O.fmt handles
+    // the integer (apostrophe-grouped) case.
+    function fmtNum(n){
+      if (n === null || n === undefined || (typeof n === 'number' && Number.isNaN(n))) return '—';
+      if (typeof n !== 'number') return String(n);
+      if (Number.isInteger(n)) return O.fmt(n);
+      if (Math.abs(n) >= 100) return n.toFixed(0);
+      if (Math.abs(n) >= 10)  return n.toFixed(1);
+      return n.toFixed(2);
+    }
+    function fmtDate(s){
+      if (!s) return '—';
+      var d = new Date(s);
+      return d.toLocaleString(O.lang === 'rm' ? 'de-CH' : O.lang, { dateStyle:'long', timeStyle:'short', timeZone:'UTC' });
+    }
+    function fmtDur(s){
+      if (s === undefined || s === null) return '—';
+      if (s < 60)   return s.toFixed(1) + 's';
+      if (s < 3600) return (s/60).toFixed(1) + 'm';
+      return (s/3600).toFixed(1) + 'h';
+    }
+    function ageStr(ageH){
+      if (ageH == null) return O.t('age_unknown');
+      if (ageH < 1.5) return T('age_min', { n: Math.round(ageH*60) });
+      if (ageH < 36)  return T('age_h',   { n: Math.round(ageH) });
+      return T('age_d', { n: Math.round(ageH/24) });
+    }
+    function statusClass(r){ return (r.passed ? 'pass-' : 'fail-') + r.severity.slice(0,4); }
+    function statusLabel(r){ return r.passed ? O.t('st_pass') : O.t(TIER_KEY[r.severity] || 'st_info'); }
+    function categoryOf(name){ return name.split('.')[0]; }
+    function checkPasses(r, f){
+      if (f === 'all')  return true;
+      if (f === 'fail') return !r.passed;
+      if (f === 'pass') return r.passed;
+      if (f === 'crit') return !r.passed && r.severity === 'critical';
+      if (f === 'warn') return !r.passed && r.severity === 'warning';
+      return true;
+    }
+
+    function el(tag, p, kids){
+      var n = document.createElement(tag);
+      if (p) for (var k in p){ if (k === 'class') n.className = p[k]; else if (k === 'text') n.textContent = p[k]; else n.setAttribute(k, p[k]); }
+      if (kids) kids.forEach(function(c){ if (c == null) return; n.appendChild(typeof c === 'string' ? document.createTextNode(c) : c); });
+      return n;
+    }
+
+    function renderTabs(){
+      var counts = {
+        all:  DATA.results.length,
+        fail: DATA.results.filter(function(r){ return !r.passed; }).length,
+        pass: DATA.results.filter(function(r){ return r.passed; }).length,
+        crit: DATA.results.filter(function(r){ return !r.passed && r.severity === 'critical'; }).length,
+        warn: DATA.results.filter(function(r){ return !r.passed && r.severity === 'warning'; }).length
+      };
+      var tabsEl = document.getElementById('tabs');
+      while (tabsEl.firstChild) tabsEl.removeChild(tabsEl.firstChild);
+      FILTERS.forEach(function(f){
+        var btn = el('button', { type:'button', class: (f.id === activeFilter ? 'on' : '') });
+        btn.appendChild(document.createTextNode(O.t(f.key)));
+        btn.appendChild(el('span', { class:'tab-count', text: O.fmt(counts[f.id]) }));
+        btn.onclick = function(){ activeFilter = f.id; renderTabs(); renderResults(); };
+        tabsEl.appendChild(btn);
+      });
+    }
+
+    function makeCheckRow(r){
+      var subname = r.name.slice(categoryOf(r.name).length + 1);
+      var did = 'c-' + r.name.replace(/[^a-z0-9]/gi, '_');
+      var hasDetail = !!(r.fix_advice || (r.sample_rows && r.sample_rows.length));
+
+      var row = el('div', { class:'check' });
+      row.appendChild(el('div', { class:'check-status ' + statusClass(r), text: statusLabel(r) }));
+
+      var middle = el('div');
+      middle.appendChild(el('div', { class:'check-name', text: subname }));
+      middle.appendChild(el('div', { class:'check-message', text: r.message || '' }));
+      if (hasDetail) {
+        var exp = el('div', { class:'expand', 'data-target': did, text: O.t('show_detail') });
+        middle.appendChild(exp);
+      }
+      row.appendChild(middle);
+
+      var metricTxt = fmtNum(r.metric_value)
+        + (r.threshold !== null && r.threshold !== undefined ? ' / ' + fmtNum(r.threshold) : '');
+      row.appendChild(el('div', { class:'check-metric', text: metricTxt }));
+
+      if (hasDetail) {
+        var detail = el('div', { class:'check-detail', id: did });
         if (r.fix_advice) {
-            const adv = document.createElement("div");
-            adv.className = "advice";
-            const lab = document.createElement("strong");
-            lab.textContent = "Remediation. ";
-            adv.appendChild(lab);
-            adv.appendChild(document.createTextNode(r.fix_advice));
-            detail.appendChild(adv);
+          var adv = el('div', { class:'advice' });
+          adv.appendChild(el('strong', { text: O.t('remediation') }));
+          adv.appendChild(document.createTextNode(r.fix_advice));
+          detail.appendChild(adv);
         }
         if (r.sample_rows && r.sample_rows.length) {
-            const samples = document.createElement("div");
-            samples.className = "samples";
-            r.sample_rows.forEach(function(s){
-                const pre = document.createElement("pre");
-                pre.textContent = JSON.stringify(s);
-                samples.appendChild(pre);
-            });
-            detail.appendChild(samples);
+          var samples = el('div', { class:'samples' });
+          r.sample_rows.forEach(function(s){
+            samples.appendChild(el('pre', { text: JSON.stringify(s) }));
+          });
+          detail.appendChild(samples);
         }
         row.appendChild(detail);
+      }
+      return row;
     }
-    return row;
-}
 
-function renderResults() {
-    const reportEl = document.getElementById("report");
-    while (reportEl.firstChild) reportEl.removeChild(reportEl.firstChild);
-    const filtered = DATA.results.filter(function(r){return checkPasses(r, activeFilter);});
-    if (filtered.length === 0) {
-        const p = document.createElement("p");
-        p.style.color = "#888";
-        p.textContent = "(no results match this filter)";
-        reportEl.appendChild(p);
+    function renderResults(){
+      var reportEl = document.getElementById('report');
+      while (reportEl.firstChild) reportEl.removeChild(reportEl.firstChild);
+      var filtered = DATA.results.filter(function(r){ return checkPasses(r, activeFilter); });
+      if (filtered.length === 0) {
+        reportEl.appendChild(el('p', { class:'empty', text: O.t('no_match'), style:'color:var(--t3);padding:32px 0' }));
         return;
-    }
-    const byCat = {};
-    filtered.forEach(function(r){
-        const c = categoryOf(r.name);
+      }
+      var byCat = {};
+      filtered.forEach(function(r){
+        var c = categoryOf(r.name);
         (byCat[c] = byCat[c] || []).push(r);
-    });
-    const cats = Object.keys(byCat).sort();
-    cats.forEach(function(cat){
-        const wrap = document.createElement("div");
-        wrap.className = "category";
-        const h = document.createElement("div");
-        h.className = "category-name";
-        h.textContent = cat;
-        wrap.appendChild(h);
-        const checks = document.createElement("div");
-        checks.className = "checks";
-        byCat[cat].forEach(function(r){
-            checks.appendChild(makeCheckRow(r));
-        });
+      });
+      Object.keys(byCat).sort().forEach(function(cat){
+        var wrap = el('div', { class:'category' });
+        wrap.appendChild(el('div', { class:'category-name', text: cat }));
+        var checks = el('div', { class:'checks' });
+        byCat[cat].forEach(function(r){ checks.appendChild(makeCheckRow(r)); });
         wrap.appendChild(checks);
         reportEl.appendChild(wrap);
-    });
-    document.querySelectorAll(".expand").forEach(function(el){
-        el.onclick = function() {
-            const t = document.getElementById(el.dataset.target);
-            const open = t.classList.toggle("open");
-            el.textContent = open ? "hide detail \u2191" : "show detail \u2193";
+      });
+      document.querySelectorAll('.expand').forEach(function(elx){
+        elx.onclick = function(){
+          var tgt = document.getElementById(elx.getAttribute('data-target'));
+          var open = tgt.classList.toggle('open');
+          elx.textContent = open ? O.t('hide_detail') : O.t('show_detail');
         };
-    });
-}
-
-function render() {
-    document.getElementById("check-count").textContent = DATA.summary.total + "+";
-    document.getElementById("num-total").textContent = fmt(DATA.summary.total);
-    document.getElementById("num-passed").textContent = fmt(DATA.summary.passed);
-    document.getElementById("num-crit").textContent = fmt(DATA.summary.critical_failures);
-    document.getElementById("num-warn").textContent = fmt(DATA.summary.warning_failures);
-
-    // Three-state badge: all-clear / publish-blocked / data-stale.
-    // The publish runs nightly at ~03:30 UTC; if the gate hasn't run in
-    // STALE_HOURS_THRESHOLD hours, the corpus on the live MCP is whatever
-    // last successful build produced (correct but ageing).
-    const STALE_HOURS_THRESHOLD = 30;
-    const gate = document.getElementById("gate");
-    const gateText = document.getElementById("gate-text");
-    const gateSub = document.getElementById("gate-sub");
-    const runAt = DATA.run_at ? new Date(DATA.run_at) : null;
-    const ageH = runAt ? (Date.now() - runAt.getTime()) / 3.6e6 : null;
-    const ageStr = ageH == null ? "unknown" :
-                   ageH < 1.5 ? Math.round(ageH * 60) + " min ago" :
-                   ageH < 36  ? Math.round(ageH) + " h ago" :
-                                Math.round(ageH / 24) + " d ago";
-
-    if (ageH != null && ageH > STALE_HOURS_THRESHOLD) {
-        // Gate hasn't run recently → publish has been failing → data is ageing
-        gate.className = "gate stale";
-        gateText.textContent = "Database actively being improved to handle a growing number of requests";
-        gateSub.textContent = "The database is actively being worked on to improve " +
-            "performance for a growing number of requests. The MCP workers at " +
-            "mcp.opencaselaw.ch continue to function — search, citation graph, " +
-            "statute lookup and case briefs all serve the last successful build " +
-            "while we catch up.";
-    } else if (DATA.summary.publish_safe) {
-        gate.className = "gate ok";
-        gateText.textContent = "Publish safe — all " + DATA.summary.total +
-            " critical and warning checks passed";
-        gateSub.textContent = "Last gate run " + ageStr +
-            ". Today's data was published to opencaselaw.ch and the MCP server.";
-    } else {
-        gate.className = "gate blocked";
-        gateText.textContent = "Publish blocked — " +
-            DATA.summary.critical_failures + " critical regression(s) detected";
-        gateSub.textContent = "Last gate run " + ageStr +
-            ". The nightly publish refused to advance to git push; users keep " +
-            "the previous successful corpus on mcp.opencaselaw.ch.";
+      });
     }
 
-    document.getElementById("ts").textContent = fmtDate(DATA.run_at);
-    document.getElementById("dur").textContent = fmtDur(DATA.duration_seconds);
-    document.getElementById("db").textContent = (DATA.db_path || "").split("/").pop() || "\u2014";
+    function render(){
+      document.getElementById('check-count').textContent = O.fmt(DATA.summary.total) + '+';
+      document.getElementById('num-total').textContent  = O.fmt(DATA.summary.total);
+      document.getElementById('num-passed').textContent = O.fmt(DATA.summary.passed);
+      document.getElementById('num-crit').textContent   = O.fmt(DATA.summary.critical_failures);
+      document.getElementById('num-warn').textContent   = O.fmt(DATA.summary.warning_failures);
 
-    renderTabs();
-    renderResults();
-}
+      // Three-state badge: all-clear / publish-blocked / data-stale.
+      // The publish runs nightly at ~03:30 UTC; if the gate hasn't run in
+      // STALE_HOURS_THRESHOLD hours, the corpus on the live MCP is whatever
+      // last successful build produced (correct but ageing).
+      var gate = document.getElementById('gate');
+      var gateText = document.getElementById('gate-text');
+      var gateSub = document.getElementById('gate-sub');
+      var runAt = DATA.run_at ? new Date(DATA.run_at) : null;
+      var ageH = runAt ? (Date.now() - runAt.getTime()) / 3.6e6 : null;
+      var age = ageStr(ageH);
 
-fetch("quality.json", { cache: "no-store" })
-    .then(function(r){ return r.ok ? r.json() : Promise.reject(new Error("HTTP " + r.status)); })
-    .then(function(d){ DATA = d; render(); })
-    .catch(function(e){
-        const reportEl = document.getElementById("report");
-        const p1 = document.createElement("p");
-        p1.style.color = "#aa1a1a";
-        p1.textContent = "Failed to load quality.json: " + (e.message || String(e));
-        const p2 = document.createElement("p");
-        p2.textContent = "The dashboard refreshes after each nightly publish (around 04-07 UTC).";
-        reportEl.appendChild(p1);
-        reportEl.appendChild(p2);
-        const gate = document.getElementById("gate");
-        gate.className = "gate stale";
-        document.getElementById("gate-text").textContent = "Quality report unavailable";
-        document.getElementById("gate-sub").textContent =
-            "quality.json could not be loaded. The CDN may still be propagating " +
-            "the most recent publish, or the report file was not generated.";
-    });
-</script>
-<script>
-/* Per-page i18n table — translated by the shared IIFE walker. */
-window.I18N_PAGE = {
-    'hero.eyebrow': { de: 'Operativ · live', fr: 'Opérationnel · en direct', it: 'Operativo · live', rm: 'Operativ · live', en: 'Operational · live' },
-    'hero.h1': { de: 'Datenqualität', fr: 'Qualité des données', it: 'Qualità dei dati', rm: 'Qualitad da las datas', en: 'Data quality' }
-  };
-</script>
-<script>
-/* Shared lang-switch wiring (works on every page).
-   - Reads current locale from ?lang=, then localStorage, then <html lang>.
-   - Highlights the matching .lang-sw [data-l] item with .on.
-   - Translates the primary nav labels via NAV_I18N so the user always
-     sees the language they picked, even on English-only pages.
-   - Click is ALWAYS preventDefault'd so the user stays on the current
-     page; localStorage persists their choice for the next i18n-capable
-     surface (landing, /word/*).
-   - On i18n-capable pages (where window.applyI18n is defined), also
-     calls applyI18n() to translate the whole body in-place. */
-(function () {
-  /* Canonical lookup by data-nav-key (added to every nav anchor) so that
-     translating once does NOT lose the key — fixes the RM-stickiness bug
-     where textContent='Tschertga' could not be looked up again. */
-  var NAV_I18N = {
-    search:  { de: 'Suche',     fr: 'Recherche', it: 'Ricerca',  rm: 'Tschertga', en: 'Search' },
-    courts:  { de: 'Gerichte',  fr: 'Tribunaux', it: 'Tribunali', rm: 'Dretgiras', en: 'Courts' },
-    laws:    { de: 'Gesetze',   fr: 'Lois',      it: 'Leggi',     rm: 'Leschas',   en: 'Laws' },
-    word:    { de: 'Word',      fr: 'Word',      it: 'Word',      rm: 'Word',      en: 'Word' },
-    mcp:     { de: 'MCP',       fr: 'MCP',       it: 'MCP',       rm: 'MCP',       en: 'MCP' },
-    api:     { de: 'API',       fr: 'API',       it: 'API',       rm: 'API',       en: 'API' },
-    quality: { de: 'Qualitaet', fr: 'Qualite',   it: 'Qualita',   rm: 'Qualitad',  en: 'Quality' }
-  };
-  var I18N_FOOTER = {
-    'footer.access': { de: 'Zugang',     fr: 'Accès',      it: 'Accesso',        rm: 'Access',      en: 'Access' },
-    'footer.product':  { de: 'Produkt',   fr: 'Produit',   it: 'Prodotto', rm: 'Product',   en: 'Product' },
-    'footer.data':     { de: 'Daten',     fr: 'Donnees',   it: 'Dati',     rm: 'Datas',     en: 'Data' },
-    'footer.about':    { de: 'Ueber',     fr: 'A propos',  it: 'Chi siamo',rm: 'Davart',    en: 'About' },
-    'footer.search':   { de: 'Suche',     fr: 'Recherche', it: 'Ricerca',  rm: 'Tschertga', en: 'Search' },
-    'footer.courts':   { de: 'Gerichte',  fr: 'Tribunaux', it: 'Tribunali', rm: 'Dretgiras', en: 'Courts' },
-    'footer.laws':     { de: 'Gesetze',   fr: 'Lois',      it: 'Leggi',     rm: 'Leschas',   en: 'Laws' },
-    'footer.word':     { de: 'Word-Add-in', fr: 'Word add-in', it: 'Componente Word', rm: 'Add-in Word', en: 'Word add-in' },
-    'footer.mcp':      { de: 'MCP',       fr: 'MCP',       it: 'MCP',       rm: 'MCP',      en: 'MCP' },
-    'footer.api':      { de: 'API',       fr: 'API',       it: 'API',       rm: 'API',      en: 'API' },
-    'footer.paper':    { de: 'Paper',     fr: 'Article',   it: 'Articolo',  rm: 'Artitgel', en: 'Paper' },
-    'footer.quality':  { de: 'Qualitaet', fr: 'Qualite',   it: 'Qualita',   rm: 'Qualitad', en: 'Quality' },
-    'footer.coverage': { de: 'Abdeckung', fr: 'Couverture', it: 'Copertura', rm: 'Cuvrida', en: 'Coverage' }
-  };
-
-  function applyNavLang(lang) {
-    document.querySelectorAll('header.site nav > a[data-nav-key]').forEach(function (a) {
-      var dict = NAV_I18N[a.dataset.navKey];
-      if (dict && dict[lang]) a.textContent = dict[lang];
-    });
-    document.querySelectorAll('[data-i18n]').forEach(function (el) {
-      var key = el.getAttribute('data-i18n');
-      var dict = (window.I18N_PAGE && window.I18N_PAGE[key]) || I18N_FOOTER[key];
-      if (dict && dict[lang]) el.textContent = dict[lang];
-    });
-    document.documentElement.setAttribute('lang', lang);
-  }
-
-  var qs = (location.search.match(/[?&]lang=([a-z]{2})/) || [])[1];
-  var stored = null;
-  try { stored = localStorage.getItem('lang'); } catch (_) {}
-  var html = (document.documentElement.lang || '').slice(0, 2);
-  var lang = qs || stored || html || 'en';
-  if (qs) { try { localStorage.setItem('lang', qs); } catch (_) {} }
-  applyNavLang(lang);
-  document.querySelectorAll('.lang-sw [data-l]').forEach(function (el) {
-    el.classList.toggle('on', el.dataset.l === lang);
-    el.addEventListener('click', function (e) {
-      e.preventDefault();
-      var l = el.dataset.l;
-      try { localStorage.setItem('lang', l); } catch (_) {}
-      document.querySelectorAll('.lang-sw [data-l]').forEach(function (b) {
-        b.classList.toggle('on', b.dataset.l === l);
-      });
-      applyNavLang(l);
-      if (typeof window.applyI18n === 'function') {
-        window.curLang = l;
-        try { window.applyI18n(); } catch (_) {}
+      if (ageH != null && ageH > STALE_HOURS_THRESHOLD) {
+        gate.className = 'gate stale';
+        gateText.textContent = O.t('gate_stale_h');
+        gateSub.textContent  = O.t('gate_stale_sub');
+      } else if (DATA.summary.publish_safe) {
+        gate.className = 'gate ok';
+        gateText.textContent = T('gate_ok_h', { n: O.fmt(DATA.summary.total) });
+        gateSub.textContent  = T('gate_ok_sub', { age: age });
+      } else {
+        gate.className = 'gate blocked';
+        gateText.textContent = T('gate_blocked_h', { n: O.fmt(DATA.summary.critical_failures) });
+        gateSub.textContent  = T('gate_blocked_sub', { age: age });
       }
-    });
-  });
-})();
-</script>
-<script>
-/* Mobile nav-toggle: <720px shows a hamburger that toggles `body.nav-open`,
-   which the design-system CSS uses to slide the full nav (links + lang
-   switch) in from the top. ESC + outside-click + nav-link-click also close. */
-(function () {
-  var btn = document.getElementById('nav-toggle');
-  if (!btn) return;
-  var nav = document.querySelector('header.site nav');
-  function setOpen(open) {
-    document.body.classList.toggle('nav-open', open);
-    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+
+      document.getElementById('ts').textContent  = fmtDate(DATA.run_at);
+      document.getElementById('dur').textContent = fmtDur(DATA.duration_seconds);
+      document.getElementById('db').textContent  = (DATA.db_path || '').split('/').pop() || '—';
+
+      renderTabs();
+      renderResults();
+    }
+
+    fetch('quality.json', { cache:'no-store' })
+      .then(function(r){ return r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)); })
+      .then(function(d){ DATA = d; render(); })
+      .catch(function(e){
+        var reportEl = document.getElementById('report');
+        reportEl.appendChild(el('p', { class:'load-err', text: O.t('load_fail') + (e.message || String(e)) }));
+        reportEl.appendChild(el('p', { text: O.t('load_fail2'), style:'color:var(--t2)' }));
+        var gate = document.getElementById('gate');
+        gate.className = 'gate stale';
+        document.getElementById('gate-text').textContent = O.t('gate_unavail_h');
+        document.getElementById('gate-sub').textContent  = O.t('gate_unavail_sub');
+      });
   }
-  btn.addEventListener('click', function () {
-    setOpen(!document.body.classList.contains('nav-open'));
-  });
-  if (nav) nav.querySelectorAll('a').forEach(function (a) {
-    a.addEventListener('click', function () { setOpen(false); });
-  });
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') setOpen(false);
-  });
-})();
+});
 </script>
 </body>
 </html>

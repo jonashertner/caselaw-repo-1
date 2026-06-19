@@ -1,714 +1,512 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Search Swiss laws — federal + cantonal — OpenCaseLaw</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Swiss laws — federal + cantonal — OpenCaseLaw</title>
 <meta name="description" content="Search the full text of 5,510 Swiss federal laws (Fedlex mirror) plus 15,722 cantonal acts. Article-level snippets with one-click direct link. Free, no account, no API key.">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0c0c0d" media="(prefers-color-scheme: dark)">
 <link rel="canonical" href="https://opencaselaw.ch/laws/">
-<meta name="robots" content="index, follow">
-<meta property="og:title" content="Search Swiss laws — federal + cantonal — OpenCaseLaw">
-<meta property="og:description" content="5,510 federal laws + 15,722 cantonal acts, full-text searchable.">
-<meta property="og:url" content="https://opencaselaw.ch/laws/">
-<meta property="og:type" content="website">
-<link rel="stylesheet" href="/static/css/design-system.css?v=22">
-<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="alternate" hreflang="de" href="https://opencaselaw.ch/laws/?lang=de">
+<link rel="alternate" hreflang="fr" href="https://opencaselaw.ch/laws/?lang=fr">
+<link rel="alternate" hreflang="it" href="https://opencaselaw.ch/laws/?lang=it">
+<link rel="alternate" hreflang="rm" href="https://opencaselaw.ch/laws/?lang=rm">
+<link rel="alternate" hreflang="en" href="https://opencaselaw.ch/laws/?lang=en">
+<link rel="alternate" hreflang="x-default" href="https://opencaselaw.ch/laws/">
+<link rel="icon" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add('js');</script>
+<link rel="stylesheet" href="/static/css/site.css?v=1">
 <style>
-  main.laws { padding-top: var(--s-6); padding-bottom: var(--s-7); max-width: var(--max-w-prose); }
-  .laws-form {
-    display: flex; gap: var(--s-3); flex-wrap: wrap; align-items: stretch;
-    margin: var(--s-5) 0 var(--s-3);
-  }
-  .laws-input {
-    flex: 1 1 320px; min-width: 240px;
-    padding: 12px 16px; font: inherit; font-size: var(--t-base);
-    background: var(--surface);
-    border: 1px solid var(--border-strong);
-    border-radius: var(--radius); color: var(--text);
-  }
-  .laws-input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
-  .laws-filters { display: flex; gap: var(--s-2); flex-wrap: wrap; margin-bottom: var(--s-5); }
-  .laws-filters button {
-    padding: 6px 12px; font: inherit; font-size: var(--t-md);
-    background: var(--surface); color: var(--text-2);
-    border: 1px solid var(--border); border-radius: var(--radius-pill);
-    cursor: pointer; transition: all var(--t-fast) var(--ease);
-    white-space: nowrap;
-  }
-  .laws-filters button:hover { color: var(--text); border-color: var(--border-strong); }
-  .laws-filters button.active { background: var(--text); color: var(--bg); border-color: var(--text); }
-  .laws-meta { font-size: var(--t-sm); color: var(--text-2); margin-bottom: var(--s-4); font-feature-settings: 'tnum' 1; }
+  /* ── Search form ─────────────────────────────────────────────── */
+  .laws-form{display:flex;gap:12px;flex-wrap:wrap;align-items:stretch;margin:36px 0 10px}
+  .laws-input{flex:1 1 320px;min-width:240px;padding:13px 16px;font:inherit;font-size:15px;
+    background:var(--paper);border:1px solid var(--line);border-radius:9px;color:var(--t1)}
+  .laws-input:focus{outline:2px solid var(--red);outline-offset:1px}
 
-  .quickgrid {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: var(--s-3); margin-top: var(--s-4); margin-bottom: var(--s-6);
-  }
-  .quick-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: var(--s-4);
-    text-decoration: none; color: inherit;
-    transition: border-color var(--t-fast) var(--ease);
-    display: flex; flex-direction: column; gap: var(--s-1);
-  }
-  .quick-card:hover { border-color: var(--border-strong); }
-  .quick-card-abbr {
-    font-family: var(--f-mono); font-size: var(--t-lg); font-weight: 500;
-    color: var(--text); letter-spacing: -0.01em;
-  }
-  .quick-card-name { font-size: var(--t-xs); color: var(--text-2); line-height: 1.4; }
+  /* ── Level filters ───────────────────────────────────────────── */
+  .laws-filters{display:inline-flex;gap:3px;background:var(--paper-2);border:1px solid var(--line);
+    border-radius:9px;padding:4px;flex-wrap:wrap;margin-bottom:18px}
+  .laws-filters button{padding:7px 14px;font:inherit;font-size:13px;background:transparent;color:var(--t2);
+    border:none;border-radius:6px;cursor:pointer;transition:color .15s,background .15s;white-space:nowrap}
+  .laws-filters button:hover{color:var(--t1)}
+  .laws-filters button.on{background:var(--paper);color:var(--t1);box-shadow:0 1px 2px var(--line-2);font-weight:500}
+  .laws-meta{margin:0 0 18px;font-family:var(--f-mono);font-size:12.5px;color:var(--t3);font-feature-settings:'tnum' 1}
 
-  .quick-section-head {
-    margin: var(--s-6) 0 var(--s-3);
-    padding-bottom: var(--s-2);
-    border-bottom: 1px solid var(--border);
-    display: flex; align-items: baseline; justify-content: space-between;
-  }
-  .quick-section-head h2 { font-size: var(--t-lg); font-weight: 400; margin: 0; }
-  .quick-section-head .meta { font-family: var(--f-mono); font-size: var(--t-xs); color: var(--text-3); }
+  /* ── Search results ──────────────────────────────────────────── */
+  .result-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px}
+  .law-result{border:1px solid var(--line);border-radius:12px;padding:18px 20px;background:var(--paper);
+    transition:border-color .16s var(--ease)}
+  .law-result:hover{border-color:var(--t3)}
+  .law-result-head{display:flex;align-items:baseline;justify-content:space-between;gap:14px;margin-bottom:7px}
+  .law-result-cite{font-family:var(--f-mono);font-size:13.5px;color:var(--t1);letter-spacing:-.01em;font-weight:600}
+  .law-result-level{font-family:var(--f-mono);font-size:10px;text-transform:uppercase;letter-spacing:.06em;
+    color:var(--t3);flex:0 0 auto}
+  .law-result-title{font-size:14px;color:var(--t2);margin:0 0 8px;line-height:1.45}
+  .law-result-snippet{font-size:14px;color:var(--t1);line-height:1.6;margin:0;padding-top:12px;
+    border-top:1px solid var(--line-2)}
+  .law-result-snippet mark{background:color-mix(in srgb,var(--red) 16%,transparent);color:inherit;
+    padding:0 2px;border-radius:2px}
 
-  .article-lookup {
-    background: var(--bg-soft);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: var(--s-5);
-    margin: var(--s-6) 0;
-  }
-  .article-lookup h3 { font-size: var(--t-lg); font-weight: 400; margin: 0 0 var(--s-3); }
-  .article-form { display: flex; gap: var(--s-2); flex-wrap: wrap; align-items: stretch; }
-  .article-form input {
-    padding: 8px 12px; font: inherit; font-size: var(--t-md);
-    background: var(--surface);
-    border: 1px solid var(--border-strong); border-radius: var(--radius);
-    color: var(--text);
-  }
-  .article-form input.law { width: 110px; font-family: var(--f-mono); }
-  .article-form input.art { width: 110px; font-family: var(--f-mono); }
+  /* ── Article lookup ──────────────────────────────────────────── */
+  .article-lookup{background:var(--paper-2);border:1px solid var(--line);border-radius:12px;
+    padding:clamp(20px,3vw,28px);margin:44px 0}
+  .article-lookup h2{font-size:clamp(18px,2.4vw,22px);font-weight:600;letter-spacing:-.01em;margin:0 0 8px}
+  .article-lookup .desc{font-size:14px;color:var(--t2);line-height:1.55;margin:0 0 16px}
+  .article-form{display:flex;gap:10px;flex-wrap:wrap;align-items:stretch}
+  .article-form input{padding:10px 13px;font:inherit;font-size:14px;background:var(--paper);
+    border:1px solid var(--line);border-radius:8px;color:var(--t1)}
+  .article-form input:focus{outline:2px solid var(--red);outline-offset:1px}
+  .article-form input.law,.article-form input.art{width:120px;font-family:var(--f-mono)}
 
-  .result-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--s-3); }
-  .law-result {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: var(--s-4) var(--s-5);
-    transition: border-color var(--t-fast) var(--ease);
-  }
-  .law-result:hover { border-color: var(--border-strong); }
-  .law-result-head {
-    display: flex; align-items: baseline; justify-content: space-between;
-    gap: var(--s-3); margin-bottom: var(--s-2);
-  }
-  .law-result-cite {
-    font-family: var(--f-mono); font-size: var(--t-sm); color: var(--text);
-    letter-spacing: -0.01em; font-weight: 500;
-  }
-  .law-result-level {
-    font-family: var(--f-mono); font-size: 10px;
-    text-transform: uppercase; letter-spacing: 0.06em;
-    color: var(--text-3);
-    flex: 0 0 auto;
-  }
-  .law-result-title {
-    font-size: var(--t-md); color: var(--text-2);
-    margin: 0 0 var(--s-2); line-height: 1.4;
-  }
-  .law-result-snippet {
-    font-size: var(--t-md); color: var(--text); line-height: 1.6;
-    margin: 0; padding: var(--s-3) 0 0;
-    border-top: 1px solid var(--border);
-  }
-  .law-result-snippet mark {
-    background: rgba(185, 28, 36, 0.12); color: inherit;
-    padding: 0 2px; border-radius: 2px;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root[data-theme='auto'] .law-result-snippet mark,
-    :root:not([data-theme]) .law-result-snippet mark {
-      background: rgba(248, 113, 113, 0.18);
-    }
-  }
+  /* ── Article display card ────────────────────────────────────── */
+  .article-display{border:1px solid var(--line);border-radius:12px;padding:clamp(20px,3vw,28px);
+    margin-bottom:18px;background:var(--paper)}
+  .article-display .head{display:flex;align-items:baseline;justify-content:space-between;gap:14px;
+    margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+  .article-display .head .law{font-family:var(--f-mono);font-size:14px;font-weight:600;color:var(--t1)}
+  .article-display .head .sr{font-family:var(--f-mono);font-size:12px;color:var(--t3)}
+  .article-display .law-title{font-size:13.5px;color:var(--t2);margin:0 0 14px;line-height:1.5}
+  .article-display .article-num{font-family:var(--f-mono);font-size:15px;font-weight:600;
+    color:var(--red);margin:14px 0 8px}
+  .article-display .text{font-size:14.5px;line-height:1.7;color:var(--t1);white-space:pre-wrap}
 
-  .article-display {
-    background: var(--surface); border: 1px solid var(--border-strong);
-    border-radius: var(--radius); padding: var(--s-5);
-    margin-bottom: var(--s-5);
-  }
-  .article-display .head {
-    display: flex; align-items: baseline; justify-content: space-between;
-    gap: var(--s-3); margin-bottom: var(--s-3);
-    padding-bottom: var(--s-2); border-bottom: 1px solid var(--border);
-  }
-  .article-display .head .law {
-    font-family: var(--f-mono); font-size: var(--t-md); color: var(--text);
-  }
-  .article-display .head .sr {
-    font-family: var(--f-mono); font-size: var(--t-xs); color: var(--text-3);
-  }
-  .article-display .law-title {
-    font-size: var(--t-sm); color: var(--text-2); margin: 0 0 var(--s-3); line-height: 1.5;
-  }
-  .article-display .article-num {
-    font-family: var(--f-mono); font-size: var(--t-base); font-weight: 500;
-    color: var(--accent); margin-bottom: var(--s-2);
-  }
-  .article-display .text {
-    font-size: var(--t-md); line-height: 1.7; white-space: pre-wrap;
-  }
+  /* ── Quick-access grid ───────────────────────────────────────── */
+  .quick-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+    margin:44px 0 16px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+  .quick-head h2{font-size:clamp(18px,2.4vw,22px);font-weight:600;letter-spacing:-.01em;margin:0}
+  .quick-head .meta{font-family:var(--f-mono);font-size:12px;color:var(--t3);white-space:nowrap}
+  .quickgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:12px}
+  .quick-card{display:flex;flex-direction:column;gap:5px;border:1px solid var(--line);border-radius:12px;
+    padding:16px 18px;background:var(--paper);text-decoration:none;color:inherit;
+    transition:border-color .16s var(--ease),transform .16s,box-shadow .16s}
+  .quick-card:hover{border-color:var(--t3);transform:translateY(-2px);box-shadow:0 12px 30px var(--line-2)}
+  .quick-card-abbr{font-family:var(--f-mono);font-size:17px;font-weight:600;color:var(--t1);letter-spacing:-.01em}
+  .quick-card-name{font-size:12px;color:var(--t3);line-height:1.4}
 
-  .empty, .error, .loading { padding: var(--s-6) var(--s-4); text-align: center; color: var(--text-2); font-size: var(--t-base); }
-  .error { color: var(--accent); }
-  .skeleton { background: var(--bg-soft); border-radius: var(--radius); animation: pulse 1.4s ease-in-out infinite; height: 92px; margin-bottom: var(--s-3); }
-  @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.95; } }
-  @media (prefers-reduced-motion: reduce) { .skeleton { animation: none; } }
+  /* ── States ──────────────────────────────────────────────────── */
+  .empty,.error,.loading{padding:48px 16px;text-align:center;color:var(--t2);font-size:15px}
+  .error{color:var(--red)}
+  .skeleton{background:var(--paper-2);border:1px solid var(--line-2);border-radius:12px;
+    animation:pulse 1.4s ease-in-out infinite;height:96px}
+  @keyframes pulse{0%,100%{opacity:.6}50%{opacity:.95}}
+  @media(prefers-reduced-motion:reduce){.skeleton{animation:none}}
+
+  .footnote{margin-top:44px;font-size:14px;color:var(--t2);line-height:1.6}
+  .footnote a{color:var(--red);text-decoration:underline;text-underline-offset:3px}
+  .footnote code{font-family:var(--f-mono);font-size:.88em;background:var(--paper-2);
+    border:1px solid var(--line);border-radius:5px;padding:1px 6px}
+  @media(max-width:480px){.laws-filters{width:100%;justify-content:space-between}.laws-filters button{flex:1 1 auto;text-align:center;padding:7px 8px}}
 </style>
 </head>
 <body>
+<a href="#main" class="skip" data-t="skip">Skip to content</a>
+<div data-nav></div>
 
-<a class="skip-link" href="#main">Skip to content</a>
+<main id="main">
+  <section class="page-head first">
+    <div class="wrap">
+      <p class="page-kicker"><b data-t="l_kick">Look up</b></p>
+      <h1 class="page-h1" data-t="l_h1">Federal &amp; cantonal laws</h1>
+      <p class="page-lead" data-t="l_lede">Full text of 5,510 federal laws (mirrored from Fedlex SPARQL) plus 15,722 cantonal acts (LexWork direct + LexFind fallback). Article-level search with snippets. Look up any article by abbreviation + number. Free, no account, no API key.</p>
+    </div>
+  </section>
 
-<header class="site">
-  <div class="container row">
-    <a class="brand" href="/">
-      <span class="logo">+</span> <span class="wordmark">opencaselaw.ch</span>
-    </a>
-    <nav id="primary-nav" aria-label="Primary">
-      <a href="/search/" data-nav-key="search">Search</a>
-      <a href="/courts/" data-nav-key="courts">Courts</a>
-      <a href="/laws/" class="active" data-nav-key="laws">Laws</a>
-      <a href="/word/" data-nav-key="word">Word</a>
-      <a href="/mcp/" data-nav-key="mcp">MCP</a>
-      <a href="/api/" data-nav-key="api">API</a>
-      <a href="/standards/" data-nav-key="standards">Standards</a>
-      <a href="/integrity/" data-nav-key="integrity">Integrity</a>
-      <a href="/quality.html" data-nav-key="quality">Quality</a>
-      <span class="lang-sw" role="group" aria-label="Language">
-        <a href="/?lang=de" data-l="de">DE</a>
-        <a href="/?lang=fr" data-l="fr">FR</a>
-        <a href="/?lang=it" data-l="it">IT</a>
-        <a href="/?lang=rm" data-l="rm">RM</a>
-        <a href="/?lang=en" data-l="en">EN</a>
-      </span>
-    </nav>
-    <button class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="primary-nav">
-      <svg class="icon-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
-      <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M6 18L18 6"/></svg>
-    </button>
-  </div>
-</header>
-
-<main class="container laws" id="main">
-  <p class="eyebrow" data-i18n="hero.eyebrow">Look up · Federal + cantonal</p>
-  <h1 data-i18n="hero.h1">Swiss federal and cantonal laws</h1>
-  <p class="lede" data-i18n="hero.lede">Full text of 5,510 federal laws (mirrored from Fedlex SPARQL) plus 15,722 cantonal acts (LexWork direct + LexFind fallback). Article-level search with snippets. Look up any article by abbreviation + number. Free, no account, no API key.</p>
-
-  <form class="laws-form" id="form" role="search" aria-label="Search Swiss laws">
-    <input class="laws-input" type="search" id="q" name="q"
-           placeholder='e.g. "Mietrecht Kündigung"  ·  "Datenschutz"  ·  "responsabilité"'
-           data-i18n-placeholder="form.placeholder"
-           autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Search query">
-    <button type="submit" class="btn btn-primary" data-i18n="form.submit">Search</button>
-  </form>
-
-  <div class="laws-filters" id="filters" hidden>
-    <button data-filter="" class="active" type="button" data-i18n="filter.allLevels">All levels</button>
-    <button data-filter="federal" type="button" data-i18n="filter.federalOnly">Federal only</button>
-    <button data-filter="cantonal" type="button" data-i18n="filter.cantonalOnly">Cantonal only</button>
-  </div>
-
-  <div class="laws-meta" id="meta" hidden></div>
-  <ul class="result-list" id="results" aria-live="polite"></ul>
-
-  <!-- Article lookup — when no search query, this is the primary action -->
-  <div class="article-lookup" id="article-lookup">
-    <h3 data-i18n="lookup.heading">Look up an article directly</h3>
-    <p style="font-size: var(--t-sm); color: var(--text-2); margin-bottom: var(--s-3);" data-i18n="lookup.desc">
-      Enter the law's standard abbreviation (OR, ZGB, STGB, STPO, ZPO, BV, …) and an article number. Returns the verbatim text from the local Fedlex mirror in &lt;1 ms.
-    </p>
-    <form class="article-form" id="article-form">
-      <input type="text" class="law" id="article-law" placeholder="OR" aria-label="Law abbreviation" required>
-      <input type="text" class="art" id="article-num" placeholder="41" aria-label="Article number" required>
-      <button type="submit" class="btn" data-i18n="lookup.submit">Show article</button>
+  <section class="wrap" style="padding-bottom:clamp(64px,9vw,112px)">
+    <form class="laws-form" id="form" role="search" aria-label="Search Swiss laws">
+      <input class="laws-input" type="search" id="q" name="q"
+             autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Search query">
+      <button type="submit" class="btn btn-primary" data-t="l_submit">Search</button>
     </form>
-    <div id="article-result" style="margin-top: var(--s-4);"></div>
-  </div>
 
-  <!-- Quick-access grid -->
-  <div class="quick-section-head"><h2 data-i18n="quick.heading">Most-searched federal laws</h2><span class="meta" data-i18n="quick.hint">click to look up Art. 1</span></div>
-  <div class="quickgrid" id="quickgrid"></div>
+    <div class="laws-filters" id="filters" role="group" aria-label="Law level" hidden>
+      <button data-filter="" class="on" type="button" data-t="l_allLevels">All levels</button>
+      <button data-filter="federal" type="button" data-t="l_federalOnly">Federal only</button>
+      <button data-filter="cantonal" type="button" data-t="l_cantonalOnly">Cantonal only</button>
+    </div>
 
-  <p style="margin-top: var(--s-6); font-size: var(--t-sm); color: var(--text-2);" data-i18n-html="footnote.materialien">
-    Need cantonal coverage detail? See <a href="/coverage/">/coverage</a> for per-portal scraper health.
-    Looking for legislative materials (Botschaften, parliamentary debates)?
-    Use <a href="https://mcp.opencaselaw.ch/api/docs"><code>get_materialien</code></a> via the MCP server or REST API.
-  </p>
+    <div class="laws-meta" id="meta" hidden></div>
+    <ul class="result-list" id="results" aria-live="polite"></ul>
+
+    <!-- Article lookup — when no search query, this is the primary action -->
+    <div class="article-lookup" id="article-lookup">
+      <h2 data-t="l_lookupHeading">Look up an article directly</h2>
+      <p class="desc" data-t="l_lookupDesc">Enter the law's standard abbreviation (OR, ZGB, STGB, STPO, ZPO, BV, …) and an article number. Returns the verbatim text from the local Fedlex mirror in &lt;1 ms.</p>
+      <form class="article-form" id="article-form">
+        <input type="text" class="law" id="article-law" placeholder="OR" aria-label="Law abbreviation" required>
+        <input type="text" class="art" id="article-num" placeholder="41" aria-label="Article number" required>
+        <button type="submit" class="btn btn-ghost btn-sm" data-t="l_lookupSubmit">Show article</button>
+      </form>
+      <div id="article-result" style="margin-top:18px"></div>
+    </div>
+
+    <!-- Quick-access grid -->
+    <div class="quick-head"><h2 data-t="l_quickHeading">Most-searched federal laws</h2><span class="meta" data-t="l_quickHint">click to look up Art. 1</span></div>
+    <div class="quickgrid" id="quickgrid"></div>
+
+    <p class="footnote" id="footnote" data-t="l_footnote">
+      Need cantonal coverage detail? See <a href="/coverage/">/coverage</a> for per-portal scraper health.
+      Looking for legislative materials (Botschaften, parliamentary debates)?
+      Use <a href="https://mcp.opencaselaw.ch/api/docs"><code>get_materialien</code></a> via the MCP server or REST API.
+    </p>
+  </section>
 </main>
 
-<footer class="site">
-  <div class="container row">
-    <div>
-      <a class="brand" href="/"><span class="logo">+</span> <span class="wordmark">opencaselaw.ch</span></a>
-      <p style="margin-top: var(--s-3); max-width: 32ch; font-size: var(--t-sm); color: var(--text-2);">
-        Open Swiss case law. Dataset packaging CC0 · Code MIT. 4-layer quality framework. Public-good infrastructure.
-      </p>
-    </div>
-    <div>
-      <h4 data-i18n="footer.data">Data</h4>
-      <ul>
-        <li><a href="/entscheide/">Decisions</a></li>
-        <li><a href="/gesetze/">Laws</a></li>
-        <li><a href="/quality.html">Quality</a></li>
-        <li><a href="/coverage/">Coverage</a></li>
-      </ul>
-    </div>
-    <div>
-      <h4 data-i18n="footer.access">Access</h4>
-      <ul>
-        <li><a href="/word/">Word add-in</a></li>
-        <li><a href="/mcp/">MCP server</a></li>
-        <li><a href="https://huggingface.co/datasets/voilaj/swiss-caselaw" rel="noopener">HuggingFace</a></li>
-        <li><a href="https://github.com/jonashertner/caselaw-repo-1" rel="noopener">GitHub</a></li>
-      </ul>
-    </div>
-    <div>
-      <h4 data-i18n="footer.about">About</h4>
-      <ul>
-        <li><a href="/ueber/">Mission</a></li>
-        <li><a href="/paper/">Research</a></li>
-        <li><a href="/datenschutz/">Privacy</a></li>
-        <li><a href="/governance-and-removal-policy.md">Governance</a></li>
-      </ul>
-    </div>
-  </div>
-  <div class="container" style="margin-top: var(--s-5); font-size: var(--t-xs); color: var(--text-3);">
-    © 2026 Jonas Hertner / OpenCaseLaw · Corpus CC0 · Code MIT
-  </div>
-</footer>
-
+<div data-foot></div>
+<script src="/static/js/site.js?v=1"></script>
 <script>
-'use strict';
-
-// All API-derived strings rendered via createElement / textContent (no
-// innerHTML on user data). Snippet ">>>foo<<<" markers turned into <mark>
-// via String.matchAll — no string interpolation through innerHTML.
-
-// --- i18n for JS-produced strings -------------------------------------------
-// Resolves against window.I18N_PAGE using the same locale precedence as the
-// shared lang-switch IIFE: ?lang → localStorage → <html lang> → 'de'.
-function detectLang() {
-  var qs = (location.search.match(/[?&]lang=([a-z]{2})/) || [])[1];
-  var stored = null;
-  try { stored = localStorage.getItem('lang'); } catch (_) {}
-  var html = (document.documentElement.lang || '').slice(0, 2);
-  return qs || stored || html || 'de';
-}
-window.curLang = window.curLang || detectLang();
-function t(key, vars) {
-  const dict = (window.I18N_PAGE && window.I18N_PAGE[key]) || null;
-  let s = (dict && (dict[window.curLang] || dict.de || dict.en)) || key;
-  if (vars) for (const k in vars) s = s.split('{' + k + '}').join(vars[k]);
-  return s;
-}
-
-const API_SEARCH = 'https://mcp.opencaselaw.ch/api/laws/search';
-const API_LAW = 'https://mcp.opencaselaw.ch/api/laws';
-const PAGE_SIZE = 20;
-
-const $ = (sel) => document.querySelector(sel);
-const params = () => new URLSearchParams(location.search);
-
-const QUICK_LAWS = [
-  ['BV',   'Bundesverfassung'],
-  ['ZGB',  'Zivilgesetzbuch'],
-  ['OR',   'Obligationenrecht'],
-  ['StGB', 'Strafgesetzbuch'],
-  ['StPO', 'Strafprozessordnung'],
-  ['ZPO',  'Zivilprozessordnung'],
-  ['DSG',  'Datenschutzgesetz'],
-  ['BGG',  'Bundesgerichtsgesetz'],
-  ['VStrR','Verwaltungsstrafrecht'],
-  ['SVG',  'Strassenverkehrsgesetz'],
-  ['ATSG', 'Allg. Sozialversicherungsrecht'],
-  ['IVG',  'Invalidenversicherung'],
-  ['AHVG', 'Alters- und Hinterlassenenvers.'],
-  ['UVG',  'Unfallversicherung'],
-  ['MWSTG','Mehrwertsteuer'],
-  ['AsylG','Asylgesetz'],
-  ['AuG',  'Auslaendergesetz'],
-  ['BZP',  'Bundeszivilprozess'],
-  ['VRV',  'Verkehrsregelnverordnung'],
-  ['GeBueV','Geschaeftsbuecherverordnung'],
-];
-
-function fmtNum(n) { return Number(n || 0).toLocaleString('de-CH').replace(/,/g, '\u2019'); }
-
-function el(tag, props, children) {
-  const node = document.createElement(tag);
-  if (props) {
-    for (const k in props) {
-      if (k === 'class') node.className = props[k];
-      else if (k === 'text') node.textContent = props[k];
-      else if (k === 'href') node.setAttribute('href', props[k]);
-      else if (k === 'role' || k.startsWith('aria-') || k === 'rel' || k === 'target') node.setAttribute(k, props[k]);
-      else node[k] = props[k];
+OCL.init({
+  active:'laws',
+  i18n:{
+    de:{
+      l_kick:'Nachschlagen · Bund + Kantone',
+      l_h1:'Bundes- und kantonale Gesetze',
+      l_lede:"Volltext von 5'510 Bundesgesetzen (Spiegel von Fedlex SPARQL) plus 15'722 kantonale Erlasse (LexWork direkt + LexFind-Fallback). Artikelweise Suche mit Snippets. Jeden Artikel über Abkürzung + Nummer nachschlagen. Frei, ohne Anmeldung, ohne API-Key.",
+      l_placeholder:'z. B. "Mietrecht Kündigung"  ·  "Datenschutz"  ·  "responsabilité"',
+      l_submit:'Suchen',
+      l_allLevels:'Alle Ebenen',l_federalOnly:'Nur Bund',l_cantonalOnly:'Nur Kantone',
+      l_searching:'Suche nach "{q}" …',
+      l_matching:'{count} passende Artikel  ·  Bund: {federal}  ·  kantonal: {cantonal}  ·  {ms} ms',
+      l_noMatch:'Keine Artikel passen zu "{q}". Versuchen Sie ein einzelnes Stichwort.',
+      l_searchFailed:'Suche fehlgeschlagen: {msg}.',
+      l_lookupHeading:'Artikel direkt nachschlagen',
+      l_lookupDesc:'Geben Sie die übliche Abkürzung des Gesetzes ein (OR, ZGB, STGB, STPO, ZPO, BV, …) sowie eine Artikelnummer. Liefert den wörtlichen Text aus dem lokalen Fedlex-Spiegel in <1 ms.',
+      l_lookupSubmit:'Artikel anzeigen',
+      l_quickHeading:'Meistgesuchte Bundesgesetze',l_quickHint:'klicken, um Art. 1 nachzuschlagen',
+      l_cardTitle:'Art. 1 von {abbr} anzeigen ({name})',
+      l_loading:'Wird geladen …',
+      l_notFound:'Artikel {num} in {law} nicht gefunden.',
+      l_lookupFailed:'Nachschlagen fehlgeschlagen: {msg}',
+      l_footnote:'Brauchen Sie Details zur kantonalen Abdeckung? Siehe <a href="/coverage/">/coverage</a> für die Scraper-Gesundheit pro Portal. Suchen Sie nach Gesetzgebungsmaterialien (Botschaften, Parlamentsdebatten)? Nutzen Sie <a href="https://mcp.opencaselaw.ch/api/docs"><code>get_materialien</code></a> über den MCP-Server oder die REST-API.'
+    },
+    fr:{
+      l_kick:'Consulter · fédéral + cantonal',
+      l_h1:'Lois fédérales et cantonales',
+      l_lede:"Texte intégral de 5'510 lois fédérales (miroir de Fedlex SPARQL) et 15'722 actes cantonaux (LexWork direct + repli LexFind). Recherche par article avec extraits. Consultez n'importe quel article par abréviation + numéro. Gratuit, sans inscription, sans clé API.",
+      l_placeholder:'p. ex. "Mietrecht Kündigung"  ·  "Datenschutz"  ·  "responsabilité"',
+      l_submit:'Rechercher',
+      l_allLevels:'Tous les niveaux',l_federalOnly:'Fédéral uniquement',l_cantonalOnly:'Cantonal uniquement',
+      l_searching:'Recherche de "{q}" …',
+      l_matching:'{count} articles correspondants  ·  fédéral : {federal}  ·  cantonal : {cantonal}  ·  {ms} ms',
+      l_noMatch:'Aucun article ne correspond à "{q}". Essayez un seul mot-clé.',
+      l_searchFailed:'Échec de la recherche : {msg}.',
+      l_lookupHeading:'Consulter un article directement',
+      l_lookupDesc:"Saisissez l'abréviation usuelle de la loi (OR, ZGB, STGB, STPO, ZPO, BV, …) et un numéro d'article. Renvoie le texte verbatim du miroir Fedlex local en <1 ms.",
+      l_lookupSubmit:"Afficher l'article",
+      l_quickHeading:'Lois fédérales les plus recherchées',l_quickHint:"cliquer pour consulter l'art. 1",
+      l_cardTitle:"Afficher l'art. 1 de {abbr} ({name})",
+      l_loading:'Chargement …',
+      l_notFound:'Article {num} introuvable dans {law}.',
+      l_lookupFailed:'Échec de la consultation : {msg}',
+      l_footnote:'Besoin de détails sur la couverture cantonale ? Voir <a href="/coverage/">/coverage</a> pour la santé des scrapers par portail. Vous cherchez des matériaux législatifs (messages, débats parlementaires) ? Utilisez <a href="https://mcp.opencaselaw.ch/api/docs"><code>get_materialien</code></a> via le serveur MCP ou l\'API REST.'
+    },
+    it:{
+      l_kick:'Consulta · federale + cantonale',
+      l_h1:'Leggi federali e cantonali',
+      l_lede:"Testo integrale di 5'510 leggi federali (mirror di Fedlex SPARQL) più 15'722 atti cantonali (LexWork diretto + fallback LexFind). Ricerca per articolo con estratti. Consultate qualunque articolo tramite abbreviazione + numero. Gratuito, senza registrazione, senza chiave API.",
+      l_placeholder:'p. es. "Mietrecht Kündigung"  ·  "Datenschutz"  ·  "responsabilité"',
+      l_submit:'Cerca',
+      l_allLevels:'Tutti i livelli',l_federalOnly:'Solo federale',l_cantonalOnly:'Solo cantonale',
+      l_searching:'Ricerca di "{q}" …',
+      l_matching:'{count} articoli corrispondenti  ·  federale: {federal}  ·  cantonale: {cantonal}  ·  {ms} ms',
+      l_noMatch:'Nessun articolo corrisponde a "{q}". Provate con una sola parola chiave.',
+      l_searchFailed:'Ricerca non riuscita: {msg}.',
+      l_lookupHeading:'Consulta direttamente un articolo',
+      l_lookupDesc:"Inserite l'abbreviazione usuale della legge (OR, ZGB, STGB, STPO, ZPO, BV, …) e un numero di articolo. Restituisce il testo verbatim dal mirror Fedlex locale in <1 ms.",
+      l_lookupSubmit:"Mostra l'articolo",
+      l_quickHeading:'Leggi federali più cercate',l_quickHint:"clicca per consultare l'art. 1",
+      l_cardTitle:"Mostra l'art. 1 di {abbr} ({name})",
+      l_loading:'Caricamento …',
+      l_notFound:'Articolo {num} non trovato in {law}.',
+      l_lookupFailed:'Consultazione non riuscita: {msg}',
+      l_footnote:'Servono dettagli sulla copertura cantonale? Vedi <a href="/coverage/">/coverage</a> per lo stato degli scraper per portale. Cercate materiali legislativi (messaggi, dibattiti parlamentari)? Usate <a href="https://mcp.opencaselaw.ch/api/docs"><code>get_materialien</code></a> tramite il server MCP o l\'API REST.'
+    },
+    rm:{
+      l_kick:'Consultar · federal + cantunal',
+      l_h1:'Leschas federalas e chantunalas',
+      l_lede:"Text cumplet da 5'510 leschas federalas (spievel da Fedlex SPARQL) e 15'722 actas chantunalas (LexWork directamain + repli LexFind). Tschertga per artitgel cun extracts. Consultar mintga artitgel cun l'abreviaziun + numer. Gratuit, senza annunzia, senza clav API.",
+      l_placeholder:'p. ex. "Mietrecht Kündigung"  ·  "Datenschutz"  ·  "responsabilité"',
+      l_submit:'Tschertgar',
+      l_allLevels:'Tut ils nivels',l_federalOnly:'Mo federal',l_cantonalOnly:'Mo chantunal',
+      l_searching:'Tschertga da "{q}" …',
+      l_matching:'{count} artitgels correspundents  ·  federal: {federal}  ·  chantunal: {cantonal}  ·  {ms} ms',
+      l_noMatch:'Nagins artitgels correspundan a "{q}". Empruvai cun in singul pled magic.',
+      l_searchFailed:'La tschertga è fallida: {msg}.',
+      l_lookupHeading:'Consultar in artitgel directamain',
+      l_lookupDesc:"Endatai l'abreviaziun usuala da la lescha (OR, ZGB, STGB, STPO, ZPO, BV, …) ed in numer d'artitgel. Returna il text litteral dal spievel Fedlex local en <1 ms.",
+      l_lookupSubmit:"Mussar l'artitgel",
+      l_quickHeading:'Leschas federalas las pli tschertgadas',l_quickHint:"cliccar per consultar l'art. 1",
+      l_cardTitle:"Mussar l'art. 1 da {abbr} ({name})",
+      l_loading:'Chargiar …',
+      l_notFound:'Artitgel {num} betg chattà en {law}.',
+      l_lookupFailed:'La consultaziun è fallida: {msg}',
+      l_footnote:'Vulais Vus detagls davart la cuvertura chantunala? Vesair <a href="/coverage/">/coverage</a> per la sanadad dals scrapers per portal. Tschertgais Vus material legislativ (messadis, debattas parlamentaras)? Dovrai <a href="https://mcp.opencaselaw.ch/api/docs"><code>get_materialien</code></a> via il server MCP u l\'API REST.'
+    },
+    en:{
+      l_kick:'Look up · Federal + cantonal',
+      l_h1:'Federal & cantonal laws',
+      l_lede:'Full text of 5,510 federal laws (mirrored from Fedlex SPARQL) plus 15,722 cantonal acts (LexWork direct + LexFind fallback). Article-level search with snippets. Look up any article by abbreviation + number. Free, no account, no API key.',
+      l_placeholder:'e.g. "Mietrecht Kündigung"  ·  "Datenschutz"  ·  "responsabilité"',
+      l_submit:'Search',
+      l_allLevels:'All levels',l_federalOnly:'Federal only',l_cantonalOnly:'Cantonal only',
+      l_searching:'Searching for "{q}"…',
+      l_matching:'{count} matching articles  ·  federal: {federal}  ·  cantonal: {cantonal}  ·  {ms} ms',
+      l_noMatch:'No articles match "{q}". Try a single keyword.',
+      l_searchFailed:'Search failed: {msg}.',
+      l_lookupHeading:'Look up an article directly',
+      l_lookupDesc:"Enter the law's standard abbreviation (OR, ZGB, STGB, STPO, ZPO, BV, …) and an article number. Returns the verbatim text from the local Fedlex mirror in <1 ms.",
+      l_lookupSubmit:'Show article',
+      l_quickHeading:'Most-searched federal laws',l_quickHint:'click to look up Art. 1',
+      l_cardTitle:'Show Art. 1 of {abbr} ({name})',
+      l_loading:'Loading…',
+      l_notFound:'Article {num} not found in {law}.',
+      l_lookupFailed:'Lookup failed: {msg}',
+      l_footnote:'Need cantonal coverage detail? See <a href="/coverage/">/coverage</a> for per-portal scraper health. Looking for legislative materials (Botschaften, parliamentary debates)? Use <a href="https://mcp.opencaselaw.ch/api/docs"><code>get_materialien</code></a> via the MCP server or REST API.'
     }
-  }
-  if (children) for (const c of children) {
-    if (c == null) continue;
-    node.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
-  }
-  return node;
-}
-function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
+  },
+  onReady:function(O){
+    'use strict';
 
-function renderSnippet(into, snippet) {
-  if (!snippet) return;
-  const pattern = />>>(.+?)<<</g;
-  const matches = Array.from(snippet.matchAll(pattern));
-  let cursor = 0;
-  for (const m of matches) {
-    if (m.index > cursor) into.appendChild(document.createTextNode(snippet.slice(cursor, m.index)));
-    const mark = document.createElement('mark');
-    mark.textContent = m[1];
-    into.appendChild(mark);
-    cursor = m.index + m[0].length;
-  }
-  if (cursor < snippet.length) into.appendChild(document.createTextNode(snippet.slice(cursor)));
-}
+    // T(key,vars) — interpolation on top of O.t(). All API-derived strings are
+    // rendered via createElement / textContent (no innerHTML on API data).
+    function T(k,v){var s=O.t(k); if(v)for(var x in v)s=s.split('{'+x+'}').join(v[x]); return s;}
 
-function buildResult(r) {
-  const li = el('li', { class: 'law-result' });
-  const head = el('div', { class: 'law-result-head' });
-  const cite = `${r.abbreviation || r.sr_number || '—'} · Art. ${r.article_num || '?'}${r.heading ? ' — ' + r.heading : ''}`;
-  head.appendChild(el('span', { class: 'law-result-cite', text: cite }));
-  head.appendChild(el('span', { class: 'law-result-level', text: r.level || '' }));
-  li.appendChild(head);
-  if (r.title) li.appendChild(el('p', { class: 'law-result-title', text: r.title }));
-  if (r.snippet) {
-    const p = el('p', { class: 'law-result-snippet' });
-    renderSnippet(p, r.snippet);
-    li.appendChild(p);
-  }
-  return li;
-}
+    var API_SEARCH='https://mcp.opencaselaw.ch/api/laws/search';
+    var API_LAW='https://mcp.opencaselaw.ch/api/laws';
+    var PAGE_SIZE=20;
+    var $=function(sel){return document.querySelector(sel);};
+    var params=function(){return new URLSearchParams(location.search);};
 
-function showSkeleton() {
-  const list = $('#results');
-  clear(list);
-  for (let i = 0; i < 6; i++) list.appendChild(el('li', { class: 'skeleton', 'aria-hidden': 'true' }));
-}
+    var QUICK_LAWS=[
+      ['BV',   'Bundesverfassung'],
+      ['ZGB',  'Zivilgesetzbuch'],
+      ['OR',   'Obligationenrecht'],
+      ['StGB', 'Strafgesetzbuch'],
+      ['StPO', 'Strafprozessordnung'],
+      ['ZPO',  'Zivilprozessordnung'],
+      ['DSG',  'Datenschutzgesetz'],
+      ['BGG',  'Bundesgerichtsgesetz'],
+      ['VStrR','Verwaltungsstrafrecht'],
+      ['SVG',  'Strassenverkehrsgesetz'],
+      ['ATSG', 'Allg. Sozialversicherungsrecht'],
+      ['IVG',  'Invalidenversicherung'],
+      ['AHVG', 'Alters- und Hinterlassenenvers.'],
+      ['UVG',  'Unfallversicherung'],
+      ['MWSTG','Mehrwertsteuer'],
+      ['AsylG','Asylgesetz'],
+      ['AuG',  'Auslaendergesetz'],
+      ['BZP',  'Bundeszivilprozess'],
+      ['VRV',  'Verkehrsregelnverordnung'],
+      ['GeBueV','Geschaeftsbuecherverordnung']
+    ];
 
-async function runSearch(q, level) {
-  if (!q) {
-    clear($('#results'));
-    $('#meta').hidden = true;
-    $('#filters').hidden = true;
-    return;
-  }
-  $('#filters').hidden = false;
-  showSkeleton();
-  $('#meta').hidden = false;
-  $('#meta').textContent = t('meta.searching', { q });
-  try {
-    const url = new URL(API_SEARCH);
-    url.searchParams.set('query', q);
-    url.searchParams.set('limit', String(PAGE_SIZE));
-    if (level) url.searchParams.set('level', level);
-    const t0 = performance.now();
-    const r = await fetch(url, { headers: { Accept: 'application/json' } });
-    if (!r.ok) throw new Error(`API ${r.status}`);
-    const data = await r.json();
-    const ms = Math.round(performance.now() - t0);
-    const results = data.results || [];
-    $('#meta').textContent = t('meta.matching', {
-      count: fmtNum(data.count || results.length),
-      federal: fmtNum(data.federal_hits),
-      cantonal: fmtNum(data.cantonal_hits),
-      ms,
-    });
-    const list = $('#results');
-    clear(list);
-    if (results.length === 0) {
-      list.appendChild(el('li', { class: 'empty', text: t('results.noMatch', { q }) }));
-      return;
-    }
-    for (const r of results) list.appendChild(buildResult(r));
-  } catch (e) {
-    const list = $('#results');
-    clear(list);
-    list.appendChild(el('li', { class: 'error', text: t('error.searchFailed', { msg: e.message }) }));
-  }
-}
-
-async function lookupArticle(law, num) {
-  const into = $('#article-result');
-  clear(into);
-  into.appendChild(el('div', { class: 'loading', text: t('article.loading') }));
-  try {
-    const url = new URL(`${API_LAW}/${encodeURIComponent(law)}`);
-    url.searchParams.set('article', num);
-    const r = await fetch(url, { headers: { Accept: 'application/json' } });
-    if (!r.ok) throw new Error(`API ${r.status}`);
-    const data = await r.json();
-    clear(into);
-    const card = el('div', { class: 'article-display' });
-    const head = el('div', { class: 'head' }, [
-      el('span', { class: 'law', text: `${data.abbreviation || law.toUpperCase()} · Art. ${num}` }),
-      el('span', { class: 'sr', text: data.sr_number ? `SR ${data.sr_number}` : '' }),
-    ]);
-    card.appendChild(head);
-    if (data.title) card.appendChild(el('p', { class: 'law-title', text: data.title }));
-    const articles = data.articles || [];
-    if (articles.length === 0) {
-      card.appendChild(el('div', { class: 'empty', text: t('article.notFound', { num, law: law.toUpperCase() }) }));
-    } else {
-      for (const a of articles) {
-        if (a.heading) card.appendChild(el('div', { class: 'article-num', text: `Art. ${a.article_num} — ${a.heading}` }));
-        else card.appendChild(el('div', { class: 'article-num', text: `Art. ${a.article_num}` }));
-        card.appendChild(el('div', { class: 'text', text: a.text || '' }));
+    function el(tag,props,children){
+      var node=document.createElement(tag);
+      if(props)for(var k in props){
+        if(k==='class')node.className=props[k];
+        else if(k==='text')node.textContent=props[k];
+        else if(k==='href')node.setAttribute('href',props[k]);
+        else if(k==='role'||k.indexOf('aria-')===0||k==='rel'||k==='target'||k==='title')node.setAttribute(k,props[k]);
+        else node[k]=props[k];
       }
-    }
-    into.appendChild(card);
-  } catch (e) {
-    clear(into);
-    into.appendChild(el('div', { class: 'error', text: t('article.lookupFailed', { msg: e.message }) }));
-  }
-}
-
-function buildQuick() {
-  const grid = $('#quickgrid');
-  clear(grid);
-  for (const [abbr, name] of QUICK_LAWS) {
-    const a = el('a', {
-      class: 'quick-card',
-      href: `?law=${encodeURIComponent(abbr)}&art=1`,
-      title: t('quick.cardTitle', { abbr, name }),
-    }, [
-      el('span', { class: 'quick-card-abbr', text: abbr }),
-      el('span', { class: 'quick-card-name', text: name }),
-    ]);
-    a.addEventListener('click', (e) => {
-      e.preventDefault();
-      $('#article-law').value = abbr;
-      $('#article-num').value = '1';
-      const p = new URLSearchParams(location.search);
-      p.set('law', abbr); p.set('art', '1');
-      history.pushState({ law: abbr, art: '1' }, '', `?${p}`);
-      lookupArticle(abbr, '1');
-      $('#article-lookup').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-    grid.appendChild(a);
-  }
-}
-
-function setLevelButtons(level) {
-  document.querySelectorAll('#filters button').forEach((b) => {
-    b.classList.toggle('active', (b.dataset.filter || '') === (level || ''));
-  });
-}
-
-function bind() {
-  $('#form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const q = $('#q').value.trim();
-    const p = new URLSearchParams();
-    if (q) p.set('q', q);
-    history.pushState({ q }, '', q ? `?${p}` : location.pathname);
-    runSearch(q, '');
-    setLevelButtons('');
-  });
-  document.querySelectorAll('#filters button').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const level = btn.dataset.filter || '';
-      const q = $('#q').value.trim();
-      const p = new URLSearchParams({ q });
-      if (level) p.set('level', level);
-      history.pushState({ q, level }, '', `?${p}`);
-      runSearch(q, level);
-      setLevelButtons(level);
-    });
-  });
-  $('#article-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const law = $('#article-law').value.trim();
-    const num = $('#article-num').value.trim();
-    if (!law || !num) return;
-    const p = new URLSearchParams({ law, art: num });
-    history.pushState({ law, art: num }, '', `?${p}`);
-    lookupArticle(law, num);
-  });
-  window.addEventListener('popstate', () => init());
-}
-
-function init() {
-  const p = params();
-  const q = p.get('q') || '';
-  const level = p.get('level') || '';
-  const law = p.get('law');
-  const art = p.get('art');
-  $('#q').value = q;
-  setLevelButtons(level);
-  if (q) runSearch(q, level);
-  if (law && art) {
-    $('#article-law').value = law;
-    $('#article-num').value = art;
-    lookupArticle(law, art);
-  }
-}
-
-// Re-render JS-produced content (quick-card titles, current search results,
-// article lookup, meta, errors) when the language is switched, without a
-// reload. Called by the shared lang switcher.
-window.rerenderI18n = function () {
-  buildQuick();
-  init();
-};
-
-buildQuick();
-bind();
-init();
-</script>
-
-<script>
-/* Per-page i18n table — translated by the shared IIFE walker. */
-window.I18N_PAGE = {
-    'hero.eyebrow': { de: 'Nachschlagen · Bund + Kantone', fr: 'Consulter · fédéral + cantonal', it: 'Consulta · federale + cantonale', rm: 'Consultar · federal + cantunal', en: 'Look up · Federal + cantonal' },
-    'hero.h1': { de: 'Schweizer Bundes- und kantonale Gesetze', fr: 'Lois fédérales et cantonales suisses', it: 'Leggi federali e cantonali svizzere', rm: 'Leschas federalas e cantunalas svizras', en: 'Swiss federal and cantonal laws' },
-    'hero.lede': { de: "Volltext von 5'510 Bundesgesetzen (Spiegel von Fedlex SPARQL) plus 15'722 kantonale Erlasse (LexWork direkt + LexFind-Fallback). Artikelweise Suche mit Snippets. Jeden Artikel über Abkürzung + Nummer nachschlagen. Frei, ohne Anmeldung, ohne API-Key.", fr: "Texte intégral de 5'510 lois fédérales (miroir de Fedlex SPARQL) et 15'722 actes cantonaux (LexWork direct + repli LexFind). Recherche par article avec extraits. Consultez n'importe quel article par abréviation + numéro. Gratuit, sans inscription, sans clé API.", it: "Testo integrale di 5'510 leggi federali (mirror di Fedlex SPARQL) più 15'722 atti cantonali (LexWork diretto + fallback LexFind). Ricerca per articolo con estratti. Consultate qualunque articolo tramite abbreviazione + numero. Gratuito, senza registrazione, senza chiave API.", rm: "Text cumplet da 5'510 leschas federalas (spievel da Fedlex SPARQL) e 15'722 actas cantunalas (LexWork directamain + repli LexFind). Tschertga per artitgel cun extracts. Consultar mintga artitgel cun l'abreviaziun + numer. Gratuit, senza annunzia, senza clav API.", en: 'Full text of 5,510 federal laws (mirrored from Fedlex SPARQL) plus 15,722 cantonal acts (LexWork direct + LexFind fallback). Article-level search with snippets. Look up any article by abbreviation + number. Free, no account, no API key.' },
-    'form.placeholder': { de: 'z. B. "Mietrecht Kündigung"  ·  "Datenschutz"  ·  "responsabilité"', fr: 'p. ex. "Mietrecht Kündigung"  ·  "Datenschutz"  ·  "responsabilité"', it: 'p. es. "Mietrecht Kündigung"  ·  "Datenschutz"  ·  "responsabilité"', rm: 'p. ex. "Mietrecht Kündigung"  ·  "Datenschutz"  ·  "responsabilité"', en: 'e.g. "Mietrecht Kündigung"  ·  "Datenschutz"  ·  "responsabilité"' },
-    'form.submit': { de: 'Suchen', fr: 'Rechercher', it: 'Cerca', rm: 'Tschertgar', en: 'Search' },
-    'filter.allLevels': { de: 'Alle Ebenen', fr: 'Tous les niveaux', it: 'Tutti i livelli', rm: 'Tut ils nivels', en: 'All levels' },
-    'filter.federalOnly': { de: 'Nur Bund', fr: 'Fédéral uniquement', it: 'Solo federale', rm: 'Mo federal', en: 'Federal only' },
-    'filter.cantonalOnly': { de: 'Nur Kantone', fr: 'Cantonal uniquement', it: 'Solo cantonale', rm: 'Mo chantunal', en: 'Cantonal only' },
-    'meta.searching': { de: 'Suche nach "{q}" …', fr: 'Recherche de "{q}" …', it: 'Ricerca di "{q}" …', rm: 'Tschertga da "{q}" …', en: 'Searching for "{q}"…' },
-    'meta.matching': { de: '{count} passende Artikel  ·  Bund: {federal}  ·  kantonal: {cantonal}  ·  {ms} ms', fr: '{count} articles correspondants  ·  fédéral : {federal}  ·  cantonal : {cantonal}  ·  {ms} ms', it: '{count} articoli corrispondenti  ·  federale: {federal}  ·  cantonale: {cantonal}  ·  {ms} ms', rm: '{count} artitgels correspundents  ·  federal: {federal}  ·  chantunal: {cantonal}  ·  {ms} ms', en: '{count} matching articles  ·  federal: {federal}  ·  cantonal: {cantonal}  ·  {ms} ms' },
-    'results.noMatch': { de: 'Keine Artikel passen zu "{q}". Versuchen Sie ein einzelnes Stichwort.', fr: 'Aucun article ne correspond à "{q}". Essayez un seul mot-clé.', it: 'Nessun articolo corrisponde a "{q}". Provate con una sola parola chiave.', rm: 'Nagins artitgels correspundan a "{q}". Empruvai cun in singul pled magic.', en: 'No articles match "{q}". Try a single keyword.' },
-    'error.searchFailed': { de: 'Suche fehlgeschlagen: {msg}.', fr: 'Échec de la recherche : {msg}.', it: 'Ricerca non riuscita: {msg}.', rm: 'La tschertga è fallida: {msg}.', en: 'Search failed: {msg}.' },
-    'lookup.heading': { de: 'Artikel direkt nachschlagen', fr: 'Consulter un article directement', it: 'Consulta direttamente un articolo', rm: 'Consultar in artitgel directamain', en: 'Look up an article directly' },
-    'lookup.desc': { de: 'Geben Sie die übliche Abkürzung des Gesetzes ein (OR, ZGB, STGB, STPO, ZPO, BV, …) sowie eine Artikelnummer. Liefert den wörtlichen Text aus dem lokalen Fedlex-Spiegel in <1 ms.', fr: "Saisissez l'abréviation usuelle de la loi (OR, ZGB, STGB, STPO, ZPO, BV, …) et un numéro d'article. Renvoie le texte verbatim du miroir Fedlex local en <1 ms.", it: "Inserite l'abbreviazione usuale della legge (OR, ZGB, STGB, STPO, ZPO, BV, …) e un numero di articolo. Restituisce il testo verbatim dal mirror Fedlex locale in <1 ms.", rm: "Endatai l'abreviaziun usuala da la lescha (OR, ZGB, STGB, STPO, ZPO, BV, …) ed in numer d'artitgel. Returna il text litteral dal spievel Fedlex local en <1 ms.", en: "Enter the law's standard abbreviation (OR, ZGB, STGB, STPO, ZPO, BV, …) and an article number. Returns the verbatim text from the local Fedlex mirror in <1 ms." },
-    'lookup.submit': { de: 'Artikel anzeigen', fr: "Afficher l'article", it: "Mostra l'articolo", rm: "Mussar l'artitgel", en: 'Show article' },
-    'quick.heading': { de: 'Meistgesuchte Bundesgesetze', fr: 'Lois fédérales les plus recherchées', it: 'Leggi federali più cercate', rm: 'Leschas federalas las pli tschertgadas', en: 'Most-searched federal laws' },
-    'quick.hint': { de: 'klicken, um Art. 1 nachzuschlagen', fr: "cliquer pour consulter l'art. 1", it: "clicca per consultare l'art. 1", rm: "cliccar per consultar l'art. 1", en: 'click to look up Art. 1' },
-    'quick.cardTitle': { de: 'Art. 1 von {abbr} anzeigen ({name})', fr: "Afficher l'art. 1 de {abbr} ({name})", it: "Mostra l'art. 1 di {abbr} ({name})", rm: "Mussar l'art. 1 da {abbr} ({name})", en: 'Show Art. 1 of {abbr} ({name})' },
-    'article.loading': { de: 'Wird geladen …', fr: 'Chargement …', it: 'Caricamento …', rm: 'Chargiar …', en: 'Loading…' },
-    'article.notFound': { de: 'Artikel {num} in {law} nicht gefunden.', fr: "Article {num} introuvable dans {law}.", it: 'Articolo {num} non trovato in {law}.', rm: 'Artitgel {num} betg chattà en {law}.', en: 'Article {num} not found in {law}.' },
-    'article.lookupFailed': { de: 'Nachschlagen fehlgeschlagen: {msg}', fr: 'Échec de la consultation : {msg}', it: 'Consultazione non riuscita: {msg}', rm: 'La consultaziun è fallida: {msg}', en: 'Lookup failed: {msg}' },
-    'footnote.materialien': { de: 'Brauchen Sie Details zur kantonalen Abdeckung? Siehe <a href="/coverage/">/coverage</a> für die Scraper-Gesundheit pro Portal. Suchen Sie nach Gesetzgebungsmaterialien (Botschaften, Parlamentsdebatten)? Nutzen Sie <a href="https://mcp.opencaselaw.ch/api/docs"><code>get_materialien</code></a> über den MCP-Server oder die REST-API.', fr: 'Besoin de détails sur la couverture cantonale ? Voir <a href="/coverage/">/coverage</a> pour la santé des scrapers par portail. Vous cherchez des matériaux législatifs (messages, débats parlementaires) ? Utilisez <a href="https://mcp.opencaselaw.ch/api/docs"><code>get_materialien</code></a> via le serveur MCP ou l\'API REST.', it: 'Servono dettagli sulla copertura cantonale? Vedi <a href="/coverage/">/coverage</a> per lo stato degli scraper per portale. Cercate materiali legislativi (messaggi, dibattiti parlamentari)? Usate <a href="https://mcp.opencaselaw.ch/api/docs"><code>get_materialien</code></a> tramite il server MCP o l\'API REST.', rm: 'Vulais Vus detagls davart la cuvertura chantunala? Vesair <a href="/coverage/">/coverage</a> per la sanadad dals scrapers per portal. Tschertgais Vus material legislativ (messadis, debattas parlamentaras)? Dovrai <a href="https://mcp.opencaselaw.ch/api/docs"><code>get_materialien</code></a> via il server MCP u l\'API REST.', en: 'Need cantonal coverage detail? See <a href="/coverage/">/coverage</a> for per-portal scraper health. Looking for legislative materials (Botschaften, parliamentary debates)? Use <a href="https://mcp.opencaselaw.ch/api/docs"><code>get_materialien</code></a> via the MCP server or REST API.' }
-  };
-</script>
-<script>
-/* Shared lang-switch wiring (works on every page).
-   - Reads current locale from ?lang=, then localStorage, then <html lang>.
-   - Highlights the matching .lang-sw [data-l] item with .on.
-   - Translates the primary nav labels via NAV_I18N so the user always
-     sees the language they picked, even on English-only pages.
-   - Click is ALWAYS preventDefault'd so the user stays on the current
-     page; localStorage persists their choice for the next i18n-capable
-     surface (landing, /word/*).
-   - On i18n-capable pages (where window.applyI18n is defined), also
-     calls applyI18n() to translate the whole body in-place. */
-(function () {
-  /* Canonical lookup by data-nav-key (added to every nav anchor) so that
-     translating once does NOT lose the key — fixes the RM-stickiness bug
-     where textContent='Tschertga' could not be looked up again. */
-  var NAV_I18N = {
-    search:  { de: 'Suche',     fr: 'Recherche', it: 'Ricerca',  rm: 'Tschertga', en: 'Search' },
-    courts:  { de: 'Gerichte',  fr: 'Tribunaux', it: 'Tribunali', rm: 'Dretgiras', en: 'Courts' },
-    laws:    { de: 'Gesetze',   fr: 'Lois',      it: 'Leggi',     rm: 'Leschas',   en: 'Laws' },
-    word:    { de: 'Word',      fr: 'Word',      it: 'Word',      rm: 'Word',      en: 'Word' },
-    mcp:     { de: 'MCP',       fr: 'MCP',       it: 'MCP',       rm: 'MCP',       en: 'MCP' },
-    api:     { de: 'API',       fr: 'API',       it: 'API',       rm: 'API',       en: 'API' },
-    quality: { de: 'Qualitaet', fr: 'Qualite',   it: 'Qualita',   rm: 'Qualitad',  en: 'Quality' }
-  };
-  var I18N_FOOTER = {
-    'footer.access': { de: 'Zugang',     fr: 'Accès',      it: 'Accesso',        rm: 'Access',      en: 'Access' },
-    'footer.product':  { de: 'Produkt',   fr: 'Produit',   it: 'Prodotto', rm: 'Product',   en: 'Product' },
-    'footer.data':     { de: 'Daten',     fr: 'Donnees',   it: 'Dati',     rm: 'Datas',     en: 'Data' },
-    'footer.about':    { de: 'Ueber',     fr: 'A propos',  it: 'Chi siamo',rm: 'Davart',    en: 'About' },
-    'footer.search':   { de: 'Suche',     fr: 'Recherche', it: 'Ricerca',  rm: 'Tschertga', en: 'Search' },
-    'footer.courts':   { de: 'Gerichte',  fr: 'Tribunaux', it: 'Tribunali', rm: 'Dretgiras', en: 'Courts' },
-    'footer.laws':     { de: 'Gesetze',   fr: 'Lois',      it: 'Leggi',     rm: 'Leschas',   en: 'Laws' },
-    'footer.word':     { de: 'Word-Add-in', fr: 'Word add-in', it: 'Componente Word', rm: 'Add-in Word', en: 'Word add-in' },
-    'footer.mcp':      { de: 'MCP',       fr: 'MCP',       it: 'MCP',       rm: 'MCP',      en: 'MCP' },
-    'footer.api':      { de: 'API',       fr: 'API',       it: 'API',       rm: 'API',      en: 'API' },
-    'footer.paper':    { de: 'Paper',     fr: 'Article',   it: 'Articolo',  rm: 'Artitgel', en: 'Paper' },
-    'footer.quality':  { de: 'Qualitaet', fr: 'Qualite',   it: 'Qualita',   rm: 'Qualitad', en: 'Quality' },
-    'footer.coverage': { de: 'Abdeckung', fr: 'Couverture', it: 'Copertura', rm: 'Cuvrida', en: 'Coverage' }
-  };
-
-  function applyNavLang(lang) {
-    document.querySelectorAll('header.site nav > a[data-nav-key]').forEach(function (a) {
-      var dict = NAV_I18N[a.dataset.navKey];
-      if (dict && dict[lang]) a.textContent = dict[lang];
-    });
-    document.querySelectorAll('[data-i18n]').forEach(function (el) {
-      var key = el.getAttribute('data-i18n');
-      var dict = (window.I18N_PAGE && window.I18N_PAGE[key]) || I18N_FOOTER[key];
-      if (dict && dict[lang]) el.textContent = dict[lang];
-    });
-    document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
-      var key = el.getAttribute('data-i18n-placeholder');
-      var dict = (window.I18N_PAGE && window.I18N_PAGE[key]) || null;
-      if (dict && dict[lang]) el.setAttribute('placeholder', dict[lang]);
-    });
-    // data-i18n-html — value contains trusted static markup (anchors) from
-    // I18N_PAGE only (never user input), so innerHTML is safe here.
-    document.querySelectorAll('[data-i18n-html]').forEach(function (el) {
-      var key = el.getAttribute('data-i18n-html');
-      var dict = (window.I18N_PAGE && window.I18N_PAGE[key]) || null;
-      if (dict && dict[lang]) el.innerHTML = dict[lang];
-    });
-    window.curLang = lang;
-    document.documentElement.setAttribute('lang', lang);
-  }
-
-  var qs = (location.search.match(/[?&]lang=([a-z]{2})/) || [])[1];
-  var stored = null;
-  try { stored = localStorage.getItem('lang'); } catch (_) {}
-  var html = (document.documentElement.lang || '').slice(0, 2);
-  var lang = qs || stored || html || 'de';
-  if (qs) { try { localStorage.setItem('lang', qs); } catch (_) {} }
-  applyNavLang(lang);
-  document.querySelectorAll('.lang-sw [data-l]').forEach(function (el) {
-    el.classList.toggle('on', el.dataset.l === lang);
-    el.addEventListener('click', function (e) {
-      e.preventDefault();
-      var l = el.dataset.l;
-      try { localStorage.setItem('lang', l); } catch (_) {}
-      document.querySelectorAll('.lang-sw [data-l]').forEach(function (b) {
-        b.classList.toggle('on', b.dataset.l === l);
+      if(children)children.forEach(function(c){
+        if(c==null)return;
+        node.appendChild(typeof c==='string'?document.createTextNode(c):c);
       });
-      applyNavLang(l);
-      // Re-render JS-produced content (quick cards, results, article view) in
-      // the new language without a reload, if the page exposes the hook.
-      if (typeof window.rerenderI18n === 'function') {
-        try { window.rerenderI18n(); } catch (_) {}
+      return node;
+    }
+    function clear(node){while(node.firstChild)node.removeChild(node.firstChild);}
+
+    // Snippet ">>>foo<<<" markers turned into <mark> via String.matchAll —
+    // no string interpolation through innerHTML.
+    function renderSnippet(into,snippet){
+      if(!snippet)return;
+      var pattern=/>>>(.+?)<<</g, matches=Array.from(snippet.matchAll(pattern)), cursor=0;
+      matches.forEach(function(m){
+        if(m.index>cursor)into.appendChild(document.createTextNode(snippet.slice(cursor,m.index)));
+        var mark=document.createElement('mark'); mark.textContent=m[1]; into.appendChild(mark);
+        cursor=m.index+m[0].length;
+      });
+      if(cursor<snippet.length)into.appendChild(document.createTextNode(snippet.slice(cursor)));
+    }
+
+    function buildResult(r){
+      var li=el('li',{class:'law-result'});
+      var head=el('div',{class:'law-result-head'});
+      var cite=(r.abbreviation||r.sr_number||'—')+' · Art. '+(r.article_num||'?')+(r.heading?' — '+r.heading:'');
+      head.appendChild(el('span',{class:'law-result-cite',text:cite}));
+      head.appendChild(el('span',{class:'law-result-level',text:r.level||''}));
+      li.appendChild(head);
+      if(r.title)li.appendChild(el('p',{class:'law-result-title',text:r.title}));
+      if(r.snippet){var p=el('p',{class:'law-result-snippet'}); renderSnippet(p,r.snippet); li.appendChild(p);}
+      return li;
+    }
+
+    function showSkeleton(){
+      var list=$('#results'); clear(list);
+      for(var i=0;i<6;i++)list.appendChild(el('li',{class:'skeleton','aria-hidden':'true'}));
+    }
+
+    function runSearch(q,level){
+      if(!q){clear($('#results')); $('#meta').hidden=true; $('#filters').hidden=true; return Promise.resolve();}
+      $('#filters').hidden=false;
+      showSkeleton();
+      $('#meta').hidden=false;
+      $('#meta').textContent=T('l_searching',{q:q});
+      var url=new URL(API_SEARCH);
+      url.searchParams.set('query',q);
+      url.searchParams.set('limit',String(PAGE_SIZE));
+      if(level)url.searchParams.set('level',level);
+      var t0=performance.now();
+      return fetch(url,{headers:{Accept:'application/json'}}).then(function(r){
+        if(!r.ok)throw new Error('API '+r.status); return r.json();
+      }).then(function(data){
+        var ms=Math.round(performance.now()-t0);
+        var results=data.results||[];
+        $('#meta').textContent=T('l_matching',{
+          count:O.fmt(data.count||results.length),
+          federal:O.fmt(data.federal_hits),
+          cantonal:O.fmt(data.cantonal_hits),
+          ms:ms
+        });
+        var list=$('#results'); clear(list);
+        if(results.length===0){list.appendChild(el('li',{class:'empty',text:T('l_noMatch',{q:q})})); return;}
+        results.forEach(function(r){list.appendChild(buildResult(r));});
+      }).catch(function(e){
+        var list=$('#results'); clear(list);
+        list.appendChild(el('li',{class:'error',text:T('l_searchFailed',{msg:e.message})}));
+      });
+    }
+
+    function lookupArticle(law,num){
+      var into=$('#article-result'); clear(into);
+      into.appendChild(el('div',{class:'loading',text:O.t('l_loading')}));
+      var url=new URL(API_LAW+'/'+encodeURIComponent(law));
+      url.searchParams.set('article',num);
+      return fetch(url,{headers:{Accept:'application/json'}}).then(function(r){
+        if(!r.ok)throw new Error('API '+r.status); return r.json();
+      }).then(function(data){
+        clear(into);
+        var card=el('div',{class:'article-display'});
+        var head=el('div',{class:'head'},[
+          el('span',{class:'law',text:(data.abbreviation||law.toUpperCase())+' · Art. '+num}),
+          el('span',{class:'sr',text:data.sr_number?'SR '+data.sr_number:''})
+        ]);
+        card.appendChild(head);
+        if(data.title)card.appendChild(el('p',{class:'law-title',text:data.title}));
+        var articles=data.articles||[];
+        if(articles.length===0){
+          card.appendChild(el('div',{class:'empty',text:T('l_notFound',{num:num,law:law.toUpperCase()})}));
+        }else{
+          articles.forEach(function(a){
+            if(a.heading)card.appendChild(el('div',{class:'article-num',text:'Art. '+a.article_num+' — '+a.heading}));
+            else card.appendChild(el('div',{class:'article-num',text:'Art. '+a.article_num}));
+            card.appendChild(el('div',{class:'text',text:a.text||''}));
+          });
+        }
+        into.appendChild(card);
+      }).catch(function(e){
+        clear(into);
+        into.appendChild(el('div',{class:'error',text:T('l_lookupFailed',{msg:e.message})}));
+      });
+    }
+
+    function buildQuick(){
+      var grid=$('#quickgrid'); clear(grid);
+      QUICK_LAWS.forEach(function(pair){
+        var abbr=pair[0], name=pair[1];
+        var a=el('a',{
+          class:'quick-card',
+          href:'?law='+encodeURIComponent(abbr)+'&art=1',
+          title:T('l_cardTitle',{abbr:abbr,name:name})
+        },[
+          el('span',{class:'quick-card-abbr',text:abbr}),
+          el('span',{class:'quick-card-name',text:name})
+        ]);
+        a.addEventListener('click',function(e){
+          e.preventDefault();
+          $('#article-law').value=abbr;
+          $('#article-num').value='1';
+          var p=new URLSearchParams(location.search);
+          p.set('law',abbr); p.set('art','1');
+          history.pushState({law:abbr,art:'1'},'','?'+p);
+          lookupArticle(abbr,'1');
+          $('#article-lookup').scrollIntoView({behavior:'smooth',block:'start'});
+        });
+        grid.appendChild(a);
+      });
+    }
+
+    function setLevelButtons(level){
+      document.querySelectorAll('#filters button').forEach(function(b){
+        b.classList.toggle('on',(b.dataset.filter||'')===(level||''));
+      });
+    }
+
+    function bind(){
+      $('#form').addEventListener('submit',function(e){
+        e.preventDefault();
+        var q=$('#q').value.trim();
+        var p=new URLSearchParams();
+        if(q)p.set('q',q);
+        history.pushState({q:q},'',q?'?'+p:location.pathname);
+        runSearch(q,'');
+        setLevelButtons('');
+      });
+      document.querySelectorAll('#filters button').forEach(function(btn){
+        btn.addEventListener('click',function(){
+          var level=btn.dataset.filter||'';
+          var q=$('#q').value.trim();
+          var p=new URLSearchParams({q:q});
+          if(level)p.set('level',level);
+          history.pushState({q:q,level:level},'','?'+p);
+          runSearch(q,level);
+          setLevelButtons(level);
+        });
+      });
+      $('#article-form').addEventListener('submit',function(e){
+        e.preventDefault();
+        var law=$('#article-law').value.trim();
+        var num=$('#article-num').value.trim();
+        if(!law||!num)return;
+        var p=new URLSearchParams({law:law,art:num});
+        history.pushState({law:law,art:num},'','?'+p);
+        lookupArticle(law,num);
+      });
+      window.addEventListener('popstate',function(){init();});
+    }
+
+    function init(){
+      var p=params();
+      var q=p.get('q')||'';
+      var level=p.get('level')||'';
+      var law=p.get('law');
+      var art=p.get('art');
+      $('#q').setAttribute('placeholder',O.t('l_placeholder'));
+      $('#q').value=q;
+      setLevelButtons(level);
+      if(q)runSearch(q,level);
+      if(law&&art){
+        $('#article-law').value=law;
+        $('#article-num').value=art;
+        lookupArticle(law,art);
       }
-      if (typeof window.applyI18n === 'function') {
-        try { window.applyI18n(); } catch (_) {}
-      }
-    });
-  });
-})();
-</script>
-<script>
-/* Mobile nav-toggle: <720px shows a hamburger that toggles `body.nav-open`,
-   which the design-system CSS uses to slide the full nav (links + lang
-   switch) in from the top. ESC + outside-click + nav-link-click also close. */
-(function () {
-  var btn = document.getElementById('nav-toggle');
-  if (!btn) return;
-  var nav = document.querySelector('header.site nav');
-  function setOpen(open) {
-    document.body.classList.toggle('nav-open', open);
-    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+
+    // Re-render JS-produced content (quick-card titles, current search results,
+    // article lookup, meta, errors) when the shared lang switcher fires, without
+    // a reload. site.js reloads the page on ?lang switch by default, but if a
+    // future build adds an in-place hook this keeps the JS surface translated.
+    window.rerenderI18n=function(){ buildQuick(); init(); };
+
+    buildQuick();
+    bind();
+    init();
   }
-  btn.addEventListener('click', function () {
-    setOpen(!document.body.classList.contains('nav-open'));
-  });
-  if (nav) nav.querySelectorAll('a').forEach(function (a) {
-    a.addEventListener('click', function () { setOpen(false); });
-  });
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') setOpen(false);
-  });
-})();
+});
 </script>
 </body>
 </html>

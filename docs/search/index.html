@@ -1,679 +1,196 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Search Swiss case law — OpenCaseLaw</title>
-<meta name="description" content="Search 972,000+ published Swiss court decisions in DE, FR and IT. Free, no account, no API key. Powered by the OpenCaseLaw open MCP backend.">
-<link rel="canonical" href="https://opencaselaw.ch/search/">
-<meta name="robots" content="index, follow">
-<meta property="og:title" content="Search Swiss case law — OpenCaseLaw">
-<meta property="og:description" content="972,000+ published Swiss court decisions, free full-text search.">
-<meta property="og:url" content="https://opencaselaw.ch/search/">
-<meta property="og:type" content="website">
-<!-- This page's logic lives entirely in inline JS, so a stale HTML cache
-     means stale JS. Force always-revalidate on this single URL — the
-     payload is small (~13 KB) and the freshness matters more than the
-     bandwidth save. -->
+<meta name="description" content="Free full-text search over every published Swiss court decision, in German, French and Italian. No account, no API key.">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0c0c0d" media="(prefers-color-scheme: dark)">
 <meta http-equiv="Cache-Control" content="no-cache, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<link rel="stylesheet" href="/static/css/design-system.css?v=22">
-<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="canonical" href="https://opencaselaw.ch/search/">
+<link rel="alternate" hreflang="de" href="https://opencaselaw.ch/search/?lang=de">
+<link rel="alternate" hreflang="fr" href="https://opencaselaw.ch/search/?lang=fr">
+<link rel="alternate" hreflang="it" href="https://opencaselaw.ch/search/?lang=it">
+<link rel="alternate" hreflang="rm" href="https://opencaselaw.ch/search/?lang=rm">
+<link rel="alternate" hreflang="en" href="https://opencaselaw.ch/search/?lang=en">
+<link rel="alternate" hreflang="x-default" href="https://opencaselaw.ch/search/">
+<link rel="icon" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://mcp.opencaselaw.ch">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add('js');</script>
+<link rel="stylesheet" href="/static/css/site.css?v=1">
 <style>
-  /* Page-specific layout — generous vertical rhythm so each section
-     reads as its own beat (hero → form → examples → filters → results
-     → pager). Caps at the prose column for legal-document scan. */
-  main.search { padding-top: var(--s-6); padding-bottom: var(--s-7); max-width: var(--max-w-prose); }
-  main.search h1 { margin-bottom: var(--s-3); }
-  main.search .lede { margin-bottom: var(--s-6); }
-  .search-form {
-    display: flex; gap: var(--s-3); flex-wrap: wrap; align-items: stretch;
-    margin: 0 0 var(--s-3);
-  }
-  .search-input {
-    flex: 1 1 320px; min-width: 240px;
-    padding: 12px 16px;
-    font: inherit; font-size: var(--t-base);
-    background: var(--surface);
-    border: 1px solid var(--border-strong);
-    border-radius: var(--radius);
-    color: var(--text);
-  }
-  .search-input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
-  .search-filters {
-    display: flex; gap: var(--s-2); flex-wrap: wrap;
-    margin: var(--s-5) 0 var(--s-5);
-  }
-  .search-filters button {
-    padding: 6px 12px;
-    font: inherit; font-size: var(--t-md);
-    background: var(--surface); color: var(--text-2);
-    border: 1px solid var(--border); border-radius: var(--radius-pill);
-    cursor: pointer;
-    transition: all var(--t-fast) var(--ease);
-    white-space: nowrap;
-  }
-  .search-filters button:hover { color: var(--text); border-color: var(--border-strong); }
-  .search-filters button.active {
-    background: var(--text); color: var(--bg); border-color: var(--text);
-  }
-  .search-meta {
-    font-size: var(--t-sm); color: var(--text-2);
-    margin: 0 0 var(--s-4);
-    font-feature-settings: 'tnum' 1;
-  }
-  .result-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--s-4); }
-  .result {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: var(--s-5);
-    transition: border-color var(--t-fast) var(--ease);
-  }
-  .result:hover { border-color: var(--border-strong); }
-  .result-head {
-    display: flex; align-items: baseline; justify-content: space-between;
-    gap: var(--s-3); margin-bottom: var(--s-2);
-  }
-  .result-cite {
-    font-family: var(--f-mono); font-size: var(--t-sm);
-    color: var(--text-2);
-    letter-spacing: -0.01em;
-  }
-  .result-cite a { text-decoration: none; color: inherit; }
-  .result-cite a:hover { color: var(--text); text-decoration: underline; }
-  .result-lang {
-    font-family: var(--f-mono); font-size: 10px;
-    text-transform: uppercase; letter-spacing: 0.06em;
-    color: var(--text-3);
-    flex: 0 0 auto;
-  }
-  .result-title {
-    font-size: var(--t-lg); font-weight: 400; line-height: 1.3;
-    margin: 0 0 var(--s-2);
-  }
-  .result-title a { text-decoration: none; color: var(--text); }
-  .result-title a:hover { text-decoration: underline; text-decoration-thickness: 1px; }
-  .result-regeste {
-    font-size: var(--t-md); color: var(--text-2); line-height: 1.55;
-    margin: 0;
-    /* Truncate to 4 lines so the page scans uniformly. */
-    display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  .result-meta {
-    margin-top: var(--s-3);
-    font-size: var(--t-xs); color: var(--text-3);
-    display: flex; gap: var(--s-3); flex-wrap: wrap;
-  }
-  .empty, .error, .loading {
-    padding: var(--s-6) var(--s-4);
-    text-align: center;
-    color: var(--text-2);
-    font-size: var(--t-base);
-  }
-  .empty strong { color: var(--text); display: block; margin-bottom: var(--s-2); font-size: var(--t-lg); font-weight: 400; }
-  .error { color: var(--accent); }
-  .skeleton {
-    background: var(--bg-soft);
-    border-radius: var(--radius);
-    animation: pulse 1.4s ease-in-out infinite;
-    height: 92px; margin-bottom: var(--s-3);
-  }
-  @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.95; } }
-  @media (prefers-reduced-motion: reduce) { .skeleton { animation: none; } }
-  .pager {
-    display: flex; gap: var(--s-3); justify-content: center; margin-top: var(--s-6);
-    font-size: var(--t-md); align-items: baseline;
-  }
-  .pager a, .pager .disabled {
-    padding: 8px 14px; border: 1px solid var(--border);
-    border-radius: var(--radius); text-decoration: none; color: var(--text);
-  }
-  .pager .disabled { color: var(--text-3); cursor: not-allowed; }
-  .pager a:hover { border-color: var(--border-strong); }
-  .pager .pager-info { color: var(--text-3); padding: 8px 0; }
-  .examples {
-    margin: var(--s-4) 0 0; font-size: var(--t-sm); color: var(--text-2);
-    line-height: 2;
-  }
-  .examples a {
-    color: var(--text-2); text-decoration: none;
-    margin-right: var(--s-4);
-    padding-bottom: 2px;
-    border-bottom: 1px dotted var(--text-3);
-  }
-  .examples a:hover { color: var(--text); border-color: var(--text); }
+  .s-form{display:flex;gap:12px;flex-wrap:wrap;align-items:stretch;margin:36px 0 0}
+  .s-input{flex:1 1 320px;min-width:240px;padding:13px 16px;font:inherit;font-size:16px;
+    background:var(--paper);border:1px solid var(--line);border-radius:10px;color:var(--t1)}
+  .s-input:focus{outline:2px solid var(--red);outline-offset:1px}
+  .examples{margin:18px 0 0;font-size:13.5px;color:var(--t2);line-height:2}
+  .examples .lbl{color:var(--t3);font-family:var(--f-mono);font-size:12px;margin-right:6px}
+  .examples a{color:var(--t2);text-decoration:none;margin-right:16px;border-bottom:1px dotted var(--t3);padding-bottom:1px}
+  .examples a:hover{color:var(--t1);border-color:var(--t1)}
+  .s-filters{display:flex;gap:7px;flex-wrap:wrap;margin:28px 0 22px}
+  .s-filters button{padding:7px 14px;font:inherit;font-size:13px;background:var(--paper);color:var(--t2);
+    border:1px solid var(--line);border-radius:999px;cursor:pointer;transition:.15s;white-space:nowrap}
+  .s-filters button:hover{color:var(--t1);border-color:var(--t3)}
+  .s-filters button.active{background:var(--t1);color:var(--paper);border-color:var(--t1)}
+  .s-meta{font-family:var(--f-mono);font-size:12.5px;color:var(--t3);margin:0 0 20px}
+  .r-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px}
+  .result{border:1px solid var(--line);border-radius:12px;padding:20px 22px;transition:border-color .16s var(--ease),transform .16s,box-shadow .16s;background:var(--paper)}
+  .result:hover{border-color:var(--t3);transform:translateY(-1px);box-shadow:0 10px 26px var(--line-2)}
+  .r-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:8px}
+  .r-cite{font-family:var(--f-mono);font-size:12.5px;color:var(--red);letter-spacing:-.01em}
+  .r-cite a{color:inherit;text-decoration:none}
+  .r-cite a:hover{text-decoration:underline;text-underline-offset:2px}
+  .r-lang{font-family:var(--f-mono);font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);flex:0 0 auto}
+  .r-title{font-size:17px;font-weight:600;line-height:1.3;letter-spacing:-.01em;margin:0 0 8px}
+  .r-title a{text-decoration:none;color:var(--t1)}
+  .r-title a:hover{text-decoration:underline;text-underline-offset:2px}
+  .r-regeste{font-size:14px;color:var(--t2);line-height:1.55;margin:0;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+  .r-meta{margin-top:12px;font-family:var(--f-mono);font-size:11.5px;color:var(--t3);display:flex;gap:14px;flex-wrap:wrap}
+  .empty,.error{padding:56px 16px;text-align:center;color:var(--t2)}
+  .empty strong{color:var(--t1);display:block;margin-bottom:8px;font-size:18px;font-weight:600}
+  .error{color:var(--red)}
+  .skeleton{background:var(--paper-2);border:1px solid var(--line-2);border-radius:12px;height:96px;margin-bottom:12px;animation:pulse 1.4s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:.55}50%{opacity:.9}}
+  @media(prefers-reduced-motion:reduce){.skeleton{animation:none}}
+  .pager{display:flex;gap:12px;justify-content:center;margin-top:40px;font-size:14px;align-items:baseline}
+  .pager a,.pager .disabled{padding:9px 15px;border:1px solid var(--line);border-radius:9px;text-decoration:none;color:var(--t1);font-family:var(--f-mono);font-size:13px}
+  .pager .disabled{color:var(--t3);cursor:not-allowed}
+  .pager a:hover{border-color:var(--t3)}
+  .pager .pager-info{color:var(--t3);padding:9px 0;font-family:var(--f-mono);font-size:12.5px}
 </style>
 </head>
 <body>
+<a href="#main" class="skip" data-t="skip">Skip to content</a>
+<div data-nav></div>
 
-<a class="skip-link" href="#main">Skip to content</a>
+<main id="main">
+  <section class="page-head first">
+    <div class="wrap" style="max-width:760px;margin:0 auto">
+      <p class="page-kicker"><b data-t="s_kick">Search</b></p>
+      <h1 class="page-h1" data-t="s_h1">Search the open Swiss corpus</h1>
+      <p class="page-lead" data-t="s_lede">Free full-text search over every published Swiss court decision, in German, French and Italian. No account, no API key.</p>
+    </div>
+  </section>
 
-<header class="site">
-  <div class="container row">
-    <a class="brand" href="/">
-      <span class="logo">+</span> <span class="wordmark">opencaselaw.ch</span>
-    </a>
-    <nav id="primary-nav" aria-label="Primary">
-      <a href="/search/" class="active" data-nav-key="search">Search</a>
-      <a href="/courts/" data-nav-key="courts">Courts</a>
-      <a href="/laws/" data-nav-key="laws">Laws</a>
-      <a href="/word/" data-nav-key="word">Word</a>
-      <a href="/mcp/" data-nav-key="mcp">MCP</a>
-      <a href="/api/" data-nav-key="api">API</a>
-      <a href="/standards/" data-nav-key="standards">Standards</a>
-      <a href="/integrity/" data-nav-key="integrity">Integrity</a>
-      <a href="/quality.html" data-nav-key="quality">Quality</a>
-      <span class="lang-sw" role="group" aria-label="Language">
-        <a href="/?lang=de" data-l="de">DE</a>
-        <a href="/?lang=fr" data-l="fr">FR</a>
-        <a href="/?lang=it" data-l="it">IT</a>
-        <a href="/?lang=rm" data-l="rm">RM</a>
-        <a href="/?lang=en" data-l="en">EN</a>
-      </span>
-    </nav>
-    <button class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="primary-nav">
-      <svg class="icon-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
-      <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M6 18L18 6"/></svg>
-    </button>
-  </div>
-</header>
-
-<main class="container search" id="main">
-  <p class="eyebrow" data-i18n="hero.eyebrow">Search · 972,000+ decisions</p>
-  <h1 data-i18n="hero.h1">Search the open Swiss corpus</h1>
-  <p class="lede" data-i18n="hero.lede">Free full-text search over every published Swiss court decision. DE, FR, IT. No account, no API key. Powered by the same MCP backend that serves Claude, ChatGPT and the Word add-in.</p>
-
-  <form class="search-form" id="form" role="search" aria-label="Search Swiss case law">
-    <input class="search-input" type="search" id="q" name="q"
-           placeholder='e.g. "Art. 41 OR Schadenersatz"  ·  6B_1234/2025  ·  Mietrecht Kündigung'
-           data-i18n-placeholder="form.placeholder"
-           autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Search query">
-    <button type="submit" class="btn btn-primary" data-i18n="form.submit">Search</button>
-  </form>
-
-  <p class="examples" id="examples">
-    <span style="color: var(--text-3);" data-i18n="examples.try">Try:</span>
-    <a href="?q=Mietrecht+K%C3%BCndigung+Form">Mietrecht Kündigung Form</a>
-    <a href="?q=Art.+41+OR+Schadenersatz">Art. 41 OR Schadenersatz</a>
-    <a href="?q=BGE+140+III+86">BGE 140 III 86</a>
-    <a href="?q=6B_1234%2F2025">6B_1234/2025</a>
-    <a href="?q=protection+des+donn%C3%A9es&amp;lang=fr">protection des données</a>
-  </p>
-
-  <div class="search-filters" id="filters" hidden>
-    <button data-filter="" class="active" type="button" data-i18n="filter.allLangs">All languages</button>
-    <button data-filter="de" type="button">DE</button>
-    <button data-filter="fr" type="button">FR</button>
-    <button data-filter="it" type="button">IT</button>
-  </div>
-
-  <div class="search-meta" id="meta" hidden></div>
-  <ul class="result-list" id="results" aria-live="polite"></ul>
-  <div class="pager" id="pager" hidden></div>
+  <section class="wrap" style="max-width:760px;margin:0 auto;padding-bottom:clamp(64px,9vw,112px)">
+    <form class="s-form" id="form" role="search" aria-label="Search Swiss case law">
+      <input class="s-input" type="search" id="q" name="q" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Search query">
+      <button type="submit" class="btn btn-primary" data-t="s_submit">Search</button>
+    </form>
+    <p class="examples">
+      <span class="lbl" data-t="s_try">Try:</span>
+      <a href="?q=Mietrecht+K%C3%BCndigung+Form">Mietrecht Kündigung Form</a>
+      <a href="?q=Art.+41+OR+Schadenersatz">Art. 41 OR Schadenersatz</a>
+      <a href="?q=BGE+140+III+86">BGE 140 III 86</a>
+      <a href="?q=6B_1234%2F2025">6B_1234/2025</a>
+      <a href="?q=protection+des+donn%C3%A9es&amp;lang=fr">protection des données</a>
+    </p>
+    <div class="s-filters" id="filters" hidden>
+      <button data-filter="" class="active" type="button" data-t="s_allLangs">All languages</button>
+      <button data-filter="de" type="button">DE</button>
+      <button data-filter="fr" type="button">FR</button>
+      <button data-filter="it" type="button">IT</button>
+    </div>
+    <div class="s-meta" id="meta" hidden></div>
+    <ul class="r-list" id="results" aria-live="polite"></ul>
+    <div class="pager" id="pager" hidden></div>
+  </section>
 </main>
 
-<footer class="site">
-  <div class="container row">
-    <div>
-      <a class="brand" href="/"><span class="logo">+</span> <span class="wordmark">opencaselaw.ch</span></a>
-      <p style="margin-top: var(--s-3); max-width: 32ch; font-size: var(--t-sm); color: var(--text-2);">
-        Open Swiss case law. Dataset packaging CC0 · Code MIT. 4-layer quality framework. Public-good infrastructure.
-      </p>
-    </div>
-    <div>
-      <h4 data-i18n="footer.data">Data</h4>
-      <ul>
-        <li><a href="/entscheide/">Decisions</a></li>
-        <li><a href="/gesetze/">Laws</a></li>
-        <li><a href="/quality.html">Quality</a></li>
-        <li><a href="/coverage/">Coverage</a></li>
-      </ul>
-    </div>
-    <div>
-      <h4 data-i18n="footer.access">Access</h4>
-      <ul>
-        <li><a href="/word/">Word add-in</a></li>
-        <li><a href="/mcp/">MCP server</a></li>
-        <li><a href="https://huggingface.co/datasets/voilaj/swiss-caselaw" rel="noopener">HuggingFace</a></li>
-        <li><a href="https://github.com/jonashertner/caselaw-repo-1" rel="noopener">GitHub</a></li>
-      </ul>
-    </div>
-    <div>
-      <h4 data-i18n="footer.about">About</h4>
-      <ul>
-        <li><a href="/ueber/">Mission</a></li>
-        <li><a href="/paper/">Research</a></li>
-        <li><a href="/datenschutz/">Privacy</a></li>
-        <li><a href="/governance-and-removal-policy.md">Governance</a></li>
-      </ul>
-    </div>
-  </div>
-  <div class="container" style="margin-top: var(--s-5); font-size: var(--t-xs); color: var(--text-3);">
-    © 2026 Jonas Hertner / OpenCaseLaw · Corpus CC0 · Code MIT
-  </div>
-</footer>
-
+<div data-foot></div>
+<script src="/static/js/site.js?v=1"></script>
 <script>
-'use strict';
-
-// The renderer below builds DOM nodes via createElement / textContent
-// for every value that comes from the API. No string interpolation
-// into innerHTML for user-controlled data — defends against XSS even
-// if the API ever returns hostile titles or regestes.
-
-const API = 'https://mcp.opencaselaw.ch/api/decisions';
-const PAGE_SIZE = 20;
-
-const $ = (sel) => document.querySelector(sel);
-const params = () => new URLSearchParams(location.search);
-
-// --- i18n for JS-produced strings -------------------------------------------
-// Resolves against window.I18N_PAGE (defined further down) using the same
-// locale precedence as the shared lang-switch IIFE: ?lang → localStorage →
-// <html lang> → 'de'. {placeholders} are substituted from `vars`.
-function detectLang() {
-  var qs = (location.search.match(/[?&]lang=([a-z]{2})/) || [])[1];
-  var stored = null;
-  try { stored = localStorage.getItem('lang'); } catch (_) {}
-  var html = (document.documentElement.lang || '').slice(0, 2);
-  return qs || stored || html || 'de';
-}
-window.curLang = window.curLang || detectLang();
-function t(key, vars) {
-  const dict = (window.I18N_PAGE && window.I18N_PAGE[key]) || null;
-  let s = (dict && (dict[window.curLang] || dict.de || dict.en)) || key;
-  if (vars) for (const k in vars) s = s.split('{' + k + '}').join(vars[k]);
-  return s;
-}
-
-function unescapePythonStr(s) {
-  // The API occasionally returns titles like "I\\x27re" — undo \xNN sequences.
-  if (!s) return s;
-  return String(s).replace(/\\x([0-9a-fA-F]{2})/g, (_, h) => String.fromCharCode(parseInt(h, 16)));
-}
-
-function fmtDate(iso) {
-  if (!iso || !/^\d{4}-\d{2}-\d{2}/.test(iso)) return '';
-  const [y, m, d] = iso.split('T')[0].split('-');
-  return `${d}.${m}.${y}`;
-}
-
-function fmtNum(n) {
-  if (n == null) return '0';
-  return n.toLocaleString('de-CH').replace(/,/g, '\u2019');
-}
-
-function pickCite(r, lang) {
-  const key = lang === 'fr' || lang === 'it' ? `citation_string_${lang}` : 'citation_string_de';
-  return r[key] || r.citation_string_de || r.docket_number || r.decision_id;
-}
-
-// --- DOM helpers (textContent-based; no innerHTML on user input) -------------
-
-function el(tag, props, children) {
-  const node = document.createElement(tag);
-  if (props) {
-    for (const k in props) {
-      if (k === 'class') node.className = props[k];
-      else if (k === 'text') node.textContent = props[k];
-      else if (k === 'href') node.setAttribute('href', props[k]);
-      else if (k.startsWith('aria-') || k === 'role') node.setAttribute(k, props[k]);
-      else if (k === 'rel' || k === 'target') node.setAttribute(k, props[k]);
-      else node[k] = props[k];
+OCL.init({
+  active:'search',
+  i18n:{
+    de:{s_kick:'Suche',s_h1:'Den offenen Schweizer Korpus durchsuchen',s_lede:'Volltextsuche über jeden publizierten Schweizer Gerichtsentscheid, auf Deutsch, Französisch und Italienisch. Ohne Konto, ohne API-Key.',
+      s_submit:'Suchen',s_try:'Versuchen Sie:',s_allLangs:'Alle Sprachen',s_ph:'z. B. "Art. 41 OR Schadenersatz" · 6B_1234/2025 · Mietrecht Kündigung',
+      m_searching:'Suche nach "{q}" …',m_matching:'{total} passende Entscheide · {ms} ms',
+      r_no:'Keine Treffer für "{q}"',r_noHint:'Versuchen Sie allgemeinere Begriffe, lassen Sie Akzente weg oder prüfen Sie das Format der Aktennummer (z. B. 6B_1234/2025).',r_untitled:'(Entscheid ohne Titel)',
+      p_prev:'← Zurück',p_next:'Weiter →',p_showing:'Zeige {from}–{to} von {total}',
+      e_stale:'Die API hat den ungefilterten Korpus zurückgegeben ({total} Zeilen). Meist ist das Seiten-JS veraltet — laden Sie hart neu (⌘⇧R / Strg+Umschalt+R).',e_failed:'Suche fehlgeschlagen: {msg}. Bitte erneut versuchen.'},
+    fr:{s_kick:'Recherche',s_h1:'Rechercher dans le corpus suisse ouvert',s_lede:'Recherche plein texte sur chaque décision publiée des tribunaux suisses, en allemand, français et italien. Sans compte, sans clé API.',
+      s_submit:'Rechercher',s_try:'Essayez :',s_allLangs:'Toutes les langues',s_ph:'p. ex. "Art. 41 OR Schadenersatz" · 6B_1234/2025 · Mietrecht Kündigung',
+      m_searching:'Recherche de "{q}" …',m_matching:'{total} décisions correspondantes · {ms} ms',
+      r_no:'Aucun résultat pour "{q}"',r_noHint:'Essayez des termes plus généraux, supprimez les diacritiques ou vérifiez le format du numéro de dossier (p. ex. 6B_1234/2025).',r_untitled:'(décision sans titre)',
+      p_prev:'← Précédent',p_next:'Suivant →',p_showing:'Affichage de {from}–{to} sur {total}',
+      e_stale:'L\'API a renvoyé le corpus non filtré ({total} lignes). Le JS de la page est probablement obsolète — actualisez de force (⌘⇧R / Ctrl+Maj+R).',e_failed:'Échec de la recherche : {msg}. Réessayez.'},
+    it:{s_kick:'Ricerca',s_h1:'Cerca nel corpus svizzero aperto',s_lede:'Ricerca a testo pieno su ogni decisione pubblicata dei tribunali svizzeri, in tedesco, francese e italiano. Senza account, senza chiave API.',
+      s_submit:'Cerca',s_try:'Provate:',s_allLangs:'Tutte le lingue',s_ph:'p. es. "Art. 41 OR Schadenersatz" · 6B_1234/2025 · Mietrecht Kündigung',
+      m_searching:'Ricerca di "{q}" …',m_matching:'{total} decisioni corrispondenti · {ms} ms',
+      r_no:'Nessun risultato per "{q}"',r_noHint:'Provate termini più generici, eliminate i segni diacritici o verificate il formato del numero di pratica (p. es. 6B_1234/2025).',r_untitled:'(decisione senza titolo)',
+      p_prev:'← Precedente',p_next:'Successivo →',p_showing:'Risultati {from}–{to} di {total}',
+      e_stale:'L\'API ha restituito il corpus non filtrato ({total} righe). Di solito il JS della pagina è obsoleto — ricaricate forzatamente (⌘⇧R / Ctrl+Maiusc+R).',e_failed:'Ricerca non riuscita: {msg}. Riprovate.'},
+    rm:{s_kick:'Tschertga',s_h1:'Tschertgar en il corpus svizzer avert',s_lede:'Tschertga da text cumplet sur mintga decisiun publitgada dals tribunals svizzers, en tudestg, franzos e talian. Nagin conto, nagina clav API.',
+      s_submit:'Tschertgar',s_try:'Empruvai:',s_allLangs:'Tut las linguas',s_ph:'p. ex. "Art. 41 OR Schadenersatz" · 6B_1234/2025 · Mietrecht Kündigung',
+      m_searching:'Tschertga da "{q}" …',m_matching:'{total} decisiuns correspundentas · {ms} ms',
+      r_no:'Nagins resultats per "{q}"',r_noHint:'Empruvai noziuns pli generalas, laschai davent ils accents u controllai il format dal numer dal dossier (p. ex. 6B_1234/2025).',r_untitled:'(decisiun senza titel)',
+      p_prev:'← Enavos',p_next:'Enavant →',p_showing:'Mussar {from}–{to} da {total}',
+      e_stale:'L\'API ha returnà il corpus betg filtrà ({total} lingias). Per ordinari è il JS da la pagina antiquà — rechargiai cun forza (⌘⇧R / Ctrl+Maiusc+R).',e_failed:'La tschertga è fallida: {msg}. Empruvai anc ina giada.'},
+    en:{s_kick:'Search',s_h1:'Search the open Swiss corpus',s_lede:'Free full-text search over every published Swiss court decision, in German, French and Italian. No account, no API key.',
+      s_submit:'Search',s_try:'Try:',s_allLangs:'All languages',s_ph:'e.g. "Art. 41 OR Schadenersatz" · 6B_1234/2025 · Mietrecht Kündigung',
+      m_searching:'Searching for "{q}"…',m_matching:'{total} matching decisions · {ms} ms',
+      r_no:'No matches for "{q}"',r_noHint:'Try broader terms, drop diacritics, or check the docket-number format (e.g. 6B_1234/2025).',r_untitled:'(untitled decision)',
+      p_prev:'← Previous',p_next:'Next →',p_showing:'Showing {from}–{to} of {total}',
+      e_stale:'The API returned the unfiltered corpus ({total} rows). This usually means the page JS is stale — hard-refresh (⌘⇧R / Ctrl+Shift+R).',e_failed:'Search failed: {msg}. Try again.'}
+  },
+  onReady:function(O){
+    'use strict';
+    function T(k,v){var s=O.t(k); if(v)for(var x in v)s=s.split('{'+x+'}').join(v[x]); return s;}
+    document.getElementById('q').placeholder=O.t('s_ph');
+    var API='https://mcp.opencaselaw.ch/api/decisions', PAGE_SIZE=20;
+    var $=function(s){return document.querySelector(s);};
+    function params(){return new URLSearchParams(location.search);}
+    function unesc(s){return s?String(s).replace(/\\x([0-9a-fA-F]{2})/g,function(_,h){return String.fromCharCode(parseInt(h,16));}):s;}
+    function fmtDate(iso){if(!iso||!/^\d{4}-\d{2}-\d{2}/.test(iso))return'';var p=iso.split('T')[0].split('-');return p[2]+'.'+p[1]+'.'+p[0];}
+    function pickCite(r,lang){var k=(lang==='fr'||lang==='it')?'citation_string_'+lang:'citation_string_de';return r[k]||r.citation_string_de||r.docket_number||r.decision_id;}
+    function el(tag,props,kids){var n=document.createElement(tag);if(props)for(var k in props){if(k==='class')n.className=props[k];else if(k==='text')n.textContent=props[k];else if(k==='href')n.setAttribute('href',props[k]);else if(k.indexOf('aria-')===0||k==='role'||k==='rel'||k==='target')n.setAttribute(k,props[k]);else n[k]=props[k];}if(kids)kids.forEach(function(c){if(c==null)return;n.appendChild(typeof c==='string'?document.createTextNode(c):c);});return n;}
+    function clear(n){while(n.firstChild)n.removeChild(n.firstChild);}
+    function safeUrl(u){try{var p=new URL(u,location.href);return (p.protocol==='http:'||p.protocol==='https:')?p.href:'#';}catch(e){return '#';}}
+    function buildLi(r){
+      var title=unesc(r.title)||T('r_untitled'); var cite=pickCite(r,r.language);
+      var url=safeUrl(r.canonical_url||('https://mcp.opencaselaw.ch/entscheid/'+encodeURIComponent(r.decision_id)));
+      var regeste=unesc(r.regeste)||''; var date=fmtDate(r.decision_date);
+      var head=el('div',{class:'r-head'},[el('span',{class:'r-cite'},[el('a',{href:url,target:'_blank',rel:'noopener',text:cite})]),el('span',{class:'r-lang',text:(r.language||'').toUpperCase()})]);
+      var titleH2=el('h2',{class:'r-title'},[el('a',{href:url,target:'_blank',rel:'noopener',text:title})]);
+      var meta=el('div',{class:'r-meta'},[r.court?el('span',{text:r.court}):null,date?el('span',{text:date}):null,r.canton?el('span',{text:r.canton}):null]);
+      return el('li',{class:'result'},[head,titleH2,regeste?el('p',{class:'r-regeste',text:regeste}):null,meta]);
     }
-  }
-  if (children) {
-    for (const c of children) {
-      if (c == null) continue;
-      node.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+    function renderResults(data,q){var list=$('#results');clear(list);var rs=data.results||[];
+      if(!rs.length){list.appendChild(el('li',{class:'empty'},[el('strong',{text:T('r_no',{q:q})}),T('r_noHint')]));return;}
+      rs.forEach(function(r){list.appendChild(buildLi(r));});}
+    function renderPager(total,offset,q,lang){var pager=$('#pager');clear(pager);if(total<=PAGE_SIZE){pager.hidden=true;return;}pager.hidden=false;
+      var prev=Math.max(0,offset-PAGE_SIZE),next=offset+PAGE_SIZE,hasPrev=offset>0,hasNext=next<total;
+      var url=function(off){var p=new URLSearchParams({q:q});if(lang)p.set('lang',lang);if(off)p.set('offset',off);return '?'+p;};
+      pager.appendChild(hasPrev?el('a',{href:url(prev),text:T('p_prev')}):el('span',{class:'disabled',text:T('p_prev')}));
+      pager.appendChild(el('span',{class:'pager-info',text:T('p_showing',{from:offset+1,to:Math.min(offset+PAGE_SIZE,total),total:O.fmt(total)})}));
+      pager.appendChild(hasNext?el('a',{href:url(next),text:T('p_next')}):el('span',{class:'disabled',text:T('p_next')}));}
+    function setMeta(txt){var m=$('#meta');m.hidden=false;m.textContent=txt;}
+    function skeleton(){var list=$('#results');clear(list);for(var i=0;i<6;i++)list.appendChild(el('li',{class:'skeleton','aria-hidden':'true'}));}
+    function runSearch(q,lang,offset){
+      if(!q){clear($('#results'));$('#meta').hidden=true;$('#pager').hidden=true;$('#filters').hidden=true;return;}
+      $('#filters').hidden=false;skeleton();setMeta(T('m_searching',{q:q}));
+      var url=new URL(API);url.searchParams.set('query',q);url.searchParams.set('limit',String(PAGE_SIZE));
+      if(offset)url.searchParams.set('offset',String(offset));if(lang)url.searchParams.set('language',lang);
+      var t0=performance.now();
+      fetch(url,{cache:'no-store',headers:{Accept:'application/json'}}).then(function(r){if(!r.ok)throw new Error('API '+r.status);return r.json();}).then(function(data){
+        var ms=Math.round(performance.now()-t0);var total=(data.total!=null)?data.total:(data.results||[]).length;
+        if(total>=500000&&q.length>0){var list=$('#results');clear(list);list.appendChild(el('li',{class:'error',text:T('e_stale',{total:O.fmt(total)})}));$('#meta').hidden=true;$('#pager').hidden=true;return;}
+        setMeta(T('m_matching',{total:O.fmt(total),ms:ms}));renderResults(data,q);renderPager(total,offset||0,q,lang);
+      }).catch(function(e){var list=$('#results');clear(list);list.appendChild(el('li',{class:'error',text:T('e_failed',{msg:e.message})}));$('#meta').hidden=true;$('#pager').hidden=true;});
     }
+    function setLangBtns(lang){document.querySelectorAll('#filters button').forEach(function(b){b.classList.toggle('active',(b.dataset.filter||'')===(lang||''));});}
+    function init(){var p=params();var q=p.get('q')||'';var lang=p.get('lang')||'';var offset=parseInt(p.get('offset')||'0',10)||0;$('#q').value=q;setLangBtns(lang);if(q)runSearch(q,lang,offset);}
+    $('#form').addEventListener('submit',function(e){e.preventDefault();var q=$('#q').value.trim();var p=new URLSearchParams();if(q)p.set('q',q);history.pushState({q:q},'',q?'?'+p:location.pathname);runSearch(q,'',0);setLangBtns('');});
+    document.querySelectorAll('#filters button').forEach(function(btn){btn.addEventListener('click',function(){var lang=btn.dataset.filter||'';var q=$('#q').value.trim();var p=new URLSearchParams({q:q});if(lang)p.set('lang',lang);history.pushState({q:q,lang:lang},'','?'+p);runSearch(q,lang,0);setLangBtns(lang);});});
+    window.addEventListener('popstate',function(){init();});
+    init();
   }
-  return node;
-}
-
-function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
-
-// --- Rendering ---------------------------------------------------------------
-
-function buildResultLi(r) {
-  const title = unescapePythonStr(r.title) || t('results.untitled');
-  const cite = pickCite(r, r.language);
-  const url = r.canonical_url || `https://mcp.opencaselaw.ch/entscheid/${encodeURIComponent(r.decision_id)}`;
-  const regeste = unescapePythonStr(r.regeste) || '';
-  const date = fmtDate(r.decision_date);
-
-  const head = el('div', { class: 'result-head' }, [
-    el('span', { class: 'result-cite' }, [
-      el('a', { href: url, target: '_blank', rel: 'noopener', text: cite }),
-    ]),
-    el('span', { class: 'result-lang', text: (r.language || '').toUpperCase() }),
-  ]);
-
-  const titleH2 = el('h2', { class: 'result-title' }, [
-    el('a', { href: url, target: '_blank', rel: 'noopener', text: title }),
-  ]);
-
-  const meta = el('div', { class: 'result-meta' }, [
-    r.court ? el('span', { text: r.court }) : null,
-    date ? el('span', { text: date }) : null,
-    r.canton ? el('span', { text: r.canton }) : null,
-  ]);
-
-  const li = el('li', { class: 'result' }, [
-    head,
-    titleH2,
-    regeste ? el('p', { class: 'result-regeste', text: regeste }) : null,
-    meta,
-  ]);
-  return li;
-}
-
-function renderResults(data, q) {
-  const list = $('#results');
-  clear(list);
-  const results = data.results || [];
-  if (results.length === 0) {
-    const msg = el('li', { class: 'empty' }, [
-      el('strong', { text: t('results.noMatches', { q }) }),
-      t('results.noMatchesHint'),
-    ]);
-    list.appendChild(msg);
-    return;
-  }
-  for (const r of results) list.appendChild(buildResultLi(r));
-}
-
-function renderPager(total, offset, q, lang) {
-  const pager = $('#pager');
-  clear(pager);
-  if (total <= PAGE_SIZE) { pager.hidden = true; return; }
-  pager.hidden = false;
-  const prev = Math.max(0, offset - PAGE_SIZE);
-  const next = offset + PAGE_SIZE;
-  const hasPrev = offset > 0;
-  const hasNext = next < total;
-  const url = (off) => {
-    const p = new URLSearchParams({ q });
-    if (lang) p.set('lang', lang);
-    if (off) p.set('offset', off);
-    return `?${p}`;
-  };
-  pager.appendChild(
-    hasPrev
-      ? el('a', { href: url(prev), text: t('pager.prev') })
-      : el('span', { class: 'disabled', text: t('pager.prev') })
-  );
-  pager.appendChild(el('span', {
-    class: 'pager-info',
-    text: t('pager.showing', {
-      from: offset + 1,
-      to: Math.min(offset + PAGE_SIZE, total),
-      total: fmtNum(total),
-    }),
-  }));
-  pager.appendChild(
-    hasNext
-      ? el('a', { href: url(next), text: t('pager.next') })
-      : el('span', { class: 'disabled', text: t('pager.next') })
-  );
-}
-
-function setMeta(text) {
-  const meta = $('#meta');
-  meta.hidden = false;
-  meta.textContent = text;
-}
-
-function showSkeleton() {
-  const list = $('#results');
-  clear(list);
-  for (let i = 0; i < 6; i++) {
-    list.appendChild(el('li', { class: 'skeleton', 'aria-hidden': 'true' }));
-  }
-}
-
-async function runSearch(q, lang, offset) {
-  if (!q) {
-    clear($('#results'));
-    $('#meta').hidden = true;
-    $('#pager').hidden = true;
-    $('#filters').hidden = true;
-    return;
-  }
-  $('#filters').hidden = false;
-  showSkeleton();
-  setMeta(t('meta.searching', { q }));
-  try {
-    // The /api/decisions endpoint expects `query=`, not `q=` — passing `q=`
-    // silently returns the unfiltered corpus sorted by date (971k results).
-    // The user-facing URL keeps `?q=` because that is shorter to share;
-    // we translate at the API boundary.
-    const url = new URL(API);
-    url.searchParams.set('query', q);
-    url.searchParams.set('limit', String(PAGE_SIZE));
-    if (offset) url.searchParams.set('offset', String(offset));
-    if (lang) url.searchParams.set('language', lang);
-    const t0 = performance.now();
-    const r = await fetch(url, { headers: { Accept: 'application/json' } });
-    if (!r.ok) throw new Error(`API ${r.status}`);
-    const data = await r.json();
-    const ms = Math.round(performance.now() - t0);
-    const total = data.total ?? (data.results || []).length;
-
-    // Sanity check: if `total` looks like the entire corpus the API has
-    // ignored our `query=` filter (older versions accepted only `q=`,
-    // and the wrong param silently returned every decision sorted by
-    // date). Surface this clearly instead of pretending the noise is
-    // a result set.
-    if (total >= 500000 && q.length > 0) {
-      const list = $('#results');
-      clear(list);
-      list.appendChild(el('li', {
-        class: 'error',
-        text: t('error.staleCorpus', { total: fmtNum(total) }),
-      }));
-      $('#meta').hidden = true;
-      $('#pager').hidden = true;
-      return;
-    }
-
-    setMeta(t('meta.matching', { total: fmtNum(total), ms }));
-    renderResults(data, q);
-    renderPager(total, offset || 0, q, lang);
-  } catch (e) {
-    const list = $('#results');
-    clear(list);
-    list.appendChild(el('li', { class: 'error', text: t('error.searchFailed', { msg: e.message }) }));
-    $('#meta').hidden = true;
-    $('#pager').hidden = true;
-  }
-}
-
-function setLangButtons(lang) {
-  document.querySelectorAll('#filters button').forEach((b) => {
-    const f = b.dataset.filter || '';
-    b.classList.toggle('active', f === (lang || ''));
-  });
-}
-
-function bind() {
-  $('#form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const q = $('#q').value.trim();
-    const p = new URLSearchParams();
-    if (q) p.set('q', q);
-    history.pushState({ q }, '', q ? `?${p}` : location.pathname);
-    runSearch(q, '', 0);
-    setLangButtons('');
-  });
-
-  document.querySelectorAll('#filters button').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const lang = btn.dataset.filter || '';
-      const q = $('#q').value.trim();
-      const p = new URLSearchParams({ q });
-      if (lang) p.set('lang', lang);
-      history.pushState({ q, lang }, '', `?${p}`);
-      runSearch(q, lang, 0);
-      setLangButtons(lang);
-    });
-  });
-
-  window.addEventListener('popstate', () => init());
-}
-
-function init() {
-  const p = params();
-  const q = p.get('q') || '';
-  const lang = p.get('lang') || '';
-  const offset = parseInt(p.get('offset') || '0', 10) || 0;
-  $('#q').value = q;
-  setLangButtons(lang);
-  if (q) runSearch(q, lang, offset);
-}
-
-// Re-run the current view so JS-produced strings (meta, empty-state, pager,
-// errors) pick up the newly selected language. Called by the lang switcher.
-window.rerenderI18n = function () { init(); };
-
-bind();
-init();
-</script>
-
-<script>
-/* Per-page i18n table — translated by the shared IIFE walker. */
-window.I18N_PAGE = {
-    'hero.eyebrow': { de: "Suche · 972'000+ Entscheide", fr: "Recherche · 972'000+ décisions", it: "Ricerca · 972'000+ decisioni", rm: "Tschertga · 972'000+ decisiuns", en: 'Search · 972,000+ decisions' },
-    'hero.h1': { de: 'Den offenen Schweizer Korpus durchsuchen', fr: 'Rechercher dans le corpus suisse ouvert', it: 'Cerca nel corpus svizzero aperto', rm: 'Tschertgar en il corpus svizzer avert', en: 'Search the open Swiss corpus' },
-    'hero.lede': { de: 'Volltextsuche über alle publizierten Schweizer Gerichtsentscheide. DE, FR, IT. Ohne Anmeldung, ohne API-Key. Gleiches MCP-Backend wie für Claude, ChatGPT und das Word-Add-in.', fr: "Recherche plein texte sur toutes les décisions publiées des tribunaux suisses. DE, FR, IT. Sans inscription ni clé API. Même backend MCP que Claude, ChatGPT et l'add-in Word.", it: 'Ricerca a testo pieno su tutte le decisioni pubblicate dei tribunali svizzeri. DE, FR, IT. Senza registrazione, senza chiave API. Stesso backend MCP usato da Claude, ChatGPT e dal componente Word.', rm: "Tschertga da text cumplet sur tut las decisiuns publitgadas dals tribunals svizzers. DE, FR, IT. Senza annunzia, senza clav API. Medem MCP-Backend che Claude, ChatGPT e l'add-in Word.", en: 'Free full-text search over every published Swiss court decision. DE, FR, IT. No account, no API key. Powered by the same MCP backend that serves Claude, ChatGPT and the Word add-in.' },
-    'form.placeholder': { de: 'z. B. "Art. 41 OR Schadenersatz"  ·  6B_1234/2025  ·  Mietrecht Kündigung', fr: 'p. ex. "Art. 41 OR Schadenersatz"  ·  6B_1234/2025  ·  Mietrecht Kündigung', it: 'p. es. "Art. 41 OR Schadenersatz"  ·  6B_1234/2025  ·  Mietrecht Kündigung', rm: 'p. ex. "Art. 41 OR Schadenersatz"  ·  6B_1234/2025  ·  Mietrecht Kündigung', en: 'e.g. "Art. 41 OR Schadenersatz"  ·  6B_1234/2025  ·  Mietrecht Kündigung' },
-    'form.submit': { de: 'Suchen', fr: 'Rechercher', it: 'Cerca', rm: 'Tschertgar', en: 'Search' },
-    'examples.try': { de: 'Versuchen Sie:', fr: 'Essayez :', it: 'Provate:', rm: 'Empruvai:', en: 'Try:' },
-    'filter.allLangs': { de: 'Alle Sprachen', fr: 'Toutes les langues', it: 'Tutte le lingue', rm: 'Tut las linguas', en: 'All languages' },
-    'meta.searching': { de: 'Suche nach "{q}" …', fr: 'Recherche de "{q}" …', it: 'Ricerca di "{q}" …', rm: 'Tschertga da "{q}" …', en: 'Searching for "{q}"…' },
-    'meta.matching': { de: '{total} passende Entscheide  ·  {ms} ms', fr: '{total} décisions correspondantes  ·  {ms} ms', it: '{total} decisioni corrispondenti  ·  {ms} ms', rm: '{total} decisiuns correspundentas  ·  {ms} ms', en: '{total} matching decisions  ·  {ms} ms' },
-    'results.noMatches': { de: 'Keine Treffer für "{q}"', fr: 'Aucun résultat pour "{q}"', it: 'Nessun risultato per "{q}"', rm: 'Nagins resultats per "{q}"', en: 'No matches for "{q}"' },
-    'results.noMatchesHint': { de: 'Versuchen Sie allgemeinere Begriffe, lassen Sie Akzente weg oder prüfen Sie das Format der Aktennummer (z. B. 6B_1234/2025).', fr: 'Essayez des termes plus généraux, supprimez les diacritiques ou vérifiez le format du numéro de dossier (p. ex. 6B_1234/2025).', it: 'Provate termini più generici, eliminate i segni diacritici o verificate il formato del numero di pratica (p. es. 6B_1234/2025).', rm: 'Empruvai noziuns pli generalas, laschai davent ils accents u controllai il format dal numer dal dossier (p. ex. 6B_1234/2025).', en: 'Try broader terms, drop diacritics, or check the docket-number format (e.g. 6B_1234/2025).' },
-    'results.untitled': { de: '(Entscheid ohne Titel)', fr: '(décision sans titre)', it: '(decisione senza titolo)', rm: '(decisiun senza titel)', en: '(untitled decision)' },
-    'pager.prev': { de: '← Zurück', fr: '← Précédent', it: '← Precedente', rm: '← Enavos', en: '← Previous' },
-    'pager.next': { de: 'Weiter →', fr: 'Suivant →', it: 'Successivo →', rm: 'Enavant →', en: 'Next →' },
-    'pager.showing': { de: 'Zeige {from}–{to} von {total}', fr: 'Affichage de {from}–{to} sur {total}', it: 'Risultati {from}–{to} di {total}', rm: 'Mussar {from}–{to} da {total}', en: 'Showing {from}–{to} of {total}' },
-    'error.staleCorpus': { de: 'Die API hat den ungefilterten Korpus zurückgegeben ({total} Zeilen). Das bedeutet in der Regel, dass das Seiten-JS veraltet ist — laden Sie die Seite hart neu (⌘⇧R / Strg+Umschalt+R), um die neueste Version zu laden.', fr: "L'API a renvoyé le corpus non filtré ({total} lignes). Cela signifie généralement que le JS de la page est obsolète — actualisez de force (⌘⇧R / Ctrl+Maj+R) pour charger la dernière version.", it: "L'API ha restituito il corpus non filtrato ({total} righe). Di solito significa che il JS della pagina è obsoleto — ricaricate forzatamente (⌘⇧R / Ctrl+Maiusc+R) per caricare l'ultima versione.", rm: "L'API ha returnà il corpus betg filtrà ({total} lingias). Quai munta per ordinari ch'il JS da la pagina è antiquà — rechargiai la pagina cun forza (⌘⇧R / Ctrl+Maiusc+R) per chargiar l'ultima versiun.", en: 'The API returned the unfiltered corpus ({total} rows). This usually means the page JS is stale — hard-refresh (⌘⇧R / Ctrl+Shift+R) to load the latest version.' },
-    'error.searchFailed': { de: 'Suche fehlgeschlagen: {msg}. Versuchen Sie es erneut oder öffnen Sie die API-Statusprüfung.', fr: "Échec de la recherche : {msg}. Réessayez ou ouvrez la vérification d'état de l'API.", it: "Ricerca non riuscita: {msg}. Riprovate o aprite il controllo di stato dell'API.", rm: "La tschertga è fallida: {msg}. Empruvai anc ina giada u avri la controlla da status da l'API.", en: 'Search failed: {msg}. Try again, or open the API health check.' }
-  };
-</script>
-<script>
-/* Shared lang-switch wiring (works on every page).
-   - Reads current locale from ?lang=, then localStorage, then <html lang>.
-   - Highlights the matching .lang-sw [data-l] item with .on.
-   - Translates the primary nav labels via NAV_I18N so the user always
-     sees the language they picked, even on English-only pages.
-   - Click is ALWAYS preventDefault'd so the user stays on the current
-     page; localStorage persists their choice for the next i18n-capable
-     surface (landing, /word/*).
-   - On i18n-capable pages (where window.applyI18n is defined), also
-     calls applyI18n() to translate the whole body in-place. */
-(function () {
-  /* Canonical lookup by data-nav-key (added to every nav anchor) so that
-     translating once does NOT lose the key — fixes the RM-stickiness bug
-     where textContent='Tschertga' could not be looked up again. */
-  var NAV_I18N = {
-    search:  { de: 'Suche',     fr: 'Recherche', it: 'Ricerca',  rm: 'Tschertga', en: 'Search' },
-    courts:  { de: 'Gerichte',  fr: 'Tribunaux', it: 'Tribunali', rm: 'Dretgiras', en: 'Courts' },
-    laws:    { de: 'Gesetze',   fr: 'Lois',      it: 'Leggi',     rm: 'Leschas',   en: 'Laws' },
-    word:    { de: 'Word',      fr: 'Word',      it: 'Word',      rm: 'Word',      en: 'Word' },
-    mcp:     { de: 'MCP',       fr: 'MCP',       it: 'MCP',       rm: 'MCP',       en: 'MCP' },
-    api:     { de: 'API',       fr: 'API',       it: 'API',       rm: 'API',       en: 'API' },
-    quality: { de: 'Qualitaet', fr: 'Qualite',   it: 'Qualita',   rm: 'Qualitad',  en: 'Quality' }
-  };
-  var I18N_FOOTER = {
-    'footer.access': { de: 'Zugang',     fr: 'Accès',      it: 'Accesso',        rm: 'Access',      en: 'Access' },
-    'footer.product':  { de: 'Produkt',   fr: 'Produit',   it: 'Prodotto', rm: 'Product',   en: 'Product' },
-    'footer.data':     { de: 'Daten',     fr: 'Donnees',   it: 'Dati',     rm: 'Datas',     en: 'Data' },
-    'footer.about':    { de: 'Ueber',     fr: 'A propos',  it: 'Chi siamo',rm: 'Davart',    en: 'About' },
-    'footer.search':   { de: 'Suche',     fr: 'Recherche', it: 'Ricerca',  rm: 'Tschertga', en: 'Search' },
-    'footer.courts':   { de: 'Gerichte',  fr: 'Tribunaux', it: 'Tribunali', rm: 'Dretgiras', en: 'Courts' },
-    'footer.laws':     { de: 'Gesetze',   fr: 'Lois',      it: 'Leggi',     rm: 'Leschas',   en: 'Laws' },
-    'footer.word':     { de: 'Word-Add-in', fr: 'Word add-in', it: 'Componente Word', rm: 'Add-in Word', en: 'Word add-in' },
-    'footer.mcp':      { de: 'MCP',       fr: 'MCP',       it: 'MCP',       rm: 'MCP',      en: 'MCP' },
-    'footer.api':      { de: 'API',       fr: 'API',       it: 'API',       rm: 'API',      en: 'API' },
-    'footer.paper':    { de: 'Paper',     fr: 'Article',   it: 'Articolo',  rm: 'Artitgel', en: 'Paper' },
-    'footer.quality':  { de: 'Qualitaet', fr: 'Qualite',   it: 'Qualita',   rm: 'Qualitad', en: 'Quality' },
-    'footer.coverage': { de: 'Abdeckung', fr: 'Couverture', it: 'Copertura', rm: 'Cuvrida', en: 'Coverage' }
-  };
-
-  function applyNavLang(lang) {
-    document.querySelectorAll('header.site nav > a[data-nav-key]').forEach(function (a) {
-      var dict = NAV_I18N[a.dataset.navKey];
-      if (dict && dict[lang]) a.textContent = dict[lang];
-    });
-    document.querySelectorAll('[data-i18n]').forEach(function (el) {
-      var key = el.getAttribute('data-i18n');
-      var dict = (window.I18N_PAGE && window.I18N_PAGE[key]) || I18N_FOOTER[key];
-      if (dict && dict[lang]) el.textContent = dict[lang];
-    });
-    document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
-      var key = el.getAttribute('data-i18n-placeholder');
-      var dict = (window.I18N_PAGE && window.I18N_PAGE[key]) || null;
-      if (dict && dict[lang]) el.setAttribute('placeholder', dict[lang]);
-    });
-    window.curLang = lang;
-    document.documentElement.setAttribute('lang', lang);
-  }
-
-  var qs = (location.search.match(/[?&]lang=([a-z]{2})/) || [])[1];
-  var stored = null;
-  try { stored = localStorage.getItem('lang'); } catch (_) {}
-  var html = (document.documentElement.lang || '').slice(0, 2);
-  var lang = qs || stored || html || 'de';
-  if (qs) { try { localStorage.setItem('lang', qs); } catch (_) {} }
-  applyNavLang(lang);
-  document.querySelectorAll('.lang-sw [data-l]').forEach(function (el) {
-    el.classList.toggle('on', el.dataset.l === lang);
-    el.addEventListener('click', function (e) {
-      e.preventDefault();
-      var l = el.dataset.l;
-      try { localStorage.setItem('lang', l); } catch (_) {}
-      document.querySelectorAll('.lang-sw [data-l]').forEach(function (b) {
-        b.classList.toggle('on', b.dataset.l === l);
-      });
-      applyNavLang(l);
-      // Re-render JS-produced content (results / pager / meta) in the new
-      // language without a reload, if the page exposes a re-render hook.
-      if (typeof window.rerenderI18n === 'function') {
-        try { window.rerenderI18n(); } catch (_) {}
-      }
-      if (typeof window.applyI18n === 'function') {
-        try { window.applyI18n(); } catch (_) {}
-      }
-    });
-  });
-})();
-</script>
-<script>
-/* Mobile nav-toggle: <720px shows a hamburger that toggles `body.nav-open`,
-   which the design-system CSS uses to slide the full nav (links + lang
-   switch) in from the top. ESC + outside-click + nav-link-click also close. */
-(function () {
-  var btn = document.getElementById('nav-toggle');
-  if (!btn) return;
-  var nav = document.querySelector('header.site nav');
-  function setOpen(open) {
-    document.body.classList.toggle('nav-open', open);
-    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-  }
-  btn.addEventListener('click', function () {
-    setOpen(!document.body.classList.contains('nav-open'));
-  });
-  if (nav) nav.querySelectorAll('a').forEach(function (a) {
-    a.addEventListener('click', function () { setOpen(false); });
-  });
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') setOpen(false);
-  });
-})();
+});
 </script>
 </body>
 </html>
