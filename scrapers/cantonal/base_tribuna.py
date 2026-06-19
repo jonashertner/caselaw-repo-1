@@ -40,6 +40,20 @@ from models import Decision, detect_language, extract_citations, make_decision_i
 
 logger = logging.getLogger(__name__)
 
+
+class TribunaProtocolError(RuntimeError):
+    """The Tribuna GWT-RPC server rejected our request shape.
+
+    Typically an ``IncompatibleRemoteServiceException`` returned as a ``//EX``
+    payload after a server-side VTPlus upgrade changes the deployed
+    ``search()`` signature so it no longer matches ``SEARCH_FIELD_COUNT``.
+    Raising — rather than silently returning zero results — keeps the failure
+    visible to the scraper-health monitor instead of masquerading as an empty
+    portal (which is what hid the BE Zivil-/Straf + Anwaltsaufsicht breakage
+    for months and defeated the silent-success detector).
+    """
+
+
 # GWT-RPC serialization policy hashes (shared across Tribuna VTPlus versions)
 _CONFIG_HASH = "7225438C30B96853F589E2336CAF98F1"
 _LOADTABLE_HASH = "CAC80118FB77794F1FDFC1B51371CC63"
@@ -93,6 +107,21 @@ class TribunaBaseScraper(BaseScraper):
     # Old Tribuna (GR, ZG): 20 fields → 46-param search()
     # New Tribuna (FR, BE VG): 21 fields → 47-param search()
     SEARCH_FIELD_COUNT: int = 20
+
+    # Date-windowed discovery (opt-in). When DATE_WINDOW_FIELD is set to the
+    # search-field index whose value filters by an ISO date prefix ("YYYY",
+    # "YYYY-MM", "YYYY-MM-DD"), discovery partitions the result set into date
+    # windows instead of one offset-paginated pass. This defeats the server's
+    # deep-offset under-fill: offset pagination over the portal's unstable date
+    # sort silently skips rows on large result sets (e.g. BE VG returned only
+    # 9,009 of 11,420). Year windows partition the corpus exactly; windows that
+    # still under-fill are split finer (year → month → day) up to
+    # DATE_WINDOW_MAX_DEPTH. None = original single-pass behaviour (every other
+    # Tribuna portal is unaffected).
+    DATE_WINDOW_FIELD: int | None = None
+    DATE_WINDOW_START_YEAR: int = 2000
+    DATE_WINDOW_MAX_DEPTH: int = 1      # 0=year only, 1=+month, 2=+day
+    DATE_WINDOW_SPLIT_OVER: int = 150   # only split a window finer when total exceeds this
 
     # Overridable: the tribunavtplus subpath (usually "tribunavtplus")
     TRIBUNA_PATH: str = "tribunavtplus"
@@ -187,7 +216,8 @@ class TribunaBaseScraper(BaseScraper):
         return credential
 
     def _build_search_body(self, credential: str, page: int, total: int | None,
-                           court_filter: str | None = None) -> str:
+                           court_filter: str | None = None,
+                           search_field_overrides: dict | None = None) -> str:
         """Build the GWT-RPC search request body.
 
         Args:
@@ -228,6 +258,18 @@ class TribunaBaseScraper(BaseScraper):
                 strings.append(label)
         strings.append(locale)
 
+        # Optional per-search-field filter values (foundation for date-windowed
+        # discovery). Each override injects a value into one search field; the
+        # values are appended to the string table last so existing refs stay
+        # valid. Default: every search field empty (ref 11 = "").
+        _nf = self.SEARCH_FIELD_COUNT
+        field_refs = ["11"] * _nf
+        if search_field_overrides:
+            for _fi, _val in sorted(search_field_overrides.items()):
+                if 0 <= _fi < _nf and _val:
+                    strings.append(_val)
+                    field_refs[_fi] = str(len(strings))
+
         num_strings = len(strings)
 
         # Build string table section (pipe-delimited)
@@ -257,8 +299,8 @@ class TribunaBaseScraper(BaseScraper):
         empty_ref = 11  # 1-based ref to "" (str[10])
         zero_ref = 12   # 1-based ref to "0" (str[11], always "0")
 
-        # N empty strings for search field values (20 or 21)
-        empties = "|".join(["11"] * nf)
+        # Search field values: empty by default, or per-field overrides.
+        empties = "|".join(field_refs)
 
         # Column definition map refs (HashMap<String,String>: key→label)
         col_refs = []
@@ -310,6 +352,24 @@ class TribunaBaseScraper(BaseScraper):
         Returns (total_count, list_of_stubs).
         Each stub has: doc_id, docket_number, decision_date, enc_path, title.
         """
+        if text.startswith("//EX"):
+            # GWT-RPC server-side exception (typically
+            # IncompatibleRemoteServiceException when a VTPlus upgrade changes
+            # the deployed search() signature so it no longer matches
+            # SEARCH_FIELD_COUNT). MUST NOT be swallowed as (0, []): doing so
+            # masked a stale-protocol failure as an empty portal for months and
+            # defeated the silent-success health detector. Raise so the scraper
+            # fails loudly (the "search failed" ERROR line also feeds the
+            # discovery-error count in run_all_scrapers.py).
+            logger.error(
+                f"[{self.court_code}] Tribuna search failed: server rejected "
+                f"request (GWT //EX; SEARCH_FIELD_COUNT={self.SEARCH_FIELD_COUNT} "
+                f"may be stale): {text[:200]}"
+            )
+            raise TribunaProtocolError(
+                f"{self.court_code}: GWT-RPC //EX — server search() signature "
+                f"no longer matches SEARCH_FIELD_COUNT={self.SEARCH_FIELD_COUNT}"
+            )
         if not text.startswith("//OK"):
             logger.warning(f"[{self.court_code}] Bad response: {text[:200]}")
             return 0, []
@@ -383,7 +443,16 @@ class TribunaBaseScraper(BaseScraper):
             yield from self._search_court(credential, court_filter, since_date)
 
     def _search_court(self, credential: str, court_filter: str, since_date=None) -> Iterator[dict]:
-        """Search a single court filter and yield decision stubs."""
+        """Search a single court filter and yield decision stubs.
+
+        With DATE_WINDOW_FIELD set, discovery is partitioned into date windows
+        (year, recursively split to month/day where the server under-fills);
+        otherwise the original single offset-paginated pass.
+        """
+        if self.DATE_WINDOW_FIELD is not None:
+            yield from self._search_court_windowed(credential, court_filter, since_date)
+            return
+
         total = None
         for page in range(self.MAX_PAGES):
             try:
@@ -425,6 +494,99 @@ class TribunaBaseScraper(BaseScraper):
             if total and (page + 1) * self.PAGE_SIZE >= total:
                 logger.info(f"[{self.court_code}] All {total} results covered in {page+1} pages")
                 break
+
+    # ------------------------------------------------------------------
+    # Date-windowed discovery (opt-in via DATE_WINDOW_FIELD)
+    # ------------------------------------------------------------------
+
+    def _search_court_windowed(self, credential, court_filter, since_date=None) -> Iterator[dict]:
+        """Partition discovery into descending-year date windows."""
+        from datetime import datetime
+        end_year = datetime.now().year + 1
+        start_year = self.DATE_WINDOW_START_YEAR
+        if since_date:
+            # Incremental run: only walk windows that can contain new decisions.
+            start_year = max(start_year, since_date.year)
+        for year in range(end_year, start_year - 1, -1):
+            yield from self._window(credential, court_filter, since_date, str(year), depth=0)
+
+    def _window(self, credential, court_filter, since_date, prefix, depth) -> Iterator[dict]:
+        """Walk one date window; split finer if the server under-fills it."""
+        total, stubs = self._collect_window(credential, court_filter, prefix)
+        if depth == 0:
+            # Each year is counted once → portal_count tracks the true corpus size.
+            self.portal_count = (self.portal_count or 0) + total
+            logger.info(f"[{self.court_code}] window '{prefix}': total={total}")
+        if total == 0:
+            return
+        unique = {st["docket_number"]: st for st in stubs}
+        # The server under-fills large windows (offset pagination over an
+        # unstable date sort skips rows). Split finer until each window is small
+        # enough to paginate completely.
+        if (len(unique) < total and depth < self.DATE_WINDOW_MAX_DEPTH
+                and total > self.DATE_WINDOW_SPLIT_OVER):
+            for child in self._sub_windows(prefix, depth):
+                yield from self._window(credential, court_filter, since_date, child, depth + 1)
+            return
+        if len(unique) < total:
+            logger.warning(
+                f"[{self.court_code}] window '{prefix}': recovered {len(unique)}/{total} "
+                f"(residual under-fill)"
+            )
+        yield from self._yield_new(list(unique.values()), since_date)
+
+    @staticmethod
+    def _sub_windows(prefix: str, depth: int) -> list[str]:
+        if depth == 0:      # year → months
+            return [f"{prefix}-{m:02d}" for m in range(1, 13)]
+        if depth == 1:      # month → days
+            return [f"{prefix}-{d:02d}" for d in range(1, 32)]
+        return []
+
+    def _collect_window(self, credential, court_filter, value) -> tuple[int, list[dict]]:
+        """Paginate one date-filtered window fully; return (server_total, stubs)."""
+        overrides = {self.DATE_WINDOW_FIELD: value}
+        total = None
+        stubs: list[dict] = []
+        for page in range(self.MAX_PAGES):
+            try:
+                body = self._build_search_body(
+                    credential, page, total, court_filter,
+                    search_field_overrides=overrides,
+                )
+                resp = self.post(
+                    f"{self._gwt_base}/loadTable", data=body, headers=self._gwt_headers
+                )
+            except Exception as e:
+                logger.error(f"[{self.court_code}] Search page {page} ['{value}'] failed: {e}")
+                break
+            page_total, decisions = self._parse_search_response(resp.text)
+            if total is None:
+                total = page_total
+            if not decisions:
+                break
+            stubs.extend(decisions)
+            if total and (page + 1) * self.PAGE_SIZE >= total:
+                break
+        return (total or 0), stubs
+
+    def _yield_new(self, stubs, since_date) -> Iterator[dict]:
+        """Dedup collected stubs + apply since_date; yield the unknown ones."""
+        seen = set()
+        for stub in stubs:
+            docket = stub.get("docket_number")
+            if not docket or docket in seen:
+                continue
+            seen.add(docket)
+            if since_date and stub.get("decision_date"):
+                d = parse_date(stub["decision_date"])
+                if d and d < since_date:
+                    continue
+            did = make_decision_id(self.court_code, docket)
+            if self.state.is_known(did):
+                continue
+            stub["decision_id"] = did
+            yield stub
 
     def _build_download_url(self, stub: dict) -> str:
         """Build the PDF download URL from stub data."""

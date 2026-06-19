@@ -3,7 +3,7 @@ Bern Anwaltsaufsichtsbehörde Scraper
 =====================================
 Scrapes attorney oversight authority decisions from the Tribuna VTPlus platform.
 
-Platform: Tribuna GWT-RPC (old protocol)
+Platform: Tribuna GWT-RPC (VTPlus, 47-param search)
 Coverage: Anwaltsaufsichtsbehörde des Kantons Bern
 Volume: ~65 decisions
 Language: de/fr
@@ -23,4 +23,4 @@ class BEAnwaltsaufsichtScraper(TribunaBaseScraper):
     LOCALE = "de"
     REQUEST_DELAY = 2.5
     VERIFY_SSL = False
-    SEARCH_FIELD_COUNT = 20  # Old Tribuna version (46-param search)
+    SEARCH_FIELD_COUNT = 21  # VTPlus upgrade removed the 46-param search() (2026-06-19; was 20)

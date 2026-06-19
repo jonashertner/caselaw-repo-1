@@ -3,7 +3,7 @@ Bern Zivil- und Strafgerichte Scraper
 =======================================
 Scrapes civil and criminal court decisions from the Tribuna VTPlus platform.
 
-Platform: Tribuna GWT-RPC (old protocol, 46-param search)
+Platform: Tribuna GWT-RPC (VTPlus, 47-param search)
 Coverage: Zivil- und Strafgerichte des Kantons Bern
 Volume: ~5,637 decisions (OG=5,632, BM=2, WSG=3)
 Language: de/fr
@@ -23,4 +23,4 @@ class BEZivilStrafScraper(TribunaBaseScraper):
     LOCALE = "de"
     REQUEST_DELAY = 2.5
     VERIFY_SSL = False
-    SEARCH_FIELD_COUNT = 20  # Old Tribuna version (46-param search)
+    SEARCH_FIELD_COUNT = 21  # VTPlus upgrade removed the 46-param search() (2026-06-19; was 20)

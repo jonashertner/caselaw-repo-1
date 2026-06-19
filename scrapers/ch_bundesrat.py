@@ -38,9 +38,41 @@ logger = logging.getLogger(__name__)
 
 BASE_URL = "https://www.bj.admin.ch"
 
-LISTING_URL = (
-    f"{BASE_URL}/bj/de/home/publiservice/publikationen/beschwerdeentscheide.html"
+# bj.admin.ch retired the legacy /bj/de/home/... tree in its 2026 CMS
+# migration; the Beschwerdeentscheide now live at this flat path.
+LISTING_URL = f"{BASE_URL}/de/beschwerdeentscheide-des-bundesrates"
+
+# Detail pages are flat descriptive slugs, e.g.
+#   /de/entscheid-des-bundesrates-vom-13-juni-2025-eda
+_DETAIL_RE = re.compile(r"^/de/entscheid-des-bundesrates-vom-", re.IGNORECASE)
+
+# German month names as they appear (transliterated, lowercase) in the slug.
+_SLUG_MONTHS = {
+    "januar": 1, "februar": 2, "maerz": 3, "marz": 3, "april": 4, "mai": 5,
+    "juni": 6, "juli": 7, "august": 8, "september": 9, "oktober": 10,
+    "november": 11, "dezember": 12,
+}
+_SLUG_DATE_RE = re.compile(
+    r"vom-(\d{1,2})-([a-z]+)-(\d{4})(?:-(.+))?$", re.IGNORECASE
 )
+
+
+def _parse_bundesrat_slug(slug: str) -> tuple[str | None, str]:
+    """Parse a detail slug into (ISO decision date, descriptor).
+
+    ``entscheid-des-bundesrates-vom-13-juni-2025-eda`` -> ("2025-06-13", "eda").
+    Returns (None, descriptor-or-"") when the date can't be parsed, so the
+    caller can fall back to the raw slug for the docket.
+    """
+    m = _SLUG_DATE_RE.search(slug)
+    if not m:
+        return None, ""
+    day, month_name, year, descriptor = m.groups()
+    month = _SLUG_MONTHS.get(month_name.lower())
+    descriptor = descriptor or ""
+    if not month:
+        return None, descriptor
+    return f"{int(year):04d}-{month:02d}-{int(day):02d}", descriptor
 
 # Date pattern in titles: "Entscheid des Bundesrates vom DD. Monat YYYY"
 DATE_PATTERN = re.compile(
@@ -86,20 +118,22 @@ class CHBundesratScraper(BaseScraper):
 
     def discover_new(self, since_date=None) -> Iterator[dict]:
         """Discover decisions from the BJ listing page."""
-        response = self.get(LISTING_URL)
+        try:
+            response = self.get(LISTING_URL)
+        except Exception as e:
+            # A 404 / transport error here means the portal moved again (as in
+            # the 2026 CMS migration that broke the old URL). Fail loudly rather
+            # than silently reporting zero new decisions.
+            logger.error(f"[ch_bundesrat] Listing fetch failed: {e}")
+            raise
+
         soup = BeautifulSoup(response.text, "html.parser")
 
-        # All entries are in the DOM (JS pagination hides some visually)
-        # Look for links to detail pages: /bj/de/.../beschwerdeentscheide/YYYY-MM-DD.html
+        # Detail links are flat slugs: /de/entscheid-des-bundesrates-vom-...
         seen = set()
         for a in soup.find_all("a", href=True):
             href = a["href"]
-            if "/beschwerdeentscheide/" not in href:
-                continue
-            if not href.endswith(".html"):
-                continue
-            # Skip the listing page itself
-            if href.rstrip("/").endswith("beschwerdeentscheide"):
+            if not _DETAIL_RE.match(href):
                 continue
 
             full_url = urljoin(BASE_URL, href)
@@ -107,24 +141,23 @@ class CHBundesratScraper(BaseScraper):
                 continue
             seen.add(full_url)
 
-            # Extract title from link or parent
+            # Title from the link text, falling back to the enclosing block.
             title = a.get_text(strip=True)
             if not title or len(title) < 5:
                 parent = a.find_parent(["h3", "h4", "li", "div"])
                 if parent:
                     title = parent.get_text(strip=True)
 
-            # Extract date from title
-            date_str = None
-            for pattern in (DATE_PATTERN, DATE_FR):
-                m = pattern.search(title or "")
-                if m:
-                    date_str = f"{m.group(1)}. {m.group(2)} {m.group(3)}"
-                    break
-
-            # Build slug from URL path for docket
-            path = href.split("/beschwerdeentscheide/")[-1].replace(".html", "")
-            docket = path
+            # The real Entscheid date + a disambiguating descriptor live in the
+            # slug. Docket = "YYYY-MM-DD[-descriptor]" so same-day decisions
+            # (e.g. three 2025-06-13 entries) stay distinct; fall back to the
+            # raw slug if the date can't be parsed.
+            slug = href.rstrip("/").split("/")[-1]
+            date_str, descriptor = _parse_bundesrat_slug(slug)
+            if date_str:
+                docket = f"{date_str}-{descriptor}" if descriptor else date_str
+            else:
+                docket = slug
 
             decision_id = make_decision_id("ch_bundesrat", docket)
             if self.state.is_known(decision_id):
