@@ -1259,7 +1259,7 @@ def _render_decision(
   var stored = null;
   try {{ stored = localStorage.getItem('lang'); }} catch (_) {{}}
   var html = (document.documentElement.lang || '').slice(0, 2);
-  var lang = qs || stored || html || 'en';
+  var lang = qs || stored || html || 'de';
   if (qs) {{ try {{ localStorage.setItem('lang', qs); }} catch (_) {{}} }}
   applyNavLang(lang);
   document.querySelectorAll('.lang-sw [data-l]').forEach(function (el) {{
@@ -1398,7 +1398,7 @@ def _render_404(decision_id: str) -> str:
   var stored = null;
   try {{ stored = localStorage.getItem('lang'); }} catch (_) {{}}
   var html = (document.documentElement.lang || '').slice(0, 2);
-  var lang = qs || stored || html || 'en';
+  var lang = qs || stored || html || 'de';
   if (qs) {{ try {{ localStorage.setItem('lang', qs); }} catch (_) {{}} }}
   applyNavLang(lang);
   document.querySelectorAll('.lang-sw [data-l]').forEach(function (el) {{

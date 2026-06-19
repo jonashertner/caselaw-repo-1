@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -188,12 +188,13 @@
   <form class="search-form" id="form" role="search" aria-label="Search Swiss case law">
     <input class="search-input" type="search" id="q" name="q"
            placeholder='e.g. "Art. 41 OR Schadenersatz"  ·  6B_1234/2025  ·  Mietrecht Kündigung'
+           data-i18n-placeholder="form.placeholder"
            autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Search query">
-    <button type="submit" class="btn btn-primary">Search</button>
+    <button type="submit" class="btn btn-primary" data-i18n="form.submit">Search</button>
   </form>
 
   <p class="examples" id="examples">
-    <span style="color: var(--text-3);">Try:</span>
+    <span style="color: var(--text-3);" data-i18n="examples.try">Try:</span>
     <a href="?q=Mietrecht+K%C3%BCndigung+Form">Mietrecht Kündigung Form</a>
     <a href="?q=Art.+41+OR+Schadenersatz">Art. 41 OR Schadenersatz</a>
     <a href="?q=BGE+140+III+86">BGE 140 III 86</a>
@@ -202,7 +203,7 @@
   </p>
 
   <div class="search-filters" id="filters" hidden>
-    <button data-filter="" class="active" type="button">All languages</button>
+    <button data-filter="" class="active" type="button" data-i18n="filter.allLangs">All languages</button>
     <button data-filter="de" type="button">DE</button>
     <button data-filter="fr" type="button">FR</button>
     <button data-filter="it" type="button">IT</button>
@@ -268,6 +269,25 @@ const PAGE_SIZE = 20;
 const $ = (sel) => document.querySelector(sel);
 const params = () => new URLSearchParams(location.search);
 
+// --- i18n for JS-produced strings -------------------------------------------
+// Resolves against window.I18N_PAGE (defined further down) using the same
+// locale precedence as the shared lang-switch IIFE: ?lang → localStorage →
+// <html lang> → 'de'. {placeholders} are substituted from `vars`.
+function detectLang() {
+  var qs = (location.search.match(/[?&]lang=([a-z]{2})/) || [])[1];
+  var stored = null;
+  try { stored = localStorage.getItem('lang'); } catch (_) {}
+  var html = (document.documentElement.lang || '').slice(0, 2);
+  return qs || stored || html || 'de';
+}
+window.curLang = window.curLang || detectLang();
+function t(key, vars) {
+  const dict = (window.I18N_PAGE && window.I18N_PAGE[key]) || null;
+  let s = (dict && (dict[window.curLang] || dict.de || dict.en)) || key;
+  if (vars) for (const k in vars) s = s.split('{' + k + '}').join(vars[k]);
+  return s;
+}
+
 function unescapePythonStr(s) {
   // The API occasionally returns titles like "I\\x27re" — undo \xNN sequences.
   if (!s) return s;
@@ -318,7 +338,7 @@ function clear(node) { while (node.firstChild) node.removeChild(node.firstChild)
 // --- Rendering ---------------------------------------------------------------
 
 function buildResultLi(r) {
-  const title = unescapePythonStr(r.title) || '(untitled decision)';
+  const title = unescapePythonStr(r.title) || t('results.untitled');
   const cite = pickCite(r, r.language);
   const url = r.canonical_url || `https://mcp.opencaselaw.ch/entscheid/${encodeURIComponent(r.decision_id)}`;
   const regeste = unescapePythonStr(r.regeste) || '';
@@ -356,8 +376,8 @@ function renderResults(data, q) {
   const results = data.results || [];
   if (results.length === 0) {
     const msg = el('li', { class: 'empty' }, [
-      el('strong', { text: `No matches for "${q}"` }),
-      'Try broader terms, drop diacritics, or check the docket-number format (e.g. 6B_1234/2025).',
+      el('strong', { text: t('results.noMatches', { q }) }),
+      t('results.noMatchesHint'),
     ]);
     list.appendChild(msg);
     return;
@@ -382,17 +402,21 @@ function renderPager(total, offset, q, lang) {
   };
   pager.appendChild(
     hasPrev
-      ? el('a', { href: url(prev), text: '← Previous' })
-      : el('span', { class: 'disabled', text: '← Previous' })
+      ? el('a', { href: url(prev), text: t('pager.prev') })
+      : el('span', { class: 'disabled', text: t('pager.prev') })
   );
   pager.appendChild(el('span', {
     class: 'pager-info',
-    text: `Showing ${offset + 1}–${Math.min(offset + PAGE_SIZE, total)} of ${fmtNum(total)}`,
+    text: t('pager.showing', {
+      from: offset + 1,
+      to: Math.min(offset + PAGE_SIZE, total),
+      total: fmtNum(total),
+    }),
   }));
   pager.appendChild(
     hasNext
-      ? el('a', { href: url(next), text: 'Next →' })
-      : el('span', { class: 'disabled', text: 'Next →' })
+      ? el('a', { href: url(next), text: t('pager.next') })
+      : el('span', { class: 'disabled', text: t('pager.next') })
   );
 }
 
@@ -420,7 +444,7 @@ async function runSearch(q, lang, offset) {
   }
   $('#filters').hidden = false;
   showSkeleton();
-  setMeta(`Searching for "${q}"…`);
+  setMeta(t('meta.searching', { q }));
   try {
     // The /api/decisions endpoint expects `query=`, not `q=` — passing `q=`
     // silently returns the unfiltered corpus sorted by date (971k results).
@@ -448,20 +472,20 @@ async function runSearch(q, lang, offset) {
       clear(list);
       list.appendChild(el('li', {
         class: 'error',
-        text: `The API returned the unfiltered corpus (${fmtNum(total)} rows). This usually means the page JS is stale — hard-refresh (⌘⇧R / Ctrl+Shift+R) to load the latest version.`,
+        text: t('error.staleCorpus', { total: fmtNum(total) }),
       }));
       $('#meta').hidden = true;
       $('#pager').hidden = true;
       return;
     }
 
-    setMeta(`${fmtNum(total)} matching decisions  ·  ${ms} ms`);
+    setMeta(t('meta.matching', { total: fmtNum(total), ms }));
     renderResults(data, q);
     renderPager(total, offset || 0, q, lang);
   } catch (e) {
     const list = $('#results');
     clear(list);
-    list.appendChild(el('li', { class: 'error', text: `Search failed: ${e.message}. Try again, or open the API health check.` }));
+    list.appendChild(el('li', { class: 'error', text: t('error.searchFailed', { msg: e.message }) }));
     $('#meta').hidden = true;
     $('#pager').hidden = true;
   }
@@ -510,6 +534,10 @@ function init() {
   if (q) runSearch(q, lang, offset);
 }
 
+// Re-run the current view so JS-produced strings (meta, empty-state, pager,
+// errors) pick up the newly selected language. Called by the lang switcher.
+window.rerenderI18n = function () { init(); };
+
 bind();
 init();
 </script>
@@ -519,7 +547,21 @@ init();
 window.I18N_PAGE = {
     'hero.eyebrow': { de: "Suche · 972'000+ Entscheide", fr: "Recherche · 972'000+ décisions", it: "Ricerca · 972'000+ decisioni", rm: "Tschertga · 972'000+ decisiuns", en: 'Search · 972,000+ decisions' },
     'hero.h1': { de: 'Den offenen Schweizer Korpus durchsuchen', fr: 'Rechercher dans le corpus suisse ouvert', it: 'Cerca nel corpus svizzero aperto', rm: 'Tschertgar en il corpus svizzer avert', en: 'Search the open Swiss corpus' },
-    'hero.lede': { de: 'Volltextsuche über alle publizierten Schweizer Gerichtsentscheide. DE, FR, IT. Ohne Anmeldung, ohne API-Key. Gleiches MCP-Backend wie für Claude, ChatGPT und das Word-Add-in.', fr: "Recherche plein texte sur toutes les décisions publiées des tribunaux suisses. DE, FR, IT. Sans inscription ni clé API. Même backend MCP que Claude, ChatGPT et l'add-in Word.", it: 'Ricerca a testo pieno su tutte le decisioni pubblicate dei tribunali svizzeri. DE, FR, IT. Senza registrazione, senza chiave API. Stesso backend MCP usato da Claude, ChatGPT e dal componente Word.', rm: "Tschertga da text cumplet sur tut las decisiuns publitgadas dals tribunals svizzers. DE, FR, IT. Senza annunzia, senza clav API. Medem MCP-Backend che Claude, ChatGPT e l'add-in Word.", en: 'Free full-text search over every published Swiss court decision. DE, FR, IT. No account, no API key. Powered by the same MCP backend that serves Claude, ChatGPT and the Word add-in.' }
+    'hero.lede': { de: 'Volltextsuche über alle publizierten Schweizer Gerichtsentscheide. DE, FR, IT. Ohne Anmeldung, ohne API-Key. Gleiches MCP-Backend wie für Claude, ChatGPT und das Word-Add-in.', fr: "Recherche plein texte sur toutes les décisions publiées des tribunaux suisses. DE, FR, IT. Sans inscription ni clé API. Même backend MCP que Claude, ChatGPT et l'add-in Word.", it: 'Ricerca a testo pieno su tutte le decisioni pubblicate dei tribunali svizzeri. DE, FR, IT. Senza registrazione, senza chiave API. Stesso backend MCP usato da Claude, ChatGPT e dal componente Word.', rm: "Tschertga da text cumplet sur tut las decisiuns publitgadas dals tribunals svizzers. DE, FR, IT. Senza annunzia, senza clav API. Medem MCP-Backend che Claude, ChatGPT e l'add-in Word.", en: 'Free full-text search over every published Swiss court decision. DE, FR, IT. No account, no API key. Powered by the same MCP backend that serves Claude, ChatGPT and the Word add-in.' },
+    'form.placeholder': { de: 'z. B. "Art. 41 OR Schadenersatz"  ·  6B_1234/2025  ·  Mietrecht Kündigung', fr: 'p. ex. "Art. 41 OR Schadenersatz"  ·  6B_1234/2025  ·  Mietrecht Kündigung', it: 'p. es. "Art. 41 OR Schadenersatz"  ·  6B_1234/2025  ·  Mietrecht Kündigung', rm: 'p. ex. "Art. 41 OR Schadenersatz"  ·  6B_1234/2025  ·  Mietrecht Kündigung', en: 'e.g. "Art. 41 OR Schadenersatz"  ·  6B_1234/2025  ·  Mietrecht Kündigung' },
+    'form.submit': { de: 'Suchen', fr: 'Rechercher', it: 'Cerca', rm: 'Tschertgar', en: 'Search' },
+    'examples.try': { de: 'Versuchen Sie:', fr: 'Essayez :', it: 'Provate:', rm: 'Empruvai:', en: 'Try:' },
+    'filter.allLangs': { de: 'Alle Sprachen', fr: 'Toutes les langues', it: 'Tutte le lingue', rm: 'Tut las linguas', en: 'All languages' },
+    'meta.searching': { de: 'Suche nach "{q}" …', fr: 'Recherche de "{q}" …', it: 'Ricerca di "{q}" …', rm: 'Tschertga da "{q}" …', en: 'Searching for "{q}"…' },
+    'meta.matching': { de: '{total} passende Entscheide  ·  {ms} ms', fr: '{total} décisions correspondantes  ·  {ms} ms', it: '{total} decisioni corrispondenti  ·  {ms} ms', rm: '{total} decisiuns correspundentas  ·  {ms} ms', en: '{total} matching decisions  ·  {ms} ms' },
+    'results.noMatches': { de: 'Keine Treffer für "{q}"', fr: 'Aucun résultat pour "{q}"', it: 'Nessun risultato per "{q}"', rm: 'Nagins resultats per "{q}"', en: 'No matches for "{q}"' },
+    'results.noMatchesHint': { de: 'Versuchen Sie allgemeinere Begriffe, lassen Sie Akzente weg oder prüfen Sie das Format der Aktennummer (z. B. 6B_1234/2025).', fr: 'Essayez des termes plus généraux, supprimez les diacritiques ou vérifiez le format du numéro de dossier (p. ex. 6B_1234/2025).', it: 'Provate termini più generici, eliminate i segni diacritici o verificate il formato del numero di pratica (p. es. 6B_1234/2025).', rm: 'Empruvai noziuns pli generalas, laschai davent ils accents u controllai il format dal numer dal dossier (p. ex. 6B_1234/2025).', en: 'Try broader terms, drop diacritics, or check the docket-number format (e.g. 6B_1234/2025).' },
+    'results.untitled': { de: '(Entscheid ohne Titel)', fr: '(décision sans titre)', it: '(decisione senza titolo)', rm: '(decisiun senza titel)', en: '(untitled decision)' },
+    'pager.prev': { de: '← Zurück', fr: '← Précédent', it: '← Precedente', rm: '← Enavos', en: '← Previous' },
+    'pager.next': { de: 'Weiter →', fr: 'Suivant →', it: 'Successivo →', rm: 'Enavant →', en: 'Next →' },
+    'pager.showing': { de: 'Zeige {from}–{to} von {total}', fr: 'Affichage de {from}–{to} sur {total}', it: 'Risultati {from}–{to} di {total}', rm: 'Mussar {from}–{to} da {total}', en: 'Showing {from}–{to} of {total}' },
+    'error.staleCorpus': { de: 'Die API hat den ungefilterten Korpus zurückgegeben ({total} Zeilen). Das bedeutet in der Regel, dass das Seiten-JS veraltet ist — laden Sie die Seite hart neu (⌘⇧R / Strg+Umschalt+R), um die neueste Version zu laden.', fr: "L'API a renvoyé le corpus non filtré ({total} lignes). Cela signifie généralement que le JS de la page est obsolète — actualisez de force (⌘⇧R / Ctrl+Maj+R) pour charger la dernière version.", it: "L'API ha restituito il corpus non filtrato ({total} righe). Di solito significa che il JS della pagina è obsoleto — ricaricate forzatamente (⌘⇧R / Ctrl+Maiusc+R) per caricare l'ultima versione.", rm: "L'API ha returnà il corpus betg filtrà ({total} lingias). Quai munta per ordinari ch'il JS da la pagina è antiquà — rechargiai la pagina cun forza (⌘⇧R / Ctrl+Maiusc+R) per chargiar l'ultima versiun.", en: 'The API returned the unfiltered corpus ({total} rows). This usually means the page JS is stale — hard-refresh (⌘⇧R / Ctrl+Shift+R) to load the latest version.' },
+    'error.searchFailed': { de: 'Suche fehlgeschlagen: {msg}. Versuchen Sie es erneut oder öffnen Sie die API-Statusprüfung.', fr: "Échec de la recherche : {msg}. Réessayez ou ouvrez la vérification d'état de l'API.", it: "Ricerca non riuscita: {msg}. Riprovate o aprite il controllo di stato dell'API.", rm: "La tschertga è fallida: {msg}. Empruvai anc ina giada u avri la controlla da status da l'API.", en: 'Search failed: {msg}. Try again, or open the API health check.' }
   };
 </script>
 <script>
@@ -572,6 +614,12 @@ window.I18N_PAGE = {
       var dict = (window.I18N_PAGE && window.I18N_PAGE[key]) || I18N_FOOTER[key];
       if (dict && dict[lang]) el.textContent = dict[lang];
     });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
+      var key = el.getAttribute('data-i18n-placeholder');
+      var dict = (window.I18N_PAGE && window.I18N_PAGE[key]) || null;
+      if (dict && dict[lang]) el.setAttribute('placeholder', dict[lang]);
+    });
+    window.curLang = lang;
     document.documentElement.setAttribute('lang', lang);
   }
 
@@ -579,7 +627,7 @@ window.I18N_PAGE = {
   var stored = null;
   try { stored = localStorage.getItem('lang'); } catch (_) {}
   var html = (document.documentElement.lang || '').slice(0, 2);
-  var lang = qs || stored || html || 'en';
+  var lang = qs || stored || html || 'de';
   if (qs) { try { localStorage.setItem('lang', qs); } catch (_) {} }
   applyNavLang(lang);
   document.querySelectorAll('.lang-sw [data-l]').forEach(function (el) {
@@ -592,8 +640,12 @@ window.I18N_PAGE = {
         b.classList.toggle('on', b.dataset.l === l);
       });
       applyNavLang(l);
+      // Re-render JS-produced content (results / pager / meta) in the new
+      // language without a reload, if the page exposes a re-render hook.
+      if (typeof window.rerenderI18n === 'function') {
+        try { window.rerenderI18n(); } catch (_) {}
+      }
       if (typeof window.applyI18n === 'function') {
-        window.curLang = l;
         try { window.applyI18n(); } catch (_) {}
       }
     });

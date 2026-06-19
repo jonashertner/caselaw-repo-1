@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
 <meta charset="UTF-8">
 <title>Coverage — OpenCaseLaw</title>
@@ -172,7 +172,7 @@
 <main class="coverage">
   <p class="eyebrow" data-i18n="hero.eyebrow">Operational · scrapers</p>
   <h1 data-i18n="hero.h1">Coverage</h1>
-  <p class="lead">
+  <p class="lead" data-i18n="lead">
     Per-source scraper health for the OpenCaseLaw Swiss legal corpus.
     Refreshed nightly by the publish pipeline (03:00&nbsp;UTC). The
     table below shows every active scraper, the decisions it added in
@@ -182,20 +182,20 @@
   </p>
 
   <div class="summary" id="summary">
-    <div class="stat"><div class="k">last run</div><div class="v" id="stat-runat"><span class="skel-bar"></span></div></div>
-    <div class="stat ok"><div class="k">healthy</div><div class="v" id="stat-ok"><span class="skel-bar"></span></div></div>
-    <div class="stat warn"><div class="k">no new docs</div><div class="v" id="stat-zero"><span class="skel-bar"></span></div></div>
-    <div class="stat err"><div class="k">failing</div><div class="v" id="stat-err"><span class="skel-bar"></span></div></div>
-    <div class="stat"><div class="k">total decisions</div><div class="v" id="stat-total"><span class="skel-bar"></span></div></div>
+    <div class="stat"><div class="k" data-i18n="stat.lastRun">last run</div><div class="v" id="stat-runat"><span class="skel-bar"></span></div></div>
+    <div class="stat ok"><div class="k" data-i18n="stat.healthy">healthy</div><div class="v" id="stat-ok"><span class="skel-bar"></span></div></div>
+    <div class="stat warn"><div class="k" data-i18n="stat.noNew">no new docs</div><div class="v" id="stat-zero"><span class="skel-bar"></span></div></div>
+    <div class="stat err"><div class="k" data-i18n="stat.failing">failing</div><div class="v" id="stat-err"><span class="skel-bar"></span></div></div>
+    <div class="stat"><div class="k" data-i18n="stat.totalDecisions">total decisions</div><div class="v" id="stat-total"><span class="skel-bar"></span></div></div>
   </div>
 
   <div class="controls">
-    <input id="search" type="search" placeholder="Filter by source key (e.g. bger, zh, ti…)" autocomplete="off">
+    <input id="search" type="search" placeholder="Filter by source key (e.g. bger, zh, ti…)" data-i18n-placeholder="controls.filterPlaceholder" autocomplete="off">
     <div class="filters" role="group" aria-label="Filter by status">
-      <button data-filter="all"   class="active">All</button>
-      <button data-filter="ok">Healthy</button>
-      <button data-filter="zero">No new</button>
-      <button data-filter="err">Failing</button>
+      <button data-filter="all"   class="active" data-i18n="filter.all">All</button>
+      <button data-filter="ok" data-i18n="filter.healthy">Healthy</button>
+      <button data-filter="zero" data-i18n="filter.noNew">No new</button>
+      <button data-filter="err" data-i18n="filter.failing">Failing</button>
     </div>
   </div>
 
@@ -203,13 +203,13 @@
     <table id="scrapers">
       <thead>
         <tr>
-          <th>Source</th>
-          <th>Status</th>
-          <th class="numeric">+ last run</th>
-          <th class="numeric">Total ours</th>
-          <th class="numeric col-portal">Portal</th>
-          <th class="numeric">Gap</th>
-          <th class="numeric col-duration">Duration</th>
+          <th data-i18n="th.source">Source</th>
+          <th data-i18n="th.status">Status</th>
+          <th class="numeric" data-i18n="th.lastRun">+ last run</th>
+          <th class="numeric" data-i18n="th.totalOurs">Total ours</th>
+          <th class="numeric col-portal" data-i18n="th.portal">Portal</th>
+          <th class="numeric" data-i18n="th.gap">Gap</th>
+          <th class="numeric col-duration" data-i18n="th.duration">Duration</th>
         </tr>
       </thead>
       <tbody id="rows">
@@ -220,7 +220,7 @@
     </table>
   </div>
 
-  <p class="meta">
+  <p class="meta" data-i18n-html="meta.dataSource">
     Data source: <a href="https://mcp.opencaselaw.ch/api/scraper-health"><code>/api/scraper-health</code></a>
     (<a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/run_scraper.py">run_scraper.py</a>).
     A non-zero gap usually means a publication delay at the source portal,
@@ -232,10 +232,10 @@
 
   <!-- ───────────────── Supplementary frozen archives ───────────────── -->
   <section class="archives" style="margin-top: var(--s-7);">
-    <h2 style="font-size: var(--t-lg); font-weight: 400; margin: 0 0 var(--s-3);">
+    <h2 style="font-size: var(--t-lg); font-weight: 400; margin: 0 0 var(--s-3);" data-i18n="archives.heading">
       Supplementary frozen archives
     </h2>
-    <p class="lead" style="margin-bottom: var(--s-4);">
+    <p class="lead" style="margin-bottom: var(--s-4);" data-i18n-html="archives.lead">
       Beyond the live scrapers above, the corpus also incorporates seven
       <strong>frozen archives</strong> sourced via
       <a href="https://entscheidsuche.ch/" rel="noopener">entscheidsuche.ch</a>
@@ -251,51 +251,51 @@
       <table>
         <thead>
           <tr>
-            <th>Shard</th>
-            <th class="numeric">Records</th>
-            <th>Upstream status</th>
+            <th data-i18n="archives.th.shard">Shard</th>
+            <th class="numeric" data-i18n="archives.th.records">Records</th>
+            <th data-i18n="archives.th.upstream">Upstream status</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td><code>vd_findinfo</code></td>
             <td class="numeric">74,866</td>
-            <td>Historical VD jurisprudence portal (<code>jurisprudence.findinfo.ch</code>) retired; current decisions covered by direct <code>vd_gerichte</code> scraper.</td>
+            <td data-i18n-html="archives.row.vd_findinfo">Historical VD jurisprudence portal (<code>jurisprudence.findinfo.ch</code>) retired; current decisions covered by direct <code>vd_gerichte</code> scraper.</td>
           </tr>
           <tr>
             <td><code>vd_omni</code></td>
             <td class="numeric">28,033</td>
-            <td>Historical VD aggregation; superseded by current portals.</td>
+            <td data-i18n-html="archives.row.vd_omni">Historical VD aggregation; superseded by current portals.</td>
           </tr>
           <tr>
             <td><code>ch_vb</code></td>
             <td class="numeric">23,055</td>
-            <td>Federal Bundesrat publications (<code>amtsdruckschriften.bar.admin.ch</code>) — Recueil officiel, Postulate, Botschaften. Mixed parliamentary/admin content, not court decisions in the strict sense.</td>
+            <td data-i18n-html="archives.row.ch_vb">Federal Bundesrat publications (<code>amtsdruckschriften.bar.admin.ch</code>) — Recueil officiel, Postulate, Botschaften. Mixed parliamentary/admin content, not court decisions in the strict sense.</td>
           </tr>
           <tr>
             <td><code>sg_gerichte</code></td>
             <td class="numeric">12,572</td>
-            <td>Predecessor of <code>sg_publikationen</code> (live, 12,690 records direct-scraped).</td>
+            <td data-i18n-html="archives.row.sg_gerichte">Predecessor of <code>sg_publikationen</code> (live, 12,690 records direct-scraped).</td>
           </tr>
           <tr>
             <td><code>be_bvd</code></td>
             <td class="numeric">2,094</td>
-            <td>BE Behörden-Verwaltungs-Direktion. Administrative tribunal; no live portal endpoint.</td>
+            <td data-i18n="archives.row.be_bvd">BE Behörden-Verwaltungs-Direktion. Administrative tribunal; no live portal endpoint.</td>
           </tr>
           <tr>
             <td><code>be_weitere</code></td>
             <td class="numeric">840</td>
-            <td>BE miscellaneous administrative bodies.</td>
+            <td data-i18n="archives.row.be_weitere">BE miscellaneous administrative bodies.</td>
           </tr>
           <tr>
             <td><code>be_steuerrekurs</code></td>
             <td class="numeric">343</td>
-            <td>Steuerrekurskommission BE. Direct scraper exists; upstream portal database disconnected since February 2026, returns 0 results. We are tracking the issue with the canton.</td>
+            <td data-i18n="archives.row.be_steuerrekurs">Steuerrekurskommission BE. Direct scraper exists; upstream portal database disconnected since February 2026, returns 0 results. We are tracking the issue with the canton.</td>
           </tr>
         </tbody>
       </table>
     </div>
-    <p class="meta">
+    <p class="meta" data-i18n-html="archives.footnote">
       All other entscheidsuche shards (~40 of 51) are <strong>shadowed
       by an independent direct scraper</strong> against the source
       portal. Where both exist, dedup at build-time uses our direct
@@ -351,6 +351,24 @@
 
 <script>
 "use strict";
+
+// --- i18n for JS-produced strings -------------------------------------------
+// Resolves against window.I18N_PAGE using the same locale precedence as the
+// shared lang-switch IIFE: ?lang → localStorage → <html lang> → 'de'.
+function detectLang() {
+  var qs = (location.search.match(/[?&]lang=([a-z]{2})/) || [])[1];
+  var stored = null;
+  try { stored = localStorage.getItem('lang'); } catch (_) {}
+  var html = (document.documentElement.lang || '').slice(0, 2);
+  return qs || stored || html || 'de';
+}
+window.curLang = window.curLang || detectLang();
+function t(key, vars) {
+  const dict = (window.I18N_PAGE && window.I18N_PAGE[key]) || null;
+  let s = (dict && (dict[window.curLang] || dict.de || dict.en)) || key;
+  if (vars) for (const k in vars) s = s.split('{' + k + '}').join(vars[k]);
+  return s;
+}
 
 const SCRAPER_LABELS = {
   bger: "Bundesgericht",
@@ -443,7 +461,7 @@ function render() {
 
   if (!rows.length) {
     const tr = el("tr", { children: [
-      el("td", { text: "No sources match." })
+      el("td", { text: t('table.noSources') })
     ]});
     tr.firstChild.colSpan = 7;
     tr.firstChild.style.cssText = "padding:20px;text-align:center;color:var(--tx3)";
@@ -468,11 +486,11 @@ function render() {
     ]});
 
     // Status
-    let pillText = (cls === "ok") ? "healthy"
-                  : (cls === "zero") ? "no new docs"
-                  : (r.timed_out ? "timed out"
-                     : r.error ? "error"
-                     : "no data");
+    let pillText = (cls === "ok") ? t('pill.healthy')
+                  : (cls === "zero") ? t('pill.noNew')
+                  : (r.timed_out ? t('pill.timedOut')
+                     : r.error ? t('pill.error')
+                     : t('pill.noData'));
     const tdStatus = el("td", { children: [pill(cls, pillText)] });
 
     // + last run
@@ -498,7 +516,7 @@ function render() {
     if (r.gap == null) {
       tdGap.textContent = "—";
     } else if (r.gap === 0) {
-      tdGap.appendChild(pill("ok", "complete", true));
+      tdGap.appendChild(pill("ok", t('gap.complete'), true));
     } else {
       tdGap.appendChild(pill("warn", "−" + fmtN(r.gap), true));
     }
@@ -544,7 +562,7 @@ function loadHealth() {
     .catch(err => {
       const tbody = document.getElementById("rows");
       tbody.replaceChildren();
-      const td = el("td", { text: "Could not load scraper health: " + err.message });
+      const td = el("td", { text: t('error.loadHealth', { msg: err.message }) });
       td.colSpan = 7;
       td.style.cssText = "padding:20px;text-align:center;color:var(--err-fg)";
       tbody.appendChild(el("tr", { children: [td] }));
@@ -564,13 +582,59 @@ document.querySelectorAll(".filters button").forEach(btn => {
   });
 });
 
+// Re-render the table (pill / gap / empty-state strings are JS-produced) when
+// the language is switched, without a reload. Called by the lang switcher.
+window.rerenderI18n = function () {
+  if (STATE.rows.length) render();
+};
+
 loadHealth();
 </script>
 <script>
 /* Per-page i18n table — translated by the shared IIFE walker. */
 window.I18N_PAGE = {
     'hero.eyebrow': { de: 'Operativ · Scraper', fr: 'Opérationnel · scrapers', it: 'Operativo · scraper', rm: 'Operativ · scrapers', en: 'Operational · scrapers' },
-    'hero.h1': { de: 'Abdeckung', fr: 'Couverture', it: 'Copertura', rm: 'Cuvrida', en: 'Coverage' }
+    'hero.h1': { de: 'Abdeckung', fr: 'Couverture', it: 'Copertura', rm: 'Cuvrida', en: 'Coverage' },
+    'lead': { de: "Scraper-Gesundheit pro Quelle für den Schweizer Rechtskorpus von OpenCaseLaw. Nächtlich aktualisiert durch die Publikations-Pipeline (03:00 UTC). Die Tabelle unten zeigt jeden aktiven Scraper, die im letzten Lauf hinzugefügten Entscheide, die insgesamt von uns gehaltenen Entscheide und — sofern das Quellportal sie ausweist — einen Vergleich mit der publizierten Anzahl des Portals, damit Sie allfällige Lücken erkennen.", fr: "Santé des scrapers par source pour le corpus juridique suisse d'OpenCaseLaw. Actualisée chaque nuit par le pipeline de publication (03:00 UTC). Le tableau ci-dessous affiche chaque scraper actif, les décisions qu'il a ajoutées lors de la dernière exécution, le total des décisions que nous détenons et — lorsque le portail source l'expose — une comparaison avec le nombre publié par le portail afin que vous puissiez repérer tout écart.", it: "Stato degli scraper per fonte per il corpus giuridico svizzero di OpenCaseLaw. Aggiornato ogni notte dalla pipeline di pubblicazione (03:00 UTC). La tabella seguente mostra ogni scraper attivo, le decisioni aggiunte nell'ultima esecuzione, il totale delle decisioni in nostro possesso e — dove il portale della fonte lo espone — un confronto con il numero pubblicato dal portale, così da individuare eventuali lacune.", rm: "Sanadad dals scrapers per funtauna per il corpus giuridic svizzer da OpenCaseLaw. Actualisada mintga notg da la pipeline da publicaziun (03:00 UTC). La tabella sutvart mussa mintga scraper activ, las decisiuns ch'el ha agiuntà en l'ultima execuziun, il total da las decisiuns che nus tegnain e — nua ch'il portal da la funtauna al exponescha — ina cumparegliaziun cun il dumber publitgà dal portal, per ch'i possian vesair eventualas largezzas.", en: "Per-source scraper health for the OpenCaseLaw Swiss legal corpus. Refreshed nightly by the publish pipeline (03:00 UTC). The table below shows every active scraper, the decisions it added in the last run, total decisions held by us, and — where the source portal exposes it — a comparison against the portal's published count so you can see any gap." },
+    'stat.lastRun': { de: 'letzter Lauf', fr: 'dernière exécution', it: 'ultima esecuzione', rm: 'ultima execuziun', en: 'last run' },
+    'stat.healthy': { de: 'gesund', fr: 'en bonne santé', it: 'in salute', rm: 'saun', en: 'healthy' },
+    'stat.noNew': { de: 'keine neuen Dok.', fr: 'aucun nouveau doc.', it: 'nessun nuovo doc.', rm: 'nagins docs novs', en: 'no new docs' },
+    'stat.failing': { de: 'fehlerhaft', fr: 'en échec', it: 'in errore', rm: 'cun errurs', en: 'failing' },
+    'stat.totalDecisions': { de: 'Entscheide total', fr: 'total des décisions', it: 'decisioni totali', rm: 'decisiuns en total', en: 'total decisions' },
+    'controls.filterPlaceholder': { de: 'Nach Quellschlüssel filtern (z. B. bger, zh, ti …)', fr: 'Filtrer par clé de source (p. ex. bger, zh, ti …)', it: 'Filtra per chiave della fonte (p. es. bger, zh, ti …)', rm: 'Filtrar tenor la clav da la funtauna (p. ex. bger, zh, ti …)', en: 'Filter by source key (e.g. bger, zh, ti…)' },
+    'filter.all': { de: 'Alle', fr: 'Tous', it: 'Tutti', rm: 'Tuts', en: 'All' },
+    'filter.healthy': { de: 'Gesund', fr: 'En bonne santé', it: 'In salute', rm: 'Saun', en: 'Healthy' },
+    'filter.noNew': { de: 'Keine neuen', fr: 'Aucun nouveau', it: 'Nessun nuovo', rm: 'Nagins novs', en: 'No new' },
+    'filter.failing': { de: 'Fehlerhaft', fr: 'En échec', it: 'In errore', rm: 'Cun errurs', en: 'Failing' },
+    'th.source': { de: 'Quelle', fr: 'Source', it: 'Fonte', rm: 'Funtauna', en: 'Source' },
+    'th.status': { de: 'Status', fr: 'Statut', it: 'Stato', rm: 'Status', en: 'Status' },
+    'th.lastRun': { de: '+ letzter Lauf', fr: '+ dernière exécution', it: '+ ultima esecuzione', rm: '+ ultima execuziun', en: '+ last run' },
+    'th.totalOurs': { de: 'Total bei uns', fr: 'Total chez nous', it: 'Totale nostro', rm: 'Total tar nus', en: 'Total ours' },
+    'th.portal': { de: 'Portal', fr: 'Portail', it: 'Portale', rm: 'Portal', en: 'Portal' },
+    'th.gap': { de: 'Lücke', fr: 'Écart', it: 'Lacuna', rm: 'Largezza', en: 'Gap' },
+    'th.duration': { de: 'Dauer', fr: 'Durée', it: 'Durata', rm: 'Durada', en: 'Duration' },
+    'table.noSources': { de: 'Keine Quellen entsprechen.', fr: 'Aucune source ne correspond.', it: 'Nessuna fonte corrisponde.', rm: 'Naginas funtaunas correspundan.', en: 'No sources match.' },
+    'pill.healthy': { de: 'gesund', fr: 'en bonne santé', it: 'in salute', rm: 'saun', en: 'healthy' },
+    'pill.noNew': { de: 'keine neuen Dok.', fr: 'aucun nouveau doc.', it: 'nessun nuovo doc.', rm: 'nagins docs novs', en: 'no new docs' },
+    'pill.timedOut': { de: 'Zeitüberschreitung', fr: 'délai dépassé', it: 'tempo scaduto', rm: 'temp surpassà', en: 'timed out' },
+    'pill.error': { de: 'Fehler', fr: 'erreur', it: 'errore', rm: 'errur', en: 'error' },
+    'pill.noData': { de: 'keine Daten', fr: 'aucune donnée', it: 'nessun dato', rm: 'naginas datas', en: 'no data' },
+    'gap.complete': { de: 'vollständig', fr: 'complet', it: 'completo', rm: 'cumplet', en: 'complete' },
+    'error.loadHealth': { de: 'Scraper-Gesundheit konnte nicht geladen werden: {msg}', fr: "Impossible de charger la santé des scrapers : {msg}", it: 'Impossibile caricare lo stato degli scraper: {msg}', rm: 'Betg pussaivel da chargiar la sanadad dals scrapers: {msg}', en: 'Could not load scraper health: {msg}' },
+    'meta.dataSource': { de: 'Datenquelle: <a href="https://mcp.opencaselaw.ch/api/scraper-health"><code>/api/scraper-health</code></a> (<a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/run_scraper.py">run_scraper.py</a>). Eine Lücke ungleich null bedeutet in der Regel eine Publikationsverzögerung beim Quellportal, keinen verpassten Scrape. Anhaltende Fehler werden im <a href="https://github.com/jonashertner/caselaw-repo-1/issues">Issue-Tracker</a> verfolgt. Für institutionelle Zusammenarbeit bei Abdeckungslücken schreiben Sie an <a href="mailto:team@jonashertner.com">team@jonashertner.com</a>.', fr: "Source des données : <a href=\"https://mcp.opencaselaw.ch/api/scraper-health\"><code>/api/scraper-health</code></a> (<a href=\"https://github.com/jonashertner/caselaw-repo-1/blob/main/run_scraper.py\">run_scraper.py</a>). Un écart non nul signifie généralement un retard de publication au portail source, et non un scrape manqué. Les échecs persistants sont suivis dans le <a href=\"https://github.com/jonashertner/caselaw-repo-1/issues\">gestionnaire de tickets</a>. Pour une collaboration institutionnelle sur les lacunes de couverture, écrivez à <a href=\"mailto:team@jonashertner.com\">team@jonashertner.com</a>.", it: "Fonte dei dati: <a href=\"https://mcp.opencaselaw.ch/api/scraper-health\"><code>/api/scraper-health</code></a> (<a href=\"https://github.com/jonashertner/caselaw-repo-1/blob/main/run_scraper.py\">run_scraper.py</a>). Un divario diverso da zero indica di solito un ritardo di pubblicazione al portale della fonte, non uno scrape mancato. Gli errori persistenti sono tracciati nell'<a href=\"https://github.com/jonashertner/caselaw-repo-1/issues\">issue tracker</a>. Per una collaborazione istituzionale sulle lacune di copertura, scrivete a <a href=\"mailto:team@jonashertner.com\">team@jonashertner.com</a>.", rm: "Funtauna da las datas: <a href=\"https://mcp.opencaselaw.ch/api/scraper-health\"><code>/api/scraper-health</code></a> (<a href=\"https://github.com/jonashertner/caselaw-repo-1/blob/main/run_scraper.py\">run_scraper.py</a>). Ina largezza betg nulla munta per ordinari in retard da publicaziun tar il portal da la funtauna, betg in scrape mancà. Errurs persistentas vegnan suandadas en l'<a href=\"https://github.com/jonashertner/caselaw-repo-1/issues\">issue tracker</a>. Per ina collavuraziun instituziunala davart largezzas da cuvertura, scrivai a <a href=\"mailto:team@jonashertner.com\">team@jonashertner.com</a>.", en: 'Data source: <a href="https://mcp.opencaselaw.ch/api/scraper-health"><code>/api/scraper-health</code></a> (<a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/run_scraper.py">run_scraper.py</a>). A non-zero gap usually means a publication delay at the source portal, not a missed scrape. Persistent failures are tracked in the <a href="https://github.com/jonashertner/caselaw-repo-1/issues">issue tracker</a>. For institutional collaboration on coverage gaps, write to <a href="mailto:team@jonashertner.com">team@jonashertner.com</a>.' },
+    'archives.heading': { de: 'Ergänzende eingefrorene Archive', fr: 'Archives figées complémentaires', it: 'Archivi congelati supplementari', rm: 'Archivs zueglals supplementars', en: 'Supplementary frozen archives' },
+    'archives.lead': { de: 'Über die oben aufgeführten Live-Scraper hinaus enthält der Korpus auch sieben <strong>eingefrorene Archive</strong>, bezogen über <a href="https://entscheidsuche.ch/" rel="noopener">entscheidsuche.ch</a> — einen unabhängigen Open-Access-Aggregator, der viele Schweizer Gerichtsportale spiegelt. Wir re-ingestieren die JSON-Archive von entscheidsuche einmal pro Woche (Sonntag 22:00 UTC) als Vollständigkeits-Absicherung; die letzten sechs Läufe fügten <strong>null neue Entscheide</strong> hinzu, weil die diesen Shards zugrunde liegenden Quellportale keine neuen Inhalte mehr produzieren oder ersetzt wurden. Die Datensätze bleiben als historische Momentaufnahmen in unserem Korpus erhalten.', fr: 'Au-delà des scrapers en direct ci-dessus, le corpus intègre aussi sept <strong>archives figées</strong> obtenues via <a href="https://entscheidsuche.ch/" rel="noopener">entscheidsuche.ch</a> — un agrégateur indépendant en libre accès qui reflète de nombreux portails judiciaires suisses. Nous réintégrons les archives JSON d\'entscheidsuche une fois par semaine (dimanche 22:00 UTC) comme garde-fou d\'exhaustivité ; les six dernières exécutions ont ajouté <strong>zéro nouvelle décision</strong> car les portails amont reflétés par ces shards ne produisent plus de nouveau contenu ou ont été remplacés. Les enregistrements sont conservés comme instantanés historiques dans notre corpus.', it: 'Oltre agli scraper attivi sopra, il corpus incorpora anche sette <strong>archivi congelati</strong> ottenuti tramite <a href="https://entscheidsuche.ch/" rel="noopener">entscheidsuche.ch</a> — un aggregatore indipendente ad accesso aperto che rispecchia molti portali giudiziari svizzeri. Reincorporiamo gli archivi JSON di entscheidsuche una volta a settimana (domenica 22:00 UTC) come salvaguardia di completezza; le ultime sei esecuzioni hanno aggiunto <strong>zero nuove decisioni</strong> perché i portali a monte riflessi da questi shard non producono più nuovi contenuti o sono stati sostituiti. I record sono conservati come istantanee storiche nel nostro corpus.', rm: 'Ultra ils scrapers en direct survart cuntegna il corpus era set <strong>archivs zueglals</strong> obtegnids via <a href="https://entscheidsuche.ch/" rel="noopener">entscheidsuche.ch</a> — in agregatur independent en access avert che spievla blers portals giudizials svizzers. Nus reincorporain ils archivs JSON d\'entscheidsuche ina giada l\'emna (dumengia 22:00 UTC) sco garanzia da cumplettadad; las ultimas sis execuziuns han agiuntà <strong>nagina nova decisiun</strong>, perquai ch\'ils portals a la funtauna reflectids da quels shards na produceschan betg pli cuntegn nov u èn vegnids remplazzads. Las datas restan sco maletgs istorics en noss corpus.', en: 'Beyond the live scrapers above, the corpus also incorporates seven <strong>frozen archives</strong> sourced via <a href="https://entscheidsuche.ch/" rel="noopener">entscheidsuche.ch</a> — an independent open-access aggregator that mirrors many Swiss court portals. We re-ingest entscheidsuche\'s JSON archives once a week (Sunday 22:00 UTC) as a completeness backstop; the last six runs added <strong>zero new decisions</strong> because the upstream portals these shards reflect are no longer producing new content or have been replaced. The records are preserved as historical snapshots inside our corpus.' },
+    'archives.th.shard': { de: 'Shard', fr: 'Shard', it: 'Shard', rm: 'Shard', en: 'Shard' },
+    'archives.th.records': { de: 'Datensätze', fr: 'Enregistrements', it: 'Record', rm: 'Datas', en: 'Records' },
+    'archives.th.upstream': { de: 'Status der Quelle', fr: 'Statut amont', it: 'Stato a monte', rm: 'Status da la funtauna', en: 'Upstream status' },
+    'archives.row.vd_findinfo': { de: 'Historisches VD-Jurisprudenzportal (<code>jurisprudence.findinfo.ch</code>) stillgelegt; aktuelle Entscheide werden vom direkten <code>vd_gerichte</code>-Scraper abgedeckt.', fr: 'Portail historique de jurisprudence VD (<code>jurisprudence.findinfo.ch</code>) retiré ; les décisions actuelles sont couvertes par le scraper direct <code>vd_gerichte</code>.', it: 'Portale storico della giurisprudenza VD (<code>jurisprudence.findinfo.ch</code>) ritirato; le decisioni attuali sono coperte dallo scraper diretto <code>vd_gerichte</code>.', rm: 'Portal istoric da giurisprudenza VD (<code>jurisprudence.findinfo.ch</code>) serrà; las decisiuns actualas vegnan cuvridas dal scraper direct <code>vd_gerichte</code>.', en: 'Historical VD jurisprudence portal (<code>jurisprudence.findinfo.ch</code>) retired; current decisions covered by direct <code>vd_gerichte</code> scraper.' },
+    'archives.row.vd_omni': { de: 'Historische VD-Aggregation; durch aktuelle Portale abgelöst.', fr: 'Agrégation historique VD ; remplacée par les portails actuels.', it: 'Aggregazione storica VD; sostituita dai portali attuali.', rm: 'Agregaziun istorica VD; remplazzada dals portals actuals.', en: 'Historical VD aggregation; superseded by current portals.' },
+    'archives.row.ch_vb': { de: 'Publikationen des Bundesrats (<code>amtsdruckschriften.bar.admin.ch</code>) — Amtliche Sammlung, Postulate, Botschaften. Gemischte parlamentarisch/administrative Inhalte, keine Gerichtsentscheide im engeren Sinn.', fr: 'Publications du Conseil fédéral (<code>amtsdruckschriften.bar.admin.ch</code>) — Recueil officiel, postulats, messages. Contenu mixte parlementaire/administratif, pas des décisions judiciaires au sens strict.', it: 'Pubblicazioni del Consiglio federale (<code>amtsdruckschriften.bar.admin.ch</code>) — Raccolta ufficiale, postulati, messaggi. Contenuto misto parlamentare/amministrativo, non decisioni giudiziarie in senso stretto.', rm: 'Publicaziuns dal Cussegl federal (<code>amtsdruckschriften.bar.admin.ch</code>) — Collecziun uffiziala, postulats, messadis. Cuntegn mixt parlamentar/administrativ, betg decisiuns giudizialas en il senn stretg.', en: 'Federal Bundesrat publications (<code>amtsdruckschriften.bar.admin.ch</code>) — Recueil officiel, Postulate, Botschaften. Mixed parliamentary/admin content, not court decisions in the strict sense.' },
+    'archives.row.sg_gerichte': { de: 'Vorgänger von <code>sg_publikationen</code> (live, 12’690 Datensätze direkt gescrapt).', fr: 'Prédécesseur de <code>sg_publikationen</code> (en direct, 12’690 enregistrements scrapés directement).', it: 'Predecessore di <code>sg_publikationen</code> (in diretta, 12’690 record raccolti direttamente).', rm: 'Anteceder da <code>sg_publikationen</code> (en direct, 12’690 datas scrapadas directamain).', en: 'Predecessor of <code>sg_publikationen</code> (live, 12,690 records direct-scraped).' },
+    'archives.row.be_bvd': { de: 'BE Behörden-Verwaltungs-Direktion. Verwaltungsgericht; kein Live-Portal-Endpunkt.', fr: 'BE Behörden-Verwaltungs-Direktion. Tribunal administratif ; pas de point d\'accès portail en direct.', it: 'BE Behörden-Verwaltungs-Direktion. Tribunale amministrativo; nessun endpoint di portale in diretta.', rm: 'BE Behörden-Verwaltungs-Direktion. Dretgira administrativa; nagin endpunct da portal en direct.', en: 'BE Behörden-Verwaltungs-Direktion. Administrative tribunal; no live portal endpoint.' },
+    'archives.row.be_weitere': { de: 'BE verschiedene Verwaltungsstellen.', fr: 'BE organes administratifs divers.', it: 'BE organi amministrativi vari.', rm: 'BE organs administrativs differents.', en: 'BE miscellaneous administrative bodies.' },
+    'archives.row.be_steuerrekurs': { de: 'Steuerrekurskommission BE. Direkter Scraper vorhanden; die Datenbank des Quellportals ist seit Februar 2026 getrennt und liefert 0 Ergebnisse. Wir verfolgen das Problem mit dem Kanton.', fr: 'Steuerrekurskommission BE. Scraper direct existant ; la base de données du portail source est déconnectée depuis février 2026 et renvoie 0 résultat. Nous suivons le problème avec le canton.', it: 'Steuerrekurskommission BE. Scraper diretto esistente; il database del portale della fonte è disconnesso da febbraio 2026 e restituisce 0 risultati. Stiamo seguendo il problema con il cantone.', rm: 'Steuerrekurskommission BE. Scraper direct existent; la banca da datas dal portal da la funtauna è disconnectada dapi favrer 2026 e returna 0 resultats. Nus suandain il problem cun il chantun.', en: 'Steuerrekurskommission BE. Direct scraper exists; upstream portal database disconnected since February 2026, returns 0 results. We are tracking the issue with the canton.' },
+    'archives.footnote': { de: 'Alle anderen entscheidsuche-Shards (~40 von 51) werden durch einen <strong>unabhängigen direkten Scraper</strong> gegen das Quellportal abgeschattet. Wo beide existieren, verwendet die Dedup beim Build unsere direkten Daten als Quelle der Wahrheit. Entscheidsuche.ch wird in der Datensatzkarte als beitragende Quelle für den Satz eingefrorener Archive anerkannt; ihre Re-Aggregationsarbeit hat eine CC BY-ähnliche Attribution.', fr: 'Tous les autres shards d\'entscheidsuche (~40 sur 51) sont <strong>doublés par un scraper direct indépendant</strong> contre le portail source. Lorsque les deux existent, la déduplication au moment du build utilise nos données directes comme source de référence. Entscheidsuche.ch est reconnu dans la fiche du jeu de données comme une source amont contributrice pour l\'ensemble des archives figées ; leur travail de réagrégation bénéficie d\'une attribution de type CC BY.', it: 'Tutti gli altri shard di entscheidsuche (~40 su 51) sono <strong>affiancati da uno scraper diretto indipendente</strong> contro il portale della fonte. Dove entrambi esistono, la deduplicazione in fase di build usa i nostri dati diretti come fonte di riferimento. Entscheidsuche.ch è riconosciuto nella scheda del dataset come fonte a monte che contribuisce all\'insieme degli archivi congelati; il loro lavoro di riaggregazione ha un\'attribuzione di tipo CC BY.', rm: 'Tut ils auters shards d\'entscheidsuche (~40 da 51) vegnan <strong>cumpletads dad in scraper direct independent</strong> cunter il portal da la funtauna. Nua che omadus existan, dovra la deduplicaziun durant il build nossas datas directas sco funtauna da referenza. Entscheidsuche.ch vegn renconuschì en la carta dal set da datas sco funtauna contribuenta per il set d\'archivs zueglals; lur lavur da reagregaziun ha in\'attribuziun da tip CC BY.', en: 'All other entscheidsuche shards (~40 of 51) are <strong>shadowed by an independent direct scraper</strong> against the source portal. Where both exist, dedup at build-time uses our direct data as the source of record. Entscheidsuche.ch is acknowledged in the dataset card as a contributing upstream for the frozen-archive set; their re-aggregation work has CC BY-style attribution.' }
   };
 </script>
 <script>
@@ -623,6 +687,19 @@ window.I18N_PAGE = {
       var dict = (window.I18N_PAGE && window.I18N_PAGE[key]) || I18N_FOOTER[key];
       if (dict && dict[lang]) el.textContent = dict[lang];
     });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
+      var key = el.getAttribute('data-i18n-placeholder');
+      var dict = (window.I18N_PAGE && window.I18N_PAGE[key]) || null;
+      if (dict && dict[lang]) el.setAttribute('placeholder', dict[lang]);
+    });
+    // data-i18n-html — value contains trusted static markup (anchors, <code>,
+    // <strong>) from I18N_PAGE only (never user input), so innerHTML is safe.
+    document.querySelectorAll('[data-i18n-html]').forEach(function (el) {
+      var key = el.getAttribute('data-i18n-html');
+      var dict = (window.I18N_PAGE && window.I18N_PAGE[key]) || null;
+      if (dict && dict[lang]) el.innerHTML = dict[lang];
+    });
+    window.curLang = lang;
     document.documentElement.setAttribute('lang', lang);
   }
 
@@ -630,7 +707,7 @@ window.I18N_PAGE = {
   var stored = null;
   try { stored = localStorage.getItem('lang'); } catch (_) {}
   var html = (document.documentElement.lang || '').slice(0, 2);
-  var lang = qs || stored || html || 'en';
+  var lang = qs || stored || html || 'de';
   if (qs) { try { localStorage.setItem('lang', qs); } catch (_) {} }
   applyNavLang(lang);
   document.querySelectorAll('.lang-sw [data-l]').forEach(function (el) {
@@ -643,8 +720,12 @@ window.I18N_PAGE = {
         b.classList.toggle('on', b.dataset.l === l);
       });
       applyNavLang(l);
+      // Re-render JS-produced content (pills, gap, empty-state) in the new
+      // language without a reload, if the page exposes a re-render hook.
+      if (typeof window.rerenderI18n === 'function') {
+        try { window.rerenderI18n(); } catch (_) {}
+      }
       if (typeof window.applyI18n === 'function') {
-        window.curLang = l;
         try { window.applyI18n(); } catch (_) {}
       }
     });

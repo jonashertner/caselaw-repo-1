@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -173,17 +173,18 @@
   <div class="courts-controls">
     <input class="courts-search" type="search" id="filter"
            placeholder="Filter — e.g. zh, bger, finma, kantonsgericht…"
+           data-i18n-placeholder="controls.filterPlaceholder"
            autocomplete="off" aria-label="Filter courts">
     <div class="courts-tabs" role="tablist" aria-label="Court group">
-      <button data-group="all" class="active" type="button">All</button>
-      <button data-group="federal" type="button">Federal</button>
-      <button data-group="regulatory" type="button">Regulatory</button>
-      <button data-group="international" type="button">International</button>
-      <button data-group="cantonal" type="button">Cantonal</button>
+      <button data-group="all" class="active" type="button" data-i18n="tab.all">All</button>
+      <button data-group="federal" type="button" data-i18n="tab.federal">Federal</button>
+      <button data-group="regulatory" type="button" data-i18n="tab.regulatory">Regulatory</button>
+      <button data-group="international" type="button" data-i18n="tab.international">International</button>
+      <button data-group="cantonal" type="button" data-i18n="tab.cantonal">Cantonal</button>
     </div>
   </div>
 
-  <div class="court-summary" id="summary">Loading…</div>
+  <div class="court-summary" id="summary" data-i18n="summary.loading">Loading…</div>
   <div id="sections"></div>
 </main>
 
@@ -230,6 +231,24 @@
 
 <script>
 'use strict';
+
+// --- i18n for JS-produced strings -------------------------------------------
+// Resolves against window.I18N_PAGE using the same locale precedence as the
+// shared lang-switch IIFE: ?lang → localStorage → <html lang> → 'de'.
+function detectLang() {
+  var qs = (location.search.match(/[?&]lang=([a-z]{2})/) || [])[1];
+  var stored = null;
+  try { stored = localStorage.getItem('lang'); } catch (_) {}
+  var html = (document.documentElement.lang || '').slice(0, 2);
+  return qs || stored || html || 'de';
+}
+window.curLang = window.curLang || detectLang();
+function t(key, vars) {
+  const dict = (window.I18N_PAGE && window.I18N_PAGE[key]) || null;
+  let s = (dict && (dict[window.curLang] || dict.de || dict.en)) || key;
+  if (vars) for (const k in vars) s = s.split('{' + k + '}').join(vars[k]);
+  return s;
+}
 
 // ─── Court taxonomy + display names ─────────────────────────────────────
 // Static map of code → display name + group. Codes not in the map fall
@@ -345,18 +364,19 @@ function clear(node) { while (node.firstChild) node.removeChild(node.firstChild)
 let ALL_COURTS = []; // [{ court, canton, count, earliest, latest, languages, group, name }]
 let activeGroup = 'all';
 let activeFilter = '';
+let LEDE_VARS = null; // { courts, decisions } — cached so the lede can re-translate on lang switch
 
 function buildCard(c) {
   const card = el('a', {
     class: 'court-card',
     href: `/search/?q=${encodeURIComponent(c.court)}`,
-    title: `Search recent ${c.name} decisions`,
+    title: t('card.searchTitle', { name: c.name }),
   });
   card.appendChild(el('div', { class: 'court-card-name', text: c.name }));
   card.appendChild(el('div', { class: 'court-card-code', text: `${c.court} · ${c.canton}` }));
   const num = el('div', { class: 'court-card-num' });
   num.appendChild(document.createTextNode(fmtNum(c.count)));
-  num.appendChild(el('span', { class: 'label', text: 'decisions' }));
+  num.appendChild(el('span', { class: 'label', text: t('card.decisions') }));
   card.appendChild(num);
   const meta = el('div', { class: 'court-card-meta' });
   if (c.earliest) meta.appendChild(el('span', { text: `${fmtDate(c.earliest)} → ${fmtDate(c.latest)}` }));
@@ -375,7 +395,7 @@ function buildSection(title, courts) {
   const head = el('div', { class: 'court-section-head' });
   head.appendChild(el('h2', { text: title }));
   const total = courts.reduce((s, c) => s + (c.count || 0), 0);
-  head.appendChild(el('span', { class: 'count', text: `${courts.length} courts · ${fmtNum(total)} decisions` }));
+  head.appendChild(el('span', { class: 'count', text: t('section.countMeta', { courts: courts.length, decisions: fmtNum(total) }) }));
   sec.appendChild(head);
   const grid = el('div', { class: 'court-grid' });
   for (const c of courts) grid.appendChild(buildCard(c));
@@ -395,19 +415,19 @@ function renderSections() {
   });
 
   document.getElementById('summary').textContent =
-    `${filtered.length} of ${ALL_COURTS.length} courts shown · ${fmtNum(filtered.reduce((s, c) => s + c.count, 0))} decisions`;
+    t('summary.shown', { shown: filtered.length, total: ALL_COURTS.length, decisions: fmtNum(filtered.reduce((s, c) => s + c.count, 0)) });
 
   if (filtered.length === 0) {
-    root.appendChild(el('div', { class: 'empty', text: 'No courts match the current filter.' }));
+    root.appendChild(el('div', { class: 'empty', text: t('empty.noMatch') }));
     return;
   }
 
   if (activeGroup === 'all') {
     const groups = [
-      ['Federal courts', filtered.filter((c) => c.group === 'federal')],
-      ['Regulators', filtered.filter((c) => c.group === 'regulatory')],
-      ['International', filtered.filter((c) => c.group === 'international')],
-      ['Cantonal courts', filtered.filter((c) => c.group === 'cantonal')],
+      [t('group.federal'), filtered.filter((c) => c.group === 'federal')],
+      [t('group.regulatory'), filtered.filter((c) => c.group === 'regulatory')],
+      [t('group.international'), filtered.filter((c) => c.group === 'international')],
+      [t('group.cantonal'), filtered.filter((c) => c.group === 'cantonal')],
     ];
     for (const [title, list] of groups) {
       list.sort((a, b) => b.count - a.count);
@@ -417,12 +437,12 @@ function renderSections() {
   } else {
     const sorted = filtered.slice().sort((a, b) => b.count - a.count);
     const titles = {
-      federal: 'Federal courts',
-      regulatory: 'Regulators',
-      international: 'International',
-      cantonal: 'Cantonal courts',
+      federal: t('group.federal'),
+      regulatory: t('group.regulatory'),
+      international: t('group.international'),
+      cantonal: t('group.cantonal'),
     };
-    const sec = buildSection(titles[activeGroup] || 'Courts', sorted);
+    const sec = buildSection(titles[activeGroup] || t('group.courts'), sorted);
     if (sec) root.appendChild(sec);
   }
 }
@@ -452,13 +472,20 @@ async function init() {
       group: courtGroup(c),
       name: deriveName(c.court, c.canton),
     }));
-    document.getElementById('lede').textContent =
-      `Browse the ${ALL_COURTS.length} Swiss federal, regulatory, international and cantonal courts whose published decisions OpenCaseLaw indexes — ${fmtNum(data.total)} decisions in total. Click any card to search recent decisions from that court.`;
+    LEDE_VARS = { courts: ALL_COURTS.length, decisions: fmtNum(data.total) };
+    document.getElementById('lede').textContent = t('lede.dynamic', LEDE_VARS);
     renderSections();
   } catch (e) {
-    document.getElementById('summary').textContent = `Failed to load /stats.json: ${e.message}`;
+    document.getElementById('summary').textContent = t('error.statsLoad', { msg: e.message });
   }
 }
+
+// Re-translate JS-produced content (lede, summary, section titles, card
+// labels) when the language is switched, without a reload.
+window.rerenderI18n = function () {
+  if (LEDE_VARS) document.getElementById('lede').textContent = t('lede.dynamic', LEDE_VARS);
+  if (ALL_COURTS.length) renderSections();
+};
 
 init();
 </script>
@@ -468,7 +495,26 @@ init();
 window.I18N_PAGE = {
     'hero.eyebrow': { de: 'Stöbern · 121 Gerichte', fr: 'Parcourir · 121 tribunaux', it: 'Sfoglia · 121 tribunali', rm: 'Sfegliar · 121 dretgiras', en: 'Browse · 121 courts' },
     'hero.h1': { de: 'Schweizer Gerichte im Korpus', fr: 'Tribunaux suisses dans le corpus', it: 'Tribunali svizzeri nel corpus', rm: 'Dretgiras svizras en il corpus', en: 'Swiss courts in the corpus' },
-    'hero.lede': { de: 'Alle Schweizer Bundes-, Regulierungs-, internationalen und kantonalen Gerichte, deren publizierte Entscheide OpenCaseLaw indexiert. Pro Gericht Anzahl, Zeitraum, Sprachen und Direktsuche.', fr: 'Tous les tribunaux suisses fédéraux, régulatoires, internationaux et cantonaux dont OpenCaseLaw indexe les décisions publiées. Par tribunal : nombre, période, langues et recherche directe.', it: 'Tutti i tribunali svizzeri federali, di regolazione, internazionali e cantonali le cui decisioni pubblicate sono indicizzate da OpenCaseLaw. Per tribunale: conteggi, intervalli, lingue e ricerca diretta.', rm: 'Tut las dretgiras svizras federalas, da regulaziun, internaziunalas e cantunalas, da las qualas las decisiuns publitgadas vegnan indexadas da OpenCaseLaw. Per dretgira: dumbers, perioda, linguas e tschertga directa.', en: 'Every Swiss federal, regulatory, international and cantonal court whose published decisions OpenCaseLaw indexes. Per-court counts, date ranges, languages, and direct search.' }
+    'hero.lede': { de: 'Alle Schweizer Bundes-, Regulierungs-, internationalen und kantonalen Gerichte, deren publizierte Entscheide OpenCaseLaw indexiert. Pro Gericht Anzahl, Zeitraum, Sprachen und Direktsuche.', fr: 'Tous les tribunaux suisses fédéraux, régulatoires, internationaux et cantonaux dont OpenCaseLaw indexe les décisions publiées. Par tribunal : nombre, période, langues et recherche directe.', it: 'Tutti i tribunali svizzeri federali, di regolazione, internazionali e cantonali le cui decisioni pubblicate sono indicizzate da OpenCaseLaw. Per tribunale: conteggi, intervalli, lingue e ricerca diretta.', rm: 'Tut las dretgiras svizras federalas, da regulaziun, internaziunalas e cantunalas, da las qualas las decisiuns publitgadas vegnan indexadas da OpenCaseLaw. Per dretgira: dumbers, perioda, linguas e tschertga directa.', en: 'Every Swiss federal, regulatory, international and cantonal court whose published decisions OpenCaseLaw indexes. Per-court counts, date ranges, languages, and direct search.' },
+    'controls.filterPlaceholder': { de: 'Filtern — z. B. zh, bger, finma, kantonsgericht …', fr: 'Filtrer — p. ex. zh, bger, finma, kantonsgericht …', it: 'Filtra — p. es. zh, bger, finma, kantonsgericht …', rm: 'Filtrar — p. ex. zh, bger, finma, kantonsgericht …', en: 'Filter — e.g. zh, bger, finma, kantonsgericht…' },
+    'tab.all': { de: 'Alle', fr: 'Tous', it: 'Tutti', rm: 'Tuts', en: 'All' },
+    'tab.federal': { de: 'Bund', fr: 'Fédéral', it: 'Federale', rm: 'Federal', en: 'Federal' },
+    'tab.regulatory': { de: 'Regulierung', fr: 'Régulation', it: 'Regolazione', rm: 'Regulaziun', en: 'Regulatory' },
+    'tab.international': { de: 'International', fr: 'International', it: 'Internazionale', rm: 'Internaziunal', en: 'International' },
+    'tab.cantonal': { de: 'Kantonal', fr: 'Cantonal', it: 'Cantonale', rm: 'Chantunal', en: 'Cantonal' },
+    'summary.loading': { de: 'Wird geladen …', fr: 'Chargement …', it: 'Caricamento …', rm: 'Chargiar …', en: 'Loading…' },
+    'summary.shown': { de: '{shown} von {total} Gerichten angezeigt · {decisions} Entscheide', fr: '{shown} sur {total} tribunaux affichés · {decisions} décisions', it: '{shown} di {total} tribunali mostrati · {decisions} decisioni', rm: '{shown} da {total} dretgiras mussadas · {decisions} decisiuns', en: '{shown} of {total} courts shown · {decisions} decisions' },
+    'card.decisions': { de: 'Entscheide', fr: 'décisions', it: 'decisioni', rm: 'decisiuns', en: 'decisions' },
+    'card.searchTitle': { de: 'Aktuelle Entscheide von {name} suchen', fr: 'Rechercher les décisions récentes de {name}', it: 'Cerca le decisioni recenti di {name}', rm: 'Tschertgar las decisiuns actualas da {name}', en: 'Search recent {name} decisions' },
+    'section.countMeta': { de: '{courts} Gerichte · {decisions} Entscheide', fr: '{courts} tribunaux · {decisions} décisions', it: '{courts} tribunali · {decisions} decisioni', rm: '{courts} dretgiras · {decisions} decisiuns', en: '{courts} courts · {decisions} decisions' },
+    'group.federal': { de: 'Bundesgerichte', fr: 'Tribunaux fédéraux', it: 'Tribunali federali', rm: 'Dretgiras federalas', en: 'Federal courts' },
+    'group.regulatory': { de: 'Regulierungsbehörden', fr: 'Autorités de régulation', it: 'Autorità di regolazione', rm: 'Autoritads da regulaziun', en: 'Regulators' },
+    'group.international': { de: 'International', fr: 'International', it: 'Internazionale', rm: 'Internaziunal', en: 'International' },
+    'group.cantonal': { de: 'Kantonale Gerichte', fr: 'Tribunaux cantonaux', it: 'Tribunali cantonali', rm: 'Dretgiras cantunalas', en: 'Cantonal courts' },
+    'group.courts': { de: 'Gerichte', fr: 'Tribunaux', it: 'Tribunali', rm: 'Dretgiras', en: 'Courts' },
+    'empty.noMatch': { de: 'Keine Gerichte entsprechen dem aktuellen Filter.', fr: 'Aucun tribunal ne correspond au filtre actuel.', it: 'Nessun tribunale corrisponde al filtro attuale.', rm: 'Naginas dretgiras correspundan al filter actual.', en: 'No courts match the current filter.' },
+    'lede.dynamic': { de: 'Durchsuchen Sie die {courts} Schweizer Bundes-, Regulierungs-, internationalen und kantonalen Gerichte, deren publizierte Entscheide OpenCaseLaw indexiert — insgesamt {decisions} Entscheide. Klicken Sie auf eine Karte, um aktuelle Entscheide dieses Gerichts zu suchen.', fr: 'Parcourez les {courts} tribunaux suisses fédéraux, régulatoires, internationaux et cantonaux dont OpenCaseLaw indexe les décisions publiées — {decisions} décisions au total. Cliquez sur une carte pour rechercher les décisions récentes de ce tribunal.', it: 'Sfogliate i {courts} tribunali svizzeri federali, di regolazione, internazionali e cantonali le cui decisioni pubblicate sono indicizzate da OpenCaseLaw — {decisions} decisioni in totale. Cliccate su una scheda per cercare le decisioni recenti di quel tribunale.', rm: 'Sfegliai las {courts} dretgiras svizras federalas, da regulaziun, internaziunalas e cantunalas, da las qualas las decisiuns publitgadas vegnan indexadas da OpenCaseLaw — {decisions} decisiuns en total. Cliccai sin ina carta per tschertgar las decisiuns actualas da quella dretgira.', en: 'Browse the {courts} Swiss federal, regulatory, international and cantonal courts whose published decisions OpenCaseLaw indexes — {decisions} decisions in total. Click any card to search recent decisions from that court.' },
+    'error.statsLoad': { de: '/stats.json konnte nicht geladen werden: {msg}', fr: 'Échec du chargement de /stats.json : {msg}', it: 'Impossibile caricare /stats.json: {msg}', rm: 'Betg pussaivel da chargiar /stats.json: {msg}', en: 'Failed to load /stats.json: {msg}' }
   };
 </script>
 <script>
@@ -521,6 +567,12 @@ window.I18N_PAGE = {
       var dict = (window.I18N_PAGE && window.I18N_PAGE[key]) || I18N_FOOTER[key];
       if (dict && dict[lang]) el.textContent = dict[lang];
     });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
+      var key = el.getAttribute('data-i18n-placeholder');
+      var dict = (window.I18N_PAGE && window.I18N_PAGE[key]) || null;
+      if (dict && dict[lang]) el.setAttribute('placeholder', dict[lang]);
+    });
+    window.curLang = lang;
     document.documentElement.setAttribute('lang', lang);
   }
 
@@ -528,7 +580,7 @@ window.I18N_PAGE = {
   var stored = null;
   try { stored = localStorage.getItem('lang'); } catch (_) {}
   var html = (document.documentElement.lang || '').slice(0, 2);
-  var lang = qs || stored || html || 'en';
+  var lang = qs || stored || html || 'de';
   if (qs) { try { localStorage.setItem('lang', qs); } catch (_) {} }
   applyNavLang(lang);
   document.querySelectorAll('.lang-sw [data-l]').forEach(function (el) {
@@ -541,8 +593,12 @@ window.I18N_PAGE = {
         b.classList.toggle('on', b.dataset.l === l);
       });
       applyNavLang(l);
+      // Re-render JS-produced content (sections, lede, summary) in the new
+      // language without a reload, if the page exposes a re-render hook.
+      if (typeof window.rerenderI18n === 'function') {
+        try { window.rerenderI18n(); } catch (_) {}
+      }
       if (typeof window.applyI18n === 'function') {
-        window.curLang = l;
         try { window.applyI18n(); } catch (_) {}
       }
     });

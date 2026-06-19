@@ -2471,11 +2471,11 @@ footer:not(.site) .foot-links a:hover { color: var(--tx); border-bottom-color: v
       <a href="/laws/"        data-t="nav_laws" data-nav-key="laws">Laws</a>
       <a href="/word/"        data-t="nav_word" data-nav-key="word">Word</a>
       <a href="/mcp/"         data-t="nav_mcp" data-nav-key="mcp">MCP</a>
-      <a href="/api/" data-nav-key="api">API</a>
-      <a href="/standards/" data-nav-key="standards">Standards</a>
-      <a href="/integrity/" data-nav-key="integrity">Integrity</a>
+      <a href="/api/" data-t="nav_api" data-nav-key="api">API</a>
+      <a href="/standards/" data-t="nav_standards" data-nav-key="standards">Standards</a>
+      <a href="/integrity/" data-t="nav_integrity" data-nav-key="integrity">Integrity</a>
       <a href="/quality.html" data-t="nav_quality" data-nav-key="quality">Quality</a>
-      <a href="/methodology.html" data-nav-key="methodology">Methodology</a>
+      <a href="/methodology.html" data-t="nav_methodology" data-nav-key="methodology">Methodology</a>
       <span class="lang-sw" role="group" aria-label="Language">
         <a href="?lang=de" data-l="de" class="on">DE</a>
         <a href="?lang=fr" data-l="fr">FR</a>
@@ -2637,14 +2637,14 @@ footer:not(.site) .foot-links a:hover { color: var(--tx); border-bottom-color: v
        is mandatory (CC-BY / CC-BY-SA upstream terms) — surfaced both in
        MCP tool responses and on this dashboard. -->
   <section class="section scholarship-block" id="scholarship" aria-labelledby="scholarship-heading">
-    <h2 class="section-heading" id="scholarship-heading">Open-access legal scholarship</h2>
-    <p class="scholarship-intro">
+    <h2 class="section-heading" id="scholarship-heading" data-t="sch_heading">Open-access legal scholarship</h2>
+    <p class="scholarship-intro" data-t="sch_intro">
       Beyond decisions and statutes: a unified, daily-rebuilt index of every Swiss legal publication that's licensed for free reuse — peer-reviewed journal articles, open commentaries, dissertations, and federal legal-policy reports. Every record carries explicit attribution + CC license, so LLMs grounded on this corpus respect the upstream authors' terms.
     </p>
 
     <!-- ── Author / reader search: "is my publication in here?" ─────── -->
     <div class="scholarship-search" role="search">
-      <label for="sch-q" class="scholarship-search-label">
+      <label for="sch-q" class="scholarship-search-label" data-t="sch_search_label">
         <strong>Check if a publication is indexed</strong> — search by author name, title, DOI, or keyword:
       </label>
       <form id="sch-search-form" class="scholarship-search-form" autocomplete="off">
@@ -2652,13 +2652,14 @@ footer:not(.site) .foot-links a:hover { color: var(--tx); border-bottom-color: v
           id="sch-q"
           type="search"
           placeholder='e.g. "Häusermann" or "Tierversuch" or "10.21257/sg.288"'
+          data-t-placeholder="sch_search_ph"
           aria-label="Search publications"
           class="scholarship-search-input"
         />
-        <button type="submit" class="scholarship-search-btn">Search</button>
+        <button type="submit" class="scholarship-search-btn" data-t="sch_search_btn">Search</button>
       </form>
       <p class="scholarship-search-hint">
-        Searches title, authors, abstract, journal, keywords across all <span id="sch-search-total">…</span> indexed publications. Full API: <a href="https://mcp.opencaselaw.ch/api/scholarship/search?query=Tierversuch&amp;limit=5"><code>/api/scholarship/search</code></a>.
+        <span data-t="sch_hint_pre">Searches title, authors, abstract, journal, keywords across all</span> <span id="sch-search-total">…</span> <span data-t="sch_hint_post">indexed publications. Full API:</span> <a href="https://mcp.opencaselaw.ch/api/scholarship/search?query=Tierversuch&amp;limit=5"><code>/api/scholarship/search</code></a>.
       </p>
       <div id="sch-results" class="scholarship-results" aria-live="polite"></div>
     </div>
@@ -2666,29 +2667,28 @@ footer:not(.site) .foot-links a:hover { color: var(--tx); border-bottom-color: v
     <div class="scholarship-grid">
       <article class="scholarship-card">
         <header>
-          <h3>Total indexed</h3>
+          <h3 data-t="sch_card_total">Total indexed</h3>
         </header>
         <div class="scholarship-big" id="sch-total"><span class="skel skel--big"></span></div>
-        <div class="scholarship-big-sub">publications across all sources</div>
+        <div class="scholarship-big-sub" data-t="sch_total_sub">publications across all sources</div>
       </article>
       <article class="scholarship-card">
-        <header><h3>Citation bridge</h3></header>
+        <header><h3 data-t="sch_card_bridge">Citation bridge</h3></header>
         <div class="scholarship-big" id="sch-bridge-decisions"><span class="skel skel--big"></span></div>
         <div class="scholarship-big-sub">
-          case citations resolved + <span id="sch-bridge-statutes">…</span> statute references<br>
+          <span data-t="sch_bridge_a">case citations resolved +</span> <span id="sch-bridge-statutes">…</span> <span data-t="sch_bridge_b">statute references</span><br>
           <span style="color: var(--tx2); font-size: 12px;">
-            extracted from <span id="sch-bridge-ftpubs">…</span> full-text records
-            (<span id="sch-bridge-coverage">…</span>% bridge coverage).
-            Query both directions via <code>find_scholarship_citing_decision</code>
-            and <code>find_scholarship_citing_statute</code>.
+            <span data-t="sch_bridge_c">extracted from</span> <span id="sch-bridge-ftpubs">…</span> <span data-t="sch_bridge_d">full-text records</span>
+            (<span id="sch-bridge-coverage">…</span><span data-t="sch_bridge_e">% bridge coverage). Query both directions via</span> <code>find_scholarship_citing_decision</code>
+            <span data-t="sch_bridge_f">and</span> <code>find_scholarship_citing_statute</code>.
           </span>
         </div>
       </article>
       <article class="scholarship-card">
-        <header><h3>Sources live today</h3></header>
+        <header><h3 data-t="sch_card_sources">Sources live today</h3></header>
         <details class="scholarship-sources-details">
           <summary id="sch-sources-summary">
-            <span id="sch-sources-summary-text">click to expand</span>
+            <span id="sch-sources-summary-text" data-t="sch_sources_expand">click to expand</span>
           </summary>
           <ul class="scholarship-sources" id="sch-sources">
             <li class="skel skel--list"></li>
@@ -2696,12 +2696,12 @@ footer:not(.site) .foot-links a:hover { color: var(--tx); border-bottom-color: v
         </details>
       </article>
       <article class="scholarship-card">
-        <header><h3>Licensing</h3></header>
-        <p class="scholarship-license-blurb">
+        <header><h3 data-t="sch_card_licensing">Licensing</h3></header>
+        <p class="scholarship-license-blurb" data-t="sch_license_blurb">
           All publications are open-access. Per-source license terms:
         </p>
         <details class="scholarship-licenses-details">
-          <summary>view license breakdown</summary>
+          <summary data-t="sch_license_view">view license breakdown</summary>
           <ul class="scholarship-licenses">
             <li>
               <a href="https://sui-generis.ch/" target="_blank" rel="noopener">sui generis</a>:
@@ -2717,7 +2717,7 @@ footer:not(.site) .foot-links a:hover { color: var(--tx); border-bottom-color: v
             </li>
             <li>
               <a href="https://thegoodboard.ch/" target="_blank" rel="noopener">The Good Board</a>:
-              <a href="https://thegoodboard.ch/llms.txt" target="_blank" rel="noopener">author-permitted reuse</a>
+              <a href="https://thegoodboard.ch/llms.txt" target="_blank" rel="noopener"><span data-t="sch_lic_authorpermitted">author-permitted reuse</span></a>
             </li>
             <li>
               <a href="https://leoh.ch/" target="_blank" rel="noopener">LEOH — Animal Law &amp; One Health</a>:
@@ -2749,37 +2749,37 @@ footer:not(.site) .foot-links a:hover { color: var(--tx); border-bottom-color: v
             </li>
             <li>
               <a href="https://www.bk.admin.ch/bk/de/home/dokumentation/zeitschrift--leges-.html" target="_blank" rel="noopener">LeGes (Bundeskanzlei)</a>:
-              federal publication — no copyright (Art. 5 URG)
+              <span data-t="sch_lic_federal">federal publication — no copyright (Art. 5 URG)</span>
             </li>
             <li>
-              <a href="https://repositorium.ch/" target="_blank" rel="noopener">Repositorium.ch</a>: author-deposited OA
+              <a href="https://repositorium.ch/" target="_blank" rel="noopener">Repositorium.ch</a>: <span data-t="sch_lic_authordeposited">author-deposited OA</span>
             </li>
             <li>
-              <a href="https://archive-ouverte.unige.ch/" target="_blank" rel="noopener">UNIGE Archive ouverte</a>: per-record license
+              <a href="https://archive-ouverte.unige.ch/" target="_blank" rel="noopener">UNIGE Archive ouverte</a>: <span data-t="sch_lic_perrecord">per-record license</span>
             </li>
             <li>
-              <a href="https://boris-portal.unibe.ch/" target="_blank" rel="noopener">UniBE BORIS</a>: per-record license
+              <a href="https://boris-portal.unibe.ch/" target="_blank" rel="noopener">UniBE BORIS</a>: <span data-t="sch_lic_perrecord">per-record license</span>
             </li>
             <li>
-              <a href="https://www.research-collection.ethz.ch/" target="_blank" rel="noopener">ETH Research Collection</a>: per-record license
+              <a href="https://www.research-collection.ethz.ch/" target="_blank" rel="noopener">ETH Research Collection</a>: <span data-t="sch_lic_perrecord">per-record license</span>
             </li>
             <li>
-              <a href="https://edoc.unibas.ch/" target="_blank" rel="noopener">UniBas edoc</a>: per-record license
+              <a href="https://edoc.unibas.ch/" target="_blank" rel="noopener">UniBas edoc</a>: <span data-t="sch_lic_perrecord">per-record license</span>
             </li>
             <li>
-              <a href="https://libra.unine.ch/" target="_blank" rel="noopener">UniNE LIBRA</a>: per-record license
+              <a href="https://libra.unine.ch/" target="_blank" rel="noopener">UniNE LIBRA</a>: <span data-t="sch_lic_perrecord">per-record license</span>
             </li>
             <li>
-              <a href="https://digitalcollection.zhaw.ch/" target="_blank" rel="noopener">ZHAW digitalcollection</a>: per-record license
+              <a href="https://digitalcollection.zhaw.ch/" target="_blank" rel="noopener">ZHAW digitalcollection</a>: <span data-t="sch_lic_perrecord">per-record license</span>
             </li>
             <li>
-              <a href="https://irf.fhnw.ch/" target="_blank" rel="noopener">FHNW IRF</a>: per-record license
+              <a href="https://irf.fhnw.ch/" target="_blank" rel="noopener">FHNW IRF</a>: <span data-t="sch_lic_perrecord">per-record license</span>
             </li>
             <li>
-              <a href="https://www.alexandria.unisg.ch/" target="_blank" rel="noopener">UniSG Alexandria</a>: per-record license
+              <a href="https://www.alexandria.unisg.ch/" target="_blank" rel="noopener">UniSG Alexandria</a>: <span data-t="sch_lic_perrecord">per-record license</span>
             </li>
             <li>
-              <a href="https://www.e-periodica.ch/" target="_blank" rel="noopener">e-periodica (ETH Library)</a>: historical periodicals, rightsstatements.org
+              <a href="https://www.e-periodica.ch/" target="_blank" rel="noopener">e-periodica (ETH Library)</a>: <span data-t="sch_lic_historical">historical periodicals, rightsstatements.org</span>
             </li>
           </ul>
         </details>
@@ -3143,23 +3143,23 @@ footer:not(.site) .foot-links a:hover { color: var(--tx); border-bottom-color: v
   <div class="container row">
     <div>
       <a class="brand" href="/"><span class="logo">+</span> <span class="wordmark">opencaselaw.ch</span></a>
-      <p style="margin-top: var(--s-3); max-width: 32ch; font-size: var(--t-sm); color: var(--text-2);">
+      <p style="margin-top: var(--s-3); max-width: 32ch; font-size: var(--t-sm); color: var(--text-2);" data-t="footer_tagline">
         Open Swiss case law. CC0 dataset, MIT code. 4-layer quality framework. Public-good infrastructure.
       </p>
       <div id="ts" style="margin-top: var(--s-3); font-size: var(--t-xs); color: var(--text-3);"></div>
     </div>
     <div>
-      <h4>Data</h4>
+      <h4 data-t="footer_col_data">Data</h4>
       <ul>
         <li><a href="/entscheide/" data-t="nav_entscheide">Decisions</a></li>
         <li><a href="/gesetze/" data-t="nav_gesetze">Laws</a></li>
-        <li><a href="/quality.html">Quality</a></li>
+        <li><a href="/quality.html" data-t="nav_quality">Quality</a></li>
         <li><a href="/coverage/" data-t="footer_coverage">Coverage</a></li>
         <li><a href="https://huggingface.co/datasets/voilaj/swiss-caselaw" rel="noopener">HuggingFace</a></li>
       </ul>
     </div>
     <div>
-      <h4>Access</h4>
+      <h4 data-t="footer_col_access">Access</h4>
       <ul>
         <li><a href="/word/" data-t="nav_word">Word add-in</a></li>
         <li><a href="/mcp/">MCP server</a></li>
@@ -3169,12 +3169,12 @@ footer:not(.site) .foot-links a:hover { color: var(--tx); border-bottom-color: v
       </ul>
     </div>
     <div>
-      <h4>About</h4>
+      <h4 data-t="footer_col_about">About</h4>
       <ul>
         <li><a href="/ueber/" data-t="footer_about">Mission</a></li>
-        <li><a href="/paper/">Research</a></li>
+        <li><a href="/paper/" data-t="footer_research">Research</a></li>
         <li><a href="/datenschutz/" data-t="footer_privacy">Privacy</a></li>
-        <li><a href="/governance-and-removal-policy.md">Governance</a></li>
+        <li><a href="/governance-and-removal-policy.md" data-t="footer_governance">Governance</a></li>
         <li><a href="mailto:team@jonashertner.com" data-t="footer_contact">Contact</a></li>
       </ul>
     </div>
@@ -3206,6 +3206,35 @@ const I18N = {
     nav_connect:'Verbinden', nav_toolkit:'Praxis', nav_verification:'Verifikation',
     nav_corpus:'Korpus', nav_latest:'Neuste', nav_international:'International', nav_about:'\u00dcber',
     nav_word:'Word', nav_quality:'Qualit\u00e4t', nav_search:'Suche',
+    nav_api:'API', nav_standards:'Standards', nav_integrity:'Integrit\u00e4t', nav_methodology:'Methodik',
+    footer_tagline:'Offene Schweizer Rechtsprechung. CC0-Datensatz, MIT-Code. Vierschichtiges Qualit\u00e4ts-Framework. Infrastruktur als \u00f6ffentliches Gut.',
+    footer_col_data:'Daten', footer_col_access:'Zugang', footer_col_about:'\u00dcber',
+    footer_research:'Forschung', footer_governance:'Governance',
+    sch_heading:'Open-Access-Rechtswissenschaft',
+    sch_intro:'\u00dcber Entscheide und Gesetze hinaus: ein einheitlicher, t\u00e4glich neu aufgebauter Index jeder Schweizer Rechtspublikation, die zur freien Weiterverwendung lizenziert ist \u2014 peer-reviewte Zeitschriftenartikel, offene Kommentare, Dissertationen und rechtspolitische Berichte des Bundes. Jeder Datensatz tr\u00e4gt eine ausdr\u00fcckliche Quellenangabe und CC-Lizenz, damit KI-Systeme, die auf diesem Korpus aufbauen, die Bedingungen der urspr\u00fcnglichen Autorinnen und Autoren wahren.',
+    sch_search_label:'<strong>Pr\u00fcfen, ob eine Publikation indexiert ist</strong> \u2014 Suche nach Autorenname, Titel, DOI oder Stichwort:',
+    sch_search_ph:'z. B. \u201eH\u00e4usermann\u201c oder \u201eTierversuch\u201c oder \u201e10.21257/sg.288\u201c',
+    sch_search_btn:'Suchen',
+    sch_hint_pre:'Durchsucht Titel, Autorinnen und Autoren, Abstract, Zeitschrift und Stichw\u00f6rter \u00fcber alle',
+    sch_hint_post:'indexierten Publikationen. Vollst\u00e4ndige API:',
+    sch_card_total:'Insgesamt indexiert',
+    sch_total_sub:'Publikationen aus allen Quellen',
+    sch_card_bridge:'Zitationsbr\u00fccke',
+    sch_bridge_a:'Entscheidzitate aufgel\u00f6st +',
+    sch_bridge_b:'Gesetzesverweise',
+    sch_bridge_c:'extrahiert aus',
+    sch_bridge_d:'Volltext-Datens\u00e4tzen',
+    sch_bridge_e:'% Br\u00fcckenabdeckung). Beide Richtungen abfragbar via',
+    sch_bridge_f:'und',
+    sch_card_sources:'Heute aktive Quellen',
+    sch_sources_expand:'zum Aufklappen klicken',
+    sch_card_licensing:'Lizenzierung',
+    sch_license_blurb:'Alle Publikationen sind Open Access. Lizenzbedingungen je Quelle:',
+    sch_license_view:'Lizenz\u00fcbersicht anzeigen',
+    sch_lic_perrecord:'Lizenz je Datensatz', sch_lic_authordeposited:'autorenhinterlegtes OA',
+    sch_lic_federal:'Bundespublikation \u2014 kein Urheberrecht (Art. 5 URG)',
+    sch_lic_authorpermitted:'vom Autor erlaubte Weiterverwendung',
+    sch_lic_historical:'historische Periodika, rightsstatements.org',
     nav_courts:'Gerichte', nav_laws:'Gesetze',
     strip_new:'Neu', strip_word_title:'OpenCaseLaw f\u00fcr Microsoft Word',
     strip_word_meta:'auf Microsoft AppSource verifiziert \u2014 kostenlos installieren',
@@ -3527,6 +3556,35 @@ const I18N = {
     nav_connect:'Connexion', nav_toolkit:'Praxis', nav_verification:'V\u00e9rification',
     nav_corpus:'Corpus', nav_latest:'R\u00e9cents', nav_international:'International', nav_about:'\u00c0 propos',
     nav_word:'Word', nav_quality:'Qualit\u00e9', nav_search:'Recherche',
+    nav_api:'API', nav_standards:'Normes', nav_integrity:'Int\u00e9grit\u00e9', nav_methodology:'M\u00e9thodologie',
+    footer_tagline:'Jurisprudence suisse ouverte. Jeu de donn\u00e9es CC0, code MIT. Cadre de qualit\u00e9 \u00e0 quatre couches. Infrastructure d\'int\u00e9r\u00eat public.',
+    footer_col_data:'Donn\u00e9es', footer_col_access:'Acc\u00e8s', footer_col_about:'\u00c0 propos',
+    footer_research:'Recherche', footer_governance:'Gouvernance',
+    sch_heading:'Doctrine juridique en libre acc\u00e8s',
+    sch_intro:'Au-del\u00e0 des d\u00e9cisions et des lois : un index unifi\u00e9, reconstruit chaque jour, de toute publication juridique suisse dont la licence autorise la r\u00e9utilisation libre \u2014 articles de revues \u00e9valu\u00e9s par les pairs, commentaires ouverts, th\u00e8ses et rapports f\u00e9d\u00e9raux de politique juridique. Chaque enregistrement porte une attribution explicite et une licence CC, afin que les IA ancr\u00e9es sur ce corpus respectent les conditions des auteurs en amont.',
+    sch_search_label:'<strong>V\u00e9rifier si une publication est index\u00e9e</strong> \u2014 recherche par nom d\'auteur, titre, DOI ou mot-cl\u00e9 :',
+    sch_search_ph:'p. ex. \u00ab H\u00e4usermann \u00bb ou \u00ab Tierversuch \u00bb ou \u00ab 10.21257/sg.288 \u00bb',
+    sch_search_btn:'Rechercher',
+    sch_hint_pre:'Recherche dans le titre, les auteurs, le r\u00e9sum\u00e9, la revue et les mots-cl\u00e9s \u00e0 travers l\'ensemble des',
+    sch_hint_post:'publications index\u00e9es. API compl\u00e8te :',
+    sch_card_total:'Total index\u00e9',
+    sch_total_sub:'publications, toutes sources confondues',
+    sch_card_bridge:'Pont de citations',
+    sch_bridge_a:'citations de d\u00e9cisions r\u00e9solues +',
+    sch_bridge_b:'r\u00e9f\u00e9rences \u00e0 des lois',
+    sch_bridge_c:'extraites de',
+    sch_bridge_d:'enregistrements en texte int\u00e9gral',
+    sch_bridge_e:'% de couverture du pont). Interrogeable dans les deux sens via',
+    sch_bridge_f:'et',
+    sch_card_sources:'Sources actives aujourd\'hui',
+    sch_sources_expand:'cliquer pour d\u00e9plier',
+    sch_card_licensing:'Licences',
+    sch_license_blurb:'Toutes les publications sont en libre acc\u00e8s. Conditions de licence par source :',
+    sch_license_view:'voir le d\u00e9tail des licences',
+    sch_lic_perrecord:'licence par enregistrement', sch_lic_authordeposited:'libre acc\u00e8s d\u00e9pos\u00e9 par l\'auteur',
+    sch_lic_federal:'publication f\u00e9d\u00e9rale \u2014 pas de droit d\'auteur (art. 5 LDA)',
+    sch_lic_authorpermitted:'r\u00e9utilisation autoris\u00e9e par l\'auteur',
+    sch_lic_historical:'p\u00e9riodiques historiques, rightsstatements.org',
     nav_courts:'Tribunaux', nav_laws:'Lois',
     strip_new:'Nouveau', strip_word_title:'OpenCaseLaw pour Microsoft Word',
     strip_word_meta:'v\u00e9rifi\u00e9 sur Microsoft AppSource \u2014 installation gratuite',
@@ -3848,6 +3906,35 @@ const I18N = {
     nav_connect:'Connessione', nav_toolkit:'Pratica', nav_verification:'Verifica',
     nav_corpus:'Corpus', nav_latest:'Recenti', nav_international:'Internazionale', nav_about:'Chi siamo',
     nav_word:'Word', nav_quality:'Qualit\u00e0', nav_search:'Ricerca',
+    nav_api:'API', nav_standards:'Standard', nav_integrity:'Integrit\u00e0', nav_methodology:'Metodologia',
+    footer_tagline:'Giurisprudenza svizzera aperta. Set di dati CC0, codice MIT. Quadro di qualit\u00e0 a quattro livelli. Infrastruttura di interesse pubblico.',
+    footer_col_data:'Dati', footer_col_access:'Accesso', footer_col_about:'Chi siamo',
+    footer_research:'Ricerca', footer_governance:'Governance',
+    sch_heading:'Dottrina giuridica ad accesso aperto',
+    sch_intro:'Oltre alle decisioni e alle leggi: un indice unificato, ricostruito ogni giorno, di ogni pubblicazione giuridica svizzera la cui licenza ne consente il libero riutilizzo \u2014 articoli di riviste sottoposti a revisione paritaria, commentari aperti, tesi di dottorato e rapporti federali di politica giuridica. Ogni record reca un\'attribuzione esplicita e una licenza CC, affinch\u00e9 le IA basate su questo corpus rispettino i termini degli autori a monte.',
+    sch_search_label:'<strong>Verificare se una pubblicazione \u00e8 indicizzata</strong> \u2014 ricerca per nome dell\'autore, titolo, DOI o parola chiave:',
+    sch_search_ph:'ad es. \u00abH\u00e4usermann\u00bb o \u00abTierversuch\u00bb o \u00ab10.21257/sg.288\u00bb',
+    sch_search_btn:'Cerca',
+    sch_hint_pre:'Cerca in titolo, autori, abstract, rivista e parole chiave in tutte le',
+    sch_hint_post:'pubblicazioni indicizzate. API completa:',
+    sch_card_total:'Totale indicizzato',
+    sch_total_sub:'pubblicazioni da tutte le fonti',
+    sch_card_bridge:'Ponte delle citazioni',
+    sch_bridge_a:'citazioni di decisioni risolte +',
+    sch_bridge_b:'riferimenti a leggi',
+    sch_bridge_c:'estratti da',
+    sch_bridge_d:'record a testo integrale',
+    sch_bridge_e:'% di copertura del ponte). Interrogabile in entrambe le direzioni tramite',
+    sch_bridge_f:'e',
+    sch_card_sources:'Fonti attive oggi',
+    sch_sources_expand:'clicca per espandere',
+    sch_card_licensing:'Licenze',
+    sch_license_blurb:'Tutte le pubblicazioni sono ad accesso aperto. Condizioni di licenza per fonte:',
+    sch_license_view:'mostra il dettaglio delle licenze',
+    sch_lic_perrecord:'licenza per record', sch_lic_authordeposited:'accesso aperto depositato dall\'autore',
+    sch_lic_federal:'pubblicazione federale \u2014 nessun diritto d\'autore (art. 5 LDA)',
+    sch_lic_authorpermitted:'riutilizzo consentito dall\'autore',
+    sch_lic_historical:'periodici storici, rightsstatements.org',
     nav_courts:'Tribunali', nav_laws:'Leggi',
     strip_new:'Nuovo', strip_word_title:'OpenCaseLaw per Microsoft Word',
     strip_word_meta:'verificato su Microsoft AppSource \u2014 installazione gratuita',
@@ -3926,7 +4013,6 @@ const I18N = {
     toolkit_download:'Scarica →',
     verify_heading:'Verificabile, non solo consultabile',
     verify_lead:'Citare un\'autorità che non esiste — o che non dice quanto affermato — è la modalità di errore centrale dell\'IA nel lavoro legale. Il server MCP è progettato perché ogni citazione che un\'IA produce si risolva in una fonte reale e cliccabile.',
-    verify_lead2:'OpenCaseLaw tratta questo come il problema centrale da risolvere. Il server MCP che alimenta l\'interfaccia utente è costruito attorno a un\'architettura a sei livelli il cui unico scopo è rendere ogni riferimento giurisprudenziale prodotto da un\'IA verificabile in un clic — dall\'utente, in tempo reale, contro la fonte originale.',
     verify_l0_title:'Citazioni canoniche',
     verify_l0_body:'Ogni risultato porta una <code>citation_string_de/fr/it</code> + <code>canonical_url</code> costruita lato server contro un <code>decision_id</code> deterministico. L\'LLM copia la citazione verbatim — non la formatta mai da sé.',
     verify_l1_title:'Citazioni costruite lato server',
@@ -4170,6 +4256,35 @@ const I18N = {
     nav_connect:'Connectar', nav_toolkit:'Pratica', nav_verification:'Verificaziun',
     nav_corpus:'Corpus', nav_latest:'Pli novs', nav_international:'Internaziunal', nav_about:'Davart',
     nav_word:'Word', nav_quality:'Qualitad', nav_search:'Tschertga',
+    nav_api:'API', nav_standards:'Standards', nav_integrity:'Integritad', nav_methodology:'Metodologia',
+    footer_tagline:'Giurisprudenza svizra averta. Set da datas CC0, code MIT. Rom da qualitad cun quatter stresch. Infrastructura d\'interess public.',
+    footer_col_data:'Datas', footer_col_access:'Access', footer_col_about:'Davart',
+    footer_research:'Perscrutaziun', footer_governance:'Governanza',
+    sch_heading:'Scienza giuridica en access liber',
+    sch_intro:'Ultra las decisiuns e las leschas: in index unifitgà, reconstruì mintga di, da mintga publicaziun giuridica svizra ch\'è licenziada per la reutilisaziun libra — artitgels da revistas evaluads da pèrs, commentaris averts, dissertaziuns e rapports federals da politica giuridica. Mintga record porta in\'indicaziun explicita da la funtauna ed ina licenza CC, uschia che las IA sin la basa da quest corpus respectan las cundiziuns dals auturs originals.',
+    sch_search_label:'<strong>Controllar sche ina publicaziun è indexada</strong> — tschertgar tenor num da l\'autur, titel, DOI u pled-clav:',
+    sch_search_ph:'p.ex. «Häusermann» u «Tierversuch» u «10.21257/sg.288»',
+    sch_search_btn:'Tschertgar',
+    sch_hint_pre:'Tschertga en il titel, ils auturs, l\'abstract, la revista ed ils pleds-clav en tut las',
+    sch_hint_post:'publicaziuns indexadas. API cumpletta:',
+    sch_card_total:'Total indexà',
+    sch_total_sub:'publicaziuns da tut las funtaunas',
+    sch_card_bridge:'Punt da citaziuns',
+    sch_bridge_a:'citaziuns da decisiuns schliadas +',
+    sch_bridge_b:'referenzas a leschas',
+    sch_bridge_c:'extratgas da',
+    sch_bridge_d:'records cun text cumplet',
+    sch_bridge_e:'% cuvertura dal punt). Dumandabel en omaduas direcziuns via',
+    sch_bridge_f:'e',
+    sch_card_sources:'Funtaunas activas oz',
+    sch_sources_expand:'cliccar per expander',
+    sch_card_licensing:'Licenzas',
+    sch_license_blurb:'Tut las publicaziuns èn en access liber. Cundiziuns da licenza per funtauna:',
+    sch_license_view:'mussar il detagl da las licenzas',
+    sch_lic_perrecord:'licenza per record', sch_lic_authordeposited:'access liber deponì da l\'autur',
+    sch_lic_federal:'publicaziun federala — nagin dretg d\'autur (art. 5 LDA)',
+    sch_lic_authorpermitted:'reutilisaziun permessa da l\'autur',
+    sch_lic_historical:'periodics istorics, rightsstatements.org',
     nav_courts:'Dretgiras', nav_laws:'Leschas',
     strip_new:'Nov', strip_word_title:'OpenCaseLaw per Microsoft Word',
     strip_word_meta:'verifitg\u00e0 sin Microsoft AppSource \u2014 installaziun gratuita',
@@ -4248,7 +4363,6 @@ const I18N = {
     toolkit_download:'Telechargiar →',
     verify_heading:'Verifitgabel, betg mo da tschertgar',
     verify_lead:'Citar ina autoritad ch\'i n\'exista betg — u che na di betg quai ch\'i vegn pretendì — è la moda d\'errur centrala da l\'IA en la lavur giuridica. Il server MCP è construì uschia che mintga citaziun ch\'in IA scriva sa schliua en ina fontana reala ed accessibla cun in clic.',
-    verify_lead2:'OpenCaseLaw tracta quai sco il problem central. Il server MCP sut l\'interfatscha utilisader è construì sin in\'architectura cun sis stresch, dont l\'unic scopo è da render mintga referenza ch\'in IA scriva controllabla en in clic — da la utilisadra, en temp real, cunter la fontana originala.',
     verify_l0_title:'Citaziuns canonicas',
     verify_l0_body:'Mintga resultat porta in <code>citation_string_de/fr/it</code> + <code>canonical_url</code> construì sin il server cunter in <code>decision_id</code> deterministic. L\'LLM copiescha la citaziun verbatim — el na la formattescha mai sez.',
     verify_l1_title:'Citaziuns construidas dal server',
@@ -4492,6 +4606,35 @@ const I18N = {
     nav_connect:'Connect', nav_toolkit:'Toolkit', nav_verification:'Verification',
     nav_corpus:'Corpus', nav_latest:'Latest', nav_international:'International', nav_about:'About',
     nav_word:'Word', nav_quality:'Quality', nav_search:'Search',
+    nav_api:'API', nav_standards:'Standards', nav_integrity:'Integrity', nav_methodology:'Methodology',
+    footer_tagline:'Open Swiss case law. CC0 dataset, MIT code. 4-layer quality framework. Public-good infrastructure.',
+    footer_col_data:'Data', footer_col_access:'Access', footer_col_about:'About',
+    footer_research:'Research', footer_governance:'Governance',
+    sch_heading:'Open-access legal scholarship',
+    sch_intro:'Beyond decisions and statutes: a unified, daily-rebuilt index of every Swiss legal publication that\'s licensed for free reuse — peer-reviewed journal articles, open commentaries, dissertations, and federal legal-policy reports. Every record carries explicit attribution + CC license, so LLMs grounded on this corpus respect the upstream authors\' terms.',
+    sch_search_label:'<strong>Check if a publication is indexed</strong> — search by author name, title, DOI, or keyword:',
+    sch_search_ph:'e.g. "Häusermann" or "Tierversuch" or "10.21257/sg.288"',
+    sch_search_btn:'Search',
+    sch_hint_pre:'Searches title, authors, abstract, journal, keywords across all',
+    sch_hint_post:'indexed publications. Full API:',
+    sch_card_total:'Total indexed',
+    sch_total_sub:'publications across all sources',
+    sch_card_bridge:'Citation bridge',
+    sch_bridge_a:'case citations resolved +',
+    sch_bridge_b:'statute references',
+    sch_bridge_c:'extracted from',
+    sch_bridge_d:'full-text records',
+    sch_bridge_e:'% bridge coverage). Query both directions via',
+    sch_bridge_f:'and',
+    sch_card_sources:'Sources live today',
+    sch_sources_expand:'click to expand',
+    sch_card_licensing:'Licensing',
+    sch_license_blurb:'All publications are open-access. Per-source license terms:',
+    sch_license_view:'view license breakdown',
+    sch_lic_perrecord:'per-record license', sch_lic_authordeposited:'author-deposited OA',
+    sch_lic_federal:'federal publication — no copyright (Art. 5 URG)',
+    sch_lic_authorpermitted:'author-permitted reuse',
+    sch_lic_historical:'historical periodicals, rightsstatements.org',
     nav_courts:'Courts', nav_laws:'Laws',
     strip_new:'New', strip_word_title:'OpenCaseLaw for Microsoft Word',
     strip_word_meta:'verified on Microsoft AppSource \u2014 install for free',
@@ -4570,7 +4713,6 @@ const I18N = {
     toolkit_download:'Download →',
     verify_heading:'Verifiable, not just searchable',
     verify_lead:'Citing an authority that doesn\'t exist — or doesn\'t say what\'s claimed — is the central failure mode of AI in legal work. The MCP server is built so every citation an AI writes resolves to a real, clickable source.',
-    verify_lead2:'OpenCaseLaw treats this as the central problem to solve. The MCP server below the user-facing search is built around a six-layer architecture whose only purpose is to make every case reference an AI writes verifiable in one click — by the user, in real time, against the original source.',
     verify_l0_title:'Canonical citations',
     verify_l0_body:'Every result carries a server-built <code>citation_string_de/fr/it</code> + <code>canonical_url</code> against a deterministic <code>decision_id</code>. The LLM copies the string verbatim — it never formats a citation itself.',
     verify_l1_title:'Server-built citations',
@@ -6253,7 +6395,7 @@ function renderCorpusSnapshot(data) {
       // Populate the summary label so users see what's behind the toggle
       if (summaryText) {
         summaryText.textContent = entries.length + ' active sources — '
-          + 'click to expand';
+          + t('sch_sources_expand');
       }
     }
   }

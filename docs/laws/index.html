@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -201,14 +201,15 @@
   <form class="laws-form" id="form" role="search" aria-label="Search Swiss laws">
     <input class="laws-input" type="search" id="q" name="q"
            placeholder='e.g. "Mietrecht Kündigung"  ·  "Datenschutz"  ·  "responsabilité"'
+           data-i18n-placeholder="form.placeholder"
            autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Search query">
-    <button type="submit" class="btn btn-primary">Search</button>
+    <button type="submit" class="btn btn-primary" data-i18n="form.submit">Search</button>
   </form>
 
   <div class="laws-filters" id="filters" hidden>
-    <button data-filter="" class="active" type="button">All levels</button>
-    <button data-filter="federal" type="button">Federal only</button>
-    <button data-filter="cantonal" type="button">Cantonal only</button>
+    <button data-filter="" class="active" type="button" data-i18n="filter.allLevels">All levels</button>
+    <button data-filter="federal" type="button" data-i18n="filter.federalOnly">Federal only</button>
+    <button data-filter="cantonal" type="button" data-i18n="filter.cantonalOnly">Cantonal only</button>
   </div>
 
   <div class="laws-meta" id="meta" hidden></div>
@@ -216,23 +217,23 @@
 
   <!-- Article lookup — when no search query, this is the primary action -->
   <div class="article-lookup" id="article-lookup">
-    <h3>Look up an article directly</h3>
-    <p style="font-size: var(--t-sm); color: var(--text-2); margin-bottom: var(--s-3);">
+    <h3 data-i18n="lookup.heading">Look up an article directly</h3>
+    <p style="font-size: var(--t-sm); color: var(--text-2); margin-bottom: var(--s-3);" data-i18n="lookup.desc">
       Enter the law's standard abbreviation (OR, ZGB, STGB, STPO, ZPO, BV, …) and an article number. Returns the verbatim text from the local Fedlex mirror in &lt;1 ms.
     </p>
     <form class="article-form" id="article-form">
       <input type="text" class="law" id="article-law" placeholder="OR" aria-label="Law abbreviation" required>
       <input type="text" class="art" id="article-num" placeholder="41" aria-label="Article number" required>
-      <button type="submit" class="btn">Show article</button>
+      <button type="submit" class="btn" data-i18n="lookup.submit">Show article</button>
     </form>
     <div id="article-result" style="margin-top: var(--s-4);"></div>
   </div>
 
   <!-- Quick-access grid -->
-  <div class="quick-section-head"><h2>Most-searched federal laws</h2><span class="meta">click to look up Art. 1</span></div>
+  <div class="quick-section-head"><h2 data-i18n="quick.heading">Most-searched federal laws</h2><span class="meta" data-i18n="quick.hint">click to look up Art. 1</span></div>
   <div class="quickgrid" id="quickgrid"></div>
 
-  <p style="margin-top: var(--s-6); font-size: var(--t-sm); color: var(--text-2);">
+  <p style="margin-top: var(--s-6); font-size: var(--t-sm); color: var(--text-2);" data-i18n-html="footnote.materialien">
     Need cantonal coverage detail? See <a href="/coverage/">/coverage</a> for per-portal scraper health.
     Looking for legislative materials (Botschaften, parliamentary debates)?
     Use <a href="https://mcp.opencaselaw.ch/api/docs"><code>get_materialien</code></a> via the MCP server or REST API.
@@ -286,6 +287,24 @@
 // All API-derived strings rendered via createElement / textContent (no
 // innerHTML on user data). Snippet ">>>foo<<<" markers turned into <mark>
 // via String.matchAll — no string interpolation through innerHTML.
+
+// --- i18n for JS-produced strings -------------------------------------------
+// Resolves against window.I18N_PAGE using the same locale precedence as the
+// shared lang-switch IIFE: ?lang → localStorage → <html lang> → 'de'.
+function detectLang() {
+  var qs = (location.search.match(/[?&]lang=([a-z]{2})/) || [])[1];
+  var stored = null;
+  try { stored = localStorage.getItem('lang'); } catch (_) {}
+  var html = (document.documentElement.lang || '').slice(0, 2);
+  return qs || stored || html || 'de';
+}
+window.curLang = window.curLang || detectLang();
+function t(key, vars) {
+  const dict = (window.I18N_PAGE && window.I18N_PAGE[key]) || null;
+  let s = (dict && (dict[window.curLang] || dict.de || dict.en)) || key;
+  if (vars) for (const k in vars) s = s.split('{' + k + '}').join(vars[k]);
+  return s;
+}
 
 const API_SEARCH = 'https://mcp.opencaselaw.ch/api/laws/search';
 const API_LAW = 'https://mcp.opencaselaw.ch/api/laws';
@@ -385,7 +404,7 @@ async function runSearch(q, level) {
   $('#filters').hidden = false;
   showSkeleton();
   $('#meta').hidden = false;
-  $('#meta').textContent = `Searching for "${q}"…`;
+  $('#meta').textContent = t('meta.searching', { q });
   try {
     const url = new URL(API_SEARCH);
     url.searchParams.set('query', q);
@@ -397,25 +416,30 @@ async function runSearch(q, level) {
     const data = await r.json();
     const ms = Math.round(performance.now() - t0);
     const results = data.results || [];
-    $('#meta').textContent = `${fmtNum(data.count || results.length)} matching articles  ·  federal: ${fmtNum(data.federal_hits)}  ·  cantonal: ${fmtNum(data.cantonal_hits)}  ·  ${ms} ms`;
+    $('#meta').textContent = t('meta.matching', {
+      count: fmtNum(data.count || results.length),
+      federal: fmtNum(data.federal_hits),
+      cantonal: fmtNum(data.cantonal_hits),
+      ms,
+    });
     const list = $('#results');
     clear(list);
     if (results.length === 0) {
-      list.appendChild(el('li', { class: 'empty', text: `No articles match "${q}". Try a single keyword.` }));
+      list.appendChild(el('li', { class: 'empty', text: t('results.noMatch', { q }) }));
       return;
     }
     for (const r of results) list.appendChild(buildResult(r));
   } catch (e) {
     const list = $('#results');
     clear(list);
-    list.appendChild(el('li', { class: 'error', text: `Search failed: ${e.message}.` }));
+    list.appendChild(el('li', { class: 'error', text: t('error.searchFailed', { msg: e.message }) }));
   }
 }
 
 async function lookupArticle(law, num) {
   const into = $('#article-result');
   clear(into);
-  into.appendChild(el('div', { class: 'loading', text: 'Loading…' }));
+  into.appendChild(el('div', { class: 'loading', text: t('article.loading') }));
   try {
     const url = new URL(`${API_LAW}/${encodeURIComponent(law)}`);
     url.searchParams.set('article', num);
@@ -432,7 +456,7 @@ async function lookupArticle(law, num) {
     if (data.title) card.appendChild(el('p', { class: 'law-title', text: data.title }));
     const articles = data.articles || [];
     if (articles.length === 0) {
-      card.appendChild(el('div', { class: 'empty', text: `Article ${num} not found in ${law.toUpperCase()}.` }));
+      card.appendChild(el('div', { class: 'empty', text: t('article.notFound', { num, law: law.toUpperCase() }) }));
     } else {
       for (const a of articles) {
         if (a.heading) card.appendChild(el('div', { class: 'article-num', text: `Art. ${a.article_num} — ${a.heading}` }));
@@ -443,7 +467,7 @@ async function lookupArticle(law, num) {
     into.appendChild(card);
   } catch (e) {
     clear(into);
-    into.appendChild(el('div', { class: 'error', text: `Lookup failed: ${e.message}` }));
+    into.appendChild(el('div', { class: 'error', text: t('article.lookupFailed', { msg: e.message }) }));
   }
 }
 
@@ -454,7 +478,7 @@ function buildQuick() {
     const a = el('a', {
       class: 'quick-card',
       href: `?law=${encodeURIComponent(abbr)}&art=1`,
-      title: `Show Art. 1 of ${abbr} (${name})`,
+      title: t('quick.cardTitle', { abbr, name }),
     }, [
       el('span', { class: 'quick-card-abbr', text: abbr }),
       el('span', { class: 'quick-card-name', text: name }),
@@ -528,6 +552,14 @@ function init() {
   }
 }
 
+// Re-render JS-produced content (quick-card titles, current search results,
+// article lookup, meta, errors) when the language is switched, without a
+// reload. Called by the shared lang switcher.
+window.rerenderI18n = function () {
+  buildQuick();
+  init();
+};
+
 buildQuick();
 bind();
 init();
@@ -538,7 +570,26 @@ init();
 window.I18N_PAGE = {
     'hero.eyebrow': { de: 'Nachschlagen · Bund + Kantone', fr: 'Consulter · fédéral + cantonal', it: 'Consulta · federale + cantonale', rm: 'Consultar · federal + cantunal', en: 'Look up · Federal + cantonal' },
     'hero.h1': { de: 'Schweizer Bundes- und kantonale Gesetze', fr: 'Lois fédérales et cantonales suisses', it: 'Leggi federali e cantonali svizzere', rm: 'Leschas federalas e cantunalas svizras', en: 'Swiss federal and cantonal laws' },
-    'hero.lede': { de: "Volltext von 5'510 Bundesgesetzen (Spiegel von Fedlex SPARQL) plus 15'722 kantonale Erlasse (LexWork direkt + LexFind-Fallback). Artikelweise Suche mit Snippets. Jeden Artikel über Abkürzung + Nummer nachschlagen. Frei, ohne Anmeldung, ohne API-Key.", fr: "Texte intégral de 5'510 lois fédérales (miroir de Fedlex SPARQL) et 15'722 actes cantonaux (LexWork direct + repli LexFind). Recherche par article avec extraits. Consultez n'importe quel article par abréviation + numéro. Gratuit, sans inscription, sans clé API.", it: "Testo integrale di 5'510 leggi federali (mirror di Fedlex SPARQL) più 15'722 atti cantonali (LexWork diretto + fallback LexFind). Ricerca per articolo con estratti. Consultate qualunque articolo tramite abbreviazione + numero. Gratuito, senza registrazione, senza chiave API.", rm: "Text cumplet da 5'510 leschas federalas (spievel da Fedlex SPARQL) e 15'722 actas cantunalas (LexWork directamain + repli LexFind). Tschertga per artitgel cun extracts. Consultar mintga artitgel cun l'abreviaziun + numer. Gratuit, senza annunzia, senza clav API.", en: 'Full text of 5,510 federal laws (mirrored from Fedlex SPARQL) plus 15,722 cantonal acts (LexWork direct + LexFind fallback). Article-level search with snippets. Look up any article by abbreviation + number. Free, no account, no API key.' }
+    'hero.lede': { de: "Volltext von 5'510 Bundesgesetzen (Spiegel von Fedlex SPARQL) plus 15'722 kantonale Erlasse (LexWork direkt + LexFind-Fallback). Artikelweise Suche mit Snippets. Jeden Artikel über Abkürzung + Nummer nachschlagen. Frei, ohne Anmeldung, ohne API-Key.", fr: "Texte intégral de 5'510 lois fédérales (miroir de Fedlex SPARQL) et 15'722 actes cantonaux (LexWork direct + repli LexFind). Recherche par article avec extraits. Consultez n'importe quel article par abréviation + numéro. Gratuit, sans inscription, sans clé API.", it: "Testo integrale di 5'510 leggi federali (mirror di Fedlex SPARQL) più 15'722 atti cantonali (LexWork diretto + fallback LexFind). Ricerca per articolo con estratti. Consultate qualunque articolo tramite abbreviazione + numero. Gratuito, senza registrazione, senza chiave API.", rm: "Text cumplet da 5'510 leschas federalas (spievel da Fedlex SPARQL) e 15'722 actas cantunalas (LexWork directamain + repli LexFind). Tschertga per artitgel cun extracts. Consultar mintga artitgel cun l'abreviaziun + numer. Gratuit, senza annunzia, senza clav API.", en: 'Full text of 5,510 federal laws (mirrored from Fedlex SPARQL) plus 15,722 cantonal acts (LexWork direct + LexFind fallback). Article-level search with snippets. Look up any article by abbreviation + number. Free, no account, no API key.' },
+    'form.placeholder': { de: 'z. B. "Mietrecht Kündigung"  ·  "Datenschutz"  ·  "responsabilité"', fr: 'p. ex. "Mietrecht Kündigung"  ·  "Datenschutz"  ·  "responsabilité"', it: 'p. es. "Mietrecht Kündigung"  ·  "Datenschutz"  ·  "responsabilité"', rm: 'p. ex. "Mietrecht Kündigung"  ·  "Datenschutz"  ·  "responsabilité"', en: 'e.g. "Mietrecht Kündigung"  ·  "Datenschutz"  ·  "responsabilité"' },
+    'form.submit': { de: 'Suchen', fr: 'Rechercher', it: 'Cerca', rm: 'Tschertgar', en: 'Search' },
+    'filter.allLevels': { de: 'Alle Ebenen', fr: 'Tous les niveaux', it: 'Tutti i livelli', rm: 'Tut ils nivels', en: 'All levels' },
+    'filter.federalOnly': { de: 'Nur Bund', fr: 'Fédéral uniquement', it: 'Solo federale', rm: 'Mo federal', en: 'Federal only' },
+    'filter.cantonalOnly': { de: 'Nur Kantone', fr: 'Cantonal uniquement', it: 'Solo cantonale', rm: 'Mo chantunal', en: 'Cantonal only' },
+    'meta.searching': { de: 'Suche nach "{q}" …', fr: 'Recherche de "{q}" …', it: 'Ricerca di "{q}" …', rm: 'Tschertga da "{q}" …', en: 'Searching for "{q}"…' },
+    'meta.matching': { de: '{count} passende Artikel  ·  Bund: {federal}  ·  kantonal: {cantonal}  ·  {ms} ms', fr: '{count} articles correspondants  ·  fédéral : {federal}  ·  cantonal : {cantonal}  ·  {ms} ms', it: '{count} articoli corrispondenti  ·  federale: {federal}  ·  cantonale: {cantonal}  ·  {ms} ms', rm: '{count} artitgels correspundents  ·  federal: {federal}  ·  chantunal: {cantonal}  ·  {ms} ms', en: '{count} matching articles  ·  federal: {federal}  ·  cantonal: {cantonal}  ·  {ms} ms' },
+    'results.noMatch': { de: 'Keine Artikel passen zu "{q}". Versuchen Sie ein einzelnes Stichwort.', fr: 'Aucun article ne correspond à "{q}". Essayez un seul mot-clé.', it: 'Nessun articolo corrisponde a "{q}". Provate con una sola parola chiave.', rm: 'Nagins artitgels correspundan a "{q}". Empruvai cun in singul pled magic.', en: 'No articles match "{q}". Try a single keyword.' },
+    'error.searchFailed': { de: 'Suche fehlgeschlagen: {msg}.', fr: 'Échec de la recherche : {msg}.', it: 'Ricerca non riuscita: {msg}.', rm: 'La tschertga è fallida: {msg}.', en: 'Search failed: {msg}.' },
+    'lookup.heading': { de: 'Artikel direkt nachschlagen', fr: 'Consulter un article directement', it: 'Consulta direttamente un articolo', rm: 'Consultar in artitgel directamain', en: 'Look up an article directly' },
+    'lookup.desc': { de: 'Geben Sie die übliche Abkürzung des Gesetzes ein (OR, ZGB, STGB, STPO, ZPO, BV, …) sowie eine Artikelnummer. Liefert den wörtlichen Text aus dem lokalen Fedlex-Spiegel in <1 ms.', fr: "Saisissez l'abréviation usuelle de la loi (OR, ZGB, STGB, STPO, ZPO, BV, …) et un numéro d'article. Renvoie le texte verbatim du miroir Fedlex local en <1 ms.", it: "Inserite l'abbreviazione usuale della legge (OR, ZGB, STGB, STPO, ZPO, BV, …) e un numero di articolo. Restituisce il testo verbatim dal mirror Fedlex locale in <1 ms.", rm: "Endatai l'abreviaziun usuala da la lescha (OR, ZGB, STGB, STPO, ZPO, BV, …) ed in numer d'artitgel. Returna il text litteral dal spievel Fedlex local en <1 ms.", en: "Enter the law's standard abbreviation (OR, ZGB, STGB, STPO, ZPO, BV, …) and an article number. Returns the verbatim text from the local Fedlex mirror in <1 ms." },
+    'lookup.submit': { de: 'Artikel anzeigen', fr: "Afficher l'article", it: "Mostra l'articolo", rm: "Mussar l'artitgel", en: 'Show article' },
+    'quick.heading': { de: 'Meistgesuchte Bundesgesetze', fr: 'Lois fédérales les plus recherchées', it: 'Leggi federali più cercate', rm: 'Leschas federalas las pli tschertgadas', en: 'Most-searched federal laws' },
+    'quick.hint': { de: 'klicken, um Art. 1 nachzuschlagen', fr: "cliquer pour consulter l'art. 1", it: "clicca per consultare l'art. 1", rm: "cliccar per consultar l'art. 1", en: 'click to look up Art. 1' },
+    'quick.cardTitle': { de: 'Art. 1 von {abbr} anzeigen ({name})', fr: "Afficher l'art. 1 de {abbr} ({name})", it: "Mostra l'art. 1 di {abbr} ({name})", rm: "Mussar l'art. 1 da {abbr} ({name})", en: 'Show Art. 1 of {abbr} ({name})' },
+    'article.loading': { de: 'Wird geladen …', fr: 'Chargement …', it: 'Caricamento …', rm: 'Chargiar …', en: 'Loading…' },
+    'article.notFound': { de: 'Artikel {num} in {law} nicht gefunden.', fr: "Article {num} introuvable dans {law}.", it: 'Articolo {num} non trovato in {law}.', rm: 'Artitgel {num} betg chattà en {law}.', en: 'Article {num} not found in {law}.' },
+    'article.lookupFailed': { de: 'Nachschlagen fehlgeschlagen: {msg}', fr: 'Échec de la consultation : {msg}', it: 'Consultazione non riuscita: {msg}', rm: 'La consultaziun è fallida: {msg}', en: 'Lookup failed: {msg}' },
+    'footnote.materialien': { de: 'Brauchen Sie Details zur kantonalen Abdeckung? Siehe <a href="/coverage/">/coverage</a> für die Scraper-Gesundheit pro Portal. Suchen Sie nach Gesetzgebungsmaterialien (Botschaften, Parlamentsdebatten)? Nutzen Sie <a href="https://mcp.opencaselaw.ch/api/docs"><code>get_materialien</code></a> über den MCP-Server oder die REST-API.', fr: 'Besoin de détails sur la couverture cantonale ? Voir <a href="/coverage/">/coverage</a> pour la santé des scrapers par portail. Vous cherchez des matériaux législatifs (messages, débats parlementaires) ? Utilisez <a href="https://mcp.opencaselaw.ch/api/docs"><code>get_materialien</code></a> via le serveur MCP ou l\'API REST.', it: 'Servono dettagli sulla copertura cantonale? Vedi <a href="/coverage/">/coverage</a> per lo stato degli scraper per portale. Cercate materiali legislativi (messaggi, dibattiti parlamentari)? Usate <a href="https://mcp.opencaselaw.ch/api/docs"><code>get_materialien</code></a> tramite il server MCP o l\'API REST.', rm: 'Vulais Vus detagls davart la cuvertura chantunala? Vesair <a href="/coverage/">/coverage</a> per la sanadad dals scrapers per portal. Tschertgais Vus material legislativ (messadis, debattas parlamentaras)? Dovrai <a href="https://mcp.opencaselaw.ch/api/docs"><code>get_materialien</code></a> via il server MCP u l\'API REST.', en: 'Need cantonal coverage detail? See <a href="/coverage/">/coverage</a> for per-portal scraper health. Looking for legislative materials (Botschaften, parliamentary debates)? Use <a href="https://mcp.opencaselaw.ch/api/docs"><code>get_materialien</code></a> via the MCP server or REST API.' }
   };
 </script>
 <script>
@@ -591,6 +642,19 @@ window.I18N_PAGE = {
       var dict = (window.I18N_PAGE && window.I18N_PAGE[key]) || I18N_FOOTER[key];
       if (dict && dict[lang]) el.textContent = dict[lang];
     });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
+      var key = el.getAttribute('data-i18n-placeholder');
+      var dict = (window.I18N_PAGE && window.I18N_PAGE[key]) || null;
+      if (dict && dict[lang]) el.setAttribute('placeholder', dict[lang]);
+    });
+    // data-i18n-html — value contains trusted static markup (anchors) from
+    // I18N_PAGE only (never user input), so innerHTML is safe here.
+    document.querySelectorAll('[data-i18n-html]').forEach(function (el) {
+      var key = el.getAttribute('data-i18n-html');
+      var dict = (window.I18N_PAGE && window.I18N_PAGE[key]) || null;
+      if (dict && dict[lang]) el.innerHTML = dict[lang];
+    });
+    window.curLang = lang;
     document.documentElement.setAttribute('lang', lang);
   }
 
@@ -598,7 +662,7 @@ window.I18N_PAGE = {
   var stored = null;
   try { stored = localStorage.getItem('lang'); } catch (_) {}
   var html = (document.documentElement.lang || '').slice(0, 2);
-  var lang = qs || stored || html || 'en';
+  var lang = qs || stored || html || 'de';
   if (qs) { try { localStorage.setItem('lang', qs); } catch (_) {} }
   applyNavLang(lang);
   document.querySelectorAll('.lang-sw [data-l]').forEach(function (el) {
@@ -611,8 +675,12 @@ window.I18N_PAGE = {
         b.classList.toggle('on', b.dataset.l === l);
       });
       applyNavLang(l);
+      // Re-render JS-produced content (quick cards, results, article view) in
+      // the new language without a reload, if the page exposes the hook.
+      if (typeof window.rerenderI18n === 'function') {
+        try { window.rerenderI18n(); } catch (_) {}
+      }
       if (typeof window.applyI18n === 'function') {
-        window.curLang = l;
         try { window.applyI18n(); } catch (_) {}
       }
     });
