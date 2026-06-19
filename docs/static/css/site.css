@@ -20,7 +20,7 @@
     --ink:#0c0c0d; --paper:#0c0c0d; --paper-2:#141416;
     --t1:#f4f4f3; --t2:#adadb4; --t3:#7e7e85;
     --line:rgba(255,255,255,.13); --line-2:rgba(255,255,255,.07);
-    --red:#ff6a5f; --red-fill:#ff5a4d; --on-red:#15100e; --red-bright:#ff5a4d;
+    --red:#ff5252; --red-fill:#ff5252; --on-red:#1a0c0c; --red-bright:#ff5252;
     --green:#4ade80;
   }
 }
@@ -60,12 +60,17 @@ img,svg{max-width:100%;height:auto}
 .nav-burger{display:none;margin-left:auto;width:42px;height:42px;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:7px;background:none;color:var(--t1);cursor:pointer;font-size:18px}
 @media(max-width:860px){
   .nav-links{display:none}
-  .nav-burger{display:inline-flex}
-  body.menu .nav-links{display:flex;position:fixed;inset:62px 0 auto 0;flex-direction:column;align-items:stretch;
-    background:var(--paper);border-bottom:1px solid var(--line);padding:14px var(--gut) 24px;gap:4px;margin:0;z-index:39}
-  body.menu .nav-links a:not(.nav-cta){padding:13px 0;border-bottom:1px solid var(--line-2);font-size:17px;color:var(--t1)}
-  body.menu .nav-cta{justify-content:center;margin-top:10px;border-bottom:none}
-  body.menu .langs{margin-top:14px;border-bottom:none}
+  .nav-burger{display:inline-flex;font-size:0}
+  .nav-burger::before{content:"\2630";font-size:19px;line-height:1}
+  body.menu{overflow:hidden}
+  body.menu .nav{backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--paper)}
+  body.menu .nav-burger::before{content:"\2715"}
+  body.menu .nav-links{display:flex;position:fixed;inset:62px 0 0 0;flex-direction:column;align-items:stretch;
+    background:var(--paper);padding:16px var(--gut) max(36px,env(safe-area-inset-bottom));gap:0;margin:0;z-index:39;overflow-y:auto}
+  body.menu .nav-links a:not(.nav-cta){padding:21px 2px;border-bottom:1px solid var(--line-2);font-size:22px;font-weight:500;color:var(--t1);letter-spacing:-.015em}
+  body.menu .nav-cta{justify-content:center;margin-top:28px;padding:16px;font-size:16px;border-radius:11px;border-bottom:none}
+  body.menu .langs{margin-top:auto;padding-top:32px;justify-content:center;gap:7px;border-bottom:none}
+  body.menu .langs a{font-size:14px;padding:11px 15px}
 }
 
 /* ── Buttons ─────────────────────────────────────────────────── */
