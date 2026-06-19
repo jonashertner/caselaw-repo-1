@@ -27,10 +27,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script>document.documentElement.classList.add('js');</script>
-<link rel="stylesheet" href="/static/css/site.css?v=2">
+<link rel="stylesheet" href="/static/css/site.css?v=3">
 <style>
   /* Page-specific — new tokens only */
-  .std{display:grid;grid-template-columns:88px 1fr;gap:clamp(18px,3vw,32px);
+  .std{display:grid;grid-template-columns:88px minmax(0,1fr);gap:clamp(18px,3vw,32px);
     padding:clamp(28px,4vw,40px) 0;border-top:1px solid var(--line)}
   .std:first-of-type{border-top:0;padding-top:8px}
   .std-n{font-family:var(--f-mono);font-weight:300;font-size:clamp(30px,4.4vw,44px);
@@ -46,7 +46,7 @@
   .prose em{color:var(--t2);font-style:italic}
   .lead-block{max-width:var(--maxw-prose)}
   @media(max-width:560px){
-    .std{grid-template-columns:54px 1fr;gap:14px}
+    .std{grid-template-columns:54px minmax(0,1fr);gap:14px}
     .std-n{font-size:26px}
   }
 </style>

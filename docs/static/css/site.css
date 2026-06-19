@@ -161,3 +161,11 @@ img,svg{max-width:100%;height:auto}
   .js .rv{opacity:1!important;transform:none!important;transition:none}
   .dot::after{animation:none}
 }
+
+/* ── Mobile overflow safety ──────────────────────────────────── */
+code{overflow-wrap:anywhere;word-break:break-word}
+pre{overflow-x:auto;max-width:100%}
+@media(max-width:560px){
+  .tbl{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;white-space:nowrap}
+  .tbl td,.tbl th{white-space:nowrap}
+}
