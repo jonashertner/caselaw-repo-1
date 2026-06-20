@@ -51,6 +51,16 @@ class Decision(BaseModel):
     publication_date: Optional[date] = Field(
         None, description="Date published online, if known"
     )
+    marked_for_publication: Optional[bool] = Field(
+        None,
+        description=(
+            "True if the BGer flagged this ruling for the official BGE "
+            "collection — the Neuheiten '*' marker ('für die Publikation "
+            "vorgesehen'), a leading-case signal set before the BGE number is "
+            "assigned. False = seen on Neuheiten without the marker; None = "
+            "unknown (not discovered via the Neuheiten feed)."
+        ),
+    )
 
     # === Content ===
     language: str = Field(

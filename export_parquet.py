@@ -39,6 +39,8 @@ DECISION_SCHEMA = pa.schema([
     pa.field("docket_number_2", pa.string(), nullable=True),
     pa.field("decision_date", pa.string(), nullable=True),
     pa.field("publication_date", pa.string(), nullable=True),
+    # BGE-bound signal: BGer Neuheiten "*" ("für die Publikation vorgesehen").
+    pa.field("marked_for_publication", pa.bool_(), nullable=True),
     # Content
     pa.field("language", pa.string(), nullable=False),
     pa.field("title", pa.string(), nullable=True),

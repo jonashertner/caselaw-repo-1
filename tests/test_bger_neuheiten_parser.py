@@ -155,6 +155,49 @@ def test_neuheiten_only_flag_skips_aza_search(monkeypatch) -> None:
     )
 
 
+# Real markup captured 2026-06-02 (date param 20260602). BGer appends a
+# trailing "*" to the Sachgebiet <cite> of decisions "für die Publikation
+# vorgesehen" — i.e. destined for the official BGE collection. It is a
+# leading-case signal flagged months before the BGE number is assigned.
+# 2C_506/2024 was starred; 8C_700/2025 (fabricated, unstarred) was not.
+NEUHEITEN_STAR_HTML = """
+<html><body><table>
+  <tr ALIGN="LEFT" VALIGN="top">
+    <td></td>
+    <td>04.05.2026</td>
+    <td><a href="/ext/eurospider/live/de/php/aza/http/index.php?highlight_docid=aza://04-05-2026-2C_506-2024&amp;lang=de&amp;type=show_document">2C_506/2024</a></td>
+    <td></td>
+    <td><cite>Entraide et extradition*</cite></td>
+  </tr>
+  <tr ALIGN="LEFT" VALIGN="top">
+    <td></td><td></td><td></td><td></td>
+    <td>Assistance administrative (CDI CH-ES), secret professionnel de l'avocat</td>
+  </tr>
+  <tr ALIGN="LEFT" VALIGN="top">
+    <td></td>
+    <td>05.05.2026</td>
+    <td><a href="/ext/eurospider/live/de/php/aza/http/index.php?highlight_docid=aza://05-05-2026-8C_700-2025&amp;lang=de&amp;type=show_document">8C_700/2025</a></td>
+    <td></td>
+    <td><cite>Assurance-chômage</cite></td>
+  </tr>
+</table></body></html>
+"""
+
+
+def test_neuheiten_parser_flags_star_for_publication() -> None:
+    """BGer marks BGE-bound rulings with a trailing '*' on the Sachgebiet
+    <cite>. The parser must surface that as ``marked_for_publication`` so the
+    leading-case signal is captured before the BGE number is assigned."""
+    soup = BeautifulSoup(NEUHEITEN_STAR_HTML, "html.parser")
+    scraper = _make_scraper()
+    by_docket = {
+        s["docket_number"]: s
+        for s in scraper._parse_neuheiten_html(soup, "de")
+    }
+    assert by_docket["2C_506/2024"]["marked_for_publication"] is True
+    assert by_docket["8C_700/2025"]["marked_for_publication"] is False
+
+
 def test_default_calls_both_neuheiten_and_search(monkeypatch) -> None:
     """Regression check: default behaviour (no flag) must keep walking
     both Neuheiten and AZA search — neuheiten_only is opt-in only."""

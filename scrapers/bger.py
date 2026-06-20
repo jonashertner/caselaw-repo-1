@@ -739,6 +739,18 @@ class BgerScraper(BaseScraper):
             if text and self._extract_docket(text):
                 docket = self._extract_docket(text) or docket
 
+            # BGE-bound signal: BGer appends a trailing "*" to the Sachgebiet
+            # <cite> of decisions "für die Publikation vorgesehen" (destined for
+            # the official BGE collection — a leading-case marker set months
+            # before the BGE number is assigned). Capture it so the flag rides
+            # the decision into the corpus.
+            marked_for_publication = False
+            row = a.find_parent("tr")
+            if row is not None:
+                cite = row.find("cite")
+                if cite is not None and cite.get_text(strip=True).endswith("*"):
+                    marked_for_publication = True
+
             decision_id = make_decision_id("bger", docket)
             yield {
                 "docket_number": docket,
@@ -746,6 +758,7 @@ class BgerScraper(BaseScraper):
                 "url": self._abs_url(href),
                 "language": lang,
                 "decision_id": decision_id,
+                "marked_for_publication": marked_for_publication,
             }
 
     # ───────────────────────────────────────────────────────────────────────
@@ -1117,6 +1130,9 @@ class BgerScraper(BaseScraper):
             # were published in the past anyway and don't need a
             # freshness signal in the Latest dashboard.
             publication_date=stub.get("publication_date"),
+            # Neuheiten "*" → destined for the official BGE collection. Absent on
+            # the AZA backfill path (star only shown on Neuheiten) → None/unknown.
+            marked_for_publication=stub.get("marked_for_publication"),
             language=language,
             title=meta.get("title"),
             legal_area=meta.get("legal_area"),

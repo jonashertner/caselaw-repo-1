@@ -16,6 +16,7 @@ SCHEMA_SQL = """
         docket_number_2 TEXT,
         decision_date TEXT,
         publication_date TEXT,
+        marked_for_publication INTEGER,
         language TEXT NOT NULL,
         title TEXT,
         legal_area TEXT,
@@ -185,7 +186,8 @@ COVERAGE_SCHEMA_SQL = """
 # Column order for INSERT statements (must match SCHEMA_SQL table definition)
 INSERT_COLUMNS = (
     "decision_id", "court", "canton", "chamber", "docket_number",
-    "docket_number_2", "decision_date", "publication_date", "language", "title",
+    "docket_number_2", "decision_date", "publication_date", "marked_for_publication",
+    "language", "title",
     "legal_area", "regeste", "abstract_de", "abstract_fr", "abstract_it",
     "full_text", "decision_type",
     "outcome", "source_url", "pdf_url", "cited_decisions",

@@ -2156,6 +2156,7 @@ def search_fts5(
     chamber: str | None = None,
     decision_type: str | None = None,
     legal_area: str | None = None,
+    marked_for_publication: bool | None = None,
     limit: int = DEFAULT_LIMIT,
     offset: int = 0,
     sort: str | None = None,
@@ -2175,11 +2176,32 @@ def search_fts5(
     """
     conn = get_db()
     try:
-        return _search_fts5_inner(
+        results, total = _search_fts5_inner(
             conn, query, court, canton, language,
             date_from, date_to, chamber, decision_type, legal_area,
             limit, offset, sort=sort,
+            marked_for_publication=marked_for_publication,
         )
+        # Surface the BGE-bound flag on each result (BGer Neuheiten "*" =
+        # "für die Publikation vorgesehen"). Single guarded lookup — the column
+        # exists only after a post-schema-change rebuild; pre-rebuild → omitted.
+        if results and _sqlite_has_column(conn, "decisions", "marked_for_publication"):
+            ids = [r.get("decision_id") for r in results if r.get("decision_id")]
+            if ids:
+                ph = ",".join("?" * len(ids))
+                flags = {
+                    row[0]: row[1]
+                    for row in conn.execute(
+                        f"SELECT decision_id, marked_for_publication "
+                        f"FROM decisions WHERE decision_id IN ({ph})",
+                        ids,
+                    )
+                }
+                for r in results:
+                    v = flags.get(r.get("decision_id"))
+                    if v is not None:
+                        r["marked_for_publication"] = bool(v)
+        return results, total
     finally:
         conn.close()
 
@@ -2198,6 +2220,7 @@ def _search_fts5_inner(
     limit: int,
     offset: int = 0,
     sort: str | None = None,
+    marked_for_publication: bool | None = None,
 ) -> tuple[list[dict], int]:
     """Inner search logic. Returns (results, total_count). Caller closes conn."""
     _trace_t0 = time.monotonic()
@@ -2215,7 +2238,7 @@ def _search_fts5_inner(
     fts_query = _sanitize_fts5(query)
     if not fts_query.strip():
         # No search query — return recent decisions with filters
-        return _list_recent(conn, court, canton, language, date_from, date_to, chamber, decision_type, limit, offset, sort=sort)
+        return _list_recent(conn, court, canton, language, date_from, date_to, chamber, decision_type, limit, offset, sort=sort, marked_for_publication=marked_for_publication)
 
     # Build WHERE clause for filters (applied to main table via JOIN)
     filters = []
@@ -2242,6 +2265,10 @@ def _search_fts5_inner(
     if decision_type:
         filters.append("d.decision_type LIKE ?")
         params.append(f"%{decision_type}%")
+    # BGE-bound filter: only when requested AND the column exists (post-rebuild),
+    # so the query never references the column on a pre-rebuild served DB.
+    if marked_for_publication and _sqlite_has_column(conn, "decisions", "marked_for_publication"):
+        filters.append("d.marked_for_publication = 1")
     # legal_area is NOT a WHERE filter — too many decisions lack this field.
     # Instead it's used as a reranking boost (see _rerank_rows).
 
@@ -6001,6 +6028,12 @@ def get_decision_by_id(decision_id: str) -> dict | None:
     # Remove json_data blob from response (redundant)
     result.pop("json_data", None)
 
+    # BGE-bound flag: DB stores 0/1/NULL; present it as a real bool (or None
+    # when unknown). The column exists only after a post-schema-change rebuild,
+    # so guard on presence — pre-rebuild responses simply omit it.
+    if result.get("marked_for_publication") is not None:
+        result["marked_for_publication"] = bool(result["marked_for_publication"])
+
     # Enrich with the same metadata that search_decisions provides,
     # so callers who fetch a decision by ID get the same fields as
     # those who find it via search.
@@ -7601,6 +7634,7 @@ def _list_recent(
     limit: int = DEFAULT_LIMIT,
     offset: int = 0,
     sort: str | None = None,
+    marked_for_publication: bool | None = None,
 ) -> tuple[list[dict], int]:
     """List recent decisions without FTS query (just filters).
     Returns (results, total_count) with exact count."""
@@ -7628,6 +7662,8 @@ def _list_recent(
     if decision_type:
         filters.append("decision_type LIKE ?")
         params.append(f"%{decision_type}%")
+    if marked_for_publication and _sqlite_has_column(conn, "decisions", "marked_for_publication"):
+        filters.append("marked_for_publication = 1")
 
     where = ("WHERE " + " AND ".join(filters)) if filters else ""
 
@@ -16754,6 +16790,17 @@ def _list_tools() -> list[Tool]:
                             "'Schuldbetreibung', 'Ausländerrecht'"
                         ),
                     },
+                    "marked_for_publication": {
+                        "type": "boolean",
+                        "description": (
+                            "If true, return only Federal Supreme Court rulings "
+                            "flagged for the official BGE collection (the Neuheiten "
+                            "'*' marker, 'für die Publikation vorgesehen') — future "
+                            "leading cases, flagged before the BGE number is "
+                            "assigned. Populated for BGer decisions published from "
+                            "mid-2026 onward; older rows are unflagged."
+                        ),
+                    },
                     "limit": {
                         "type": "integer",
                         "description": "Max results to return (max 2000). Omit to use default of 50. Do not set low values like 5 or 10 unless the user explicitly asked for fewer results.",
@@ -18463,6 +18510,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 chamber=arguments.get("chamber"),
                 decision_type=arguments.get("decision_type"),
                 legal_area=arguments.get("legal_area"),
+                marked_for_publication=arguments.get("marked_for_publication"),
                 limit=arguments.get("limit", DEFAULT_LIMIT),
                 offset=req_offset,
                 sort=sort_arg,
@@ -20752,6 +20800,7 @@ setInterval(load, 30000);
         date_to: str = Query(None, description="End date (YYYY-MM-DD)"),
         chamber: str = Query(None, description="Filter by chamber/division (substring match)"),
         decision_type: str = Query(None, description="Filter by decision type (Urteil, Beschluss, etc.)"),
+        marked_for_publication: bool = Query(None, description="If true, return only Federal Supreme Court rulings flagged for the official BGE collection (Neuheiten '*' = 'für die Publikation vorgesehen') — future leading cases, flagged before the BGE number is assigned. Populated for BGer decisions from mid-2026 onward."),
         limit: int = Query(50, ge=1, le=2000, description="Max results to return"),
         offset: int = Query(0, ge=0, description="Skip results for pagination"),
         sort: str = Query(None, description="Sort: relevance (default), date_desc, date_asc"),
@@ -20768,6 +20817,7 @@ setInterval(load, 30000);
             search_fts5, query=query or "", court=court, canton=canton,
             language=language, date_from=date_from, date_to=date_to,
             chamber=chamber, decision_type=decision_type,
+            marked_for_publication=marked_for_publication,
             limit=limit, offset=offset, sort=sort,
         )
         # Bound the response so an enumeration ("list ALL cases on X") returns
