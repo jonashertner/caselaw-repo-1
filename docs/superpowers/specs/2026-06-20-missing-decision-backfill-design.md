@@ -150,3 +150,40 @@ ceiling); log it, don't retry endlessly.
   vs genuinely uncollected?
 
 The answers turn this spec from a plan into a sized program.
+
+## Phase 1 results — BGer probe (2026-06-20)
+
+Ran the BGer recoverability probe on the top‑cited missing dockets. Decisive,
+and it **revises the strategy**:
+
+- **The AZA‑search date‑resolution mechanism WORKS.** Controls (known‑present
+  dockets 5A_26/2018, 5A_7/2018, 5A_51/2018) were **3/3 found** by AZA full‑text
+  search `query_words={docket}` + a year..year+1 window (the date filter is the
+  *decision* date, often the filing year + 1 — bound accordingly). So ordinary
+  missing decisions ARE resolvable docket→date→fetch.
+- **But the top‑cited missing are NOT in the AZA archive: 0/10.** 4A_101/2014
+  (826×), 5A_843/2018 (458×), 6B_494/2022 (253×) … return near‑misses or nothing
+  despite the mechanism working. Their citation signature (200–800×) is the
+  fingerprint of **leading cases (BGE)** — a different collection — and the
+  precise header scan confirmed they are not present in our corpus as a BGE
+  either. So the highest‑value gaps are the **hardest**, not the easiest.
+- **~half the top sample is pre‑2007** (4C_310/1996, 2A_255/1994, 1P_477/1993…),
+  which bger.ch's online AZA archive does not cover at all.
+
+**Strategy correction (important):**
+1. **Do NOT prioritize top‑cited‑first** — those are BGE leading cases / pre‑2007,
+   the hardest to recover. The naive "most‑cited first" ordering would yield ~0%.
+2. **Target the mid‑tier** — ordinary, post‑2007, non‑leading‑case missing
+   decisions, where the AZA mechanism works. The next probe must measure the
+   recoverable rate on a *mid‑tier* sample (e.g. missing cited 5–50× from
+   2010–2023) to size the genuinely‑recoverable fraction of the ~74,500.
+3. **BGE‑bound gaps** need the BGE/CLIR source (CLIR query format still TBD) and
+   a corpus cross‑check — some may already be present and merely unresolvable by
+   BGer docket.
+4. **Pre‑2007 is a separate hard track** (print BGE volumes / offline archives /
+   Wayback) — likely the floor on recoverability.
+
+Net: the subsystem is viable for the mid‑tier but the top‑cited and pre‑2007
+bulk are hard. The recoverable fraction of ~74,500 is **not yet known** and the
+mid‑tier probe is the next step that sizes it.
+
