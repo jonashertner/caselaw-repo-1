@@ -138,7 +138,9 @@ SCRAPERS = {
     "comcom": ("scrapers.comcom", "ComComScraper"),
     # Federal — customs and tax administration
     "bazg": ("scrapers.bazg", "BAZGScraper"),
-    "estv": ("scrapers.estv", "ESTVScraper"),
+    # NB: ESTV Kreisschreiben are scraped by scrapers/practice/estv_kreisschreiben.py
+    # into the practice pipeline (practice.db / search_practice) — administrative
+    # practice, not court decisions (issue #16). Not registered here on purpose.
     # Federal — military
     "mkg": ("scrapers.militaerkassationsgericht", "MilitaerkassationsgerichtScraper"),
     # Cantonal — implemented

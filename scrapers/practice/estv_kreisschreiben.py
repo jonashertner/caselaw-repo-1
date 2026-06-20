@@ -1,28 +1,31 @@
 """
-ESTV Kreisschreiben — Federal Direct Tax (DBG)
-==============================================
+ESTV Kreisschreiben — Federal tax administrative practice (DBST / VST / STA)
+===========================================================================
 
-Source page (DE):
-  https://www.estv.admin.ch/de/kreisschreiben-direkten-bundessteuer
+Source pages (server-rendered HTML, no JS):
+  Direkte Bundessteuer (DBST):  /de/kreisschreiben-direkten-bundessteuer  (+ fr/it)
+  Verrechnungssteuer (VST):     /de/kreisschreiben-verrechnungssteuer     (+ fr/it)
+  Stempelabgaben (STA):         /de/kreisschreiben-stempelabgaben         (+ fr/it)
 
-Each Kreisschreiben (KS) is a PDF under ``estv.admin.ch/dam/de/sd-web/{ID}/``.
-The listing HTML is server-rendered, no JS required. Each entry has the
-form:
+Each Kreisschreiben (KS) is a PDF under ``estv.admin.ch/dam/.../*.pdf``. Every
+file uses the ``dbst-ks-`` prefix regardless of tax type; the applicable tax(es)
+are encoded in the suffix letters before the language code, e.g.
 
-    <a href="/dam/de/sd-web/HASH/dbst-ks-YYYY-1-NNN-X-de.pdf">
-      KS Nr. NNN — Title
-      Datum: DD.MM.YYYY
-    </a>
+    dbst-ks-{YYYY}-1-{NNN}{rev}-{suffix}-{lang}.pdf
+        suffix:  d = Direkte Bundessteuer
+                 v = Verrechnungssteuer
+                 s = Stempelabgaben      (combinations: dv, dvs, …)
 
-Coverage: ~73 KS + Anhänge currently active (DE). FR+IT versions exist on
-parallel ``/fr/`` and ``/it/`` index pages.
+A single KS can therefore apply to several taxes and appears on several tax-type
+pages — we iterate all of them and dedup by (language-keyed) doc_id.
 
-Cited PDF naming convention:
-    dbst-ks-{YYYY}-1-{NNN}{suffix}-{lang}.pdf
-        suffix: a/b/c (revisions), -anhang1, -faq, etc.
+This is the SINGLE home for ESTV Kreisschreiben. The decisions-pipeline
+duplicate (PR #26, ``scrapers/estv.py``) was retired (issue #16): Kreisschreiben
+are administrative practice, not court decisions, and belong in practice.db /
+search_practice — not in the decision corpus + citation graph.
 
-Why this matters: KS bind cantonal tax authorities applying DBG/StHG.
-Every Swiss tax practitioner cites them; current MCP corpus has zero.
+Why this matters: KS bind cantonal tax authorities applying DBG / VStG / StG.
+Every Swiss tax practitioner cites them.
 """
 from __future__ import annotations
 
@@ -37,19 +40,55 @@ from .base import PracticeScraper
 
 logger = logging.getLogger(__name__)
 
-INDEX_URLS = {
-    "de": "https://www.estv.admin.ch/de/kreisschreiben-direkten-bundessteuer",
-    "fr": "https://www.estv.admin.ch/fr/circulaires-impot-federal-direct",
-    "it": "https://www.estv.admin.ch/it/circolari-imposta-federale-diretta",
+_BASE = "https://www.estv.admin.ch"
+
+# Per (tax type, language) index page. Every page lists dbst-ks-*.pdf files;
+# the union across tax pages (deduped) is the full KS set for a language.
+_TAX_PAGES = {
+    "DBST": {
+        "de": "/de/kreisschreiben-direkten-bundessteuer",
+        "fr": "/fr/circulaires-impot-federal-direct",
+        "it": "/it/circolari-imposta-federale-diretta",
+    },
+    "VST": {
+        "de": "/de/kreisschreiben-verrechnungssteuer",
+        "fr": "/fr/circulaires-impot-anticipe",
+        "it": "/it/circolari-imposta-preventiva",
+    },
+    "STA": {
+        "de": "/de/kreisschreiben-stempelabgaben",
+        "fr": "/fr/circulaires-droits-de-timbre",
+        "it": "/it/circolari-tasse-di-bollo",
+    },
 }
 
-# Match KS number from PDF URL or anchor text.
-# URL pattern: dbst-ks-YYYY-1-NNN[suffix]-lang.pdf
-# Anchor text: "KS Nr. 28" or "KS Nr. 50a"
+INDEX_SOURCES = [
+    {"tax_type": tax, "lang": lang, "url": _BASE + slug}
+    for tax, pages in _TAX_PAGES.items()
+    for lang, slug in pages.items()
+]
+
+# KS number from PDF URL (primary) or anchor text (fallback).
 _KS_NUM_FROM_URL = re.compile(r"dbst-ks-(\d{4})-1-(\d{1,3})([a-z]?)", re.IGNORECASE)
 _KS_NUM_FROM_TEXT = re.compile(r"KS\s+Nr\.\s+(\d{1,3}[a-z]?)", re.IGNORECASE)
 _DATE_PATTERN = re.compile(r"(\d{1,2})\.(\d{1,2})\.(\d{4})")
-_BASE = "https://www.estv.admin.ch"
+# Tax-type suffix: the letters between the KS number and the language code.
+_SUFFIX_RE = re.compile(r"dbst-ks-\d{4}-1-\d{1,3}[a-z]?-([dvs]+)-(?:de|fr|it)\.pdf",
+                        re.IGNORECASE)
+_TAX_LABEL = {"d": "Direkte Bundessteuer", "v": "Verrechnungssteuer", "s": "Stempelabgaben"}
+
+
+def _topics_from_filename(filename: str) -> list[str]:
+    """Applicable taxes from the suffix letters (d/v/s) → ordered labels."""
+    m = _SUFFIX_RE.search(filename)
+    if not m:
+        return []
+    seen: list[str] = []
+    for ch in m.group(1).lower():
+        label = _TAX_LABEL.get(ch)
+        if label and label not in seen:
+            seen.append(label)
+    return seen
 
 
 class EstvKreisschreibenScraper(PracticeScraper):
@@ -58,52 +97,52 @@ class EstvKreisschreibenScraper(PracticeScraper):
     DEFAULT_DOC_TYPE = "kreisschreiben"
     REQUEST_DELAY = 1.0
 
-    def __init__(self, languages: tuple[str, ...] = ("de",)):
+    def __init__(self, languages: tuple[str, ...] = ("de", "fr", "it")):
         super().__init__()
         self.languages = languages
 
+    def _make_doc_id(self, stub: dict) -> str:
+        # Key by the PDF filename stem (unique per PDF): this distinguishes
+        # languages (-de/-fr/-it) AND annexes (one KS ships as main + Anhänge +
+        # FAQ sharing a number). A doc_number-based id would collapse those and
+        # silently drop the FR/IT versions + the annexes.
+        from .base import slugify
+        stem = stub["pdf_url"].rsplit("/", 1)[-1].rsplit(".", 1)[0]
+        return f"{self.SOURCE_KEY}_{slugify(stem)}"
+
     def discover_documents(self) -> Iterator[dict]:
-        for lang in self.languages:
-            url = INDEX_URLS.get(lang)
-            if not url:
+        for src in INDEX_SOURCES:
+            lang = src["lang"]
+            if lang not in self.languages:
                 continue
+            url = src["url"]
             try:
-                r = self.get(url)
+                r = self.get(url, headers={"Accept-Language": f"{lang}-CH,{lang};q=0.9"})
                 r.raise_for_status()
             except Exception as e:
-                logger.warning("ESTV-KS [%s] index fetch failed: %s", lang, e)
+                logger.warning("ESTV-KS [%s/%s] index fetch failed: %s",
+                               src["tax_type"], lang, e)
                 continue
 
             soup = BeautifulSoup(r.text, "html.parser")
-            seen_pdfs: set[str] = set()
-
-            # Listing has anchor tags whose href points to /dam/.../*.pdf
             for a in soup.find_all("a", href=True):
                 href = a["href"]
                 if "/dam/" not in href or not href.lower().endswith(".pdf"):
                     continue
                 pdf_url = urljoin(_BASE, href)
-                if pdf_url in seen_pdfs:
-                    continue
-                seen_pdfs.add(pdf_url)
+                filename = pdf_url.rsplit("/", 1)[-1]
 
-                # Title: text content of the anchor (strip + collapse whitespace)
                 title = re.sub(r"\s+", " ", a.get_text(" ", strip=True)) or "(untitled)"
 
-                # KS number — from URL primarily, anchor text as fallback
                 m_url = _KS_NUM_FROM_URL.search(pdf_url)
                 m_txt = _KS_NUM_FROM_TEXT.search(title)
                 if m_url:
-                    ks_year, ks_num, ks_rev = m_url.group(1), m_url.group(2), m_url.group(3)
-                    doc_number = f"KS Nr. {int(ks_num)}{ks_rev}"
+                    doc_number = f"KS Nr. {int(m_url.group(2))}{m_url.group(3)}"
                 elif m_txt:
                     doc_number = f"KS Nr. {m_txt.group(1)}"
                 else:
-                    # Mitteilungen / Wegleitungen from same index
-                    fname = pdf_url.rsplit("/", 1)[-1]
-                    doc_number = fname.replace(".pdf", "")[:60]
+                    doc_number = filename.replace(".pdf", "")[:60]
 
-                # Date — anchor + immediate sibling/parent text often contain DD.MM.YYYY
                 surrounding = (a.get_text(" ", strip=True) + " "
                                + (a.parent.get_text(" ", strip=True) if a.parent else ""))
                 d = _DATE_PATTERN.search(surrounding)
@@ -118,12 +157,11 @@ class EstvKreisschreibenScraper(PracticeScraper):
                     "date": date_iso,
                     "language": lang,
                     "doc_type": "kreisschreiben",
-                    "topics": ["DBG", "Direkte Bundessteuer"],
+                    "topics": _topics_from_filename(filename) or ["Bundessteuern"],
                 }
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO,
                         format="%(asctime)s %(name)s %(levelname)s %(message)s")
-    s = EstvKreisschreibenScraper(languages=("de",))
-    s.run()
+    EstvKreisschreibenScraper().run()
