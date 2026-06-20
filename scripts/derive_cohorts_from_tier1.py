@@ -51,6 +51,13 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Iterable
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+# Shared wire format for the persisted sketch (read back by active_clients.py
+# for windowed distinct counts). derive keeps its own inline HLL for the per-day
+# estimate; only the serialization format is shared, so it cannot drift.
+from analytics_hll import HLL as _SketchHLL  # noqa: E402
+from analytics_hll import serialize_registers  # noqa: E402
+
 # Tier-1 format (from ops/nginx/ocl-logging.conf):
 #   $remote_addr $time_iso8601 "$request_method $uri" $status $request_time "$http_user_agent"
 TIER1_RE = re.compile(
@@ -245,33 +252,48 @@ def main() -> int:
 
     conn = sqlite3.connect(str(args.db))
     try:
+        # Persist the per-day HLL *sketch* (not just the scalar estimate) so the
+        # active-client counter can merge sketches across days into a true
+        # windowed distinct count. The registers hold only rank-maxima — no
+        # identifiers — so this preserves the no-IP-retention guarantee.
+        try:
+            conn.execute("ALTER TABLE daily_reach ADD COLUMN hll_sketch TEXT")
+        except sqlite3.OperationalError:
+            pass  # column already exists
+
         # Schema already exists. Upsert into daily_reach.
         for (day_iso, client), hll in hlls.items():
             est = hll.estimate()
             exact_n = len(exact_seen[(day_iso, client)])
+            sketch = serialize_registers(hll.registers, hll.p)
             existing = conn.execute(
-                "SELECT n_cohorts_exact, n_cohorts_hll_estimate "
+                "SELECT n_cohorts_exact, n_cohorts_hll_estimate, hll_sketch "
                 "FROM daily_reach WHERE day = ? AND client_class = ?",
                 (day_iso, client),
             ).fetchone()
             if existing:
-                old_exact, old_hll = existing
+                old_exact, old_hll, old_sketch = existing
                 # Only upgrade if our derived signal is larger (we're
                 # adding a previously-unknown cohort source).
                 new_exact = max(exact_n, old_exact or 0)
                 new_hll = max(est, old_hll or 0)
+                # Sketch: union with any existing sketch (idempotent on re-run;
+                # additive if a prior run saw a different cohort source).
+                merged_sketch = _SketchHLL.union(
+                    [old_sketch, sketch]
+                ).serialize() if old_sketch else sketch
                 conn.execute(
                     "UPDATE daily_reach SET n_cohorts_exact = ?, "
-                    "n_cohorts_hll_estimate = ? "
+                    "n_cohorts_hll_estimate = ?, hll_sketch = ? "
                     "WHERE day = ? AND client_class = ?",
-                    (new_exact, new_hll, day_iso, client),
+                    (new_exact, new_hll, merged_sketch, day_iso, client),
                 )
             else:
                 conn.execute(
                     "INSERT INTO daily_reach "
-                    "(day, client_class, n_cohorts_exact, n_cohorts_hll_estimate) "
-                    "VALUES (?,?,?,?)",
-                    (day_iso, client, exact_n, est),
+                    "(day, client_class, n_cohorts_exact, n_cohorts_hll_estimate, hll_sketch) "
+                    "VALUES (?,?,?,?,?)",
+                    (day_iso, client, exact_n, est, sketch),
                 )
         conn.commit()
     finally:
