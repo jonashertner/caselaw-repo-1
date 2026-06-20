@@ -16,6 +16,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from .estv_kreisschreiben import EstvKreisschreibenScraper
+from .estv_mwst import EstvMwstScraper
 from .sem_weisungen import SemWeisungenScraper
 from .bafu_vollzugshilfen import BafuVollzugshilfenScraper
 from .ssk_kreisschreiben import SskKreisschreibenScraper
@@ -27,6 +28,7 @@ logger = logging.getLogger(__name__)
 # Tested + production-ready (full implementations against real HTML)
 ENABLED_SCRAPERS = {
     "estv_ks":       EstvKreisschreibenScraper,
+    "estv_mwst":     EstvMwstScraper,
     "sem_weisungen": SemWeisungenScraper,
     "bafu_vollzug":  BafuVollzugshilfenScraper,
 }
