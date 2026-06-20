@@ -183,7 +183,46 @@ and it **revises the strategy**:
 4. **Pre‑2007 is a separate hard track** (print BGE volumes / offline archives /
    Wayback) — likely the floor on recoverability.
 
-Net: the subsystem is viable for the mid‑tier but the top‑cited and pre‑2007
-bulk are hard. The recoverable fraction of ~74,500 is **not yet known** and the
-mid‑tier probe is the next step that sizes it.
+## Phase 1b — mid-tier probe + the structural conclusion (2026-06-20)
+
+Probed the mid-tier (ordinary BGer, post-2007, cited 5–50×): **0/25 recoverable**
+from AZA — same as the top-cited. The sample also exposed extraction-noise
+contamination in the "missing" set: impossible dockets like `1C_261/2997` (year
+2997), `68_418/2021` / `15_168/2016` (invalid chambers) that passed normalize_ref.
+
+**The structural finding (decisive):** controls (decisions we HAVE) are found
+3/3; cited-but-missing refs are found **0/35** across both probes. This is not a
+mechanism failure — it is inherent. Our corpus is built by *sweeping the AZA
+archive*, so anything in AZA we already hold. Therefore a cited ref that is NOT
+in our corpus is, **by construction, not in AZA** — it is one of:
+- a **BGE leading case** (the 200–800× ones), published in the CLIR collection
+  under its BGE number, not in AZA under the BGer docket;
+- **pre-2007**, which bger.ch's online archive does not cover;
+- **genuinely unpublished** (cited in prose, decision text not public);
+- **extraction noise** (a mis-parsed citation → a docket for no real decision).
+
+**Conclusion: the citation-gap is NOT a backfill driver.** It surfaces important
+*references*, not recoverable *decisions*; an AZA-driven citation-gap backfill
+recovers ~0%. The oracle remains valuable as a graph-completeness signal and for
+finding BGE/CLIR + pre-2007 recovery targets, but it does not size a recoverable
+decision backlog.
+
+**The correct path to a complete database is per-source coverage (Plan Pillar 3),
+not citation-gap backfill:**
+1. For each court, measure `our_count` vs the **source's own archive size** (its
+   exposed total / sitemap / year counts). The recoverable gap is the scraper's
+   **discovery misses** — decisions in the source archive we failed to collect
+   (cf. the known BGer 180-day-horizon / upload-lag blind spot) — which a full
+   re-sweep recovers. This is a different, recoverable population than the cited
+   refs, which are biased toward not-in-archive.
+2. **BGE/CLIR completeness** as its own track: ensure the BGE collection is fully
+   captured (many top-cited "missing" likely live here).
+3. **Pre-2007** as a separate hard track (print volumes / Wayback).
+4. First clean the oracle's `missing` of extraction-noise dockets (impossible
+   chambers/years) before quoting a gap figure — the ~74,500 includes noise +
+   BGE + unpublished and overstates the recoverable backlog.
+
+Net: this probe sequence (cost ~50 fetches) prevented building an AZA backfill
+subsystem that would have recovered nothing, and redirected the program to
+per-source coverage — the actually-recoverable completeness lever.
 
