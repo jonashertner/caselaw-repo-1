@@ -2272,7 +2272,7 @@
     "2026-05": 1591,
     "2026-06": 337
   },
-  "generated_at": "2026-06-20T11:09:58.545673+00:00",
+  "generated_at": "2026-06-20T16:08:31.210472+00:00",
   "scraper_health": {
     "run_at": "2026-06-20T03:11:17.223111+00:00",
     "run_duration_s": 7816.2,
@@ -3278,7 +3278,7 @@
         "note": "1713 listed on portal but content not downloadable (empty page or missing PDF)",
         "state_count": 1513,
         "jsonl_size_mb": 91.3,
-        "jsonl_mtime": "2026-06-20T02:44:07.823439+00:00"
+        "jsonl_mtime": "2026-06-20T14:53:08.218303+00:00"
       },
       "sg_publikationen": {
         "success": true,
@@ -3351,15 +3351,15 @@
       "ZH": 135
     },
     "commentaries": 1131,
-    "scholarship_publications": 25286,
+    "scholarship_publications": 26666,
     "scholarship_by_source": {
       "boris_law": 7319,
       "e_periodica_law": 3041,
       "zhaw_digitalcollection": 3040,
       "e_periodica_polsci": 2957,
+      "unige_law": 2881,
       "libra_unine": 1983,
       "eth_research_collection": 1760,
-      "unige_law": 1501,
       "e_periodica_pubadmin": 855,
       "fhnw_irf": 496,
       "onlinekommentar": 377,
@@ -3378,29 +3378,29 @@
       "alexandria_law": 13
     },
     "scholarship_by_type": {
-      "article": 19219,
-      "book": 4293,
-      "dissertation": 647,
-      "report": 434,
+      "article": 19863,
+      "book": 5012,
+      "dissertation": 659,
+      "report": 439,
       "commentary": 407,
       "working_paper": 173,
       "guidance": 70,
       "reference_article": 40,
       "bachelor_thesis": 3
     },
-    "citation_edges": 9212820,
-    "statute_edges": 11825835
+    "citation_edges": 9218628,
+    "statute_edges": 11832862
   },
   "interesting_stats": {
     "most_cited_decision": {
       "docket": "BGE 125 V 351",
-      "citation_count": 96732,
+      "citation_count": 96743,
       "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
     },
     "most_cited_statute": {
       "law_code": "LTF",
       "article": "100",
-      "ref_count": 182246
+      "ref_count": 182279
     },
     "oldest_decision": {
       "docket": "1_I_3",
@@ -3411,23 +3411,23 @@
     "language_split": {
       "de_pct": 46.7,
       "fr_pct": 45.1,
-      "it_pct": 8.3,
-      "total": 991298
+      "it_pct": 8.2,
+      "total": 991621
     },
     "regeste_coverage": {
-      "pct": 38.0,
-      "with_regeste": 376204,
-      "total": 991298
+      "pct": 37.9,
+      "with_regeste": 376201,
+      "total": 991621
     },
     "graph_size": {
-      "decision_edges": 8631179,
-      "statute_edges": 11825835,
-      "total": 20457014
+      "decision_edges": 8636746,
+      "statute_edges": 11832862,
+      "total": 20469608
     },
     "echr_switzerland": {
-      "total": 2834,
+      "total": 2835,
       "grand_chamber": 94,
-      "in_2026": 110,
+      "in_2026": 111,
       "most_recent": {
         "decision_date": "2026-06-18",
         "docket": "41355/23",
@@ -3438,31 +3438,31 @@
     "top_5_decisions": [
       {
         "docket": "BGE 125 V 351",
-        "citation_count": 96732,
+        "citation_count": 96743,
         "regeste_excerpt": "Regeste\n Art. 4 BV; Art. 108 Abs. 1 lit. b UVG; Art. 40 BZP in Verbindung mit Art. 19 VwVG; Art. 95 Abs. 2 in Verbindung mit Art. 113 und 132 OG: Beweiswürdigun",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
       },
       {
         "docket": "BGE 122 V 157",
-        "citation_count": 53780,
+        "citation_count": 53783,
         "regeste_excerpt": "Regeste\n Art. 4 BV, Art. 6 Ziff. 1 EMRK. - Art. 4 BV und Art. 6 Ziff. 1 EMRK umfassen keinen formellen Anspruch auf Beizug versicherungsexterner medizinischer G",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_122_V_157"
       },
       {
         "docket": "BGE 134 V 231",
-        "citation_count": 37302,
+        "citation_count": 37308,
         "regeste_excerpt": "Regeste\n Art. 6 Abs. 1 UVG; Beweiswert diagnostischer Methoden; funktionelle Magnetresonanztomographie; Schleudertrauma. Eine medizinisch-diagnostische Methode ",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_134_V_231"
       },
       {
         "docket": "BGE 126 V 75",
-        "citation_count": 33745,
+        "citation_count": 33749,
         "regeste_excerpt": "Regeste\n Art. 28 Abs. 2 IVG: Kürzung von Tabellenlöhnen. - Für die Bestimmung des Invalideneinkommens ist primär von der beruflich-erwerblichen Situation auszug",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_126_V_75"
       },
       {
         "docket": "BGE 130 V 343",
-        "citation_count": 32893,
+        "citation_count": 32895,
         "regeste_excerpt": "Regeste\n Art. 1 Abs. 1 IVG (in der seit 1. Januar 2003 geltenden Fassung) in Verbindung mit Art. 6, 7, 8 Abs. 1, Art. 16 und 17 ATSG; Art. 4 Abs. 1, Art. 28 Abs",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_130_V_343"
       }
@@ -3471,27 +3471,27 @@
       {
         "law_code": "LTF",
         "article": "100",
-        "ref_count": 182246
+        "ref_count": 182279
       },
       {
         "law_code": "LTF",
         "article": "113",
-        "ref_count": 111961
+        "ref_count": 111969
       },
       {
         "law_code": "LTF",
         "article": "42",
-        "ref_count": 105252
+        "ref_count": 105283
       },
       {
         "law_code": "BGG",
         "article": "42",
-        "ref_count": 93024
+        "ref_count": 93247
       },
       {
         "law_code": "BGG",
         "article": "66",
-        "ref_count": 59687
+        "ref_count": 59709
       }
     ],
     "materialien_coverage": {
@@ -3549,7 +3549,7 @@
         "earliest": "1908-11-08",
         "latest": "2026-06-02",
         "span_years": 118,
-        "decision_count": 168434
+        "decision_count": 168457
       }
     ]
   },
@@ -4171,7 +4171,10 @@
       "SO": 6,
       "UR": 9
     },
-    "corpus": {},
+    "corpus": {
+      "citation_edges": 5808,
+      "statute_edges": 7027
+    },
     "previous_generated_at": "2026-06-19T21:18:27.693098+00:00"
   }
 }
