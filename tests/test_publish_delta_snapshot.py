@@ -162,6 +162,13 @@ def test_publish_sqlite_snapshot_uploads_manifest_last_and_prunes_previous(tmp_p
 
     monkeypatch.setattr(pd, "_upload_file", fake_upload)
     monkeypatch.setattr(pd, "_delete_file", fake_delete)
+    # Issue #19: pruning now lists all snapshots and keeps the newest N (default 3).
+    monkeypatch.setattr(pd, "_list_snapshot_paths", lambda repo, token: [
+        "artifacts/sqlite/snapshots/2026-05-22.decisions.sqlite.zst",
+        "artifacts/sqlite/snapshots/2026-05-23.decisions.sqlite.zst",
+        "artifacts/sqlite/snapshots/2026-05-24.decisions.sqlite.zst",
+        "artifacts/sqlite/snapshots/2026-05-25.decisions.sqlite.zst",
+    ])
 
     pd.publish_sqlite_snapshot(
         build_info=build_info,
@@ -190,7 +197,47 @@ def test_publish_sqlite_snapshot_uploads_manifest_last_and_prunes_previous(tmp_p
         "producer_commit": "abc123",
     }
     assert manifest["deltas"] == [{"date": "2026-05-24"}]
+    # Issue #19: newest 3 kept (23/24/25); only the oldest (22) pruned + its checksum.
     assert deletes == [
-        "artifacts/sqlite/snapshots/2026-05-24.decisions.sqlite.zst",
-        "artifacts/sqlite/snapshots/2026-05-24.decisions.sqlite.zst.sha256",
+        "artifacts/sqlite/snapshots/2026-05-22.decisions.sqlite.zst",
+        "artifacts/sqlite/snapshots/2026-05-22.decisions.sqlite.zst.sha256",
     ]
+
+
+def test_hf_call_with_retry_succeeds_after_transient_failures(monkeypatch) -> None:
+    """Issue #20: a transient HF error retries, then succeeds — no propagation."""
+    monkeypatch.setattr(pd._time, "sleep", lambda s: None)
+
+    class _Transient(Exception):
+        pass
+
+    monkeypatch.setattr(pd, "_hf_retryable_exceptions", lambda: (_Transient,))
+    calls = {"n": 0}
+
+    def flaky():
+        calls["n"] += 1
+        if calls["n"] < 3:
+            raise _Transient("network blip")
+        return "ok"
+
+    assert pd._hf_call_with_retry(flaky, attempts=3, base_delay=0) == "ok"
+    assert calls["n"] == 3
+
+
+def test_hf_call_with_retry_reraises_after_max_attempts(monkeypatch) -> None:
+    """Issue #20: a persistent failure propagates so the operator sees it."""
+    monkeypatch.setattr(pd._time, "sleep", lambda s: None)
+
+    class _Transient(Exception):
+        pass
+
+    monkeypatch.setattr(pd, "_hf_retryable_exceptions", lambda: (_Transient,))
+    calls = {"n": 0}
+
+    def always_fail():
+        calls["n"] += 1
+        raise _Transient("still down")
+
+    with pytest.raises(_Transient):
+        pd._hf_call_with_retry(always_fail, attempts=3, base_delay=0)
+    assert calls["n"] == 3

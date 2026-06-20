@@ -36,6 +36,7 @@ import os as _os
 import shutil as _shutil
 import sqlite3 as _sqlite3
 import subprocess as _subprocess
+import time as _time
 from pathlib import Path as _Path
 from typing import Any, Dict, Iterable, Iterator, List, Optional
 
@@ -449,10 +450,47 @@ def _download_manifest(hf_repo: str) -> Dict[str, Any]:
 
 # ── HF upload ───────────────────────────────────────────────────────────
 
+def _hf_retryable_exceptions() -> tuple:
+    """Transient HF/transport errors worth retrying (issue #20)."""
+    excs: list = []
+    try:
+        from huggingface_hub.utils import HfHubHTTPError
+        excs.append(HfHubHTTPError)
+    except Exception:
+        pass
+    try:
+        import httpx
+        excs.append(httpx.HTTPError)
+    except Exception:
+        pass
+    return tuple(excs) or (Exception,)
+
+
+def _hf_call_with_retry(call, *args, attempts: int = 3, base_delay: float = 5.0,
+                        max_delay: float = 60.0, **kwargs):
+    """Call an HF Hub API method with retry + exponential backoff on transient
+    HTTP errors (issue #20). A hiccup between the sequential snapshot/checksum/
+    manifest uploads otherwise leaves HF in a dirty state (orphan artifact or
+    stale manifest). Re-raises the final error so a genuine failure still
+    surfaces in publish.log."""
+    retryable = _hf_retryable_exceptions()
+    for attempt in range(1, attempts + 1):
+        try:
+            return call(*args, **kwargs)
+        except retryable as e:
+            if attempt >= attempts:
+                raise
+            delay = min(base_delay * (2 ** (attempt - 1)), max_delay)
+            log.warning("HF call failed (attempt %d/%d): %s — retrying in %.0fs",
+                        attempt, attempts, e, delay)
+            _time.sleep(delay)
+
+
 def _upload_file(local: _Path, repo: str, path_in_repo: str, token: str, commit_message: str) -> None:
     from huggingface_hub import HfApi
     api = HfApi(token=token)
-    api.upload_file(
+    _hf_call_with_retry(
+        api.upload_file,
         path_or_fileobj=str(local),
         path_in_repo=path_in_repo,
         repo_id=repo,
@@ -464,7 +502,8 @@ def _upload_file(local: _Path, repo: str, path_in_repo: str, token: str, commit_
 def _delete_file(repo: str, path_in_repo: str, token: str, commit_message: str) -> None:
     from huggingface_hub import HfApi
     api = HfApi(token=token)
-    api.delete_file(
+    _hf_call_with_retry(
+        api.delete_file,
         path_in_repo=path_in_repo,
         repo_id=repo,
         repo_type="dataset",
@@ -603,6 +642,38 @@ def build_sqlite_snapshot(
     return info
 
 
+def _list_snapshot_paths(hf_repo: str, token: str | None) -> list[str]:
+    """All snapshot sqlite paths on HF, sorted oldest→newest (the names are
+    date-prefixed, so a lexical sort is chronological). Issue #19."""
+    from huggingface_hub import HfApi
+    api = HfApi(token=token)
+    files = api.list_repo_files(repo_id=hf_repo, repo_type="dataset")
+    prefix = "artifacts/sqlite/snapshots/"
+    suffix = ".decisions.sqlite.zst"
+    return sorted(f for f in files if f.startswith(prefix) and f.endswith(suffix))
+
+
+def _prune_old_snapshots(hf_repo: str, token: str | None, retain: int = 3) -> list[str]:
+    """Keep the `retain` newest snapshots on HF; delete older ones (+ .sha256).
+
+    Replaces the prior "delete the previous snapshot immediately" behaviour,
+    which created a 404 race for clients that fetched the old manifest moments
+    before the swap (issue #19). Keeping N gives them a grace window without
+    growing HF storage unboundedly. Returns the snapshot paths deleted."""
+    snaps = _list_snapshot_paths(hf_repo, token)
+    to_delete = snaps[:-retain] if retain >= 0 and len(snaps) > retain else []
+    for snap in to_delete:
+        for path in (snap, f"{snap}.sha256"):
+            try:
+                _delete_file(
+                    hf_repo, path, token,
+                    commit_message=f"snapshot retention: prune {path} (keep newest {retain})",
+                )
+            except Exception as e:
+                log.warning("snapshot retention failed for %s: %s", path, e)
+    return to_delete
+
+
 def publish_sqlite_snapshot(
     *,
     build_info: Dict[str, Any],
@@ -610,6 +681,7 @@ def publish_sqlite_snapshot(
     hf_token: str | None = None,
     dry_run: bool = False,
     prune_previous: bool = True,
+    retain_snapshots: int = 3,
 ) -> None:
     """Upload full SQLite snapshot and update manifest.snapshot.
 
@@ -632,7 +704,6 @@ def publish_sqlite_snapshot(
         return
 
     manifest = _download_manifest(hf_repo)
-    previous_snapshot = manifest.get("snapshot") if isinstance(manifest, dict) else None
 
     _upload_file(
         build_info["sqlite_zst"],
@@ -678,19 +749,11 @@ def publish_sqlite_snapshot(
         commit_message=f"manifest: set snapshot {date}",
     )
 
-    if prune_previous and isinstance(previous_snapshot, dict):
-        previous_sqlite = (previous_snapshot.get("sqlite_zst") or {}).get("path")
-        if previous_sqlite and previous_sqlite != sqlite_path_in_repo:
-            for old_path in (previous_sqlite, f"{previous_sqlite}.sha256"):
-                try:
-                    _delete_file(
-                        hf_repo,
-                        old_path,
-                        hf_token,
-                        commit_message=f"snapshot retention: remove {old_path}",
-                    )
-                except Exception as e:
-                    log.warning("snapshot retention failed for %s: %s", old_path, e)
+    # Retain the newest N snapshots instead of deleting the previous one
+    # immediately — gives clients that fetched the prior manifest a grace
+    # window before its snapshot disappears (issue #19).
+    if prune_previous:
+        _prune_old_snapshots(hf_repo, hf_token, retain=retain_snapshots)
 
     log.info("publish_sqlite_snapshot: %s published (%d rows)", date, build_info["rows"])
 

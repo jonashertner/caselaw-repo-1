@@ -60,3 +60,43 @@ def test_ignores_non_dir_entries(tmp_path):
     publish_delta._prune_old_build_dirs(parent, keep="2026-06-16", retain=1)
     assert (parent / "stray.txt").exists()          # file untouched
     assert not (parent / "2026-06-10").exists()     # stale dated dir pruned
+
+
+def test_publish_sqlite_snapshot_retains_n_previous(monkeypatch):
+    """Issue #19: keep the N newest HF snapshots; delete only older ones
+    (+ their .sha256), giving clients a grace window after a manifest swap."""
+    snaps = [
+        f"artifacts/sqlite/snapshots/2026-05-2{d}.decisions.sqlite.zst"
+        for d in (1, 2, 3, 4, 5)
+    ]
+    monkeypatch.setattr(publish_delta, "_list_snapshot_paths", lambda repo, token: snaps)
+    deletes: list[str] = []
+    monkeypatch.setattr(
+        publish_delta, "_delete_file",
+        lambda repo, path, token, commit_message: deletes.append(path),
+    )
+
+    pruned = publish_delta._prune_old_snapshots("example/repo", "token", retain=3)
+
+    # newest 3 (23/24/25) kept; oldest 2 (21/22) pruned with their checksums
+    assert pruned == snaps[:2]
+    assert deletes == [
+        "artifacts/sqlite/snapshots/2026-05-21.decisions.sqlite.zst",
+        "artifacts/sqlite/snapshots/2026-05-21.decisions.sqlite.zst.sha256",
+        "artifacts/sqlite/snapshots/2026-05-22.decisions.sqlite.zst",
+        "artifacts/sqlite/snapshots/2026-05-22.decisions.sqlite.zst.sha256",
+    ]
+
+
+def test_prune_old_snapshots_noop_within_retain(monkeypatch):
+    """Fewer snapshots than `retain` → nothing deleted (the grace window)."""
+    snaps = ["artifacts/sqlite/snapshots/2026-05-24.decisions.sqlite.zst",
+             "artifacts/sqlite/snapshots/2026-05-25.decisions.sqlite.zst"]
+    monkeypatch.setattr(publish_delta, "_list_snapshot_paths", lambda repo, token: snaps)
+    deletes: list[str] = []
+    monkeypatch.setattr(
+        publish_delta, "_delete_file",
+        lambda repo, path, token, commit_message: deletes.append(path),
+    )
+    assert publish_delta._prune_old_snapshots("example/repo", "token", retain=3) == []
+    assert deletes == []
