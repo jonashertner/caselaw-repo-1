@@ -25,8 +25,10 @@ def _decisions_db():
     return d
 
 
-def _graph_db():
+def _graph_db(decision_ids=()):
     g = sqlite3.connect(":memory:")
+    g.execute("CREATE TABLE decisions (decision_id TEXT PRIMARY KEY)")
+    g.executemany("INSERT INTO decisions VALUES (?)", [(d,) for d in decision_ids])
     g.execute("CREATE TABLE citation_targets (source_decision_id TEXT, target_ref TEXT, "
               "target_decision_id TEXT, match_type TEXT, confidence_score REAL, "
               "PRIMARY KEY (source_decision_id, target_ref, target_decision_id))")
@@ -42,7 +44,7 @@ def test_resolves_bger_docket_to_bge_entry():
     idx = build_key_index(d)
     assert idx.get("d:2c_663_2021") == "bge_148 II 233"   # cross-reference captured
 
-    g = _graph_db()
+    g = _graph_db(["bge_148 II 233"])
     g.execute("INSERT INTO decision_citations VALUES ('s1','2C_663/2021','docket')")
     added = resolve_crossref(g, idx)
     assert added == 1
@@ -56,7 +58,7 @@ def test_resolves_separator_and_decision_id_drift():
     # present as bger_5D_78_2017 with a space-separator docket the JOIN missed
     d.execute("INSERT INTO decisions VALUES ('bger_5D_78_2017','5D 78/2017',NULL,'bger',NULL)")
     idx = build_key_index(d)
-    g = _graph_db()
+    g = _graph_db(["bger_5D_78_2017"])
     g.execute("INSERT INTO decision_citations VALUES ('s2','5D_78/2017','docket')")
     added = resolve_crossref(g, idx)
     assert added == 1
@@ -64,11 +66,23 @@ def test_resolves_separator_and_decision_id_drift():
                      "WHERE source_decision_id='s2'").fetchone()[0] == "bger_5D_78_2017"
 
 
+def test_skips_target_not_in_graph_fk_safe():
+    """If the key index points to a decision the graph doesn't contain (dedup /
+    court-filter / limited build), the edge is skipped — never an FK failure."""
+    d = _decisions_db()
+    d.execute("INSERT INTO decisions VALUES ('bger_2C_663_2021','2C_663/2021',NULL,'bger',NULL)")
+    idx = build_key_index(d)
+    g = _graph_db(decision_ids=[])  # graph has NO decisions
+    g.execute("INSERT INTO decision_citations VALUES ('s9','2C_663/2021','docket')")
+    added = resolve_crossref(g, idx)
+    assert added == 0  # target absent from graph → skipped, no FK error
+
+
 def test_never_touches_already_resolved():
     d = _decisions_db()
     d.execute("INSERT INTO decisions VALUES ('bger_4A_101_2014','4A_101/2014',NULL,'bger',NULL)")
     idx = build_key_index(d)
-    g = _graph_db()
+    g = _graph_db(["bger_4A_101_2014", "existing_target"])
     # already resolved by the docket_norm pass to a (hypothetical) other target
     g.execute("INSERT INTO citation_targets VALUES ('s3','4A_101/2014','existing_target','docket_norm',0.9)")
     g.execute("INSERT INTO decision_citations VALUES ('s3','4A_101/2014','docket')")
@@ -83,7 +97,7 @@ def test_skips_unmatchable_and_self_citation():
     d = _decisions_db()
     d.execute("INSERT INTO decisions VALUES ('bger_4A_101_2014','4A_101/2014',NULL,'bger',NULL)")
     idx = build_key_index(d)
-    g = _graph_db()
+    g = _graph_db(["bger_4A_101_2014"])
     g.execute("INSERT INTO decision_citations VALUES ('x','URK_ 2','docket')")          # noise
     g.execute("INSERT INTO decision_citations VALUES ('x','9Z_999/2099','docket')")     # no corpus match
     g.execute("INSERT INTO decision_citations VALUES ('bger_4A_101_2014','4A_101/2014','docket')")  # self

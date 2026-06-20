@@ -66,6 +66,11 @@ def resolve_crossref(graph: sqlite3.Connection, key_index: dict[str, str],
     resolved = set(
         r[0] for r in graph.execute("SELECT DISTINCT target_ref FROM citation_targets")
     )
+    # citation_targets has a FK to decisions(decision_id); the key index is built
+    # from the full source corpus, which may include decisions the graph excluded
+    # (dedup/court filter/limited build). Only insert edges whose target exists in
+    # THIS graph, else a single missing target fails the whole INSERT batch.
+    graph_ids = set(r[0] for r in graph.execute("SELECT decision_id FROM decisions"))
     insert_sql = (
         "INSERT OR IGNORE INTO citation_targets "
         "(source_decision_id, target_ref, target_decision_id, match_type, confidence_score) "
@@ -88,7 +93,7 @@ def resolve_crossref(graph: sqlite3.Connection, key_index: dict[str, str],
         if not k:
             continue
         tid = key_index.get(k)
-        if tid and tid != sid:
+        if tid and tid != sid and tid in graph_ids:
             payload.append((sid, ref, tid, XREF_MATCH_TYPE, confidence))
             if len(payload) >= batch:
                 graph.executemany(insert_sql, payload)
