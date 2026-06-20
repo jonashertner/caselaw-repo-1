@@ -674,6 +674,30 @@ def build_graph(
         _resolve_citation_targets(conn)
         conn.commit()
 
+        # Completeness Step 1: additive BGer↔BGE cross-reference resolution —
+        # recovers citations the docket_norm JOIN missed (separator drift,
+        # decision_id forms, and BGer dockets whose decision is stored as a BGE).
+        # Purely additive (only unresolved refs, INSERT OR IGNORE) and wrapped so
+        # a failure can NEVER break the nightly build — the base graph still ships.
+        if source_db is not None:
+            try:
+                _scripts = os.path.join(
+                    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scripts")
+                if _scripts not in sys.path:
+                    sys.path.insert(0, _scripts)
+                from resolve_citation_crossref import build_key_index, resolve_crossref
+                _src = sqlite3.connect(f"file:{source_db}?mode=ro&immutable=1", uri=True)
+                try:
+                    _xref_added = resolve_crossref(conn, build_key_index(_src))
+                finally:
+                    _src.close()
+                conn.commit()
+                print(f"  cross-reference resolution: +{_xref_added:,} edges",
+                      file=sys.stderr, flush=True)
+            except Exception as _e:
+                print(f"  cross-reference resolution skipped (non-fatal): {_e}",
+                      file=sys.stderr, flush=True)
+
         total_decisions = conn.execute("SELECT COUNT(*) FROM decisions").fetchone()[0]
         total_statutes = conn.execute("SELECT COUNT(*) FROM statutes").fetchone()[0]
         total_citations = conn.execute("SELECT COUNT(*) FROM decision_citations").fetchone()[0]
