@@ -27,22 +27,29 @@ from citation_gap_oracle import normalize_ref  # noqa: E402
 
 HEADER_WINDOW = 500
 
-# Docket-candidate finders (loose; normalize_ref validates each candidate).
-_CAND_RES = [
-    re.compile(r"\d{1,3}\s+(?:I{1,3}|IV|VI|V|Ia|Ib)\s+\d{1,4}", re.IGNORECASE),   # BGE bare
-    re.compile(r"\d{1,2}[A-Za-z]{0,2}[._/ -]\d{1,5}[._/ -]\d{4}"),                # BGer
-    re.compile(r"[A-Fa-f][._/ -]\d{1,5}[._/ -]\d{4}"),                            # BVGer
-    re.compile(r"[A-Za-z]{2}[._]\d{4}[._]\d{1,5}"),                               # BStGer/cantonal
+# A decision's OWN docket in its Urteilskopf is followed by a "decided-on"
+# marker: "4A_576/2024 vom 29. April 2025" (de) / "du 7 mai 2025" (fr) /
+# "del 7 maggio 2025" (it). Requiring that marker is what distinguishes the
+# decision's identity (incl. the underlying BGer docket of a BGE) from a docket
+# merely CITED in the header/Regeste — without it the scan over-counts citations
+# as alternate-identity matches. The capture group is the docket.
+_VOM = r"(?:vom|du|del|della|dell['’]?)\s+\d"
+_OWN_DOCKET_RES = [
+    re.compile(rf"(\d{{1,2}}[A-Za-z]{{0,2}}[._/ -]\d{{1,5}}[._/ -]\d{{4}})\s+{_VOM}", re.IGNORECASE),  # BGer
+    re.compile(rf"([A-Fa-f][._/ -]\d{{1,5}}[._/ -]\d{{4}})\s+{_VOM}", re.IGNORECASE),                  # BVGer
+    re.compile(rf"([A-Za-z]{{2}}[._]\d{{4}}[._]\d{{1,5}})\s+{_VOM}", re.IGNORECASE),                   # BStGer/cantonal
 ]
 
 
 def extract_header_dockets(text: str | None, window: int = HEADER_WINDOW) -> set[str]:
-    """All docket keys declared in a decision's header window."""
+    """Keys for the docket(s) a decision declares as ITS OWN in the header —
+    those immediately followed by a 'vom/du/del DATE' marker. Citations in the
+    header are excluded (they lack the marker)."""
     if not text:
         return set()
     head = text[:window]
     keys: set[str] = set()
-    for rx in _CAND_RES:
+    for rx in _OWN_DOCKET_RES:
         for m in rx.findall(head):
             k = normalize_ref(m)
             if k:

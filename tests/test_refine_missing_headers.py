@@ -16,16 +16,25 @@ from refine_missing_headers import (  # noqa: E402
 )
 
 
-def test_extract_header_dockets_finds_underlying_and_bge():
+def test_extract_underlying_docket_with_marker():
     head = "Urteilskopf 151 III 481 47. Auszug aus dem Urteil 4A_576/2024 vom 29. April 2025"
     keys = extract_header_dockets(head)
-    assert "bge:151:iii:481" in keys        # the BGE number itself
-    assert "d:4a_576_2024" in keys          # the underlying BGer docket
+    assert "d:4a_576_2024" in keys          # underlying docket, followed by 'vom DATE'
 
 
-def test_extract_header_dockets_bvger_and_cantonal():
-    assert "d:e_3431_2021" in extract_header_dockets("Urteil E-3431/2021 vom ...")
-    assert "d:sk_2020_42" in extract_header_dockets("Entscheid SK.2020.42 der ...")
+def test_extract_marker_in_three_languages():
+    assert "d:4a_282_2024" in extract_header_dockets("... 4A_282/2024 du 7 mai 2025")
+    assert "d:e_3431_2021" in extract_header_dockets("Urteil E-3431/2021 vom 1. Juli 2021")
+    assert "d:sk_2020_42" in extract_header_dockets("Sentenza SK.2020.42 del 5 maggio 2020")
+
+
+def test_cited_docket_without_marker_is_excluded():
+    # the decision's OWN docket (9C_612/2016, has the marker) is captured;
+    # a CITED docket (9C_667/2016, no marker) is NOT — the false-positive case.
+    head = "Urteil 9C_612/2016 vom 3. Juni 2016 ... mit Hinweis auf 9C_667/2016 E. 2"
+    keys = extract_header_dockets(head)
+    assert "d:9c_612_2016" in keys
+    assert "d:9c_667_2016" not in keys
 
 
 def test_build_index_and_refine_splits_present_vs_missing():
