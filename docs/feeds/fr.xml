@@ -5,9 +5,30 @@
     <link>https://opencaselaw.ch/feeds/fr.xml</link>
     <description>Latest published Swiss court decisions in Français.</description>
     <language>de-CH</language>
-    <lastBuildDate>Fri, 19 Jun 2026 14:58:05 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 20 Jun 2026 11:20:38 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/fr.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>fr_gerichte 502 2026 111 vom 2026-07-13</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_502%202026%20111</link>
+      <description>Tribunal cantonal TC
+Kantonsgericht KG
+Rue des Augustins 3, case postale 630, 1701 Fribourg
+T +41 26 304 15 00
+www.fr.ch/tc
+—
+Pouvoir Judiciaire PJ
+Gerichtsbehörden GB
+502 2026 111
+Arrêt du 1er juin 2026
+Chambre pénale
+Composition
+Président :
+Laurent…</description>
+      <pubDate>Mon, 13 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">fr_gerichte_502 2026 111</guid>
+      <category>fr_gerichte</category>
+    </item>
     <item>
       <title>fr_gerichte 502 2026 131 vom 2026-07-13</title>
       <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_502%202026%20131</link>
@@ -27,6 +48,27 @@ Composition
 Vice-…</description>
       <pubDate>Mon, 13 Jul 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">fr_gerichte_502 2026 131</guid>
+      <category>fr_gerichte</category>
+    </item>
+    <item>
+      <title>fr_gerichte 502 2026 58 vom 2026-07-10</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_502%202026%2058</link>
+      <description>Tribunal cantonal TC
+Kantonsgericht KG
+Rue des Augustins 3, case postale 630, 1701 Fribourg
+T +41 26 304 15 00
+www.fr.ch/tc
+—
+Pouvoir Judiciaire PJ
+Gerichtsbehörden GB
+502 2026 58
+Arrêt du 8 juin 2026
+Chambre pénale
+Composition
+Président :
+Laurent Sc…</description>
+      <pubDate>Fri, 10 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">fr_gerichte_502 2026 58</guid>
       <category>fr_gerichte</category>
     </item>
     <item>
@@ -133,6 +175,27 @@ Michel…</description>
       <category>fr_gerichte</category>
     </item>
     <item>
+      <title>fr_gerichte 102 2026 125 vom 2026-06-19</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_102%202026%20125</link>
+      <description>Tribunal cantonal TC
+Kantonsgericht KG
+Rue des Augustins 3, case postale 630, 1701 Fribourg
+T +41 26 304 15 00
+www.fr.ch/tc
+—
+Pouvoir Judiciaire PJ
+Gerichtsbehörden GB
+102 2026 125
+Arrêt du 3 juin 2026
+IIe Cour d’appel civil
+Composition
+Présidente :
+…</description>
+      <pubDate>Fri, 19 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">fr_gerichte_102 2026 125</guid>
+      <category>fr_gerichte</category>
+    </item>
+    <item>
       <title>fr_gerichte 605 2025 107 vom 2026-06-19</title>
       <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_605%202025%20107</link>
       <description>Tribunal cantonal TC
@@ -199,6 +262,27 @@ Composition
 Prési…</description>
       <pubDate>Thu, 18 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">fr_gerichte_605 2025 97</guid>
+      <category>fr_gerichte</category>
+    </item>
+    <item>
+      <title>fr_gerichte 604 2025 23 vom 2026-06-17</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_604%202025%2023</link>
+      <description>Tribunal cantonal TC
+Kantonsgericht KG
+Rue des Augustins 3, case postale 630, 1701 Fribourg
+T +41 26 304 15 00
+www.fr.ch/tc
+—
+Pouvoir Judiciaire PJ
+Gerichtsbehörden GB
+604 2025 23
+Arrêt du 3 juin 2026
+Cour fiscale
+Composition
+Président :
+Marc Sugnaux…</description>
+      <pubDate>Wed, 17 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">fr_gerichte_604 2025 23</guid>
       <category>fr_gerichte</category>
     </item>
     <item>
@@ -387,6 +471,22 @@ représenté par …</description>
       <category>bvger</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht D-5626/2025 vom 2026-06-11</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-5626_2025</link>
+      <description>Asile et renvoi</description>
+      <pubDate>Thu, 11 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-5626.2025</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht E-1936/2023 vom 2026-06-11</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-1936_2023</link>
+      <description>Asile et renvoi</description>
+      <pubDate>Thu, 11 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-1936.2023</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>ecthr_chamber 49687/16 vom 2026-06-11</title>
       <link>https://mcp.opencaselaw.ch/entscheid/ecthr_chamber_49687_16</link>
       <description>Violation de l'article 14 - Interdiction de la discrimination (Article 14 - Discrimination);Dommage matériel - demande rejetée (Article 41 - Dommage matériel;Satisfaction équitable);Préjudice moral - réparation (Article 41 - Préjudice moral;Satisfaction équitable); Violation: 14</description>
@@ -423,6 +523,38 @@ bénéfice dun contrat de travail de durée indétermin…</description>
       <pubDate>Thu, 11 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ne_gerichte_CDP.2025.255</guid>
       <category>ne_gerichte</category>
+    </item>
+    <item>
+      <title>Bundesgericht 5A_496/2026 vom 2026-06-10</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_496_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+5A_496/2026
+
+Arrêt du 10 juin 2026
+
+IIe Cour de droit civil
+
+Composition
+
+M. le Juge fédéral Bovey, Président.
+
+Greffière : Mme Mairot.
+
+Participants à la procédure
+
+A.________,
+
+…</description>
+      <pubDate>Wed, 10 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_496.2026</guid>
+      <category>bger</category>
     </item>
     <item>
       <title>fr_gerichte 501 2024 73 vom 2026-06-10</title>
@@ -491,6 +623,214 @@ Greffier : M. Entenza-Ras…</description>
       <category>bger</category>
     </item>
     <item>
+      <title>Bundesgericht 2C_343/2026 vom 2026-06-09</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_2C_343_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+2C_343/2026
+
+Arrêt du 9 juin 2026
+
+IIe Cour de droit public
+
+Composition
+
+M. le Juge fédéral
+
+Donzallaz, Juge présidant.
+
+Greffier : M. Dubey.
+
+Participants à la procédure
+
+A.____…</description>
+      <pubDate>Tue, 09 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:2C_343.2026</guid>
+      <category>bger</category>
+    </item>
+    <item>
+      <title>Bundesgericht 4A_260/2026 vom 2026-06-09</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_4A_260_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+4A_260/2026
+
+Ordonnance du 9 juin 2026
+
+Ire Cour de droit civil
+
+Composition
+
+M. le Juge fédéral Hurni, Président.
+
+Greffier : M. Widmer.
+
+1. A.________,
+
+Participants à la procéd…</description>
+      <pubDate>Tue, 09 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:4A_260.2026</guid>
+      <category>bger</category>
+    </item>
+    <item>
+      <title>Bundesgericht 4D_91/2026 vom 2026-06-09</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_4D_91_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+4D_91/2026
+
+Ordonnance du 9 juin 2026
+
+Ire Cour de droit civil
+
+Composition
+
+M. le Juge fédéral Hurni, Président.
+
+Greffier : M. Botteron.
+
+Participants à la procédure
+
+A.________…</description>
+      <pubDate>Tue, 09 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:4D_91.2026</guid>
+      <category>bger</category>
+    </item>
+    <item>
+      <title>Bundesgericht 5A_512/2026 vom 2026-06-09</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_512_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+5A_512/2026
+
+Arrêt du 9 juin 2026
+
+IIe Cour de droit civil
+
+Composition
+
+M. le Juge fédéral Bovey, Président.
+
+Greffière : Mme Mairot.
+
+Participants à la procédure
+
+A.________,
+
+r…</description>
+      <pubDate>Tue, 09 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_512.2026</guid>
+      <category>bger</category>
+    </item>
+    <item>
+      <title>Bundesgericht 8C_30/2026 vom 2026-06-09</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_8C_30_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+8C_30/2026
+
+Arrêt du 9 juin 2026
+
+IVe Cour de droit public
+
+Composition
+
+M. le Juge fédéral Métral, en qualité de juge unique.
+
+Greffière : Mme Barman Ionta.
+
+Participants à la pr…</description>
+      <pubDate>Tue, 09 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:8C_30.2026</guid>
+      <category>bger</category>
+    </item>
+    <item>
+      <title>Bundesgericht 8C_31/2026 vom 2026-06-09</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_8C_31_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+8C_31/2026
+
+Arrêt du 9 juin 2026
+
+IVe Cour de droit public
+
+Composition
+
+M. le Juge fédéral Métral, en qualité de juge unique.
+
+Greffière : Mme Barman Ionta.
+
+Participants à la pr…</description>
+      <pubDate>Tue, 09 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:8C_31.2026</guid>
+      <category>bger</category>
+    </item>
+    <item>
+      <title>Bundesgericht 8C_742/2025 vom 2026-06-09</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_8C_742_2025</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+8C_742/2025
+
+Arrêt du 9 juin 2026
+
+IVe Cour de droit public
+
+Composition
+
+M. le Juge fédéral Métral, en qualité de juge unique.
+
+Greffière : Mme Barman Ionta.
+
+Participants à la p…</description>
+      <pubDate>Tue, 09 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:8C_742.2025</guid>
+      <category>bger</category>
+    </item>
+    <item>
       <title>ecthr_chamber 56007/21 vom 2026-06-09</title>
       <link>https://mcp.opencaselaw.ch/entscheid/ecthr_chamber_56007_21</link>
       <description>Violation de l'article 9 - Liberté de pensée, de conscience et de religion (Article 9-1 - Liberté de religion);Préjudice moral - constat de violation suffisant (Article 41 - Préjudice moral;Satisfaction équitable); Violation: 9;9-1</description>
@@ -518,6 +858,34 @@ Vice-président…</description>
       <pubDate>Tue, 09 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">fr_gerichte_102 2026 96</guid>
       <category>fr_gerichte</category>
+    </item>
+    <item>
+      <title>Bundesgericht 5A_405/2026 vom 2026-06-08</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_405_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+5A_405/2026
+
+Arrêt du 8 juin 2026
+
+IIe Cour de droit civil
+
+Composition
+
+MM. et Mme les Juges fédéraux Bovey, Président,
+
+Hartmann et De Rossa.
+
+Greffière : Mme de Poret Bortolaso…</description>
+      <pubDate>Mon, 08 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_405.2026</guid>
+      <category>bger</category>
     </item>
     <item>
       <title>Bundesgericht 5A_453/2026 vom 2026-06-08</title>
@@ -615,259 +983,6 @@ P…</description>
       <pubDate>Mon, 08 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">fr_gerichte_101 2026 117</guid>
       <category>fr_gerichte</category>
-    </item>
-    <item>
-      <title>fr_gerichte 101 2026 95 vom 2026-06-08</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_101%202026%2095</link>
-      <description>Tribunal cantonal TC
-Kantonsgericht KG
-Rue des Augustins 3, case postale 630, 1701 Fribourg
-T +41 26 304 15 00
-www.fr.ch/tc
-—
-Pouvoir Judiciaire PJ
-Gerichtsbehörden GB
-101 2026 95
-Arrêt du 4 mai 2026
-Ie Cour d’appel civil
-Composition
-Président :
-Jérô…</description>
-      <pubDate>Mon, 08 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">fr_gerichte_101 2026 95</guid>
-      <category>fr_gerichte</category>
-    </item>
-    <item>
-      <title>fr_gerichte 602 2025 117 vom 2026-06-08</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_602%202025%20117</link>
-      <description>Tribunal cantonal TC
-Kantonsgericht KG
-Rue des Augustins 3, case postale 630, 1701 Fribourg
-T +41 26 304 15 00
-www.fr.ch/tc
-—
-Pouvoir Judiciaire PJ
-Gerichtsbehörden GB
-602 2025 117
-Arrêt du 29 avril 2026
-IIe Cour administrative
-Composition
-Présidente…</description>
-      <pubDate>Mon, 08 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">fr_gerichte_602 2025 117</guid>
-      <category>fr_gerichte</category>
-    </item>
-    <item>
-      <title>be_verwaltungsgericht 100 2024 353 vom 2026-06-05</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/be_verwaltungsgericht_100%202024%20353</link>
-      <description>100.2024.353
-MAU/EGC
-Tribunal administratif du canton de Berne
-Cour des affaires de langue française
-Jugement du 7 mai 2026
-Droit administratif
-C. Tissot, président
-G. Niederer et N. Stohner, juges
-A. Mariotti, greffière
-A.________
-représenté par Me …</description>
-      <pubDate>Fri, 05 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">be_verwaltungsgericht_100 2024 353</guid>
-      <category>be_verwaltungsgericht</category>
-    </item>
-    <item>
-      <title>Bundesgericht 5A_391/2026 vom 2026-06-05</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_391_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-5A_391/2026
-
-Arrêt du 5 juin 2026
-
-IIe Cour de droit civil
-
-Composition
-
-M. le Juge fédéral Bovey, Président.
-
-Greffière : Mme Mairot.
-
-Participants à la procédure
-
-A.________,
-
-r…</description>
-      <pubDate>Fri, 05 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_391.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht B-864/2024 vom 2026-06-05</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_B-864_2024</link>
-      <description>Assurance-chômage</description>
-      <pubDate>Fri, 05 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:B-864.2024</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht D-2640/2026 vom 2026-06-05</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-2640_2026</link>
-      <description>Asile et renvoi (procédure accélérée)</description>
-      <pubDate>Fri, 05 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-2640.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht F-3841/2026 vom 2026-06-05</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-3841_2026</link>
-      <description>Attribution d'un demandeur d'asile à un canton</description>
-      <pubDate>Fri, 05 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-3841.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>fr_gerichte 102 2026 78 vom 2026-06-05</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_102%202026%2078</link>
-      <description>Tribunal cantonal TC
-Kantonsgericht KG
-Rue des Augustins 3, case postale 630, 1701 Fribourg
-T +41 26 304 15 00
-www.fr.ch/tc
-—
-Pouvoir Judiciaire PJ
-Gerichtsbehörden GB
-102 2026 78
-Arrêt du 20 avril 2026
-IIe Cour d’appel civil
-Composition
-Présidente :…</description>
-      <pubDate>Fri, 05 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">fr_gerichte_102 2026 78</guid>
-      <category>fr_gerichte</category>
-    </item>
-    <item>
-      <title>fr_gerichte 502 2025 438 vom 2026-06-05</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_502%202025%20438</link>
-      <description>Tribunal cantonal TC
-Kantonsgericht KG
-Rue des Augustins 3, case postale 630, 1701 Fribourg
-T +41 26 304 15 00
-www.fr.ch/tc
-—
-Pouvoir Judiciaire PJ
-Gerichtsbehörden GB
-502 2025 438
-Arrêt du 23 avril 2026
-Chambre pénale
-Composition
-Président :
-Laurent…</description>
-      <pubDate>Fri, 05 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">fr_gerichte_502 2025 438</guid>
-      <category>fr_gerichte</category>
-    </item>
-    <item>
-      <title>ne_gerichte CDP.2025.122 vom 2026-06-05</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ne_gerichte_CDP.2025.122</link>
-      <description>A.A.________,
-né en 1964, sans formation, ayant exercé en dernier lieu lactivité de
-polisseur, a déposé une demande de prestations (mesures professionnelles/rente)
-auprès de lOffice de lassurance-invalidité du canton de Neuchâtel (ci-après :
-O…</description>
-      <pubDate>Fri, 05 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ne_gerichte_CDP.2025.122</guid>
-      <category>ne_gerichte</category>
-    </item>
-    <item>
-      <title>Bundesgericht 5A_384/2026 vom 2026-06-04</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_384_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-5A_384/2026
-
-Arrêt du 4 juin 2026
-
-IIe Cour de droit civil
-
-Composition
-
-MM. et Mme les Juges fédéraux Bovey, Président,
-
-De Rossa et Josi.
-
-Greffière : Mme de Poret Bortolaso.
-
-P…</description>
-      <pubDate>Thu, 04 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_384.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 5F_14/2026 vom 2026-06-04</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_5F_14_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-5F_14/2026
-
-Arrêt du 4 juin 2026
-
-IIe Cour de droit civil
-
-Composition
-
-MM. et Mme les Juges fédéraux Bovey, Président,
-
-Herrmann et De Rossa.
-
-Greffière : Mme de Poret Bortolaso.…</description>
-      <pubDate>Thu, 04 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:5F_14.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>ecthr_chamber 15994/20 vom 2026-06-04</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ecthr_chamber_15994_20</link>
-      <description>Partiellement irrecevable (Art. 35) Conditions de recevabilité;(Art. 35-1) Épuisement des voies de recours internes;(Art. 35-3-a) Manifestement mal fondé;Violation de l'article 3 - Interdiction de la torture (Article 3 - Traitement dégradant;Traitement inhumain) (Volet matériel);Violation de l'article 5 - Droit à la liberté et à la sûreté (Article 5-1 - Arrestation ou détention régulières);Violation de l'article 5 - Droit à la liberté et à la sûreté (Article 5-4 - Contrôle de la légalité de la détention);Préjudice moral - réparation (Article 41 - Préjudice moral;Satisfaction équitable); Violation: 3;5;5-1;5-4</description>
-      <pubDate>Thu, 04 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ecthr_chamber_15994_20</guid>
-      <category>ecthr_chamber</category>
-      <category>CEDH / Droits humains</category>
-    </item>
-    <item>
-      <title>ecthr_chamber 368/21 vom 2026-06-04</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ecthr_chamber_368_21</link>
-      <description>Partiellement irrecevable (Art. 35) Conditions de recevabilité;(Art 35-1) Délai de quatre mois (précédemment six mois);Violation de l'article 3 - Interdiction de la torture (Article 3 - Traitement dégradant;Traitement inhumain) (Volet matériel);Non-violation de l'article 5 - Droit à la liberté et à la sûreté (Article 5-1 - Arrestation ou détention régulières;Voies légales;Article 5-1-c - Nécessité raisonnable d'empêcher une infraction);Violation de l'article 5 - Droit à la liberté et à la sûreté (Article 5-1 - Arrestation ou détention régulières;Article 5-1-e - Aliéné);Violation de l'article 5 - Droit à la liberté et à la sûreté (Article 5-1 - Arrestation ou détention régulières);Non-violation de l'article 5 - Droit à la liberté et à la sûreté (Article 5-5 - Réparation);Violation de l'article 6 - Droit à un procès équitable (Article 6 - Procédure pénale;Article 6-1 - Accès à un tribunal);Violation de l'article 34 - Requêtes individuelles (Article 34 - Entraver l'exercice du droit de recours);Etat défendeur tenu de prendre des mesures générales (Article 46 - Problème structurel;Article 46-2 - Mesures générales);Préjudice moral - réparation (Article 41 - Préjudice moral;Satisfaction équitable); Violation: 3;5;5-1;5-1-e;6;6-1;34; No violation: 5;5-1;5-1-c;5-5</description>
-      <pubDate>Thu, 04 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ecthr_chamber_368_21</guid>
-      <category>ecthr_chamber</category>
-      <category>CEDH / Droits humains</category>
-    </item>
-    <item>
-      <title>hudoc_ch 50885/16 vom 2026-06-04</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/hudoc_ch_50885_16</link>
-      <description>No violation of Article 14+4 - Prohibition of discrimination (Article 14 - Discrimination) (Article 4-2 - Compulsory labour;Article 4 - Prohibition of slavery and forced labour;Article 4-3-b - Service of military character); No violation: 14;14+4;4;4-2;4-3-b</description>
-      <pubDate>Thu, 04 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">hudoc_ch_50885_16</guid>
-      <category>hudoc_ch</category>
-      <category>EMRK / Menschenrechte</category>
     </item>
   </channel>
 </rss>
