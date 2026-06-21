@@ -1,0 +1,484 @@
+{
+  "_doc": "Swiss decision sources entscheidsuche MISSES — web-verified, from the 2026-06-21 beyond-es research (26 cantons + federal + cross-cutting). es is a federal+supreme-court backbone, not a complete index. These publish online but are NOT aggregated by es. Ingestion = gated /feature backlog, ranked by priority (1=high). Companion to the es-universe catalogue data/swiss_court_sources.json.",
+  "generated_at": "2026-06-21T20:39:15.554471+00:00",
+  "summary": "entscheidsuche (es) is a federal-court + cantonal-supreme-court BACKBONE, not a complete index of published Swiss decisions. Across 26 cantons + federal + cross-cutting review, es is essentially complete for the appellate/supreme tier in most small cantons (NW, GL, AI, SH, OW, UR, LU, GR appellate, VS courts, AR courts) because those cantons consolidate admin/tax/social-insurance jurisdiction inside one Obergericht/Kantonsgericht that es already mirrors. The beyond-es frontier is real but concentrated in three places: (a) DIRECTORATE / EXECUTIVE administrative-appeal jurisprudence that never reaches the courts (Bern's Direktionen, ZH Rekursentscheide+RRB, SO/BS Regierungsrat databases, NE jurisprudenceadm.ne.ch, the GVP/EGV-SZ yearbooks for SG/SZ/ZG); (b) SPECIALIZED COMMISSIONS with their own portals (BS Steuerrekurskommission + BStP tax portal + Personalrekurskommission + Anwaltsaufsichtskommission, GE Commission du barreau 'dcba', FR Commission du barreau + ASRF/CRRF, several cantonal data-protection/transparency authorities, and a cluster of federal regulators — ESBK, RAB/ASR, ESchK-Schiedskommission, Preisüberwacher); (c) FEDERAL post-2016 authority output (CH_VB only covers the static VPB archive 1982-2016, so any admin.ch portal after 2016 is a gap). Quantitatively the depth problem is large where es is shallow (repo direct vs es: GE 166,845 vs 88,603; VD 155,349 vs 81,689; BS ~10,100 vs 128; BL 16,947 vs 772), but most of that depth is recovered by ingesting each cantonal judiciary's OWN portal directly rather than by adding new bodies. After dropping every source not verified to publish online (all Schlichtungsbehörden, ZH/UR/OW/NW/VS/SH/GR non-publishing commissions, VS Conseil d'État, ZH Anwaltsaufsicht), the de-duplicated ingestion catalogue is ~28 discrete sources. The biggest single high-feasibility wins are: the federal regulators (ESBK, RAB/ASR, ESchK-Schiedskommission, Preisüberwacher — clean PDF archives), Bern's directorate decision archives (GSI, KAIO-procurement, BKD), the BS commission cluster (Steuerrekurskommission, BStP, Personalrekurs, Anwaltsaufsicht, Regierungsratsbeschlüsse app), the SO and ZH Regierungsrat/Rekurs databases, NE's jurisprudenceadm.ne.ch, and the GE Commission du barreau 'dcba' collection. The genuinely un-recoverable layer is first-instance conciliation output (Schlichtungsbehörden), which essentially no body publishes online anywhere.",
+  "systemic_gaps": [
+    "DEPTH within courts es already lists: es aggregates one shallow spider per canton and captures only what each court's portal exposes through it. Cantonal judiciaries' OWN portals are materially deeper for the SAME courts — repo direct-scrape vs es proves it: GE 166,845 vs 88,603 (~53% coverage), VD 155,349 vs 81,689, BS ~10,106 vs 128, BL 16,947 vs 772. Recovering this needs direct ingestion of each cantonal judiciary portal, not new bodies.",
+    "WHOLE CHAMBERS / SUB-COURTS folded into one coarse spider: ZH (Handelsgericht, Bezirksgerichte, Arbeitsgericht, Mietgericht, ZMG all behind the single ZH_Obergericht spider), plus district/commercial/social-insurance/tax sub-courts in ZH/BS/SG/AG that es treats as one-or-zero spiders.",
+    "EXECUTIVE / DIRECTORATE administrative-appeal jurisprudence that never reaches the courts: Regierungsrat + Direktionen/départements recourse decisions are a whole track es ignores. Confirmed online for ZH (Rekursentscheide), BE (GSI/KAIO/BKD/DIJ directorates), SO (rrb.so.ch), BS (Regierungsratsbeschlüsse app), NE (jurisprudenceadm.ne.ch), and via yearbook digests for SG (GVP), SZ (EGV-SZ), ZG (GVP/LexWork).",
+    "SPECIALIZED COMMISSIONS with independent portals that es does not aggregate: lawyer-supervision (GE 'dcba', FR/BS Anwaltsaufsicht), tax commissions (BS Steuerrekurskommission + BStP), personnel-appeals (BS Personalrekurskommission), land-registry (FR ASRF/CRRF, BE Grundbuch/Notariat), and cantonal/inter-cantonal data-protection & transparency authorities (TI CCPDT, GE PPDT, FR ATPrDM, JU/NE CPDT-JUNE).",
+    "FEDERAL post-2016 authority output: CH_VB only crawls the static VPB archive (1982-2016), so any federal authority publishing on its own admin.ch portal after 2016 is a gap — ESBK, RAB/ASR, ESchK-Schiedskommission (copyright tariffs), Preisüberwacher all confirmed online and absent.",
+    "DECISION TYPES es never reaches: (a) first-instance conciliation output (Schlichtungsbehörden — rent/labour/equality) is the genuinely un-recoverable layer, essentially never published by any body online; the only partial surfacing is the topical BWO Mietrecht-DB and the national equality-law.ch aggregator. (b) Curated/paywalled collections that are the ONLY online channel for some courts — most acutely the Basel-Stadt Appellationsgericht, which does not self-publish and sends only a selection to Swisslex/BJM; plus ZBl and Der Steuerentscheid for cantonal admin/tax jurisprudence. These require a licensing path, not scraping.",
+    "es is best treated as a federal-court + cantonal-supreme-court BACKBONE, not a complete index. Several small cantons (NW, GL, AI, SH, OW, UR, LU, GR appellate) ARE essentially complete in es because they consolidate admin/tax/social-insurance jurisdiction into one Obergericht/Kantonsgericht — adding bodies there is wasted effort; the frontier is concentrated in the larger/multi-body cantons and at the federal regulator + executive-recourse layers."
+  ],
+  "top_recommendations": [
+    "Federal regulators (clean, high-feasibility PDF archives, all post-2016 gaps CH_VB misses): ESBK (esbk.admin.ch/de/rechtsprechung), RAB/ASR (rab-asr.ch/de/verfuegungen-der-rab), ESchK-Schiedskommission copyright tariffs (eschk.admin.ch/de/beschluesse), Preisüberwacher (preisueberwacher.admin.ch). One-index-page-plus-PDF-links scrapes each; do these first.",
+    "Executive / administrative-recourse databases — the single largest net-new content type: NE jurisprudenceadm.ne.ch (several thousand decisions, FindinfoWeb full-text), ZH Rekursentscheide (whole admin-recourse track, structured DB), SO rrb.so.ch (53k+ docs Solr-backed, filter substantive Rekurs). Each unlocks an entire jurisdiction es ignores.",
+    "Bern directorate decision archives (easy per-year PDF tables, GSI ~35-40/yr): GSI, then KAIO public-procurement, then BKD. Confirmed live, trivially scrapeable; BE_BVD is the only directorate currently in es, so these are clean additions (dedupe KAIO vs BE_BVD for BVD-issued procurement).",
+    "ZH gerichte-zh.ch non-Obergericht spruchkörper (Handelsgericht, Bezirksgerichte, Arbeitsgericht, Mietgericht, ZMG): ONE crawl target already hosting Obergericht unlocks 5+ court types es omits, with Bezirksgerichte volume growing from 2025. Highest court-layer depth win per unit of effort (repo already proves ~34k ZH sub-court decisions recoverable).",
+    "Basel-Stadt commission cluster (own portals, all free): Steuerrekurskommission (hundreds of STRK PDFs), BStP tax portal (~509 since 1996), Personalrekurskommission, Anwaltsaufsichtskommission, and the Regierungsratsbeschlüsse app (~15k). BS is a known es desert (~128 vs ~10,100 direct), so these materially extend coverage.",
+    "TI CCPDT (data-protection/transparency, 100+ decisions, predictable PDF URLs) and GE Commission du barreau 'dcba' (structured-DB, distinct collection on the same apps/decis engine es only partially crawls) — two clean, high-confidence, easy commission gaps.",
+    "BWO Mietrecht-Datenbank (federal topical rental-law DB) + a single national ingest of equality-law.ch with per-canton dedupe — these two together capture the conciliation-adjacent decision types es structurally never reaches, far more efficiently than chasing per-canton Schlichtungsbehörden (which publish nothing).",
+    "Defer (and treat as licensing, not scraping): ZBl-online, Der Steuerentscheid/legalis, and Swisslex/Weblaw — including the Basel-Stadt Appellationsgericht selection that exists ONLY on Swisslex/BJM. Pursue via acquisition once the free, scrapeable frontier above is ingested."
+  ],
+  "sources": [
+    {
+      "level": "cantonal",
+      "canton": "BE",
+      "body": "Beschaffungswesen / öffentliche Vergaben (KAIO) — Beschwerdeentscheide",
+      "type": "Cross-directorate public-procurement appeal decisions",
+      "portal_url": "https://www.kaio.fin.be.ch/de/start/themen/oeffentliches-beschaffungswesen/rechtliches/beschwerdeentscheide.html",
+      "est_volume": "~80 PDFs, 2015-2025",
+      "feasibility": "PDF-archive: per-year table, tagged by issuing directorate. Easy scrape. Partial overlap with BE_BVD for BVD-issued procurement — dedupe.",
+      "priority": 1
+    },
+    {
+      "level": "cantonal",
+      "canton": "BE",
+      "body": "Gesundheits-, Sozial- und Integrationsdirektion (GSI) — Beschwerdeentscheide",
+      "type": "Directorate administrative-appeal decisions (social assistance, health, integration)",
+      "portal_url": "https://www.gsi.be.ch/de/start/ueber-uns/generalsekretariat/rechtsabteilung/rechtsprechung.html",
+      "est_volume": "~200+ anonymized PDFs, ~35-40/yr, 2013-2026",
+      "feasibility": "PDF-archive: per-year HTML table, each row a downloadable anonymized PDF. Easy structured scrape.",
+      "priority": 1
+    },
+    {
+      "level": "cantonal",
+      "canton": "BS",
+      "body": "Steuerrekurskommission Basel-Stadt",
+      "type": "Specialized tribunal (tax appeals)",
+      "portal_url": "https://www.steuerrekurskommission.bs.ch/entscheide.html",
+      "est_volume": "Hundreds of anonymized PDFs (STRK.YYYY.nn), own collection since ~2023 with 2016+ reachable",
+      "feasibility": "PDF-archive: free, anonymized, individually downloadable dam/jcr PDFs. Straightforward enumerate.",
+      "priority": 1
+    },
+    {
+      "level": "cantonal",
+      "canton": "GE",
+      "body": "Commission du barreau — collection 'dcba'",
+      "type": "Professional supervision (Anwaltsaufsicht) — first-instance admission/disciplinary",
+      "portal_url": "https://justice.ge.ch/apps/decis/fr/dcba/search",
+      "est_volume": "Tens/yr, likely a few hundred docs total, 2019-2026 (LEV/SEC/DISCIP)",
+      "feasibility": "Structured-DB on the same apps/decis engine as ata/acjc but a distinct collection es does NOT aggregate (es GE = GE_CJ_* + GE_TAPI_* only). Primary GE court-system gap.",
+      "priority": 1
+    },
+    {
+      "level": "cantonal",
+      "canton": "NE",
+      "body": "Jurisprudence administrative de l'État de Neuchâtel (Conseil d'État + départements, contentieux)",
+      "type": "Administrative appeals (executive + departmental contentious decisions)",
+      "portal_url": "http://jurisprudenceadm.ne.ch/",
+      "est_volume": "Several thousand decisions (construction/aménagement, personnel, expropriation), steady annual flow",
+      "feasibility": "Structured-DB: FindinfoWeb/Omnis backend, full-text HTML, no login. Highest-value beyond-es target for NE; whole executive track absent from NE_Omni.",
+      "priority": 1
+    },
+    {
+      "level": "cantonal",
+      "canton": "SO",
+      "body": "Regierungsrat Solothurn — RRB-Datenbank",
+      "type": "Administrative appeals / government-council decisions (Verwaltungsrekurs + routine resolutions)",
+      "portal_url": "https://rrb.so.ch/",
+      "est_volume": "53,500+ documents; substantive Verwaltungsrekurs/appeal decisions are a subset, remainder routine",
+      "feasibility": "Structured-DB: Solr-backed, stable PDF URLs, published 17 days post-session. Main work = filtering substantive appeal decisions from routine resolutions.",
+      "priority": 1
+    },
+    {
+      "level": "cantonal",
+      "canton": "TI",
+      "body": "Commissione cantonale per la protezione dei dati e la trasparenza (CCPDT)",
+      "type": "Data-protection & transparency appeals commission (LIT/LPDP)",
+      "portal_url": "https://www4.ti.ch/can/sgcds/trasparenza/giurisprudenza",
+      "est_volume": "100+ decisions, 2013-2026 (one of the canton's most comprehensive published sets)",
+      "feasibility": "PDF-archive: predictable PDF URLs (CCPDT_LIT.<year>.<num>_<date>.pdf), no login. Clean high-confidence gap.",
+      "priority": 1
+    },
+    {
+      "level": "cantonal",
+      "canton": "ZH",
+      "body": "Handelsgericht / Bezirksgerichte / Arbeitsgericht / Mietgericht / Zwangsmassnahmengericht Zürich (gerichte-zh.ch, non-Obergericht spruchkörper)",
+      "type": "Specialized + first-instance civil/criminal courts on the gerichte-zh.ch decision DB (es ingests only ZH_Obergericht)",
+      "portal_url": "https://www.gerichte-zh.ch/entscheide/entscheide-suchen.html",
+      "est_volume": "Handelsgericht hundreds since 1.7.2011; Bezirksgerichte regular publication from 2025 (growing); Arbeitsgericht curated AGer-Z + portal from 2024; Mietgericht/ZMG modest",
+      "feasibility": "PDF-archive + metadata index on the SAME crawl target as Obergericht, filterable by spruchkörper. One crawl unlocks 5+ court types es misses (repo already scrapes ~34k ZH sub-court decisions).",
+      "priority": 1
+    },
+    {
+      "level": "cantonal",
+      "canton": "ZH",
+      "body": "ZHEntscheide — Rekursentscheide (Regierungsrat + Direktionen + Bezirksräte/Statthalterämter)",
+      "type": "Administrative recourse track (Regierungsrat + executive directorate recourse decisions)",
+      "portal_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/rekursentscheide.html",
+      "est_volume": "Selected leading Rechtsmittelentscheide since 1.7.2001; the entire ZH admin-recourse track absent from es",
+      "feasibility": "Structured-DB: searchable by body/date/legal field, anonymized full text. Clean ingest, whole track is net-new.",
+      "priority": 1
+    },
+    {
+      "level": "cross-cutting",
+      "canton": "national",
+      "body": "BWO Mietrecht-Datenbank (Bundesamt für Wohnungswesen)",
+      "type": "Federal-curated topical DB of cantonal rental-law decisions (incl. lower-instance/conciliation-relevant)",
+      "portal_url": "https://www.bwo.admin.ch/de/datenbank-gerichtsentscheide",
+      "est_volume": "Several hundred to low thousands (curated), decisions from 2002 onward",
+      "feasibility": "Structured-DB, searchable, free, mono-lingual per decision. Topical collection es does not aggregate. Captures rental-law output otherwise unpublished.",
+      "priority": 1
+    },
+    {
+      "level": "federal",
+      "canton": "CH",
+      "body": "Eidg. Schiedskommission für die Verwertung von Urheberrechten (ESchK-Schiedskommission) — Beschlüsse",
+      "type": "Federal first-instance commission approving collecting-society tariffs (URG), appealable to BVGer",
+      "portal_url": "https://www.eschk.admin.ch/de/beschluesse",
+      "est_volume": "Year-indexed Beschlüsse 1991-2025, ~1-15/yr, low-hundreds total",
+      "feasibility": "PDF-archive: year subpages linking PDF Beschlüsse, well-structured. NOTE: distinct from the Schätzungskommissionen (expropriation, no portal — do not confuse).",
+      "priority": 1,
+      "status": "INGESTED 2026-06-21",
+      "our_scraper": "eschk"
+    },
+    {
+      "level": "federal",
+      "canton": "CH",
+      "body": "Eidgenössische Revisionsaufsichtsbehörde (RAB/ASR) — Verfügungen",
+      "type": "Federal regulator (audit oversight, RAG) — enforcement Verfügungen",
+      "portal_url": "https://www.rab-asr.ch/de/verfuegungen-der-rab",
+      "est_volume": "~5 named Leading Cases (2017-2020) + paginated enforcement archive 'ab 2023' (hundreds of anonymized matters through Dec 2025), ongoing",
+      "feasibility": "PDF-archive: multilingual PDFs, ~20-page paginated table, scrapeable, no paywall.",
+      "priority": 1,
+      "status": "INGESTED 2026-06-21",
+      "our_scraper": "rab"
+    },
+    {
+      "level": "federal",
+      "canton": "CH",
+      "body": "Eidgenössische Spielbankenkommission (ESBK) — Rechtsprechung",
+      "type": "Federal regulatory/prosecution commission (gambling, Geldspielgesetz)",
+      "portal_url": "https://www.esbk.admin.ch/de/rechtsprechung",
+      "est_volume": "~50-80+ published decisions 2004-2025 (Strafverfügungen, Aufsicht/Abgaben, Zugangssperren, Leitentscheide); curated subset of 130+ Strafverfügungen/yr",
+      "feasibility": "PDF-archive: single Rechtsprechung index page + PDF links by category, no login. Easy scrape.",
+      "priority": 1,
+      "status": "INGESTED 2026-06-21",
+      "our_scraper": "esbk"
+    },
+    {
+      "level": "cantonal",
+      "canton": "BE",
+      "body": "Bildungs- und Kulturdirektion (BKD) — ausgewählte Beschwerdeentscheide",
+      "type": "Directorate administrative-appeal decisions (education, stipends, special ed, culture)",
+      "portal_url": "https://www.bkd.be.ch/de/start/ueber-uns/die-organisation/bkd-generalsekretariat/rechtsdienst-bkd/ausgewaehlte-beschwerdeentscheide.html",
+      "est_volume": "~80 selected PDFs, 2013-2025 (selection only, not exhaustive)",
+      "feasibility": "PDF-archive: table of PDFs. Easy scrape.",
+      "priority": 2
+    },
+    {
+      "level": "cantonal",
+      "canton": "BE",
+      "body": "DIJ — Grundbuch-Beschwerdeentscheide",
+      "type": "Land-register (Grundbuch) complaint decisions",
+      "portal_url": "https://www.gba.dij.be.ch/de/start/grundbuch/rechtliches/beschwerdeentscheide.html",
+      "est_volume": "Modest (unknown count)",
+      "feasibility": "PDF-archive / search-with-digest: on-page search covers only the Regeste, may need per-entry PDF fetch.",
+      "priority": 2
+    },
+    {
+      "level": "cantonal",
+      "canton": "BL",
+      "body": "Steuerverwaltung BL — Steuerrechtsprechung (Verwaltungsentscheide / Einspracheentscheide + tax-practice archive)",
+      "type": "Administrative (non-court) tax decisions + curated tax-practice DB",
+      "portal_url": "https://www.baselland.ch/politik-und-behorden/direktionen/finanz-und-kirchendirektion/steuerverwaltung/steuerrechtsprechung",
+      "est_volume": "Low-medium curated selection across decades + a subject-organized 'Verwaltungsentscheide' list",
+      "feasibility": "PDF/HTML index pages. baselland.ch returns HTTP 403 to generic fetchers — needs a scraper with realistic browser headers. Administrative tax decisions are outside the court portal (genuine gap).",
+      "priority": 2
+    },
+    {
+      "level": "cantonal",
+      "canton": "BS",
+      "body": "Anwaltsaufsichtskommission Basel-Stadt",
+      "type": "Supervisory commission (lawyer discipline)",
+      "portal_url": "https://www.anwaltsaufsichtskommission.bs.ch/",
+      "est_volume": "Selected decisions of general significance from 2014; electronic collection since 1.12.2019; low (handful/yr)",
+      "feasibility": "Structured-DB (FindInfoWeb-style, same engine as courts). CAVEAT: some AK decisions may already surface via the shared FindInfoWeb engine — confirm es does not already mirror before prioritizing.",
+      "priority": 2
+    },
+    {
+      "level": "cantonal",
+      "canton": "BS",
+      "body": "Personalrekurskommission Basel-Stadt",
+      "type": "Specialized tribunal (public-employment appeals)",
+      "portal_url": "https://www.fd.bs.ch/ueber-das-departement/dienststellen-institutionen/entscheide-beschluesse/personalrekurskommission.html",
+      "est_volume": "Tens of published anonymized PDFs (PRK), series back to ~2001",
+      "feasibility": "PDF-archive on media.bs.ch, scrapeable from fd.bs.ch listing. Free.",
+      "priority": 2
+    },
+    {
+      "level": "cantonal",
+      "canton": "BS",
+      "body": "Regierungsrat Basel-Stadt — Regierungsratsbeschlüsse (app)",
+      "type": "Executive/administrative decisions (Regierungsrat)",
+      "portal_url": "https://www.bs.ch/apps/regierungsratsbeschluesse",
+      "est_volume": "~15,459 resolutions, searchable by meeting date with stable reference IDs",
+      "feasibility": "Structured-DB with per-decision detail pages. High volume but executive/administrative (not court rulings); some are summaries. Free.",
+      "priority": 2
+    },
+    {
+      "level": "cantonal",
+      "canton": "BS",
+      "body": "Steuerrechtsprechung Basel-Stadt / Basler Steuerpraxis (BStP)",
+      "type": "Curated cantonal tax case-law portal (BGer + VG + Steuerrekurskommission)",
+      "portal_url": "https://www.bs.ch/steuerrechtsprechung",
+      "est_volume": "~509 indexed decisions from 1996, digital-only since 2017",
+      "feasibility": "PDF-archive with instance/year/keyword filters. Partial overlap with Steuerrekurskommission + VG — distinct curated portal, dedupe.",
+      "priority": 2
+    },
+    {
+      "level": "cantonal",
+      "canton": "FR",
+      "body": "Autorité de surveillance du Registre foncier (ASRF) / CRRF",
+      "type": "Land-registry supervisory + appeal authority",
+      "portal_url": "https://www.fr.ch/dfin/rf/publication-des-decisions-de-la-commission-de-recours-en-matiere-de-registre-foncier-crrf",
+      "est_volume": "A few to ~10/yr; full anonymized decisions since 2022",
+      "feasibility": "PDF-archive: anonymized full decisions by date. Small, scrapeable. (Re-check from a Swiss IP — fr.ch blocked the fetcher.)",
+      "priority": 2
+    },
+    {
+      "level": "cantonal",
+      "canton": "GE",
+      "body": "Préposé cantonal à la protection des données et à la transparence (PPDT) — recommandations LIPAD",
+      "type": "Data-protection / freedom-of-information authority (quasi-judicial)",
+      "portal_url": "https://www.ge.ch/document/ppdt-transparence-recommandations",
+      "est_volume": "~150+ recommendations 2010-2026, ~14-47/yr recently",
+      "feasibility": "PDF-archive: chronological table of downloadable PDFs on ge.ch admin domain. Clearly not in es.",
+      "priority": 2
+    },
+    {
+      "level": "cantonal",
+      "canton": "SZ",
+      "body": "EGV-SZ — Regierungsrat administrative-appeal + selected commission decisions",
+      "type": "Government / administrative-appeals leitentscheid yearbook",
+      "portal_url": "https://www.sz.ch/behoerden/amtsblatt-gesetze-entscheide/entscheide/entscheidsammlungen.html/72-416-413-680-674",
+      "est_volume": "Selected leitentscheide only; tens of RR decisions/yearbook. Official PDFs 2012-2024 + older HTML (schoenbaechler.ch) from 1990s",
+      "feasibility": "PDF-archive (annual yearbooks, multi-decision per file — needs splitting) + HTML archive. RR track is the value-add es lacks.",
+      "priority": 2
+    },
+    {
+      "level": "cantonal",
+      "canton": "SZ",
+      "body": "Steuerverwaltung SZ — StPS-Leitentscheide (Steuerkommission)",
+      "type": "Tax commission leading decisions (Steuerkommission + VG + BGer tax)",
+      "portal_url": "https://www.sz.ch/verwaltung/finanzdepartement/steuerverwaltung/rechtliche-grundlagen/entscheide.html/8756-8758-8802-10332-10354-10358-10371",
+      "est_volume": "~50 leitentscheide 2016-2024 + bundled 1983-2015 archive PDF (curated, not full caseload)",
+      "feasibility": "PDF-archive: list of individual PDFs + one archive PDF. Easy. Curated selection only.",
+      "priority": 2
+    },
+    {
+      "level": "cantonal",
+      "canton": "VD",
+      "body": "Tribunal neutre du canton de Vaud",
+      "type": "Specialized recusal tribunal (constitutionally independent, outside Ordre judiciaire)",
+      "portal_url": "https://www.vd.ch/tn",
+      "est_volume": "~40-54 anonymized PDFs total, 2005-2025",
+      "feasibility": "PDF-archive: small static list of anonymized full-text PDFs on one page. Trivial scrape, very low volume. Not in jurisprudence.vd.ch/FindInfo.",
+      "priority": 2
+    },
+    {
+      "level": "cantonal",
+      "canton": "ZG",
+      "body": "Gerichts- und Verwaltungspraxis (GVP) — Regierungsrat + administrative authorities (LexWork)",
+      "type": "Government / administrative-appeals leading-case digest",
+      "portal_url": "https://bgs.zg.ch/app/de/decrees/fulltext_search",
+      "est_volume": "Selective: dozens-to-~100 RR/administrative entries/yr; full text 1995/96-present",
+      "feasibility": "Structured-DB (LexWork). CAVEAT: es already mirrors much as 'zg_neu' Verwaltungspraxis/Rechtspflege — genuine gap = native DB as cleaner/more-complete RR source; verify delta before full ingest.",
+      "priority": 2
+    },
+    {
+      "level": "cross-cutting",
+      "canton": "national",
+      "body": "equality-law.ch (formerly gleichstellungsgesetz.ch) — national Gleichstellungsgesetz (GlG/LEg) database",
+      "type": "Thematic aggregator of conciliation + first-instance + appeal equality decisions, canton-filterable",
+      "portal_url": "https://www.equality-law.ch/de/",
+      "est_volume": "~1,406 GlG cases nationwide (Schlichtung, admin first instance, second instance, federal); full texts/summaries",
+      "feasibility": "Structured-DB with canton filter. Unique value = Schlichtungsstelle/conciliation equality cases that never reach (and are never published by) the courts. Per-canton slices (UR, SO, BL, AG, NW, AI, GE) all roll up here — ingest ONCE nationally, dedupe vs es court layer.",
+      "priority": 2
+    },
+    {
+      "level": "federal",
+      "canton": "CH",
+      "body": "Preisüberwacher / Surveillant des prix — formelle Entscheide + Empfehlungen",
+      "type": "Federal authority (PüG) — appealable Verfügungen + recommendations",
+      "portal_url": "https://www.preisueberwacher.admin.ch/pue/de/home/dokumentation/publikationen/formelle-entscheide.html",
+      "est_volume": "~15 formal decisions 1998-2025 (incl. Booking.com 5/2025) + selected Art.14/15 recommendations; low volume",
+      "feasibility": "PDF-archive: paginated PDF lists. Mixed (own Verfügungen + court rulings on appeal) — dedupe vs BVGer/BGer needed.",
+      "priority": 2,
+      "status": "INGESTED 2026-06-21",
+      "our_scraper": "preisueberwacher"
+    },
+    {
+      "level": "cantonal",
+      "canton": "AR",
+      "body": "AR GVP — Verwaltung half (Regierungsrat + Departemente) on rechtsprechung.ar.ch + historical PDF volumes 1-28",
+      "type": "Administrative-practice leading decisions + historical leading-case digests",
+      "portal_url": "https://rechtsprechung.ar.ch",
+      "est_volume": "Online: tens of administrative excerpts/yr from Band 29/2017; historical: ~28 PDF volumes through 2016 (regeste/excerpt digests)",
+      "feasibility": "Structured-DB (LEv4 JS app) for the Verwaltung-tagged entries + PDF-archive (ar.ch fileadmin) for vols 1-28. CAVEAT: es AR_Gerichte indexes the COURT decisions; field-verify whether es already pulls the administrative entries before treating as full gap.",
+      "priority": 3
+    },
+    {
+      "level": "cantonal",
+      "canton": "BE",
+      "body": "DIJ — Notariatsaufsicht Entscheide",
+      "type": "Notary-supervision (Notariatsaufsicht) decisions",
+      "portal_url": "https://www.gba.dij.be.ch/de/start/notariat/notariatsaufsicht/entscheide.html",
+      "est_volume": "Small (unknown count)",
+      "feasibility": "PDF-archive: rechtskräftige Notariatsaufsicht decisions + related VG/BGer. Niche.",
+      "priority": 3
+    },
+    {
+      "level": "cantonal",
+      "canton": "BL",
+      "body": "Steuergericht BL — legacy per-year HTML decision archive",
+      "type": "Court (Steuergericht) standalone web archive predating bl.swisslex.ch",
+      "portal_url": "https://www.baselland.ch/politik-und-behorden/gerichte/rechtsprechung/steuergericht/",
+      "est_volume": "Medium; per-year pages ~2007-2023",
+      "feasibility": "PDF/HTML, 403 to generic fetchers. Recent years overlap BL_Gerichte (dedupe) but pre-portal years are additive — below the swisslex portal's ~8000 floor.",
+      "priority": 3
+    },
+    {
+      "level": "cantonal",
+      "canton": "FR",
+      "body": "ATPrDM / CTPDM + Préposée — recommandations transparence + décisions protection des données",
+      "type": "Data-protection / transparency / mediation authority",
+      "portal_url": "https://www.fr.ch/atprdm/recommandations-de-la-preposee-en-matiere-de-transparence",
+      "est_volume": "Low (<10-20/yr)",
+      "feasibility": "Web/PDF. Net-new = Préposée recommendations + CTPDM own decisions; the 'Jurisprudence-Transparence' page mostly republishes TC arrêts (already in es) — exclude those.",
+      "priority": 3
+    },
+    {
+      "level": "cantonal",
+      "canton": "FR",
+      "body": "Commission du barreau Fribourg — Jurisprudence",
+      "type": "Anwaltsaufsicht / lawyer disciplinary commission",
+      "portal_url": "https://www.fr.ch/etat-et-droit/justice/commission-du-barreau",
+      "est_volume": "Low (~10-20 anonymized summaries/yr, publication started 2023)",
+      "feasibility": "PDF/web summaries (not full decisions). Small. (fr.ch blocked fetcher — re-verify from Swiss IP.)",
+      "priority": 3
+    },
+    {
+      "level": "cantonal",
+      "canton": "GE",
+      "body": "Conseil d'État Genève — arrêtés statuant sur recours (droits politiques)",
+      "type": "Executive administrative appeal authority (sporadic recours arrêtés)",
+      "portal_url": "https://www.ge.ch/document/arrete-du-conseil-etat-statuant-recours-matiere-droits-politiques-federaux-du-14-aout-2024",
+      "est_volume": "Very low / sporadic (a handful/yr, mostly political-rights)",
+      "feasibility": "Scattered ge.ch /document pages, no structured search DB. Low-yield, high-effort. Confirm scope before investing.",
+      "priority": 3
+    },
+    {
+      "level": "cantonal",
+      "canton": "GR",
+      "body": "Regionalgerichte Graubünden (11 first-instance regional courts)",
+      "type": "First-instance regional courts (civil/criminal), selected public-interest decisions",
+      "portal_url": "https://www.justiz-gr.ch/gerichte/regionalgerichte/plessur/informationenformulare/publikation-von-entscheiden/",
+      "est_volume": "Very low — ~1-2/court/yr; a few dozen total across all 11 courts, growing slowly",
+      "feasibility": "PDF-archive: per-court HTML pages with anonymized PDFs by year. Trivial per page but requires enumerating 11 separate subpages; low yield.",
+      "priority": 3
+    },
+    {
+      "level": "cantonal",
+      "canton": "SG",
+      "body": "St.Gallische Gerichts- und Verwaltungspraxis (GVP) — Regierung + Kantonsrat decisions",
+      "type": "Historical government/parliament-level appellate decisions (the only channel for Rekurs an die Regierung)",
+      "portal_url": "https://publikationen.sg.ch/rechtsprechung-gerichte/gvp-archiv/",
+      "est_volume": "~13 annual volumes 2004-2016 (+ Retrodigital for older); dozens of leading decisions/volume across branches",
+      "feasibility": "PDF-archive (annual yearbooks; per-decision splitting needed). GVP discontinued post-2016 (leading cases now flagged inside SG_Gerichte/SG_Publikationen) — value is the historical RR/Kantonsrat corpus.",
+      "priority": 3
+    },
+    {
+      "level": "cantonal",
+      "canton": "SZ",
+      "body": "Bezirksgericht Schwyz — own decisions",
+      "type": "First-instance court (Bezirksgericht), curated selection",
+      "portal_url": "https://bezirk-schwyz.ch/bezirksgericht/rechtsprechung/",
+      "est_volume": "Very small — ~4 anonymized PDFs (2019-2022)",
+      "feasibility": "PDF-archive: short list on one page. Trivial but negligible volume; other SZ Bezirksgerichte do not publish.",
+      "priority": 3
+    },
+    {
+      "level": "cantonal",
+      "canton": "VD",
+      "body": "Conseil d'État Vaud — décisions du Conseil d'État (summaries)",
+      "type": "Executive/government decisions (incl. some recours hiérarchiques)",
+      "portal_url": "https://www.vd.ch/decisions-ce",
+      "est_volume": "1000+ session entries (summaries only) since Aug 2000",
+      "feasibility": "Structured-DB, summaries only (no full-text PDFs) — limited substantive value, governmental not judicial.",
+      "priority": 3
+    },
+    {
+      "level": "cantonal",
+      "canton": "ZH",
+      "body": "Regierungsrat Zürich — released Regierungsratsbeschlüsse (RRB)",
+      "type": "Regierungsrat resolutions (government, partial adjudicative relevance)",
+      "portal_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/beschluesse-des-regierungsrates.html",
+      "est_volume": "All released RRB since 1.10.2008 (excl. personnel/appeals/privacy), large volume",
+      "feasibility": "Structured-DB, searchable. Mostly governance resolutions, not classic caselaw — partial relevance.",
+      "priority": 3
+    },
+    {
+      "level": "cross-cutting",
+      "canton": "national",
+      "body": "Der Steuerentscheid (StE) — legalis / steuerentscheid.ch",
+      "type": "Curated collection of selected federal + cantonal tax decisions",
+      "portal_url": "https://www.legalis.ch/de/steuerentscheid/",
+      "est_volume": "Selection, large historical run (30+ yrs)",
+      "feasibility": "PAYWALLED (legalis subscription). Some cantonal tax rulings appear here but not on es. Acquisition = LICENSING.",
+      "priority": 3
+    },
+    {
+      "level": "cross-cutting",
+      "canton": "national",
+      "body": "Swisslex / Weblaw — exclusive cantonal collections (notably Basel-Stadt Appellationsgericht / BJM)",
+      "type": "Paywalled aggregators; some courts publish ONLY here (BS Appellationsgericht does not self-publish online, sends a selection to Swisslex)",
+      "portal_url": "https://www.swisslex.ch/en/biblio/jurisprudence",
+      "est_volume": "BS Appellationsgericht selection + others; thousands across collections",
+      "feasibility": "PAYWALLED / login. Structural: where a cantonal supreme court's only online channel is Swisslex, decisions are absent from es and all free portals. Acquisition = LICENSING.",
+      "priority": 3
+    },
+    {
+      "level": "cross-cutting",
+      "canton": "national",
+      "body": "ZBl — Schweizerisches Zentralblatt für Staats- und Verwaltungsrecht (Schulthess)",
+      "type": "Curated DB of selected federal + cantonal admin-court decisions (sole published source for many cantonal VG rulings)",
+      "portal_url": "https://www.zbl-online.ch/",
+      "est_volume": "Selection (dozens/yr), >125-yr run",
+      "feasibility": "PAYWALLED (Schulthess Digital). Holds cantonal admin-court decisions not free on es. Acquisition = LICENSING, not scraping.",
+      "priority": 3
+    },
+    {
+      "level": "cross-cutting",
+      "canton": "national",
+      "body": "swissrights.ch — alternative free aggregator",
+      "type": "Independent aggregator (cantonal incl. district/regional, specialized chambers, admin commissions, SchKG; federal)",
+      "portal_url": "https://www.swissrights.ch/enscheiduebersicht.php",
+      "est_volume": "Aggregator (overlaps es; value = long-tail/first-instance pointers)",
+      "feasibility": "Structured overview — best as a DISCOVERY/cross-check source for bodies es misses, not a primary ingest (verify per-source freshness). Heavy dedupe.",
+      "priority": 3
+    },
+    {
+      "level": "federal",
+      "canton": "CH",
+      "body": "ombudscom — Schlichtungsstelle Telekommunikation (Fallbeispiele)",
+      "type": "Federal telecom conciliation body — anonymized Schlichtungsvorschläge (non-binding)",
+      "portal_url": "https://cas.ombudscom.ch/",
+      "est_volume": "~200+ anonymized case examples 2013-2025, browsable by year/keyword",
+      "feasibility": "Structured-DB. LOW PRIORITY / borderline: conciliation proposals, not binding appealable decisions — include only if ADR scope is in.",
+      "priority": 3
+    },
+    {
+      "level": "intercantonal",
+      "canton": "JU/NE",
+      "body": "PPDT / CPDT-JUNE — Préposé(e) et Commission protection des données et transparence Jura-Neuchâtel",
+      "type": "Inter-cantonal data-protection + transparency authority",
+      "portal_url": "https://www.ppdt-june.ch/fr/PPDT/Documentation/Jurisprudence/Jurisprudence.html",
+      "est_volume": "Low — tens of recommendations/decisions accumulating since 2013",
+      "feasibility": "PDF-archive from a Documentation/Jurisprudence page. Site fragile (HTTP 500 on fetch) — needs retry/robust handling. Covers both JU and NE.",
+      "priority": 3
+    }
+  ]
+}
