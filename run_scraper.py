@@ -136,6 +136,10 @@ SCRAPERS = {
     "elcom": ("scrapers.elcom", "ElComScraper"),
     "postcom": ("scrapers.postcom", "PostComScraper"),
     "comcom": ("scrapers.comcom", "ComComScraper"),
+    "esbk": ("scrapers.esbk", "ESBKScraper"),
+    "rab": ("scrapers.rab", "RABScraper"),
+    "eschk": ("scrapers.eschk", "ESchKScraper"),
+    "preisueberwacher": ("scrapers.preisueberwacher", "PreisueberwacherScraper"),
     # Federal — customs and tax administration
     "bazg": ("scrapers.bazg", "BAZGScraper"),
     # NB: ESTV Kreisschreiben are scraped by scrapers/practice/estv_kreisschreiben.py
