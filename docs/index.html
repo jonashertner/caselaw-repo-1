@@ -263,7 +263,7 @@ a{color:inherit;text-decoration:none}
       </div>
       <p class="hero-trust">
         <span class="dot" aria-hidden="true"></span>
-        <span><span data-t="trust_new">+</span><b id="trust-delta">198</b> <span data-t="trust_today">today</span> · CC0 · <span data-t="trust_cov">all 26 cantons + federal courts</span></span>
+        <span><span data-t="trust_new">+</span><b id="trust-delta">198</b> · <span id="trust-date">2026-06-21</span> · CC0 · <span data-t="trust_cov">all 26 cantons + federal courts</span></span>
       </p>
     </div>
   </section>
@@ -509,7 +509,7 @@ function applyStats(s){
   if(s.date_range&&s.date_range.earliest){var y=new Date().getFullYear()-parseInt(s.date_range.earliest.slice(0,4),10);setT('d-span',y);}
   if(s.date_range&&s.date_range.latest){window._cyear=s.date_range.latest.slice(0,4);document.querySelectorAll('.cy').forEach(function(e){e.textContent=window._cyear;});}
   if(s.by_canton)renderCantons(s.by_canton);
-  if(s.generated_at){var d=new Date(s.generated_at);document.getElementById('stamp').textContent=d.toISOString().slice(0,10);}
+  if(s.generated_at){var d=new Date(s.generated_at);document.getElementById('stamp').textContent=d.toISOString().slice(0,10);setT('trust-date',d.toISOString().slice(0,10));}
 }
 fetch('/stats.json?v='+Math.floor(Date.now()/60000)).then(function(r){return r.ok?r.json():null;}).then(applyStats).catch(function(){});
 fetch('https://mcp.opencaselaw.ch/health',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(h){
