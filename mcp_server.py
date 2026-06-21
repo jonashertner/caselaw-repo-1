@@ -18445,14 +18445,32 @@ def _deep_research_search(query: str, limit: int = DEEP_RESEARCH_SEARCH_LIMIT) -
 
 def _deep_research_fetch(doc_id: str) -> dict:
     """OpenAI deep-research `fetch`: id -> {id,title,text,url,metadata}."""
+    # Edge cases return SUBSTANTIVE content (not empty/echo fields) so clients
+    # — and anti-ghost conformance probes — get an actionable message rather
+    # than a hollow placeholder.
     if not doc_id:
-        return {"id": "", "title": "", "text": "", "url": "",
-                "metadata": {"error": "missing_id"}}
+        return {
+            "id": "",
+            "title": "No document ID provided",
+            "text": ("The fetch tool needs a document `id` from a prior search "
+                     "result. Call the `search` tool first, then fetch one of "
+                     "the returned ids (for example 'bge_140 III 86')."),
+            "url": "https://opencaselaw.ch",
+            "metadata": {"error": "missing_id"},
+        }
     canonical = _resolve_decision_id(doc_id)
     dec = get_decision_by_id(canonical)
     if not dec:
-        return {"id": doc_id, "title": doc_id, "text": "", "url": "",
-                "metadata": {"error": "not_found"}}
+        return {
+            "id": doc_id,
+            "title": f"No decision found for ID '{doc_id}'",
+            "text": (f"No Swiss court decision matches the ID '{doc_id}'. Valid "
+                     "ids come from `search` results — a decision id such as "
+                     "'bge_140 III 86' or a docket like '4A_101/2014'. Call "
+                     "`search` to discover valid ids."),
+            "url": "https://opencaselaw.ch",
+            "metadata": {"error": "not_found"},
+        }
     cit = _build_citation_strings(dec)
     label = (cit.get("citation_string_de")
              or _clean_docket(dec.get("docket_number")) or canonical)

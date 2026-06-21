@@ -96,12 +96,18 @@ def test_fetch_not_found(monkeypatch):
     monkeypatch.setattr(mcp_server, "_resolve_decision_id", lambda x: x)
     monkeypatch.setattr(mcp_server, "get_decision_by_id", lambda x: None)
     out = mcp_server._deep_research_fetch("nonexistent")
-    assert out["text"] == ""
+    # Anti-ghost (issue #25): not-found returns SUBSTANTIVE content — an
+    # actionable message, not empty text or a bare echo of the input id.
+    assert out["text"] and "nonexistent" in out["text"]
+    assert out["title"] and out["title"] != "nonexistent"
+    assert out["url"]
     assert out["metadata"].get("error") == "not_found"
 
 
 def test_fetch_missing_id():
     out = mcp_server._deep_research_fetch("")
+    # Anti-ghost (issue #25): substantive message, not all-empty fields.
+    assert out["title"] and out["text"]
     assert out["metadata"].get("error") == "missing_id"
 
 

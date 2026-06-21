@@ -54,7 +54,8 @@ def _defined_per_lang(src: str) -> dict[str, set[str]]:
     """Parse ``const I18N = { de: {...}, fr: {...}, ... }`` and return
     ``{lang: {keys defined for that lang}}``.
     """
-    m = re.search(r"const\s+I18N\s*=\s*\{", src)
+    # The redesigned dashboard declares `var I18N={...}` (was `const I18N = {`).
+    m = re.search(r"(?:const|var|let)\s+I18N\s*=\s*\{", src)
     assert m, "I18N dictionary not found in docs/index.html"
     i, depth, start = m.end(), 1, m.end()
     while depth > 0:
@@ -78,8 +79,11 @@ def _defined_per_lang(src: str) -> dict[str, set[str]]:
                 d -= 1
             si += 1
         block = body[lm.end() : si - 1]
+        # The redesigned dict packs several keys per line
+        # (`cta_connect:'...',cta_search:'...'`), so match each key after the
+        # block start or a comma rather than only at line-start.
         out[lang] = set(
-            re.findall(r"^\s*([a-zA-Z_][\w]*):\s*", block, re.MULTILINE)
+            re.findall(r"(?:^|,)\s*([a-zA-Z_][\w]*)\s*:", block)
         )
     return out
 
@@ -142,18 +146,9 @@ def test_dead_keys_under_threshold(
     )
 
 
-def test_didyou_intro_says_eight(src: str) -> None:
-    """The 'did you know' section grew from 6 to 8 cards (added ECHR
-    + Materialien). Each language's intro must reflect the new count."""
-    expected = {
-        "de": "Acht Fakten",
-        "fr": "Huit faits",
-        "it": "Otto fatti",
-        "rm": "Otg fatgs",
-        "en": "Eight facts",
-    }
-    for lang, phrase in expected.items():
-        assert phrase in src, (
-            f"didyou intro for {lang!r} should contain {phrase!r} "
-            f"(was: 'Sechs/Six/Sei/Sis/Six' before the eighth card was added)"
-        )
+# NOTE: test_didyou_intro_says_eight was removed 2026-06-21. The world-class
+# dashboard redesign reworded the "did you know" section and dropped the explicit
+# "N facts" count phrasing (the facts now render as cards without a counted intro),
+# so asserting "Acht Fakten"/"Eight facts" tested copy that no longer exists. The
+# i18n-parity tests above already guarantee every facts key is translated in all
+# five languages, which is the durable invariant.
