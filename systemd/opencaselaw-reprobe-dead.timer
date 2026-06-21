@@ -1,0 +1,13 @@
+[Unit]
+Description=OpenCaseLaw — weekly dead-source re-probe (detect resumed portals)
+# PROPOSED (gated, invariant #5). Sunday 23:30 UTC: after the entscheidsuche bulk
+# (Sun 22:00) and clear of the daily scrape window, so a recovering portal is not
+# hammered by concurrent jobs. Persistent=true catches a missed run after downtime.
+
+[Timer]
+OnCalendar=Sun *-*-* 23:30:00 UTC
+Persistent=true
+RandomizedDelaySec=300
+
+[Install]
+WantedBy=timers.target

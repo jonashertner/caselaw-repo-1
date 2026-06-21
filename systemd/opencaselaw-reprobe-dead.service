@@ -1,0 +1,23 @@
+[Unit]
+Description=OpenCaseLaw — re-probe KNOWN_DEAD_SOURCES for resumption (weekly)
+# PROPOSED (gated, invariant #5). Deploy only with explicit approval:
+#   cp systemd/opencaselaw-reprobe-dead.{service,timer} /etc/systemd/system/
+#   systemctl daemon-reload && systemctl enable --now opencaselaw-reprobe-dead.timer
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=root
+WorkingDirectory=/opt/caselaw/repo
+ExecStart=/usr/bin/python3 scripts/reprobe_dead_sources.py
+# Bounds worst-case dead-portal TCP retries (~30s timeout x3 x N candidates) so a hung
+# portal can never wedge the unit. islice bounds row COUNT, not connect time.
+TimeoutStartSec=1800
+StandardOutput=append:/opt/caselaw/repo/logs/reprobe_dead_sources.log
+StandardError=append:/opt/caselaw/repo/logs/reprobe_dead_sources.log
+# Hardening (mirrors the analytics/monitor units): read-only system, only the paths it writes.
+ProtectSystem=strict
+ReadWritePaths=/opt/caselaw/repo/logs /opt/caselaw/repo/state /tmp
+PrivateTmp=true
+NoNewPrivileges=true
