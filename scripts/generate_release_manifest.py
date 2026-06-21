@@ -79,21 +79,6 @@ def _summarise(conn: sqlite3.Connection) -> dict:
         }
     except sqlite3.OperationalError:
         out["content_hashes"] = {"status": "column not present"}
-    # Wayback queue progress
-    try:
-        out["wayback_queue"] = {
-            "total": conn.execute(
-                "SELECT COUNT(*) FROM wayback_queue"
-            ).fetchone()[0],
-            "archived": conn.execute(
-                "SELECT COUNT(*) FROM wayback_queue WHERE status_code = 200"
-            ).fetchone()[0],
-            "pending": conn.execute(
-                "SELECT COUNT(*) FROM wayback_queue WHERE attempted_at IS NULL"
-            ).fetchone()[0],
-        }
-    except sqlite3.OperationalError:
-        out["wayback_queue"] = {"status": "table not present"}
     out["date_range"] = list(conn.execute(
         "SELECT MIN(decision_date), MAX(decision_date) FROM decisions "
         "WHERE decision_date >= '1700-01-01'"

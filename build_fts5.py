@@ -150,8 +150,8 @@ def _check_swap_per_court_gate(
 #
 # Step 2 of publish.py is a 4–10 h black-box. Without per-phase
 # timings we can't tell whether the variance comes from FTS5 optimize,
-# wayback_queue provisioning, hash computation, or one of the 13
-# normalisation passes. The context manager below logs:
+# hash computation, or one of the 13 normalisation passes. The context
+# manager below logs:
 #
 #     Phase: Deduplicating decisions...
 #       (existing inner logger.info lines from the phase body)
@@ -798,130 +798,6 @@ def _compute_content_hashes(conn: sqlite3.Connection, batch_size: int = 5000) ->
     if fixed:
         conn.commit()
     return fixed
-
-
-def _ensure_wayback_queue(conn: sqlite3.Connection, live_db_path=None) -> None:
-    """Provision the wayback_queue table that scripts/wayback_archiver.py
-    drains. Populated at the tail of every full rebuild — one row per
-    (decision_id, url, url_type) where url_type is 'source' or 'pdf'.
-    Idempotent: PRIMARY KEY ignores duplicates.
-
-    The archiver's job is to call https://web.archive.org/save/<url>
-    (rate-limited) so we own a permanent snapshot of every source URL
-    even if the upstream portal drops it later.
-
-    Performance note (2026-05-18): on a fully-provisioned 1.94M-row
-    queue, an unfiltered ``INSERT OR IGNORE ... SELECT`` from the full
-    972K-row decisions table costs ~1h 21min — entirely no-op PK
-    lookups. We now query ``MAX(queued_at)`` as a marker and only scan
-    decisions with ``scraped_at > marker`` on subsequent runs. The full
-    backfill semantics are preserved on first run (when the queue is
-    empty and the marker is NULL). Estimated speed-up: ~80×.
-    """
-    conn.executescript(
-        """
-        CREATE TABLE IF NOT EXISTS wayback_queue (
-            decision_id  TEXT NOT NULL,
-            url          TEXT NOT NULL,
-            url_type     TEXT NOT NULL,        -- 'source' | 'pdf'
-            queued_at    TEXT NOT NULL DEFAULT (datetime('now')),
-            attempted_at TEXT,
-            status_code  INTEGER,
-            archived_url TEXT,
-            PRIMARY KEY (decision_id, url, url_type)
-        );
-        CREATE INDEX IF NOT EXISTS wq_pending
-          ON wayback_queue(attempted_at) WHERE attempted_at IS NULL;
-        """
-    )
-
-    # Preserve the existing queue (incl. attempted_at) from the live DB before
-    # a FULL rebuild. Without this the fresh .tmp queue starts empty → the
-    # marker is NULL → every row is re-enqueued as pending (wiping weeks of
-    # archiver progress) AND the slow full backfill runs (~1h on the corpus).
-    # Copying the live queue first makes the marker non-NULL, so the enqueue
-    # below takes the fast incremental path and attempted_at is retained.
-    # No-op on the first-ever build (no live DB / no table yet).
-    already = conn.execute("SELECT COUNT(*) FROM wayback_queue").fetchone()[0]
-    if already == 0 and live_db_path is not None and Path(str(live_db_path)).exists():
-        try:
-            conn.execute("ATTACH DATABASE ? AS live", (str(live_db_path),))
-            has_tbl = conn.execute(
-                "SELECT 1 FROM live.sqlite_master WHERE type='table' "
-                "AND name='wayback_queue'"
-            ).fetchone()
-            if has_tbl:
-                conn.execute(
-                    "INSERT OR IGNORE INTO wayback_queue"
-                    "(decision_id, url, url_type, queued_at, attempted_at,"
-                    " status_code, archived_url) "
-                    "SELECT decision_id, url, url_type, queued_at, attempted_at,"
-                    " status_code, archived_url FROM live.wayback_queue"
-                )
-                conn.commit()
-                kept = conn.execute(
-                    "SELECT COUNT(*) FROM wayback_queue").fetchone()[0]
-                logger.info(
-                    "wayback_queue: preserved %d rows (incl. attempted) from live DB",
-                    kept,
-                )
-        except sqlite3.Error as e:
-            logger.warning(
-                "wayback_queue: live preserve failed (%s); falling back to backfill",
-                e,
-            )
-        finally:
-            try:
-                conn.execute("DETACH DATABASE live")
-            except sqlite3.Error:
-                pass
-
-    # Incremental enqueue: scan only decisions scraped since the last
-    # queued_at marker. NULL marker (empty queue, e.g. brand-new DB
-    # file) falls through to the original full-backfill behaviour.
-    marker = conn.execute(
-        "SELECT MAX(queued_at) FROM wayback_queue"
-    ).fetchone()[0]
-
-    if marker is None:
-        # First-run backfill — scan everything (legacy behaviour).
-        source_sql = (
-            "INSERT OR IGNORE INTO wayback_queue(decision_id, url, url_type) "
-            "SELECT decision_id, source_url, 'source' FROM decisions "
-            "WHERE source_url LIKE 'http%'"
-        )
-        pdf_sql = (
-            "INSERT OR IGNORE INTO wayback_queue(decision_id, url, url_type) "
-            "SELECT decision_id, pdf_url, 'pdf' FROM decisions "
-            "WHERE pdf_url LIKE 'http%'"
-        )
-        params: tuple = ()
-        logger.info("wayback_queue: full backfill (marker NULL)")
-    else:
-        # Incremental — only enqueue decisions scraped after the marker.
-        source_sql = (
-            "INSERT OR IGNORE INTO wayback_queue(decision_id, url, url_type) "
-            "SELECT decision_id, source_url, 'source' FROM decisions "
-            "WHERE source_url LIKE 'http%' AND scraped_at > ?"
-        )
-        pdf_sql = (
-            "INSERT OR IGNORE INTO wayback_queue(decision_id, url, url_type) "
-            "SELECT decision_id, pdf_url, 'pdf' FROM decisions "
-            "WHERE pdf_url LIKE 'http%' AND scraped_at > ?"
-        )
-        params = (marker,)
-        logger.info("wayback_queue: incremental enqueue since %s", marker)
-
-    cur = conn.cursor()
-    before = cur.execute("SELECT COUNT(*) FROM wayback_queue").fetchone()[0]
-    cur.execute(source_sql, params)
-    cur.execute(pdf_sql, params)
-    after = cur.execute("SELECT COUNT(*) FROM wayback_queue").fetchone()[0]
-    conn.commit()
-    logger.info(
-        "wayback_queue: %d new rows enqueued (total %d)",
-        after - before, after,
-    )
 
 
 def _recover_decision_dates(conn: sqlite3.Connection) -> int:
@@ -1983,18 +1859,6 @@ def build_database(
             hashes = _compute_content_hashes(conn)
             if hashes:
                 logger.info(f"  Hashed/refreshed {hashes} decisions")
-
-        # Provision the wayback_queue table; populated as part of the
-        # same step so scripts/wayback_archiver.py finds work to do.
-        with _phase_timer("provision wayback_queue"):
-            # Pass the live DB so a full rebuild preserves the existing queue
-            # (attempted_at) and takes the fast incremental path (issue: the
-            # full backfill cost ~1h11m + wiped archiver progress every Sunday).
-            _ensure_wayback_queue(conn, live_db_path=final_db_path)
-            wq_pending = conn.execute(
-                "SELECT COUNT(*) FROM wayback_queue WHERE attempted_at IS NULL"
-            ).fetchone()[0]
-            logger.info(f"  wayback_queue pending: {wq_pending:,} entries")
 
         with _phase_timer("log quality summary"):
             _log_quality_summary(conn)

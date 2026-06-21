@@ -27,8 +27,8 @@ Sequencing
 Designed to run AFTER ``opencaselaw-scrape.timer`` finishes (01:00 UTC).
 A new ``opencaselaw-publish-incremental.timer`` should fire at 03:30 UTC
 Mon-Sat; the legacy ``opencaselaw-publish.timer`` keeps Sun 03:30 UTC for
-the weekly safety-net full rebuild (which still does wayback_queue
-provisioning, FTS5 optimize, full parquet export).
+the weekly safety-net full rebuild (which still does FTS5 optimize
+and full parquet export).
 
 Failure semantics
 -----------------
