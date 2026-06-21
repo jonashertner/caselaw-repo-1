@@ -254,7 +254,7 @@ a{color:inherit;text-decoration:none}
       <p class="kicker"><b data-t="kick_a">Complete</b> · <span data-t="kick_b">rebuilt every day</span></p>
       <p class="bignum tnum" id="bignum">991&#8217;298</p>
       <div class="num-rule" aria-hidden="true"></div>
-      <p class="num-label" data-t="hero_label">published Swiss court decisions, 1875–today</p>
+      <p class="num-label" data-t="hero_label">published Swiss court decisions, 1875–<span class="cy"></span></p>
       <h1 class="headline" data-t="hero_h1">The complete record of Swiss case law — <em>rebuilt every day.</em></h1>
       <p class="subline" data-t="hero_sub">Every published decision from every federal and cantonal court, plus 21,000+ federal and cantonal laws. Open data (CC0), machine-readable.</p>
       <div class="hero-actions">
@@ -276,7 +276,7 @@ a{color:inherit;text-decoration:none}
       <div class="facts">
         <div class="fact">
           <div class="fact-n tnum" id="f-decisions">991&#8217;298 <span class="u" data-t="u_decisions">decisions</span></div>
-          <div class="fact-t" data-t="f_decisions_t">Published rulings from the Federal Supreme Court, every federal court, and all 26 cantons — <b>1875 to today</b>, in German, French and Italian.</div>
+          <div class="fact-t" data-t="f_decisions_t">Published rulings from the Federal Supreme Court, every federal court, and all 26 cantons — <b>1875–<span class="cy"></span></b>, in German, French and Italian.</div>
         </div>
         <div class="fact">
           <div class="fact-n tnum" id="f-laws">21&#8217;108 <span class="u" data-t="u_laws">laws</span></div>
@@ -311,7 +311,7 @@ a{color:inherit;text-decoration:none}
         <div class="d"><div class="d-n pos tnum">+<span id="d-today">198</span></div><div class="d-l" data-t="d_today">new today</div></div>
         <div class="d"><div class="d-n tnum"><span id="d-span">151</span></div><div class="d-l" data-t="d_span">years of case law</div></div>
         <div class="d"><div class="d-n tnum"><span id="d-langs">3</span></div><div class="d-l" data-t="d_langs">national languages</div></div>
-        <p class="stamp" id="stamp"></p>
+        <p class="stamp"><span data-t="stamp_asof">As of</span> <span id="stamp"></span></p>
       </div>
     </div>
   </section>
@@ -371,13 +371,13 @@ a{color:inherit;text-decoration:none}
 <script>
 /* ── i18n ──────────────────────────────────────────────────── */
 var I18N={
- de:{skip:'Zum Inhalt springen',nav_search:'Suche',nav_courts:'Gerichte',nav_laws:'Gesetze',nav_connect:'Verbinden →',nav_quality:'Qualität',
-  kick_a:'Vollständig',kick_b:'täglich neu aufgebaut',hero_label:'publizierte Schweizer Gerichtsentscheide, 1875–heute',
+ de:{stamp_asof:'Stand',skip:'Zum Inhalt springen',nav_search:'Suche',nav_courts:'Gerichte',nav_laws:'Gesetze',nav_connect:'Verbinden →',nav_quality:'Qualität',
+  kick_a:'Vollständig',kick_b:'täglich neu aufgebaut',hero_label:'publizierte Schweizer Gerichtsentscheide, 1875–<span class="cy"></span>',
   hero_h1:'Das vollständige Verzeichnis der Schweizer Rechtsprechung — <em>täglich neu aufgebaut.</em>',
   hero_sub:'Jeder publizierte Entscheid jedes Bundes- und kantonalen Gerichts, dazu 21 000+ Bundes- und kantonale Gesetze. Offene Daten (CC0), maschinenlesbar.',
   cta_connect:'KI verbinden',cta_search:'Korpus durchsuchen',trust_new:'+',trust_today:'heute',trust_cov:'alle 26 Kantone + Bundesgerichte',
   t_inside:'Im Korpus',inside_h:'Ein offener Datensatz des Schweizer Rechts.',u_decisions:'Entscheide',u_laws:'Gesetze',u_cites:'Zitate',
-  f_decisions_t:'Publizierte Urteile des Bundesgerichts, aller Bundesgerichte und aller 26 Kantone — <b>1875 bis heute</b>, auf Deutsch, Französisch und Italienisch.',
+  f_decisions_t:'Publizierte Urteile des Bundesgerichts, aller Bundesgerichte und aller 26 Kantone — <b>1875–<span class="cy"></span></b>, auf Deutsch, Französisch und Italienisch.',
   f_laws_t:'<b>5519 Bundesgesetze</b> (Fedlex) und <b>15 589 kantonale</b> Erlasse mit über 494 000 Artikeln.',
   f_cites_t:'Ein aufgelöster Zitationsgraph, der Entscheide mit den zitierten Entscheiden und Gesetzen verbindet.',
   t_coverage:'Abdeckung',cov_h:'Alle 26 Kantone und die Bundesgerichte.',cov_sub:'Publizierte Entscheide pro Gerichtsbarkeit, direkt von jeder offiziellen Quelle gescrapt, dedupliziert und nächtlich neu aufgebaut.',
@@ -388,13 +388,13 @@ var I18N={
   copy:'Kopieren',connect_note:'Einrichtung pro Client, die REST-API, Bulk-Download und das Word-Add-in:',connect_link:'Verbindungsanleitung →',
   foot_browse:'Durchsuchen',foot_build:'Entwickeln',foot_trust:'Vertrauen',foot_coverage:'Abdeckung',foot_scholarship:'Literatur',foot_about:'Über uns',
   foot_tag:'Das vollständige offene Verzeichnis des Schweizer Rechts. CC0-Datensatz, MIT-Code.',foot_legal:'Korpus CC0 · Code MIT'},
- fr:{skip:'Aller au contenu',nav_search:'Recherche',nav_courts:'Tribunaux',nav_laws:'Lois',nav_connect:'Connexion →',nav_quality:'Qualité',
-  kick_a:'Complet',kick_b:'reconstruit chaque jour',hero_label:'décisions judiciaires suisses publiées, 1875–aujourd’hui',
+ fr:{stamp_asof:'État au',skip:'Aller au contenu',nav_search:'Recherche',nav_courts:'Tribunaux',nav_laws:'Lois',nav_connect:'Connexion →',nav_quality:'Qualité',
+  kick_a:'Complet',kick_b:'reconstruit chaque jour',hero_label:'décisions judiciaires suisses publiées, 1875–<span class="cy"></span>',
   hero_h1:'Le registre complet de la jurisprudence suisse — <em>reconstruit chaque jour.</em>',
   hero_sub:'Chaque décision publiée de chaque tribunal fédéral et cantonal, plus 21 000+ lois fédérales et cantonales. Données ouvertes (CC0), lisibles par machine.',
   cta_connect:'Connecter l’IA',cta_search:'Rechercher le corpus',trust_new:'+',trust_today:'aujourd’hui',trust_cov:'les 26 cantons + tribunaux fédéraux',
   t_inside:'Dans le corpus',inside_h:'Un jeu de données ouvert du droit suisse.',u_decisions:'décisions',u_laws:'lois',u_cites:'citations',
-  f_decisions_t:'Arrêts publiés du Tribunal fédéral, de tous les tribunaux fédéraux et des 26 cantons — <b>de 1875 à aujourd’hui</b>, en allemand, français et italien.',
+  f_decisions_t:'Arrêts publiés du Tribunal fédéral, de tous les tribunaux fédéraux et des 26 cantons — <b>de 1875–<span class="cy"></span></b>, en allemand, français et italien.',
   f_laws_t:'<b>5519 lois fédérales</b> (Fedlex) et <b>15 589 actes cantonaux</b>, avec plus de 494 000 articles.',
   f_cites_t:'Un graphe de citations résolu reliant les décisions aux décisions et lois qu’elles citent.',
   t_coverage:'Couverture',cov_h:'Les 26 cantons et les tribunaux fédéraux.',cov_sub:'Décisions publiées par juridiction, extraites directement de chaque source officielle, dédupliquées et reconstruites chaque nuit.',
@@ -405,13 +405,13 @@ var I18N={
   copy:'Copier',connect_note:'Configuration par client, l’API REST, le téléchargement en masse et l’add-in Word :',connect_link:'guide de connexion →',
   foot_browse:'Parcourir',foot_build:'Développer',foot_trust:'Confiance',foot_coverage:'Couverture',foot_scholarship:'Doctrine',foot_about:'À propos',
   foot_tag:'Le registre ouvert complet du droit suisse. Jeu de données CC0, code MIT.',foot_legal:'Corpus CC0 · Code MIT'},
- it:{skip:'Vai al contenuto',nav_search:'Ricerca',nav_courts:'Tribunali',nav_laws:'Leggi',nav_connect:'Collega →',nav_quality:'Qualità',
-  kick_a:'Completo',kick_b:'ricostruito ogni giorno',hero_label:'decisioni giudiziarie svizzere pubblicate, 1875–oggi',
+ it:{stamp_asof:'Stato al',skip:'Vai al contenuto',nav_search:'Ricerca',nav_courts:'Tribunali',nav_laws:'Leggi',nav_connect:'Collega →',nav_quality:'Qualità',
+  kick_a:'Completo',kick_b:'ricostruito ogni giorno',hero_label:'decisioni giudiziarie svizzere pubblicate, 1875–<span class="cy"></span>',
   hero_h1:'Il registro completo della giurisprudenza svizzera — <em>ricostruito ogni giorno.</em>',
   hero_sub:'Ogni decisione pubblicata di ogni tribunale federale e cantonale, più 21 000+ leggi federali e cantonali. Dati aperti (CC0), leggibili dalle macchine.',
   cta_connect:'Collega l’IA',cta_search:'Cerca nel corpus',trust_new:'+',trust_today:'oggi',trust_cov:'tutti i 26 cantoni + tribunali federali',
   t_inside:'Nel corpus',inside_h:'Un dataset aperto del diritto svizzero.',u_decisions:'decisioni',u_laws:'leggi',u_cites:'citazioni',
-  f_decisions_t:'Sentenze pubblicate del Tribunale federale, di ogni tribunale federale e dei 26 cantoni — <b>dal 1875 a oggi</b>, in tedesco, francese e italiano.',
+  f_decisions_t:'Sentenze pubblicate del Tribunale federale, di ogni tribunale federale e dei 26 cantoni — <b>dal 1875–<span class="cy"></span></b>, in tedesco, francese e italiano.',
   f_laws_t:'<b>5519 leggi federali</b> (Fedlex) e <b>15 589 atti cantonali</b>, con oltre 494 000 articoli.',
   f_cites_t:'Un grafo di citazioni risolto che collega le decisioni alle decisioni e alle leggi citate.',
   t_coverage:'Copertura',cov_h:'I 26 cantoni e i tribunali federali.',cov_sub:'Decisioni pubblicate per giurisdizione, estratte direttamente da ogni fonte ufficiale, deduplicate e ricostruite ogni notte.',
@@ -422,13 +422,13 @@ var I18N={
   copy:'Copia',connect_note:'Configurazione per client, l’API REST, il download in blocco e l’add-in Word:',connect_link:'guida alla connessione →',
   foot_browse:'Sfoglia',foot_build:'Sviluppa',foot_trust:'Fiducia',foot_coverage:'Copertura',foot_scholarship:'Dottrina',foot_about:'Chi siamo',
   foot_tag:'Il registro aperto completo del diritto svizzero. Dataset CC0, codice MIT.',foot_legal:'Corpus CC0 · Codice MIT'},
- rm:{skip:'Ir al cuntegn',nav_search:'Tschertga',nav_courts:'Dretgiras',nav_laws:'Leschas',nav_connect:'Connectar →',nav_quality:'Qualitad',
-  kick_a:'Cumplet',kick_b:'reconstruì mintga di',hero_label:'decisiuns giudicialas svizras publitgadas, 1875–oz',
+ rm:{stamp_asof:'Versiun dal',skip:'Ir al cuntegn',nav_search:'Tschertga',nav_courts:'Dretgiras',nav_laws:'Leschas',nav_connect:'Connectar →',nav_quality:'Qualitad',
+  kick_a:'Cumplet',kick_b:'reconstruì mintga di',hero_label:'decisiuns giudicialas svizras publitgadas, 1875–<span class="cy"></span>',
   hero_h1:'Il register cumplet da la giurisprudenza svizra — <em>reconstruì mintga di.</em>',
   hero_sub:'Mintga decisiun publitgada da mintga dretgira federala e chantunala, plus 21 000+ leschas federalas e chantunalas. Datas avertas (CC0), legiblas da maschinas.',
   cta_connect:'Connectar l’IA',cta_search:'Tschertgar el corpus',trust_new:'+',trust_today:'oz',trust_cov:'tut ils 26 chantuns + dretgiras federalas',
   t_inside:'El corpus',inside_h:'In set da datas avert dal dretg svizzer.',u_decisions:'decisiuns',u_laws:'leschas',u_cites:'citaziuns',
-  f_decisions_t:'Sentenzas publitgadas dal Tribunal federal, da mintga dretgira federala e da tut ils 26 chantuns — <b>da 1875 fin oz</b>, en tudestg, franzos ed talian.',
+  f_decisions_t:'Sentenzas publitgadas dal Tribunal federal, da mintga dretgira federala e da tut ils 26 chantuns — <b>da 1875–<span class="cy"></span></b>, en tudestg, franzos ed talian.',
   f_laws_t:'<b>5519 leschas federalas</b> (Fedlex) e <b>15 589 acts chantunals</b>, cun passa 494 000 artitgels.',
   f_cites_t:'In graf da citaziuns resolvì che colliescha las decisiuns cun las decisiuns e leschas citadas.',
   t_coverage:'Cuvertura',cov_h:'Ils 26 chantuns e las dretgiras federalas.',cov_sub:'Decisiuns publitgadas per giurisdicziun, tratgas directamain da mintga funtauna uffiziala, deduplitgadas e reconstruidas mintga notg.',
@@ -439,13 +439,13 @@ var I18N={
   copy:'Copiar',connect_note:'Configuraziun per client, l’API REST, il download en bloc e l’add-in Word:',connect_link:'guida da connexiun →',
   foot_browse:'Tschertgar',foot_build:'Sviluppar',foot_trust:'Confidenza',foot_coverage:'Cuvertura',foot_scholarship:'Litteratura',foot_about:'Davart nus',
   foot_tag:'Il register avert cumplet dal dretg svizzer. Set da datas CC0, code MIT.',foot_legal:'Corpus CC0 · Code MIT'},
- en:{skip:'Skip to content',nav_search:'Search',nav_courts:'Courts',nav_laws:'Laws',nav_connect:'Connect →',nav_quality:'Quality',
-  kick_a:'Complete',kick_b:'rebuilt every day',hero_label:'published Swiss court decisions, 1875–today',
+ en:{stamp_asof:'As of',skip:'Skip to content',nav_search:'Search',nav_courts:'Courts',nav_laws:'Laws',nav_connect:'Connect →',nav_quality:'Quality',
+  kick_a:'Complete',kick_b:'rebuilt every day',hero_label:'published Swiss court decisions, 1875–<span class="cy"></span>',
   hero_h1:'The complete record of Swiss case law — <em>rebuilt every day.</em>',
   hero_sub:'Every published decision from every federal and cantonal court, plus 21,000+ federal and cantonal laws. Open data (CC0), machine-readable.',
   cta_connect:'Connect your AI',cta_search:'Search the corpus',trust_new:'+',trust_today:'today',trust_cov:'all 26 cantons + federal courts',
   t_inside:'Inside the corpus',inside_h:'An open dataset of Swiss law.',u_decisions:'decisions',u_laws:'laws',u_cites:'citations',
-  f_decisions_t:'Published rulings from the Federal Supreme Court, every federal court, and all 26 cantons — <b>1875 to today</b>, in German, French and Italian.',
+  f_decisions_t:'Published rulings from the Federal Supreme Court, every federal court, and all 26 cantons — <b>1875–<span class="cy"></span></b>, in German, French and Italian.',
   f_laws_t:'<b>5,519 federal</b> laws (Fedlex) and <b>15,589 cantonal</b> acts, with 494,000+ articles.',
   f_cites_t:'A resolved citation graph linking decisions to the decisions and statutes they cite.',
   t_coverage:'Coverage',cov_h:'All 26 cantons and the federal courts.',cov_sub:'Published decisions per jurisdiction, scraped directly from each official source, deduplicated, and rebuilt nightly.',
@@ -468,6 +468,7 @@ function applyI18n(){
   document.querySelectorAll('[data-t]').forEach(function(el){
     var v=t(el.dataset.t); if(/<[a-z]/i.test(v))el.innerHTML=v; else el.textContent=v;
   });
+  document.querySelectorAll('.cy').forEach(function(e){e.textContent=window._cyear||new Date().getFullYear();});
   var lw=document.getElementById('langs');
   lw.innerHTML=LANGS.map(function(l){return '<a href="?lang='+l+'" class="'+(l===curLang?'on':'')+'" hreflang="'+l+'">'+l+'</a>';}).join('');
 }
@@ -506,8 +507,9 @@ function applyStats(s){
   setT('trust-delta',fmt(delta)); setT('d-today',fmt(delta));
   if(s.court_count)setT('cov-courts',s.court_count);
   if(s.date_range&&s.date_range.earliest){var y=new Date().getFullYear()-parseInt(s.date_range.earliest.slice(0,4),10);setT('d-span',y);}
+  if(s.date_range&&s.date_range.latest){window._cyear=s.date_range.latest.slice(0,4);document.querySelectorAll('.cy').forEach(function(e){e.textContent=window._cyear;});}
   if(s.by_canton)renderCantons(s.by_canton);
-  if(s.generated_at){var d=new Date(s.generated_at);document.getElementById('stamp').textContent='⟳ '+d.toISOString().slice(0,10);}
+  if(s.generated_at){var d=new Date(s.generated_at);document.getElementById('stamp').textContent=d.toISOString().slice(0,10);}
 }
 fetch('/stats.json?v='+Math.floor(Date.now()/60000)).then(function(r){return r.ok?r.json():null;}).then(applyStats).catch(function(){});
 fetch('https://mcp.opencaselaw.ch/health',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(h){

@@ -32,7 +32,9 @@ configs:
 
 # Swiss Case Law Dataset
 
-**969,000+ published decisions from Swiss federal, cantonal, and regulatory bodies.**
+**991,000+ published decisions from Swiss federal, cantonal, and regulatory bodies.**
+
+*Figures as of 2026-06-21 — refreshed daily; live counts at [opencaselaw.ch](https://opencaselaw.ch).*
 
 Full text, structured metadata, extracted case-citation references, and daily updates. The dataset contains German, French, and Italian decisions; the export schema also reserves `rm` for Romansh.
 
@@ -44,17 +46,17 @@ Full text, structured metadata, extracted case-citation references, and daily up
 
 ## Dataset Summary
 
-The largest open collection of Swiss court decisions: 969,000+ decisions from 108 federal, cantonal, regulatory, and international courts, scraped from official publication channels. New decisions are added every night.
+The largest open collection of Swiss court decisions: 991,000+ decisions from 108 federal, cantonal, regulatory, and international courts, scraped from official publication channels. New decisions are added every night.
 
 - **20+ federal courts and bodies**: BGer, BVGer, BStGer, BPatGer, BGE, FINMA, WEKO, EDÖB, MKG (Militärkassationsgericht), VPB, Sports Tribunal, and more
 - **80+ cantonal courts** across all 26 cantons
 - **ECHR/EGMR**: 834 Swiss-respondent judgments (HUDOC) + general ECtHR Grand Chamber / Chamber / Committee (1,421 judgments live; full-corpus backfill in progress)
-- **Current decision languages**: German (447,783; 46.2%), French (441,094; 45.5%), Italian (80,696; 8.3%); the export schema also reserves `rm`
+- **Current decision languages**: German (463,012; 46.7%), French (446,869; 45.1%), Italian (81,796; 8.2%); the export schema also reserves `rm`
 - **Temporal range**: 1875–present (BGE historical vol. 1 from 1875)
-- **8.9 million extracted case-citation references** (8.3 million resolved, with confidence scores)
-- **11.47 million statute-decision links** (e.g., which decisions cite Art. 41 OR)
+- **9.2 million extracted case-citation references** (8.6 million resolved, with confidence scores)
+- **11.8 million statute-decision links** (e.g., which decisions cite Art. 41 OR)
 - **5,510 federal laws indexed** with 132,586 articles in 3 languages (from Fedlex SPARQL)
-- **15,722 cantonal laws** with 353,464 articles (direct-scraped from 19 cantonal portals; LexFind fallback for the rest)
+- **15,589 cantonal laws** with 353,464 articles (direct-scraped from 19 cantonal portals; LexFind fallback for the rest)
 - **Legislative history (Materialien)** for 2,500 federal laws: Botschaft references for 33,000 statute articles, structured Botschaft digests for BV and BGFA, parliamentary debate transcripts (Amtliches Bulletin) for the BV
 - **34 structured fields** per decision in Parquet; 27 in the FTS5 search index
 
@@ -114,7 +116,7 @@ curl "https://datasets-server.huggingface.co/info?dataset=voilaj/swiss-caselaw"
 
 ### Full-text search via MCP
 
-Connect the dataset to Claude, ChatGPT, Cursor, Gemini, Grok, or any MCP client for natural-language search over all 990,000+ decisions, statute lookup, citation graph traversal, legislative history, and more. The MCP server exposes **43 tools total — 41 in remote (public) mode**; the 2 local-only `update_database` / `check_update_status` tools are hidden when REMOTE_MODE=True. Tools include verbatim head-note retrieval (`get_regeste`), structured Erwägung-paragraph access (`get_erwaegung`), full decision-structure decomposition (`get_decision_structure`), and a closed-corpus citation-integrity toolkit (`cite`, `check_claim_support`, `attest_response`) that audits every reference, statute, quotation, decision date, and — opt-in — proposition-grounding before an answer ships. The architecture defends against the two empirically-measured legal-LLM failure classes: **hallucination** (Dahl, Magesh, Suzgun & Ho, *Large Legal Fictions*, Journal of Legal Analysis 16(1) 2024 — 58–88 % of legal queries to general-purpose LLMs produced fabricated authority, range across ChatGPT-4 to Llama-2; the follow-up Magesh et al. *Hallucination-Free?* study, Journal of Empirical Legal Studies 22 (2025), measured 17–33 % on commercial legal-RAG tools) and **reasoning error** (Butler & Butler, *Legal RAG Bench*, arXiv:2603.01710, 2026 — citation real, source retrieved, proposition unsupported).
+Connect the dataset to Claude, ChatGPT, Cursor, Gemini, Grok, or any MCP client for natural-language search over all 991,000+ decisions, statute lookup, citation graph traversal, legislative history, and more. The MCP server exposes **43 tools total — 41 in remote (public) mode**; the 2 local-only `update_database` / `check_update_status` tools are hidden when REMOTE_MODE=True. Tools include verbatim head-note retrieval (`get_regeste`), structured Erwägung-paragraph access (`get_erwaegung`), full decision-structure decomposition (`get_decision_structure`), and a closed-corpus citation-integrity toolkit (`cite`, `check_claim_support`, `attest_response`) that audits every reference, statute, quotation, decision date, and — opt-in — proposition-grounding before an answer ships. The architecture defends against the two empirically-measured legal-LLM failure classes: **hallucination** (Dahl, Magesh, Suzgun & Ho, *Large Legal Fictions*, Journal of Legal Analysis 16(1) 2024 — 58–88 % of legal queries to general-purpose LLMs produced fabricated authority, range across ChatGPT-4 to Llama-2; the follow-up Magesh et al. *Hallucination-Free?* study, Journal of Empirical Legal Studies 22 (2025), measured 17–33 % on commercial legal-RAG tools) and **reasoning error** (Butler & Butler, *Legal RAG Bench*, arXiv:2603.01710, 2026 — citation real, source retrieved, proposition unsupported).
 
 **Remote (no download needed):**
 
@@ -157,16 +159,16 @@ This snapshot is intended for local MCP/server bootstrap tools that want to avoi
 
 | Metric | Value |
 |--------|-------|
-| Total decisions | 990,000+ (live count, updated daily) |
+| Total decisions | 991,000+ (live count, updated daily) |
 | Courts | 108 |
 | Temporal range | 1875–present |
 | Average decision length | 22,775 characters |
 | Full text coverage | 100% |
 | Regeste (headnote) coverage | 38.7% |
-| Case-citation references | 8.3 million resolved (8.9 million extracted) |
-| Statute-decision links | 11.47 million |
-| Federal laws indexed | 5,516 (400,405 articles total / ~133,468 per DE/FR/IT) |
-| Cantonal laws indexed | 15,722 (353,437 articles, direct-scraped + LexFind) |
+| Case-citation references | 8.6 million resolved (9.2 million extracted) |
+| Statute-decision links | 11.8 million |
+| Federal laws indexed | 5,519 (400,405 articles total / ~133,359 per DE/FR/IT) |
+| Cantonal laws indexed | 15,589 (361,430 articles, direct-scraped + LexFind) |
 | Laws with Botschaft refs | 2,615 (33,465 articles) |
 | Verbatim Botschaft corpus | 5,900+ documents / ~409K FTS5-indexed paragraphs (Phase 2, scaling) |
 | Legislation texts searchable | 33,000+ (federal + cantonal + intercantonal) |
@@ -177,11 +179,11 @@ This snapshot is intended for local MCP/server bootstrap tools that want to avoi
 
 | Language | Count | Share |
 |----------|-------|-------|
-| German (de) | 447,783 | 46.2% |
-| French (fr) | 441,094 | 45.5% |
-| Italian (it) | 80,696 | 8.3% |
+| German (de) | 463,012 | 46.7% |
+| French (fr) | 446,869 | 45.1% |
+| Italian (it) | 81,796 | 8.2% |
 
-**Reference graph:** 8.3 million resolved citation edges (8.9 million extracted) and 11.47 million statute-to-decision links. The most-cited decision is BGE 125 V 351 with 85,108 incoming citations.
+**Reference graph:** 8.6 million resolved citation edges (9.2 million extracted) and 11.8 million statute-to-decision links. The most-cited decision is BGE 125 V 351 with 85,108 incoming citations.
 
 **Search benchmark (frozen offline baseline):** `benchmarks/search_benchmark_2026-03-19_offline_full.json` records a 100-query run against a 1,078,177-row local `decisions.db`, with MRR@10 = 0.4697, Recall@10 = 0.4958, nDCG@10 = 0.5250, and Hit@1 = 0.33. This is a reproducible offline baseline, not a fully provisioned hosted-system score.
 
@@ -270,7 +272,7 @@ Full 34-field Parquet export schema: [`export_parquet.py`](https://github.com/jo
 | Competition Commission (WEKO) | `weko` | ~256 | 2009–present |
 | Sports Tribunal | `ta_sst` | ~49 | 2024–present |
 
-### Cantonal Courts (26 cantons, 81 courts)
+### Cantonal Courts (26 cantons, 110 courts)
 
 | Canton | Courts | Decisions | Period |
 |--------|--------|-----------|--------|
@@ -296,7 +298,7 @@ Live per-court statistics: **[Dashboard](https://opencaselaw.ch)**
 
 **Federal legislation** — Fedlex SPARQL endpoint (Bundeskanzlei). Mirrored monthly into `statutes.db`; covers every consolidated federal act in DE/FR/IT.
 
-**Cantonal legislation** — dual-source pipeline. **19 cantons** are scraped directly from their official Gesetzessammlungen (LexWork + SIL platforms — the same publishing systems the cantons themselves operate), parsed natively as HTML for clean article-level data. The **remaining 7 cantons** fall back to PDF extraction via [LexFind.ch](https://www.lexfind.ch). Combined into `cantonal_laws.db` (15,722 laws / 353,464 articles) and federated with `statutes.db` via SQLite FTS5. The live LexFind API also serves as a real-time fallback for SR numbers not yet in the local mirror, and as the discovery catalog for the broader `search_legislation` tool which spans 33,000+ legislation texts including ordinances and intercantonal agreements.
+**Cantonal legislation** — dual-source pipeline. **19 cantons** are scraped directly from their official Gesetzessammlungen (LexWork + SIL platforms — the same publishing systems the cantons themselves operate), parsed natively as HTML for clean article-level data. The **remaining 7 cantons** fall back to PDF extraction via [LexFind.ch](https://www.lexfind.ch). Combined into `cantonal_laws.db` (15,589 laws / 353,464 articles) and federated with `statutes.db` via SQLite FTS5. The live LexFind API also serves as a real-time fallback for SR numbers not yet in the local mirror, and as the discovery catalog for the broader `search_legislation` tool which spans 33,000+ legislation texts including ordinances and intercantonal agreements.
 
 Decisions appearing in multiple sources are deduplicated by `decision_id` (a deterministic hash of court code + normalized docket number). The version with the longest full text is kept.
 
@@ -320,13 +322,13 @@ See the governance policy for source withdrawals, re-anonymization, and verified
 
 ```bibtex
 @dataset{swiss_caselaw_2026,
-  title={Swiss Case Law Dataset: 969,000+ Court Decisions with Reference Graph and ECtHR Coverage},
+  title={Swiss Case Law Dataset: 991,000+ Court Decisions with Reference Graph and ECtHR Coverage},
   author={Jonas Hertner},
   year={2026},
   url={https://huggingface.co/datasets/voilaj/swiss-caselaw},
-  note={990,000+ Swiss federal, cantonal, and regulatory decisions with full text,
-        structured metadata, 8.3M resolved citation edges, 11.47M statute links,
-        5,516 federal laws, 15,722 cantonal laws,
+  note={991,000+ Swiss federal, cantonal, and regulatory decisions with full text,
+        structured metadata, 8.6M resolved citation edges, 11.8M statute links,
+        5,519 federal laws, 15,589 cantonal laws,
         and legislative history (83,958 Botschaft amendment references; 459
         verbatim Botschaften, scaling).
         Searchable via 43 MCP tools (41 remote in public mode + 2 local-only) from Claude, ChatGPT, Cursor, Gemini, Grok, or any MCP/function-calling client. Updated daily.}

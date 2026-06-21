@@ -2,7 +2,9 @@
 
 **The complete machine-readable archive of Swiss case law and legislation — built for humans, designed for AI agents.**
 
-**990,000+ court decisions · 5,516 federal laws · 15,722 cantonal laws · 8.3 M resolved citation edges (8.9 M extracted) · 11.47 M statute references · 83,958 Botschaft amendment references (5,900+ verbatim Botschaften ingested, scaling) · daily RFC-6962 Merkle root + OpenTimestamps anchor (cryptographic provenance) · cli:ch + ECLI identifiers on every decision**
+**991,000+ court decisions · 5,519 federal laws · 15,589 cantonal laws · 8.6 M resolved citation edges (9.2 M extracted) · 11.8 M statute references · 83,958 Botschaft amendment references (5,900+ verbatim Botschaften ingested, scaling) · daily RFC-6962 Merkle root + OpenTimestamps anchor (cryptographic provenance) · cli:ch + ECLI identifiers on every decision**
+
+*Figures as of 2026-06-21 — corpus refreshed daily; live counts at [opencaselaw.ch](https://opencaselaw.ch).*
 
 Spans **1875 to today**, covers every Swiss federal court and all 26 cantonal court systems (plus regulators: FINMA, ComCo, FDPIC, IndepBC, ElCom, PostCom, ComCom), mirrors federal legislation directly from **Fedlex SPARQL** and cantonal legislation by **direct portal scraping for all 26 cantons** (LexWork: 18 cantons; SIL: NE + JU; ZH OpenData; TI RL — the same publishing systems the cantons operate themselves) with **LexFind PDF as fallback** supplementing 4 cantons for laws missing from their primary portals and as the discovery catalog for 33,000+ legislative texts. Includes **83,958 Botschaft amendment references across 9,139 BBl publications**, a **Phase 2 verbatim Botschaft corpus** (5,900+ documents, ~409K FTS5-indexed paragraphs, scaling via Fedlex SPARQL discovery), per-article Botschaft digests for BV/BGFA, parliamentary debate transcripts for the Bundesverfassung, a **resolved citation graph**, and **43 MCP tools (41 remote in public mode + 2 local-only)** usable from Claude, ChatGPT, Cursor, Gemini, Grok, or any MCP/function-calling client. **CC0 public-domain data, MIT-licensed code, no sign-up, no API keys, no paywall.**
 
@@ -22,26 +24,26 @@ OpenCaseLaw fixes this. **Every published Swiss court decision, every federal an
 
 ## What you get
 
-**Case law** — 990,000+ decisions from 1875 to today across **109 courts**, full text + structured metadata, covering:
+**Case law** — 991,000+ decisions from 1875 to today across **110 courts**, full text + structured metadata, covering:
 - All 7 federal courts (BGer, BVGer, BStGer, BPatGer, BGE, BGE historical, BGE-EGMR)
 - Federal military court (Militärkassationsgericht / MKG, 1,244 decisions 1915–2025)
 - All 26 cantonal court systems (first, second, and third instance)
 - Regulatory decisions (FINMA, ComCo, FDPIC, IndepBC, ElCom, PostCom, ComCom)
 - **ECHR/EGMR**: 834 Swiss-respondent (HUDOC) + general ECtHR Grand Chamber/Chamber/Committee (1,421 judgments live, full-corpus backfill in progress)
-- Three official languages: German 449,758 (46.3%), French 441,257 (45.4%), Italian 80,717 (8.3%); schema reserves `rm` for Romansh
+- Three official languages: German 463,012 (46.7%), French 446,869 (45.1%), Italian 81,796 (8.2%); schema reserves `rm` for Romansh
 - Deduplicated via docket normalisation + content-length-aware merge
 - Updated daily; BGer decisions available within ~15 minutes of court publication
 
 **Legislation** — every Swiss law, federal and cantonal, locally mirrored with article-level indexing:
-- 5,516 federal laws / ~133,468 articles in each of DE/FR/IT from the Fedlex SPARQL endpoint
-- 15,722 cantonal laws / 353,437 articles, direct-scraped from all 26 cantons (LexWork covers 18, SIL covers 2, ZH OpenData covers ZH, TI~RL covers TI); LexFind PDF fallback supplements 4 cantons for laws missing from their primary portals
+- 5,519 federal laws / ~133,359 articles in each of DE/FR/IT from the Fedlex SPARQL endpoint
+- 15,589 cantonal laws / 361,430 articles, direct-scraped from all 26 cantons (LexWork covers 18, SIL covers 2, ZH OpenData covers ZH, TI~RL covers TI); LexFind PDF fallback supplements 4 cantons for laws missing from their primary portals
 - Unified SQLite FTS5 search federates both corpora; sub-millisecond article lookup
 - Monthly refresh on the 2nd of each month (the day after laws enter into force)
-- 11.47 M resolved links from decisions to individual statute articles
+- 11.8 M resolved links from decisions to individual statute articles
 
 **Citation graph** — the **only public large-scale citation graph of the Swiss legal system**:
-- 8.3 M resolved decision-to-decision citation edges (8.9 M extracted) with confidence scores
-- 11.47 M decision-to-statute links resolved against the current consolidated text
+- 8.6 M resolved decision-to-decision citation edges (9.2 M extracted) with confidence scores
+- 11.8 M decision-to-statute links resolved against the current consolidated text
 - Bidirectional lookup, appeal-chain resolution (Instanzenzug), leading-case ranking by citation authority
 - Powers `find_leading_cases`, `find_citations`, `find_appeal_chain`, `analyze_legal_trend` (top: BGE 125 V 351 with 85,108 incoming citations)
 
@@ -52,7 +54,7 @@ OpenCaseLaw fixes this. **Every published Swiss court decision, every federal an
 - Doctrine overviews (statute + authority-ranked BGEs + timeline + Botschaft reference)
 - **Legislative history (Materialien)** — 83,958 Botschaft amendment references across 9,139 BBl publications and 33,465 distinct (statute, article) pairs; **Phase 2 verbatim Botschaft corpus** (5,900+ documents, ~409K FTS5-indexed paragraphs) accessible via `search_botschaft` (topical FTS5 across the verbatim corpus), `get_article_purpose` (verbatim Botschaft text for a specific article), and `get_article_history` (chronological timeline composing statute + Botschaft + leading cases + commentary); per-article digests (legislative intent, key arguments, design choices, rejected alternatives) for BV and BGFA; parliamentary debate transcripts for the BV. **Full verbatim ingest to ~25K Botschaften via Fedlex SPARQL discovery is scaling.**
 - **Decision-structure access** — `get_decision_structure` (Sachverhalt + Erwägungen + Dispositiv + Regeste split), `get_erwaegung` (verbatim Schweizer-citation Einheit, e.g. `get_erwaegung("BGE 140 III 86", "2.3")`), `get_regeste` (official BGer/BVGer/BStGer head-note)
-- Scholarly commentary lookup from OnlineKommentar.ch + OpenLegalCommentary.ch (1,100+ commentaries)
+- Scholarly commentary lookup from OnlineKommentar.ch + OpenLegalCommentary.ch (1,131 commentaries)
 - **Fallbearbeitung exam questions** generated from real BGE fact patterns, with hidden analysis for practice
 - Draft mock decisions from fact patterns (research-only tool for grounding LLM outputs)
 - Structured case briefs (regeste, Sachverhalt, Erwägungen, Dispositiv, cited statutes, authority)
@@ -78,7 +80,7 @@ OpenCaseLaw fixes this. **Every published Swiss court decision, every federal an
 | Article lookup latency | < 1 ms (local FTS5) |
 | BGer publication → searchable | ~15 min (was 24 h pre-poller) |
 | Daily full-text rebuild | ~5 h, zero downtime (atomic swap) |
-| Citation-to-decision resolution | 8.3 M edges resolved (8.9 M extracted) |
+| Citation-to-decision resolution | 8.6 M edges resolved (9.2 M extracted) |
 
 ---
 
@@ -94,7 +96,7 @@ There are eight ways to use it, depending on what you need:
 |--------|----------|-------------|
 | [**Search with AI**](#1-search-with-ai) | Everyone | Natural-language search in Claude, ChatGPT, Cursor, or Gemini — instant access, no download, full 24-tool surface |
 | [**Citation Analysis**](#citation-graph-tools) | Legal scholars, researchers | Leading cases, citation networks, appeal chains, jurisprudence trends over time |
-| [**Statute Lookup**](#statute-lookup-tools) | Legal professionals | Full article text from 5,516 federal laws and 15,722 cantonal laws, federated FTS5, sub-millisecond lookup |
+| [**Statute Lookup**](#statute-lookup-tools) | Legal professionals | Full article text from 5,519 federal laws and 15,589 cantonal laws, federated FTS5, sub-millisecond lookup |
 | [**Legislation Search**](#legislation-tools) | Legal professionals | LexFind-backed discovery search with `fetch_top_n_texts` for single-call natural-language workflows |
 | [**Education tools**](#education-tools) | Law students, instructors | Structured case briefs, doctrine timelines, real-BGE exam questions with hidden analysis |
 | [**Word Add-in**](https://word.opencaselaw.ch/install.html) | Legal practitioners writing briefs | Insert formatted Swiss citations into Word · click Erwägung / § to insert with correct sub-reference · free **Audit** (5-rail citation check) · **Pro** (CHF 5/mo, 25 AI calls/day): **Verify** (citation vs. full text) · **Strengthen** (paragraph x-ray + leading-case suggestions) · **Find Support** (decisions backing a statement) · **Reflect** (literary mirror) — curated ~8-tool subset |
@@ -496,7 +498,7 @@ The AI calls the MCP tools automatically — you see the search results inline a
 
 ### Citation graph tools
 
-Four tools expose the **reference graph**: 8.3 million resolved decision-to-decision citation edges (8.9 million extracted) and 11.47 million statute references. These require the graph database (`output/reference_graph.db`); if it's not available, the tools return a message instead of failing.
+Four tools expose the **reference graph**: 8.6 million resolved decision-to-decision citation edges (9.2 million extracted) and 11.8 million statute references. These require the graph database (`output/reference_graph.db`); if it's not available, the tools return a message instead of failing.
 
 **`find_citations`** — Given a decision, show its outgoing citations (what it references) and incoming citations (what references it). Each resolved citation includes the target decision's metadata and a confidence score. Unresolved references (e.g., older decisions not in the dataset) appear with their raw reference text.
 
@@ -556,8 +558,8 @@ Parameters: `query` (optional text), `law_code` + `article` (optional statute), 
 
 Two tools provide direct access to **Swiss law text** from the local mirror, covering both federal and cantonal jurisdictions with article-level FTS5 indexing and sub-millisecond lookup:
 
-- **Federal:** 5,516 laws / ~133,468 articles in each of DE/FR/IT from the [Fedlex](https://www.fedlex.admin.ch) SPARQL endpoint, mirrored monthly into `statutes.db`. Covers every consolidated federal act in German, French, and Italian.
-- **Cantonal:** 15,722 laws / 353,437 articles in `cantonal_laws.db`, sourced via two layers:
+- **Federal:** 5,519 laws / ~133,359 articles in each of DE/FR/IT from the [Fedlex](https://www.fedlex.admin.ch) SPARQL endpoint, mirrored monthly into `statutes.db`. Covers every consolidated federal act in German, French, and Italian.
+- **Cantonal:** 15,589 laws / 361,430 articles in `cantonal_laws.db`, sourced via two layers:
   - **Direct portal scraping (primary)** — 22 cantons whose official Gesetzessammlungen are published via the LexWork, SIL, ZH OpenData, or TI Raccolta delle Leggi platforms (AG, AI, AR, BE, BL, BS, FR, GE, GL, GR, LU, NE, NW, OW, SG, SH, SO, TG, TI, VS, ZG, ZH). The HTML is parsed natively — no PDF extraction, no OCR — yielding clean article-level data.
   - **LexFind PDF fallback** — 4 cantons not yet covered by direct scrapers (JU, SZ, UR, VD). PDFs from [LexFind.ch](https://www.lexfind.ch) are extracted with PyMuPDF and segmented into articles. Bilingual secondary-language passes for BE / FR / VS / GR.
   - Combined and federated via SQLite FTS5 with the federal table.
