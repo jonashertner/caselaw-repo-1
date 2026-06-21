@@ -14316,40 +14316,31 @@ def _get_law_cantonal(
     canton: str,
 ) -> dict:
     """Look up a specific law or article from cantonal_laws.db."""
-    conn = _get_cantonal_conn()
-    if conn is None:
-        return {"error": (
-            "Cantonal laws DB not available yet. The first full crawl may "
-            "still be running — use search_legislation or get_legislation "
-            "as a LexFind-backed fallback in the meantime."
-        )}
+    # The cantonal_laws.db mirror is now only needed to resolve a textual
+    # abbreviation -> sr_number; with LexFind-first serving (issue #27) the law
+    # text itself comes live from LexFind, so open the mirror lazily.
+    conn = None
 
     try:
         canton_u = canton.upper()
-        # Resolve by abbreviation OR sr_number. Cantonal abbreviations are
-        # stored in laws.title or (for future) a dedicated column — for now
-        # we fall back to title-prefix matching.
+        # Resolve by abbreviation OR sr_number.
         if not sr_number and abbreviation:
-            # If the abbreviation looks like an SR number (digits/dots/slashes),
-            # try it as sr_number first — callers often pass the SR number via
-            # the REST path /api/laws/{sr_number}?canton=ZH when they don't know
-            # the abbreviation.
+            # A digit-form abbreviation IS the SR/LS number (the common REST
+            # /api/laws/{n}?canton=ZH path) — use it directly, no mirror needed.
             if re.match(r"^[\d./]+$", abbreviation):
-                sr_check = conn.execute(
-                    "SELECT sr_number FROM laws WHERE canton = ? AND sr_number = ? AND language = ? LIMIT 1",
-                    (canton_u, abbreviation, language),
-                ).fetchone()
-                if sr_check:
-                    sr_number = sr_check["sr_number"]
-            if not sr_number:
-                row = conn.execute(
-                    """SELECT sr_number FROM laws
-                    WHERE canton = ? AND language = ?
-                      AND (title LIKE ? OR title LIKE ?) LIMIT 1""",
-                    (canton_u, language, f"%({abbreviation})%", f"{abbreviation}%"),
-                ).fetchone()
-                if row:
-                    sr_number = row["sr_number"]
+                sr_number = abbreviation
+            else:
+                # Resolve a textual abbreviation via the mirror's titles.
+                conn = _get_cantonal_conn()
+                if conn is not None:
+                    row = conn.execute(
+                        """SELECT sr_number FROM laws
+                        WHERE canton = ? AND language = ?
+                          AND (title LIKE ? OR title LIKE ?) LIMIT 1""",
+                        (canton_u, language, f"%({abbreviation})%", f"{abbreviation}%"),
+                    ).fetchone()
+                    if row:
+                        sr_number = row["sr_number"]
             if not sr_number:
                 return {"error": (
                     f"No cantonal law found for {canton_u} with abbreviation "
@@ -14359,34 +14350,36 @@ def _get_law_cantonal(
         if not sr_number:
             return {"error": "Provide sr_number, abbreviation, or use search_laws."}
 
-        law = conn.execute(
-            """SELECT * FROM laws WHERE canton = ? AND sr_number = ? AND language = ?""",
-            (canton_u, sr_number, language),
-        ).fetchone()
-        if not law:
+        # LexFind-first for currency + completeness (issue #27): delegate to the
+        # legislation path, which serves live from LexFind with the local mirror
+        # as a resilience fallback. This fixes false "No law found" for laws
+        # absent from the incomplete cantonal mirror (e.g. ZH 550.1 PolG, 554.5 HuG).
+        leg = _get_legislation(
+            systematic_number=sr_number, canton=canton_u, language=language,
+        )
+        if not isinstance(leg, dict) or leg.get("error"):
             return {
                 "error": (
                     f"No law found for canton={canton_u} SR {sr_number} "
-                    f"({language}). Use search_laws to discover the right law."
+                    f"({language}). Use search_laws or get_legislation to discover the right law."
                 )
             }
 
+        cur = leg.get("current_version") or {}
         result = {
-            "sr_number": law["sr_number"] or "",
-            "title": law["title"],
+            "sr_number": leg.get("systematic_number") or sr_number,
+            "title": leg.get("title"),
             "abbreviation": "",  # cantonal laws rarely have canonical abbreviations
             "canton": canton_u,
             "level": "cantonal",
             "language": language,
-            "category": law["category"] or "",
-            "lexfind_id": law["lexfind_id"],
+            "category": cur.get("category") or leg.get("category") or "",
+            "lexfind_id": leg.get("lexfind_id"),
+            "version_active_since": cur.get("active_since"),
+            "source": leg.get("source", "lexfind"),
         }
 
-        articles_rows = conn.execute(
-            """SELECT article_num, heading, text FROM articles
-            WHERE lexfind_id = ? AND language = ? ORDER BY seq""",
-            (law["lexfind_id"], language),
-        ).fetchall()
+        articles_rows = leg.get("articles") or []
 
         if article:
             article_norm = article.strip().lstrip("§").lstrip("Art.").strip()
@@ -14414,8 +14407,14 @@ def _get_law_cantonal(
     except sqlite3.Error as e:
         logger.error("Cantonal law lookup error: %s", e)
         return {"error": f"Database error: {e}"}
+    except Exception as e:
+        # The hot path now runs live LexFind HTTP + response parsing; a malformed
+        # response must degrade to a graceful error, not an unhandled 500.
+        logger.error("Cantonal law lookup failed: %s", e)
+        return {"error": f"Lookup failed: {e}"}
     finally:
-        conn.close()
+        if conn is not None:
+            conn.close()
 
 
 _FEDLEX_SPARQL = "https://fedlex.data.admin.ch/sparqlendpoint"
@@ -14978,8 +14977,43 @@ _CANTON_PRIMARY_LANG: dict[str, str] = {
 
 def _search_laws_cantonal(
     query: str, canton: str | None, language: str, limit: int,
+    raw_query: str | None = None,
 ) -> list[dict]:
-    """Cantonal FTS5 search against cantonal_laws.db. Returns a ranked list."""
+    """Cantonal statute search — LexFind-first (issue #27), local mirror fallback.
+
+    LexFind is queried live so newly-consolidated laws absent from the
+    incomplete local mirror (e.g. ZH PolG / HuG) are findable. Uses the RAW
+    query because LexFind expects natural text, not FTS5-expanded syntax.
+    """
+    if canton:
+        try:
+            # search_in_content=True: search_laws matches article TEXT (the local
+            # FTS did), so a content term like "Wegweisung" surfaces the PolG even
+            # though it isn't in the title/keywords.
+            leg = _search_legislation(
+                query=(raw_query or query), canton=canton, language=language,
+                limit=limit, search_in_content=True,
+            )
+        except Exception as e:
+            logger.warning("Cantonal LexFind search failed, using mirror: %s", e)
+            leg = None
+        if isinstance(leg, dict) and leg.get("laws"):
+            out: list[dict] = []
+            for law in leg["laws"][:limit]:
+                out.append({
+                    "level": "cantonal",
+                    "canton": law.get("entity") or canton.upper(),
+                    "sr_number": law.get("systematic_number") or "",
+                    "abbreviation": "",
+                    "title": law.get("title"),
+                    "article_num": None,
+                    "heading": None,
+                    "snippet": law.get("snippet"),
+                    "lexfind_id": law.get("lexfind_id"),
+                })
+            return out
+
+    # Fallback: local mirror FTS5 (offline / LexFind unavailable / federal-only).
     conn = _get_cantonal_conn()
     if conn is None:
         return []
@@ -15193,7 +15227,7 @@ def search_laws(
         )
     if hit_cantonal:
         cantonal_results = _search_laws_cantonal(
-            query, canton_u or None, language, limit,
+            query, canton_u or None, language, limit, raw_query=raw_query,
         )
 
     # Interleave by rank position: federal #1, cantonal #1, federal #2, ...
@@ -15304,8 +15338,9 @@ def _format_search_laws_response(result: dict) -> str:
 
 _LEXFIND_CACHE_TTL_MAP = {
     "search:": 86400,      # 24h
-    "sysnum:": 2592000,    # 30d
-    "law:": 604800,        # 7d
+    "sysnum:": 2592000,    # 30d — systematic_number -> lexfind_id mapping is stable
+    "law:": 3600,          # 1h — keep LexFind-served law text current (issue #27)
+    "law_text:": 3600,     # 1h — same currency guarantee for the PDF-extracted text
     "changes:": 86400,     # 24h
 }
 
@@ -15510,16 +15545,20 @@ def _search_legislation(
             "merged_from_per_lang_total": merged_count,
         }
 
-    # Local-first for cantonal queries: when a canton filter is set and
-    # the local mirror has content, serve from cantonal_laws.db FTS5 —
-    # instant, offline, BM25-ranked.
-    if canton and canton.upper() != "CH":
+    # Cantonal queries: LexFind-first for currency + completeness (issue #27).
+    # The local cantonal_laws.db mirror is a resilience fallback only — used
+    # when LexFind is unreachable or returns nothing (the mirror can be
+    # incomplete, e.g. ZH holds only 135 of ~600 laws).
+    cantonal_search = bool(canton and canton.upper() != "CH")
+
+    def _cantonal_search_fallback() -> dict | None:
+        if not cantonal_search:
+            return None
         local = _search_cantonal_local(
             query=query, canton=canton, language=language,
             limit=limit, fetch_top_n_texts=fetch_top_n_texts,
         )
-        if local and local.get("laws"):
-            return local
+        return local if (local and local.get("laws")) else None
 
     cache_key = (
         f"search:{language}:{query}:{canton}:{active_only}:"
@@ -15550,7 +15589,7 @@ def _search_legislation(
         timeout=LEXFIND_SEARCH_TIMEOUT,
     )
     if not create_resp or "id" not in create_resp:
-        return {"error": "LexFind search failed. Please try again."}
+        return _cantonal_search_fallback() or {"error": "LexFind search failed. Please try again."}
 
     search_id = create_resp["id"]
     session_id = create_resp.get("session_id", "")
@@ -15563,7 +15602,7 @@ def _search_legislation(
         timeout=LEXFIND_SEARCH_TIMEOUT,
     )
     if not results_resp:
-        return {"error": "Failed to fetch search results from LexFind."}
+        return _cantonal_search_fallback() or {"error": "Failed to fetch search results from LexFind."}
 
     # Parse results
     laws = []
@@ -15625,6 +15664,12 @@ def _search_legislation(
             law["sample_articles"] = arts[:5]
             law["text_source"] = text.get("text_source", "lexfind_pdf")
 
+    # Empty LexFind result for a cantonal query → try the local mirror before
+    # returning nothing (resilience for the freshest/edge queries).
+    if not laws:
+        fb = _cantonal_search_fallback()
+        if fb is not None:
+            return fb
     result = {"query": query, "total": total, "laws": laws, "language": language}
     _lexfind_cache_set(cache_key, result)
     return result
@@ -15898,17 +15943,28 @@ def _get_legislation(
         if local is not None:
             return local
 
-    # Local-first: serve cantonal laws from cantonal_laws.db when available
-    if not include_versions and (
+    # Cantonal laws: LexFind-first for currency + completeness (issue #27).
+    # The cantonal_laws.db mirror can be incomplete/stale (e.g. ZH's zhlex_pdf
+    # source captured only 135 of ~600 laws), so we serve live from LexFind and
+    # keep the mirror as a resilience fallback only — used when LexFind is
+    # disabled (here) or unreachable (at the Path B failure points below).
+    cantonal_lookup = not include_versions and (
         lexfind_id is not None
         or (systematic_number and canton and canton.upper() != "CH")
-    ):
-        cantonal = _get_cantonal_local(
+    )
+
+    def _cantonal_mirror_fallback() -> dict | None:
+        if not cantonal_lookup:
+            return None
+        return _get_cantonal_local(
             lexfind_id=lexfind_id,
             systematic_number=systematic_number,
             canton=canton,
             language=language,
         )
+
+    if cantonal_lookup and not LEXFIND_ENABLED:
+        cantonal = _cantonal_mirror_fallback()
         if cantonal is not None:
             return cantonal
 
@@ -15937,7 +15993,9 @@ def _get_legislation(
                 timeout=LEXFIND_SEARCH_TIMEOUT,
             )
             if not create_resp or "id" not in create_resp:
-                return {"error": f"Systematic search failed for SR {systematic_number}."}
+                return _cantonal_mirror_fallback() or {
+                    "error": f"Systematic search failed for SR {systematic_number}."
+                }
 
             sid = create_resp["id"]
             ssid = create_resp.get("session_id", "")
@@ -16022,7 +16080,9 @@ def _get_legislation(
                                 break
 
             if not best:
-                return {"error": f"No legislation found for SR {systematic_number} in {target_canton}."}
+                return _cantonal_mirror_fallback() or {
+                    "error": f"No legislation found for SR {systematic_number} in {target_canton}."
+                }
 
             lexfind_id = best
             _lexfind_cache_set(cache_key, lexfind_id)
@@ -16038,7 +16098,9 @@ def _get_legislation(
         timeout=LEXFIND_LOOKUP_TIMEOUT,
     )
     if not data:
-        return {"error": f"Failed to fetch legislation {lexfind_id} from LexFind."}
+        return _cantonal_mirror_fallback() or {
+            "error": f"Failed to fetch legislation {lexfind_id} from LexFind."
+        }
 
     entity = data.get("entity", {})
 
@@ -17645,9 +17707,20 @@ def _list_tools() -> list[Tool]:
                     "sr_number": {
                         "type": "string",
                         "description": (
-                            "SR number (federal: '210'=ZGB, '220'=OR, '101'=BV; "
-                            "cantonal: as published by the canton, e.g. '554.5' "
-                            "for ZH Hundegesetz)."
+                            "Statute number. Federal: SR number ('210'=ZGB, "
+                            "'220'=OR, '101'=BV). Cantonal: the canton's "
+                            "systematic number — e.g. ZH 'LS' number '554.5' "
+                            "(Hundegesetz), '550.1' (Polizeigesetz). The "
+                            "`systematic_number` alias (as used by get_legislation) "
+                            "is also accepted."
+                        ),
+                    },
+                    "systematic_number": {
+                        "type": "string",
+                        "description": (
+                            "Alias for sr_number — the cantonal-friendly name "
+                            "(LS / systematic number), matching get_legislation. "
+                            "Either field works."
                         ),
                     },
                     "abbreviation": {
@@ -18893,7 +18966,9 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
         elif name == "get_law":
             result = await asyncio.to_thread(
                 get_law,
-                sr_number=arguments.get("sr_number"),
+                # `systematic_number` is the cantonal-friendly alias (LS number),
+                # mirroring get_legislation; either is accepted (issue #27).
+                sr_number=arguments.get("sr_number") or arguments.get("systematic_number"),
                 abbreviation=arguments.get("abbreviation"),
                 article=arguments.get("article"),
                 language=arguments.get("language", "de"),
