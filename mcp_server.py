@@ -3652,67 +3652,250 @@ def search_materialien(
         conn.close()
 
 
-def _get_materialien_for_doctrine(law_code: str, article: str) -> dict | None:
-    """Fetch a compact Materialien excerpt for get_doctrine enrichment.
+_SR_NUMBER_MAP = {  # law abbreviation (UPPER) -> SR number
+    "BV": "101", "ZGB": "210", "OR": "220", "ZPO": "272",
+    "STGB": "311.0", "STPO": "312.0", "SCHKG": "281.1",
+    "VWVG": "172.021", "BGFA": "935.61", "BGG": "173.110",
+    "AVIG": "837.0", "IVG": "831.20", "AHVG": "831.10",
+    "KVG": "832.10", "UVG": "832.20", "DSG": "235.1",
+    "SVG": "741.01", "ATSG": "830.1", "EOG": "834.1",
+    "ARBG": "822.11", "MWSTG": "641.20", "DBG": "642.11",
+}
 
-    Tries the openlegalcommentary digest first (richer), falls back to
-    Fedlex amendment refs (sparser but universal).
+
+def _resolve_sr_for_law(conn: sqlite3.Connection, law_code: str) -> str:
+    """Resolve a law abbreviation to its SR number: static map -> materialien
+    digest row -> statutes.db abbreviation lookup. Returns '' if unresolved."""
+    sr = _SR_NUMBER_MAP.get(law_code.upper(), "")
+    if sr:
+        return sr
+    try:
+        r = conn.execute(
+            "SELECT sr_number FROM materialien "
+            "WHERE law_code = ? AND sr_number IS NOT NULL LIMIT 1",
+            (law_code.upper(),),
+        ).fetchone()
+        if r and r["sr_number"]:
+            return r["sr_number"]
+    except sqlite3.Error:
+        pass
+    try:
+        st = sqlite3.connect(
+            f"file:{STATUTES_DB_PATH}?mode=ro", uri=True, timeout=0.5,
+        )
+        st.row_factory = sqlite3.Row
+        r = st.execute(
+            "SELECT sr_number FROM laws WHERE UPPER(abbr_de) = ? LIMIT 1",
+            (law_code.upper(),),
+        ).fetchone()
+        st.close()
+        if r and r["sr_number"]:
+            return r["sr_number"]
+    except Exception:
+        pass
+    return ""
+
+
+def _verbatim_botschaft_pointer(
+    conn: sqlite3.Connection, sr: str, article: str,
+) -> dict | None:
+    """Bridge the digest/doctrine path to the VERBATIM Botschaft corpus.
+
+    Looks up article_botschaft_links -> botschaft_documents for (sr, article)
+    and returns a lean pointer telling the caller to fetch quotable text via
+    get_article_purpose (R2/R4). Returns None if the article isn't linked or
+    the Phase-2 tables aren't present.
+    """
+    if not sr or not article:
+        return None
+    try:
+        rows = conn.execute(
+            """SELECT DISTINCT d.bbl_citation, d.eli_uri
+               FROM article_botschaft_links abl
+               JOIN botschaft_documents d ON d.botschaft_id = abl.botschaft_id
+               WHERE abl.sr_number = ? AND abl.article = ?
+               LIMIT 5""",
+            (sr, article),
+        ).fetchall()
+    except sqlite3.OperationalError:
+        return None
+    if not rows:
+        return None
+    return {
+        "available": True,
+        "tool": "get_article_purpose",
+        "call": f'get_article_purpose(sr_number="{sr}", article="{article}")',
+        "bbl_citations": [r["bbl_citation"] for r in rows if r["bbl_citation"]],
+        "eli_uris": [r["eli_uri"] for r in rows if r["eli_uri"]],
+        "note": (
+            "Verbatim Botschaft paragraphs for this article are available — "
+            "call get_article_purpose for quotable text (R2/R4). Any digest "
+            "fields above are paraphrase, not verbatim."
+        ),
+    }
+
+
+def _get_materialien_for_doctrine(law_code: str, article: str) -> dict | None:
+    """Fetch a compact Materialien excerpt for get_doctrine / get_law enrichment.
+
+    Richness ladder: openlegalcommentary digest (BV/BGFA only, PARAPHRASE) ->
+    Fedlex amendment refs (publication locators) -> ALWAYS a pointer to the
+    verbatim Botschaft corpus (get_article_purpose) whenever article_botschaft_links
+    has a row, so the statute path bridges to quotable text instead of returning
+    "no materials".
     """
     conn = _get_materialien_conn()
     if conn is None:
         return None
     try:
-        # Try openlegalcommentary digest first
-        row = conn.execute(
-            """SELECT legislative_intent, key_arguments, bbl_ref
-               FROM materialien
-               WHERE law_code = ? AND article = ?
-               ORDER BY bbl_ref LIMIT 1""",
-            (law_code.upper(), article),
-        ).fetchone()
+        sr = _resolve_sr_for_law(conn, law_code)
+        verbatim = _verbatim_botschaft_pointer(conn, sr, article) if sr else None
+
+        # 1. openlegalcommentary digest (richest prose, but PARAPHRASE)
+        row = None
+        try:
+            row = conn.execute(
+                """SELECT legislative_intent, key_arguments, bbl_ref
+                   FROM materialien
+                   WHERE law_code = ? AND article = ?
+                   ORDER BY bbl_ref LIMIT 1""",
+                (law_code.upper(), article),
+            ).fetchone()
+        except sqlite3.OperationalError:
+            pass
         if row:
-            return {
+            out = {
                 "bbl_ref": row["bbl_ref"],
                 "legislative_intent": (row["legislative_intent"] or "")[:500],
                 "key_arguments": (row["key_arguments"] or "")[:500],
-                "source": "openlegalcommentary.ch (CC BY-SA 4.0)",
+                "source": "openlegalcommentary.ch (CC BY-SA 4.0) — PARAPHRASE, not verbatim",
             }
+            if verbatim:
+                out["verbatim_botschaft"] = verbatim
+            return out
 
-        # Fall back to Fedlex amendment refs
-        _SR_MAP = {
-            "BV": "101", "ZGB": "210", "OR": "220", "ZPO": "272",
-            "STGB": "311.0", "STPO": "312.0", "SCHKG": "281.1",
-            "VWVG": "172.021", "BGFA": "935.61", "BGG": "173.110",
-            "DSG": "235.1", "SVG": "741.01", "ATSG": "830.1",
-        }
-        sr = _SR_MAP.get(law_code.upper(), "")
-        if not sr:
-            return None
-        try:
-            refs = conn.execute(
-                """SELECT ref_type, year, page, fedlex_url, context
-                   FROM amendment_refs
-                   WHERE sr_number = ? AND article = ?
-                     AND ref_type IN ('BBl', 'FF')
-                   ORDER BY year DESC LIMIT 3""",
-                (sr, article),
-            ).fetchall()
-            if not refs:
-                return None
-            bbl_citations = [f"{r['ref_type']} {r['year']} {r['page']}" for r in refs]
+        # 2. Fedlex amendment refs (publication locators)
+        if sr:
+            try:
+                refs = conn.execute(
+                    """SELECT ref_type, year, page, fedlex_url, context
+                       FROM amendment_refs
+                       WHERE sr_number = ? AND article = ?
+                         AND ref_type IN ('BBl', 'FF')
+                       ORDER BY year DESC LIMIT 3""",
+                    (sr, article),
+                ).fetchall()
+            except sqlite3.OperationalError:
+                refs = []
+            if refs:
+                bbl_citations = [f"{r['ref_type']} {r['year']} {r['page']}" for r in refs]
+                out = {
+                    "bbl_ref": bbl_citations[0],
+                    "bbl_citations": bbl_citations,
+                    "fedlex_urls": [r["fedlex_url"] for r in refs if r["fedlex_url"]],
+                    "context": (refs[0]["context"] or "")[:300],
+                    "source": "Fedlex (automatic extraction from statute footnotes)",
+                }
+                if verbatim:
+                    out["verbatim_botschaft"] = verbatim
+                return out
+
+        # 3. Verbatim pointer alone — the article is linked to a Botschaft even
+        #    though no digest/refs exist; surface the quotable bridge anyway.
+        if verbatim:
             return {
-                "bbl_ref": bbl_citations[0],
-                "bbl_citations": bbl_citations,
-                "fedlex_urls": [r["fedlex_url"] for r in refs if r["fedlex_url"]],
-                "context": (refs[0]["context"] or "")[:300],
-                "source": "Fedlex (automatic extraction from statute footnotes)",
+                "verbatim_botschaft": verbatim,
+                "source": "Fedlex Botschaft corpus (verbatim, via article_botschaft_links)",
             }
-        except sqlite3.OperationalError:
-            return None  # amendment_refs table may not exist yet
+        return None
     except sqlite3.Error:
         return None
     finally:
         conn.close()
+
+
+def _materials_for_decision(decision_id: str, max_items: int = 6) -> list[dict] | None:
+    """Preparatory Botschaft materials for the statute articles a decision cites,
+    most-cited first. Lean pointers to get_article_purpose — NO verbatim text in
+    the decision payload (R1-R3 clean). Returns None when the graph/materials DBs
+    are unavailable, [] when the decision cites nothing with a Botschaft link.
+    """
+    if not decision_id:
+        return None
+    gconn = _get_graph_conn()
+    if gconn is None:
+        return None
+    try:
+        if not _sqlite_has_table(gconn, "decision_statutes"):
+            return None
+        rows = gconn.execute(
+            """SELECT s.law_code AS law_code, s.article AS article,
+                      SUM(ds.mention_count) AS mc
+               FROM decision_statutes ds
+               JOIN statutes s ON s.statute_id = ds.statute_id
+               WHERE ds.decision_id = ?
+                 AND s.article IS NOT NULL AND s.article != ''
+               GROUP BY s.law_code, s.article
+               ORDER BY mc DESC LIMIT 25""",
+            (decision_id,),
+        ).fetchall()
+    except sqlite3.Error:
+        return None
+    finally:
+        gconn.close()
+    if not rows:
+        return []
+    mconn = _get_materialien_conn()
+    if mconn is None:
+        return None
+    out: list[dict] = []
+    seen: set = set()
+    sr_cache: dict = {}
+    try:
+        for r in rows:
+            if len(out) >= max_items:
+                break
+            law_code = r["law_code"]
+            article = r["article"]
+            if not law_code or not article:
+                continue
+            if law_code not in sr_cache:
+                sr_cache[law_code] = _resolve_sr_for_law(mconn, law_code)
+            sr = sr_cache[law_code]
+            if not sr or (sr, article) in seen:
+                continue
+            ptr = _verbatim_botschaft_pointer(mconn, sr, article)
+            if not ptr:
+                continue
+            seen.add((sr, article))
+            out.append({
+                "law": law_code,
+                "article": article,
+                "sr_number": sr,
+                "bbl_citations": ptr["bbl_citations"],
+                "tool": "get_article_purpose",
+                "call": ptr["call"],
+            })
+    finally:
+        mconn.close()
+    return out
+
+
+def _format_materials_section_md(mats: list[dict]) -> str:
+    """Render _materials_for_decision output as a compact Markdown section for
+    the text-mode get_decision response."""
+    if not mats:
+        return ""
+    parts = [
+        "\n## Preparatory materials (Botschaft) for cited articles\n",
+        "_Federal Council Botschaft for the provisions this decision applies — "
+        "for statutory interpretation (R4) call `get_article_purpose` for "
+        "verbatim text:_\n",
+    ]
+    for m in mats:
+        cites = ", ".join(m.get("bbl_citations") or []) or "—"
+        parts.append(f"- **Art. {m['article']} {m['law']}** → {cites} — `{m['call']}`\n")
+    return "".join(parts)
 
 
 def _get_vector_model():
@@ -8081,8 +8264,13 @@ server = Server(
         "R2. NEVER write a direct quotation (text inside quotation marks) "
         "unless it came verbatim from `get_erwaegung` (the `text` field), "
         "`get_regeste` (the `regeste` field), `get_law` (the article text), "
-        "`get_commentary`, or `get_materialien`. If you can't retrieve the "
-        "exact words, paraphrase and cite the whole decision.\n\n"
+        "`get_commentary`, or `get_article_purpose` / `search_botschaft` "
+        "(the verbatim Botschaft `text` field, with BBl + eli_uri provenance). "
+        "`get_materialien` returns PARAPHRASED digests (legislative_intent, "
+        "key_arguments, …) — NEVER quote them verbatim; use them only to locate "
+        "the BBl reference, then call `get_article_purpose` for quotable text. "
+        "If you can't retrieve the exact words, paraphrase and cite the whole "
+        "decision.\n\n"
 
         "R3. NEVER state what a Swiss statute says from memory. Always "
         "call `get_law` (federal) or `get_legislation` (cantonal/federal "
@@ -8091,8 +8279,12 @@ server = Server(
         "lawyer misadvising a client.\n\n"
 
         "R4. NEVER speculate about legislative intent or teleology. The "
-        "Federal Council's Botschaft is the primary source — retrieve "
-        "via `get_materialien` or `get_doctrine` first.\n\n"
+        "Federal Council's Botschaft is the primary source — retrieve the "
+        "VERBATIM Botschaft for an article via `get_article_purpose` "
+        "(sr_number + article), or search it topically via `search_botschaft`. "
+        "`get_materialien` / `get_doctrine` return paraphrased digests + the "
+        "BBl locator — use them to find the reference, then quote from "
+        "`get_article_purpose`.\n\n"
 
         "R5. If `get_law` returns a `pending_changes` field, ALWAYS "
         "surface it: \"Note: this provision will be amended on [date].\"\n\n"
@@ -8266,7 +8458,8 @@ server = Server(
         "══════════════════════════════════════════════════════════════\n"
         "• 'What does Art. X say?'                 → get_law\n"
         "• 'Leading cases on Art. X?'              → get_doctrine\n"
-        "• 'Why does Art. X exist?' (teleology)    → get_materialien\n"
+        "• 'Why does Art. X exist?' (teleology)    → get_article_purpose (verbatim Botschaft for the article)\n"
+        "• 'Botschaft / prep-materials on [topic]?' → search_botschaft (verbatim FTS); get_materialien (BV/BGFA digests)\n"
         "• 'Find cases about [topic]'              → search_decisions\n"
         "• 'Is BGE X still good law?'              → find_citations (incoming)\n"
         "• 'What does [canton] law say about Y?'   → search_laws with canton\n"
@@ -8294,9 +8487,9 @@ server = Server(
         "══════════════════════════════════════════════════════════════\n"
         "For a full provision workup:\n"
         "  get_law (current text) → get_doctrine (cases + timeline) →\n"
-        "  get_materialien (Botschaft — currently digested only for BV/BGFA; "
-        "other laws return BBl/AS publication-locator refs while full expansion "
-        "is in active build) → get_commentary (scholarly views)\n\n"
+        "  get_article_purpose (VERBATIM Botschaft paragraphs for the article, "
+        "with BBl + eli_uri provenance; `get_materialien` adds BV/BGFA digests + "
+        "the BBl publication-locator) → get_commentary (scholarly views)\n\n"
 
         "To check if a precedent still holds:\n"
         "  find_citations(direction=\"incoming\") on the BGE → scan "
@@ -8863,8 +9056,13 @@ def _handle_get_decision_structure(*, decision_id: str, paragraph_excerpt_chars:
     main_decision = get_decision_by_id(resolved) or {}
     canonical_id = main_decision.get("decision_id") or resolved or row["decision_id"]
     canonical_url = _canonical_decision_url(canonical_id)
+    try:
+        _prep_mats = _materials_for_decision(canonical_id)
+    except Exception:
+        _prep_mats = None
     return {
         "decision_id": canonical_id,
+        "preparatory_materials": _prep_mats or [],
         "canonical_url": canonical_url,
         "court": row["court"],
         "language": row["language"],
@@ -12540,8 +12738,13 @@ def _handle_get_case_brief(*, case: str) -> dict:
         {**ew, "text": _auto_link_citations(ew.get("text") or "")}
         for ew in key_erwaegungen
     ]
+    try:
+        _prep_mats = _materials_for_decision(decision_id)
+    except Exception:
+        _prep_mats = None
     return {
         "decision_id": decision_id,
+        "preparatory_materials": _prep_mats or [],
         "bge_ref": decision.get("docket_number", ""),
         "court": decision.get("court", ""),
         "date": decision.get("decision_date", ""),
@@ -18758,6 +18961,12 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
             incoming, outgoing = _count_citations(result["decision_id"])
             if incoming > 0 or outgoing > 0:
                 text += f"\n**Citation graph:** Cited by {incoming} decisions | Cites {outgoing} decisions\n"
+            try:
+                _prep_mats = _materials_for_decision(result.get("decision_id") or _did_arg)
+            except Exception:
+                _prep_mats = None
+            if _prep_mats:
+                text += _format_materials_section_md(_prep_mats)
             return [TextContent(type="text", text=text)]
 
         elif name == "cite":
