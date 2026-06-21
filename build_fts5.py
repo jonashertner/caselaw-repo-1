@@ -800,7 +800,7 @@ def _compute_content_hashes(conn: sqlite3.Connection, batch_size: int = 5000) ->
     return fixed
 
 
-def _ensure_wayback_queue(conn: sqlite3.Connection) -> None:
+def _ensure_wayback_queue(conn: sqlite3.Connection, live_db_path=None) -> None:
     """Provision the wayback_queue table that scripts/wayback_archiver.py
     drains. Populated at the tail of every full rebuild — one row per
     (decision_id, url, url_type) where url_type is 'source' or 'pdf'.
@@ -834,6 +834,47 @@ def _ensure_wayback_queue(conn: sqlite3.Connection) -> None:
           ON wayback_queue(attempted_at) WHERE attempted_at IS NULL;
         """
     )
+
+    # Preserve the existing queue (incl. attempted_at) from the live DB before
+    # a FULL rebuild. Without this the fresh .tmp queue starts empty → the
+    # marker is NULL → every row is re-enqueued as pending (wiping weeks of
+    # archiver progress) AND the slow full backfill runs (~1h on the corpus).
+    # Copying the live queue first makes the marker non-NULL, so the enqueue
+    # below takes the fast incremental path and attempted_at is retained.
+    # No-op on the first-ever build (no live DB / no table yet).
+    already = conn.execute("SELECT COUNT(*) FROM wayback_queue").fetchone()[0]
+    if already == 0 and live_db_path is not None and Path(str(live_db_path)).exists():
+        try:
+            conn.execute("ATTACH DATABASE ? AS live", (str(live_db_path),))
+            has_tbl = conn.execute(
+                "SELECT 1 FROM live.sqlite_master WHERE type='table' "
+                "AND name='wayback_queue'"
+            ).fetchone()
+            if has_tbl:
+                conn.execute(
+                    "INSERT OR IGNORE INTO wayback_queue"
+                    "(decision_id, url, url_type, queued_at, attempted_at,"
+                    " status_code, archived_url) "
+                    "SELECT decision_id, url, url_type, queued_at, attempted_at,"
+                    " status_code, archived_url FROM live.wayback_queue"
+                )
+                conn.commit()
+                kept = conn.execute(
+                    "SELECT COUNT(*) FROM wayback_queue").fetchone()[0]
+                logger.info(
+                    "wayback_queue: preserved %d rows (incl. attempted) from live DB",
+                    kept,
+                )
+        except sqlite3.Error as e:
+            logger.warning(
+                "wayback_queue: live preserve failed (%s); falling back to backfill",
+                e,
+            )
+        finally:
+            try:
+                conn.execute("DETACH DATABASE live")
+            except sqlite3.Error:
+                pass
 
     # Incremental enqueue: scan only decisions scraped since the last
     # queued_at marker. NULL marker (empty queue, e.g. brand-new DB
@@ -1946,7 +1987,10 @@ def build_database(
         # Provision the wayback_queue table; populated as part of the
         # same step so scripts/wayback_archiver.py finds work to do.
         with _phase_timer("provision wayback_queue"):
-            _ensure_wayback_queue(conn)
+            # Pass the live DB so a full rebuild preserves the existing queue
+            # (attempted_at) and takes the fast incremental path (issue: the
+            # full backfill cost ~1h11m + wiped archiver progress every Sunday).
+            _ensure_wayback_queue(conn, live_db_path=final_db_path)
             wq_pending = conn.execute(
                 "SELECT COUNT(*) FROM wayback_queue WHERE attempted_at IS NULL"
             ).fetchone()[0]
