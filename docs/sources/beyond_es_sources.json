@@ -70,7 +70,9 @@
       "portal_url": "http://jurisprudenceadm.ne.ch/",
       "est_volume": "Several thousand decisions (construction/aménagement, personnel, expropriation), steady annual flow",
       "feasibility": "Structured-DB: FindinfoWeb/Omnis backend, full-text HTML, no login. Highest-value beyond-es target for NE; whole executive track absent from NE_Omni.",
-      "priority": 1
+      "priority": 1,
+      "status": "INGESTED 2026-06-22",
+      "our_scraper": "ne_jurisprudence_adm"
     },
     {
       "level": "cantonal",

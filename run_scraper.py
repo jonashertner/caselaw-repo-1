@@ -173,6 +173,7 @@ SCRAPERS = {
     "ti_gerichte": ("scrapers.cantonal.ti_gerichte", "TIGerichteScraper"),
     "gl_gerichte": ("scrapers.cantonal.gl_gerichte", "GLGerichteScraper"),
     "ne_gerichte": ("scrapers.cantonal.ne_gerichte", "NEGerichteScraper"),
+    "ne_jurisprudence_adm": ("scrapers.cantonal.ne_jurisprudence_adm", "NEJurisprudenceAdmScraper"),
     # Cantonal — Custom platforms
     "vd_gerichte": ("scrapers.cantonal.vd_gerichte", "VDGerichteScraper"),
     "so_gerichte": ("scrapers.cantonal.so_gerichte", "SOGerichteScraper"),
