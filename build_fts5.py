@@ -1713,6 +1713,40 @@ def _migrate_schema(conn: sqlite3.Connection) -> None:
             pass  # column already exists
 
 
+def _fts5_optimize_with_heartbeat(conn, interval: int = 600) -> None:
+    """Run the FTS5 'optimize' merge while emitting a heartbeat line every ``interval`` seconds.
+
+    'optimize' is one blocking SQLite call that runs for hours with NO output; the publish
+    stall-watchdog (publish.py — kills a step after N seconds with no output line) false-killed
+    this healthy step on 2026-06-22 once optimize crossed the 4h mark. The optimize runs in THIS
+    (main) thread — the connection is never touched cross-thread — while a daemon thread only
+    prints (never touches ``conn``), so there is no SQLite threading hazard. ``flush=True`` makes
+    each heartbeat reach the subprocess stdout immediately (pipes are block-buffered otherwise),
+    resetting the watchdog's idle timer well under its limit.
+    """
+    import threading
+    import time as _t
+
+    stop = threading.Event()
+    t0 = _t.monotonic()
+
+    def _beat() -> None:
+        while not stop.wait(interval):
+            print(
+                f"  FTS5 optimize still running… {int((_t.monotonic() - t0) // 60)}m elapsed (heartbeat)",
+                flush=True,
+            )
+
+    hb = threading.Thread(target=_beat, name="fts5-optimize-heartbeat", daemon=True)
+    hb.start()
+    try:
+        conn.execute("INSERT INTO decisions_fts(decisions_fts) VALUES('optimize')")
+        conn.commit()
+    finally:
+        stop.set()
+        hb.join(timeout=2)
+
+
 def build_database(
     output_dir: Path,
     db_path: Path | None = None,
@@ -1865,8 +1899,9 @@ def build_database(
 
     if not no_optimize and total_imported > 0:
         with _phase_timer("FTS5 optimize"):
-            conn.execute("INSERT INTO decisions_fts(decisions_fts) VALUES('optimize')")
-            conn.commit()
+            # heartbeat-wrapped so the publish stall-watchdog doesn't false-kill this ~4h
+            # silent step (it did on 2026-06-22 when optimize crossed the 14400s no-output cap)
+            _fts5_optimize_with_heartbeat(conn)
     elif no_optimize and total_imported > 0:
         logger.info("Skipping FTS5 optimize (--no-optimize)")
         conn.commit()
