@@ -57,7 +57,9 @@ SPIDER_TO_COURT: dict[str, str | None] = {
     # Bern
     "BE_ZivilStraf": "be_zivilstraf", "BE_Anwaltsaufsicht": "be_anwaltsaufsicht",
     "BE_Verwaltungsgericht": "be_verwaltungsgericht", "BE_Steuerrekurs": "be_steuerrekurs",
-    "BE_BVD": "be_bvd", "BE_Weitere": None,
+    # BE_BVD: a be_bvd scraper exists in the working tree but is not yet committed/registered
+    # upstream; map to None until it is (keeps this map consistent with the committed SCRAPERS).
+    "BE_BVD": None, "BE_Weitere": None,
     # Basel
     "BL_Gerichte": "bl_gerichte", "BS_Omni": "bs_gerichte",
     # Rest of cantons
