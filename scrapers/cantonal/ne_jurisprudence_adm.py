@@ -173,6 +173,7 @@ class NEJurisprudenceAdmScraper(BaseScraper):
                 yield stub
 
         if total_hits > RESULTS_PER_PAGE and session_key:
+            consecutive_errors = 0
             for page in range(2, total_pages + 1):
                 try:
                     params = dict(BASE_PARAMS)
@@ -192,9 +193,14 @@ class NEJurisprudenceAdmScraper(BaseScraper):
                                 continue
                             yielded += 1
                             yield stub
+                    consecutive_errors = 0
                 except Exception as e:
-                    logger.error(f"NE-adm: page {page} failed: {e}")
-                    break
+                    consecutive_errors += 1
+                    logger.error(f"NE-adm: page {page} failed ({consecutive_errors}/5): {e}")
+                    if consecutive_errors >= 5:
+                        logger.error("NE-adm: 5 consecutive page errors — stopping pagination")
+                        break
+                    continue
                 if page % 20 == 0:
                     logger.info(f"NE-adm: scanned {page}/{total_pages} pages, yielded {yielded}")
         logger.info(f"NE-adm: discovery complete: {yielded} new stubs")
@@ -260,9 +266,8 @@ class NEJurisprudenceAdmScraper(BaseScraper):
         soup = BeautifulSoup(html, "html.parser")
         full_text = _extract_document_text(soup)
         if not full_text or len(full_text) < 50:
-            logger.warning(f"NE-adm: text too short for {stub['docket_number']}")
-            if not full_text:
-                full_text = f"[Text extraction failed for {stub['docket_number']}]"
+            logger.warning(f"NE-adm: no usable text for {stub['docket_number']} — skipping")
+            return None
 
         chamber = _extract_labelled(soup, "Autorité")        # issuing body / department (DDTE, …)
         legal_area = _extract_labelled(soup, "Domaine")

@@ -43,7 +43,7 @@ class ESchKScraper(BaseScraper):
         return "eschk"
 
     def discover_new(self, since_date=None) -> Iterator[dict]:
-        end_year = datetime.now(timezone.utc).year + 1
+        end_year = datetime.now(timezone.utc).year
         start_year = max(START_YEAR, since_date.year) if since_date else START_YEAR
         seen_hashes: set[str] = set()
         found = 0
@@ -70,14 +70,14 @@ class ESchKScraper(BaseScraper):
                 docket = unquote(href.split("/")[-1]).rsplit(".pdf", 1)[0] or f"eschk-{year}"
 
                 pm = PUB_DATE_PATTERN.search(title)
-                decision_date_str = (
-                    f"{pm.group(1)}. {pm.group(2)} {pm.group(3)}" if pm else f"1. Januar {year}"
-                )
+                # On a date-miss leave it None (do NOT fabricate "1. Januar {year}", which would
+                # be a wrong, real-looking date); fetch_decision keeps decision_date=None.
+                decision_date_str = f"{pm.group(1)}. {pm.group(2)} {pm.group(3)}" if pm else None
 
                 decision_id = make_decision_id("eschk", docket)
                 if self.state.is_known(decision_id):
                     continue
-                if since_date:
+                if since_date and decision_date_str:
                     parsed = parse_date(decision_date_str)
                     if parsed and parsed < since_date:
                         continue
@@ -85,7 +85,7 @@ class ESchKScraper(BaseScraper):
                 found += 1
                 yield {
                     "docket_number": docket,
-                    "decision_date": decision_date_str,
+                    "decision_date": decision_date_str or "",
                     "pdf_url": pdf_url,
                     "title": title or docket,
                 }

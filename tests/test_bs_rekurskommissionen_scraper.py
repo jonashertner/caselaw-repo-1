@@ -61,3 +61,30 @@ def test_two_courts_and_dockets(monkeypatch, tmp_path):
 def test_court_code_is_storage_key(tmp_path):
     s = BSRekurskommissionenScraper(state_dir=tmp_path)
     assert s.court_code == "bs_rekurskommissionen"
+
+
+def test_embedded_year_slug_not_matched(monkeypatch, tmp_path):
+    # regression: a non-decision PDF whose slug merely *contains* a year-number must NOT be
+    # ingested. The bare YYYY-NN docket form is only accepted as the WHOLE slug stem (fullmatch).
+    FIX = ('<html><body><a href="https://media.bs.ch/original_file/zzz/'
+           'merkblatt-prk-verfahren-2024-05.pdf">Merkblatt zum Verfahren Externer Link</a></body></html>')
+    s = BSRekurskommissionenScraper(state_dir=tmp_path)
+
+    def fake_get(url, **k):
+        class R:
+            text = FIX if "personalrekurs" in url else "<html><body></body></html>"
+        return R()
+
+    monkeypatch.setattr(s, "get", fake_get)
+    assert list(s.discover_new()) == []
+
+
+def test_prk_docket_normalised(monkeypatch, tmp_path):
+    # a dotted PRK docket in the slug normalises to dash form
+    FIX = ('<html><body><a href="https://media.bs.ch/original_file/zzz/prk-205.pdf">'
+           'Fall Nr. 205 (01.02.2024) Externer Link</a></body></html>')
+    s = BSRekurskommissionenScraper(state_dir=tmp_path)
+    monkeypatch.setattr(s, "get", lambda url, **k: type("R", (), {
+        "text": FIX if "personalrekurs" in url else "<html></html>"})())
+    stubs = list(s.discover_new())
+    assert [x["docket_number"] for x in stubs] == ["PRK-205"]

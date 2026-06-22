@@ -78,7 +78,12 @@ def _slugify(text: str) -> str:
 
 
 def _extract_pdf_text(data: bytes) -> str:
-    """Extract text from PDF bytes using fitz (PyMuPDF) with pdfplumber fallback."""
+    """Extract text from PDF bytes using fitz (PyMuPDF) with pdfplumber fallback.
+
+    Robust to corrupt/malformed PDFs: extraction errors are caught and logged so a single
+    bad PDF returns "" rather than raising into a caller's fetch_decision (which would abort
+    the scrape run). All callers already treat "" as a skip.
+    """
     try:
         import fitz
 
@@ -86,6 +91,8 @@ def _extract_pdf_text(data: bytes) -> str:
         return "\n\n".join(p.get_text() for p in doc)
     except ImportError:
         pass
+    except Exception as e:
+        logger.warning(f"fitz PDF extraction failed: {e}")
     try:
         import pdfplumber
 
@@ -93,6 +100,8 @@ def _extract_pdf_text(data: bytes) -> str:
             return "\n\n".join(p.extract_text() or "" for p in pdf.pages)
     except ImportError:
         pass
+    except Exception as e:
+        logger.warning(f"pdfplumber PDF extraction failed: {e}")
     return ""
 
 

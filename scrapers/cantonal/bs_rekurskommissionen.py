@@ -35,13 +35,18 @@ SOURCES = [
     {
         "court": "bs_steuerrekurskommission",
         "url": "https://www.bs.ch/organisation/rechtsprechung-der-steuerrekurskommission",
-        "docket_re": re.compile(r"(STRK\.\d{4}\.\d+)", re.I),
+        "text_re": re.compile(r"(STRK\.\d{4}\.\d+)", re.I),   # docket is in the link text
+        "slug_re": None,
         "legal_area": "Steuerrecht",
     },
     {
         "court": "bs_personalrekurskommission",
         "url": "https://www.bs.ch/entscheide-der-personalrekurskommission",
-        "docket_re": re.compile(r"((?:PRK|RRB)[-.]?\d+|\d{4}-\d{1,3})", re.I),
+        # prefixed dockets may appear in text; the bare YYYY-NN form is matched ONLY as the
+        # whole slug stem (fullmatch) so an embedded year-number in a longer slug can't masquerade
+        # as a docket and pull in a non-decision PDF.
+        "text_re": re.compile(r"((?:PRK|RRB)[-.]?\d+)", re.I),
+        "slug_re": re.compile(r"(?:prk|rrb)-?\d+|\d{4}-\d{1,3}", re.I),
         "legal_area": "Personalrecht",
     },
 ]
@@ -92,10 +97,15 @@ class BSRekurskommissionenScraper(BaseScraper):
                     continue
                 text = a.get_text(" ", strip=True)
                 slug = href.split("/")[-1]
-                m = src["docket_re"].search(text) or src["docket_re"].search(slug)
-                if not m:
+                tm = src["text_re"].search(text)
+                docket = tm.group(1) if tm else None
+                if not docket and src["slug_re"]:
+                    sm = src["slug_re"].fullmatch(slug.rsplit(".", 1)[0])
+                    docket = sm.group(0) if sm else None
+                if not docket:
                     continue
-                docket = m.group(1).upper().replace("RRB-", "RRB-").replace("PRK-", "PRK-")
+                # normalise PRK./PRK123 -> PRK-123 (and RRB likewise); STRK keeps its dotted form
+                docket = re.sub(r"^(PRK|RRB)[.\-]?(?=\d)", r"\1-", docket.upper())
 
                 pdf_url = urljoin(src["url"], href)
                 if pdf_url in seen_urls:

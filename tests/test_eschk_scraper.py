@@ -50,3 +50,25 @@ def test_eschk_since_narrows_year_range(monkeypatch, tmp_path):
     # since 2024 -> start_year=2024, so the 2023 page is never fetched
     stubs = list(_scraper(monkeypatch, tmp_path).discover_new(since_date=date(2024, 1, 1)))
     assert stubs == []
+
+
+NO_DATE_FIX = """<html><body>
+ <a class="download-item" href="https://www.eschk.admin.ch/dam/de/sd-web/HX/tarif-z-2022.pdf">
+   <h4 class="download-item__title">Tarif Z (kein Datum im Titel)</h4></a>
+</body></html>"""
+
+
+def test_eschk_no_date_not_fabricated(monkeypatch, tmp_path):
+    # regression: a title with no parseable date must yield decision_date "" — NOT a fabricated
+    # "1. Januar {year}" (which looked real and corrupted date filtering/sorting).
+    s = ESchKScraper(state_dir=tmp_path)
+
+    def fake_get(url, **k):
+        class R:
+            text = NO_DATE_FIX if "beschluesse-2022" in url else "<html><body></body></html>"
+        return R()
+
+    monkeypatch.setattr(s, "get", fake_get)
+    stubs = list(s.discover_new())
+    assert len(stubs) == 1
+    assert stubs[0]["decision_date"] == ""

@@ -15,6 +15,7 @@ Beyond-es: federal audit-oversight enforcement, not aggregated by entscheidsuche
 """
 from __future__ import annotations
 
+import hashlib
 import logging
 import re
 from datetime import date, datetime, timezone
@@ -58,7 +59,8 @@ class RABScraper(BaseScraper):
                 break
             soup = BeautifulSoup(resp.text, "html.parser")
             tiles = soup.select("div.rab-download-tile")
-            page_count = 0
+            if not tiles:
+                break  # genuinely empty page = end of pager (don't infer end from new-PDF count)
             for tile in tiles:
                 info = tile.select_one(".rab-download-tile__info p")
                 m = DOCKET_RE.search(info.get_text(strip=True)) if info else None
@@ -73,13 +75,16 @@ class RABScraper(BaseScraper):
                 if pdf_url in seen_urls:
                     continue
                 seen_urls.add(pdf_url)
-                page_count += 1
 
                 fn = unquote(href.split("/")[-1])
                 fdm = FN_DATE_RE.search(fn)
                 decision_date_str = f"{fdm.group(1)}. {fdm.group(2)} {fdm.group(3)}" if fdm else None
                 if not docket:
-                    docket = (decision_date_str or fn.rsplit(".", 1)[0]).replace(" ", "-")[:40]
+                    # fall back to date/filename, but append a PDF-URL hash so two dateless
+                    # tiles can never collapse to the same decision_id (elcom.py pattern).
+                    url_hash = hashlib.sha1(pdf_url.encode()).hexdigest()[:6]
+                    base = (decision_date_str or fn.rsplit(".", 1)[0]).replace(" ", "-")[:33]
+                    docket = f"{base}-{url_hash}"
 
                 decision_id = make_decision_id("rab", docket)
                 if self.state.is_known(decision_id):
@@ -96,8 +101,6 @@ class RABScraper(BaseScraper):
                     "pdf_url": pdf_url,
                     "title": f"RAB-Verfügung {docket}",
                 }
-            if page_count == 0:
-                break  # exhausted the pager
         logger.info(f"[rab] Found {found} new Verfügungen ({len(seen_urls)} PDFs seen)")
 
     def fetch_decision(self, stub: dict) -> Decision | None:
