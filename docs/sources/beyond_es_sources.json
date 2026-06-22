@@ -30,7 +30,9 @@
       "portal_url": "https://www.kaio.fin.be.ch/de/start/themen/oeffentliches-beschaffungswesen/rechtliches/beschwerdeentscheide.html",
       "est_volume": "~80 PDFs, 2015-2025",
       "feasibility": "PDF-archive: per-year table, tagged by issuing directorate. Easy scrape. Partial overlap with BE_BVD for BVD-issued procurement — dedupe.",
-      "priority": 1
+      "priority": 1,
+      "status": "INGESTED 2026-06-22",
+      "our_scraper": "be_direktionen"
     },
     {
       "level": "cantonal",
@@ -40,7 +42,9 @@
       "portal_url": "https://www.gsi.be.ch/de/start/ueber-uns/generalsekretariat/rechtsabteilung/rechtsprechung.html",
       "est_volume": "~200+ anonymized PDFs, ~35-40/yr, 2013-2026",
       "feasibility": "PDF-archive: per-year HTML table, each row a downloadable anonymized PDF. Easy structured scrape.",
-      "priority": 1
+      "priority": 1,
+      "status": "INGESTED 2026-06-22",
+      "our_scraper": "be_direktionen"
     },
     {
       "level": "cantonal",
@@ -168,7 +172,9 @@
       "portal_url": "https://www.bkd.be.ch/de/start/ueber-uns/die-organisation/bkd-generalsekretariat/rechtsdienst-bkd/ausgewaehlte-beschwerdeentscheide.html",
       "est_volume": "~80 selected PDFs, 2013-2025 (selection only, not exhaustive)",
       "feasibility": "PDF-archive: table of PDFs. Easy scrape.",
-      "priority": 2
+      "priority": 2,
+      "status": "INGESTED 2026-06-22",
+      "our_scraper": "be_direktionen"
     },
     {
       "level": "cantonal",
