@@ -151,6 +151,7 @@ SCRAPERS = {
     "ag_gerichte": ("scrapers.cantonal.ag_gerichte", "AGGerichteScraper"),
     "ai_gerichte": ("scrapers.cantonal.ai_gerichte", "AIGerichteScraper"),
     "bs_gerichte": ("scrapers.cantonal.bs_gerichte", "BSGerichteScraper"),
+    "bs_rekurskommissionen": ("scrapers.cantonal.bs_rekurskommissionen", "BSRekurskommissionenScraper"),
     "zh_gerichte": ("scrapers.cantonal.zh_gerichte", "ZHGerichteScraper"),
 "zh_verwaltungsgericht": ("scrapers.cantonal.zh_verwaltungsgericht", "ZHVerwaltungsgerichtScraper"),
     "zh_sozialversicherungsgericht": ("scrapers.cantonal.zh_sozialversicherungsgericht", "ZHSozialversicherungsgerichtScraper"),

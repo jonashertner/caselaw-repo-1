@@ -54,7 +54,9 @@
       "portal_url": "https://www.steuerrekurskommission.bs.ch/entscheide.html",
       "est_volume": "Hundreds of anonymized PDFs (STRK.YYYY.nn), own collection since ~2023 with 2016+ reachable",
       "feasibility": "PDF-archive: free, anonymized, individually downloadable dam/jcr PDFs. Straightforward enumerate.",
-      "priority": 1
+      "priority": 1,
+      "status": "INGESTED 2026-06-22",
+      "our_scraper": "bs_rekurskommissionen"
     },
     {
       "level": "cantonal",
@@ -214,7 +216,9 @@
       "portal_url": "https://www.fd.bs.ch/ueber-das-departement/dienststellen-institutionen/entscheide-beschluesse/personalrekurskommission.html",
       "est_volume": "Tens of published anonymized PDFs (PRK), series back to ~2001",
       "feasibility": "PDF-archive on media.bs.ch, scrapeable from fd.bs.ch listing. Free.",
-      "priority": 2
+      "priority": 2,
+      "status": "INGESTED 2026-06-22",
+      "our_scraper": "bs_rekurskommissionen"
     },
     {
       "level": "cantonal",
