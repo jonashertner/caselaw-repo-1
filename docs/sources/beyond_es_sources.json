@@ -88,7 +88,9 @@
       "portal_url": "https://rrb.so.ch/",
       "est_volume": "53,500+ documents; substantive Verwaltungsrekurs/appeal decisions are a subset, remainder routine",
       "feasibility": "Structured-DB: Solr-backed, stable PDF URLs, published 17 days post-session. Main work = filtering substantive appeal decisions from routine resolutions.",
-      "priority": 1
+      "priority": 1,
+      "status": "NOT-CORPUS-APPROPRIATE 2026-06-22: government-business register, not a decisions DB. Geschaeftsart facet = Sachgeschaefte(48394)/Parlamentarische Vorstoesse(3628)/Wahlgeschaefte(1216); no Beschwerde/Rekurs category. Sample titles = festival contributions, motions, consultations. 'Beschwerde' text-match = 676/53579 (~1.3%, mostly non-decisions). SO admin appeals go to so_gerichte (Verwaltungsgericht, already covered, 9172). SKIP wholesale ingestion.",
+      "our_scraper": "(skipped — not decisions)"
     },
     {
       "level": "cantonal",
