@@ -431,7 +431,7 @@ def _dedup_decisions(conn: sqlite3.Connection) -> int:
                 for _, loser_regeste, _ in rows[1:]:
                     if loser_regeste:
                         conn.execute(
-                            "UPDATE decisions SET regeste = ? WHERE decision_id = ?",
+                            "UPDATE decisions SET regeste = ?, content_hash = NULL WHERE decision_id = ?",
                             (loser_regeste, survivor_id),
                         )
                         break
@@ -468,7 +468,7 @@ def _dedup_decisions(conn: sqlite3.Connection) -> int:
                 for _, loser_regeste, _ in rows[1:]:
                     if loser_regeste:
                         conn.execute(
-                            "UPDATE decisions SET regeste = ? WHERE decision_id = ?",
+                            "UPDATE decisions SET regeste = ?, content_hash = NULL WHERE decision_id = ?",
                             (loser_regeste, survivor_id),
                         )
                         break
@@ -732,7 +732,7 @@ def _truncate_oversized_regestes(conn: sqlite3.Connection) -> int:
             updates.append((new_regeste, did))
     if updates:
         conn.executemany(
-            "UPDATE decisions SET regeste = ? WHERE decision_id = ?",
+            "UPDATE decisions SET regeste = ?, content_hash = NULL WHERE decision_id = ?",
             updates,
         )
         conn.commit()
@@ -751,7 +751,7 @@ def _migrate_short_text_to_regeste(conn: sqlite3.Connection) -> int:
     Auto-applies on every nightly so future scraper regressions self-correct.
     """
     cur = conn.execute(
-        "UPDATE decisions SET regeste = full_text, full_text = NULL "
+        "UPDATE decisions SET regeste = full_text, full_text = NULL, content_hash = NULL "
         "WHERE LENGTH(COALESCE(full_text, '')) BETWEEN 10 AND 99 "
         "AND (regeste IS NULL OR regeste = '')"
     )
@@ -769,14 +769,17 @@ def _compute_content_hashes(conn: sqlite3.Connection, batch_size: int = 5000) ->
     Anyone — auditor, lawyer, researcher — can later prove that the bytes
     we returned for decision Y on date X were exactly this content.
 
-    Idempotent: only computes for rows where content_hash is NULL OR
-    differs from the computed value (i.e. content changed since the last
-    rebuild). Stores 64-hex SHA-256 per row (~64 MB extra at 970k rows).
+    Dirty-tracked: the text-mutating passes (dedup regeste-merge, truncate
+    oversized regeste, migrate short text, fill missing regeste) set
+    content_hash=NULL when they change regeste/full_text, so this only
+    re-hashes the NULL'd (changed) rows plus any genuinely-new rows — it
+    no longer reads+hashes the whole ~970k-row table to repair ~17k stale
+    hashes. Stores 64-hex SHA-256 per row (~64 MB extra at 970k rows).
     """
     import hashlib
     rows = conn.execute(
         "SELECT decision_id, regeste, full_text, content_hash "
-        "FROM decisions"
+        "FROM decisions WHERE content_hash IS NULL OR content_hash = ''"
     ).fetchall()
     updates: list[tuple[str, str]] = []
     for decision_id, regeste, full_text, existing_hash in rows:
@@ -1074,7 +1077,7 @@ def _fill_missing_regeste(conn: sqlite3.Connection) -> int:
                 batch.append((regeste, decision_id))
         if batch:
             conn.executemany(
-                "UPDATE decisions SET regeste = ? WHERE decision_id = ?",
+                "UPDATE decisions SET regeste = ?, content_hash = NULL WHERE decision_id = ?",
                 batch,
             )
             updated += len(batch)

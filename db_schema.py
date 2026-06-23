@@ -79,7 +79,16 @@ SCHEMA_SQL = """
             old.full_text);
     END;
 
-    CREATE TRIGGER IF NOT EXISTS decisions_au AFTER UPDATE ON decisions BEGIN
+    -- Reindex FTS5 only when an FTS-indexed/stored column actually changed;
+    -- skip content_hash-only / date-only / json_data-only updates so the B5
+    -- content-hash repair pass doesn't force ~17k needless FTS delete+reinserts.
+    CREATE TRIGGER IF NOT EXISTS decisions_au AFTER UPDATE ON decisions
+    WHEN old.decision_id IS NOT new.decision_id
+      OR old.court IS NOT new.court OR old.canton IS NOT new.canton
+      OR old.docket_number IS NOT new.docket_number
+      OR old.language IS NOT new.language OR old.title IS NOT new.title
+      OR old.regeste IS NOT new.regeste OR old.full_text IS NOT new.full_text
+    BEGIN
         INSERT INTO decisions_fts(decisions_fts, rowid, decision_id, court,
             canton, docket_number, language, title, regeste, full_text)
         VALUES ('delete', old.rowid, old.decision_id, old.court, old.canton,

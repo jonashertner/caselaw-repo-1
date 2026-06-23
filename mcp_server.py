@@ -518,6 +518,13 @@ LLM_EXPANSION_TIMEOUT = float(os.environ.get("LLM_EXPANSION_TIMEOUT", "2.0"))
 # the no-contention MRR benchmark never trips it, so this is not MRR-affecting.
 SEARCH_DEADLINE_MS = int(os.environ.get("OCL_SEARCH_DEADLINE_MS", "20000"))
 
+# Hard server-side cap on a single tool dispatch. Under thread-pool saturation
+# (e.g. a bloated DB or a build hammering the box), a to_thread-dispatched tool
+# can queue for many minutes; without this an adopter saw 10-30min hangs while
+# list_tools (on the event loop) stayed instant. A timeout returns a clean error
+# instead of an indefinite hang. Generous so only pathological calls trip it.
+TOOL_DISPATCH_TIMEOUT_S = float(os.environ.get("OCL_TOOL_TIMEOUT_S", "120"))
+
 
 def _past_deadline(deadline: float | None) -> bool:
     """True if a monotonic-clock deadline has passed (None = no deadline set)."""
@@ -1682,6 +1689,39 @@ _last_flushed: dict = {
     "search_total": 0,
     "search_followups": 0,
 }
+
+
+def _classify_rest_metric(path: str, status: int) -> tuple[str | None, bool]:
+    """Map a REST request (path, HTTP status) to (tool_name, is_error) for metrics.
+
+    Path-depth-aware so crawler 4xx on per-decision sub-resources
+    (/api/decisions/{id}/export.*, /api/decisions/{id}) and fabricated
+    /api/laws/{abbr}/{canton} URLs are NOT charged to the parent tool's error rate.
+    Only genuine 5xx server faults count as errors — a 404 on a missing decision or a
+    422 on a bad URL is an expected client/crawler condition, not a tool failure.
+    Returns (None, False) for non-/api or unclassified paths.
+    """
+    p = (path or "").strip("/")
+    if not p.startswith("api/"):
+        return None, False
+    parts = p.split("/")
+    if len(parts) < 2:
+        return None, False
+    endpoint = parts[1]
+    if endpoint == "decisions":
+        if len(parts) >= 4 and parts[3].startswith("export"):
+            tool = "export_decision"
+        elif len(parts) >= 3:
+            tool = "get_decision"
+        else:
+            tool = "search_decisions"
+    elif endpoint == "decision":
+        tool = "get_decision"
+    elif endpoint in ("docs", "openapi.json", "redoc"):
+        tool = None
+    else:
+        tool = endpoint
+    return tool, (status >= 500)
 
 
 def _init_metrics_db():
@@ -10132,6 +10172,8 @@ def _handle_search_botschaft(
     *,
     query: str,
     language: str | None = None,
+    year_min: int | None = None,
+    year_max: int | None = None,
     limit: int = 20,
 ) -> dict:
     """Topical FTS5 search across the verbatim Botschaft corpus.
@@ -10214,6 +10256,15 @@ def _handle_search_botschaft(
         if language:
             sql += " AND bd.language = ? "
             params.append(language)
+        # Temporal scoping for legislative-history research ("on X from the 1990s").
+        # publication_date is an ISO date string; compare on its 4-digit year. Rows
+        # with a NULL/empty date fall out of a year-bounded search (expected).
+        if year_min is not None:
+            sql += " AND CAST(substr(bd.publication_date, 1, 4) AS INTEGER) >= ? "
+            params.append(int(year_min))
+        if year_max is not None:
+            sql += " AND CAST(substr(bd.publication_date, 1, 4) AS INTEGER) <= ? "
+            params.append(int(year_max))
         sql += " ORDER BY rank LIMIT ? "
         params.append(limit)
         try:
@@ -10253,6 +10304,8 @@ def _handle_search_botschaft(
     return {
         "query": q,
         "language_filter": language,
+        "year_filter": ({"min": year_min, "max": year_max}
+                        if (year_min is not None or year_max is not None) else None),
         "total": len(results),
         "results": results,
     }
@@ -13697,13 +13750,15 @@ def _scholarship_license_hint(license_code: str | None) -> dict:
 
 
 def search_scholarship(
-    query: str,
+    query: str = "",
     *,
     source: str | None = None,
     pub_type: str | None = None,
     language: str | None = None,
     year_min: int | None = None,
     year_max: int | None = None,
+    author: str | None = None,
+    sort: str | None = None,
     limit: int = 10,
 ) -> dict:
     """Full-text search across Swiss OA legal scholarship.
@@ -13725,40 +13780,66 @@ def search_scholarship(
         return {"error": "Legal scholarship database not available."}
     limit = min(max(1, limit), 50)
     try:
-        query = _sanitize_fts5(query or "")
-        if not query:
-            return {"query": query, "count": 0, "results": []}
-        conditions = ["f.publications_fts MATCH ?"]
-        params: list = [query]
+        safe_query = _sanitize_fts5(query or "")
+        # Structured filters — apply to both the full-text and the browse path.
+        filt: list[str] = []
+        filt_params: list = []
+        if author:
+            filt.append("p.authors LIKE ?")
+            filt_params.append(f"%{author}%")
         if source:
-            conditions.append("p.source = ?")
-            params.append(source)
+            filt.append("p.source = ?")
+            filt_params.append(source)
         if pub_type:
-            conditions.append("p.pub_type = ?")
-            params.append(pub_type)
+            filt.append("p.pub_type = ?")
+            filt_params.append(pub_type)
         if language:
-            conditions.append("p.language = ?")
-            params.append(language)
+            filt.append("p.language = ?")
+            filt_params.append(language)
         if year_min is not None:
-            conditions.append("p.year >= ?")
-            params.append(int(year_min))
+            filt.append("p.year >= ?")
+            filt_params.append(int(year_min))
         if year_max is not None:
-            conditions.append("p.year <= ?")
-            params.append(int(year_max))
-        where = " AND ".join(conditions)
-        params.append(limit)
-        rows = conn.execute(
-            f"""SELECT p.pub_id, p.source, p.pub_type, p.title, p.authors,
-                       p.language, p.year, p.journal, p.doi, p.url,
-                       p.pdf_url, p.license,
-                       snippet(publications_fts, 2, '>>>', '<<<', '...', 30) AS snippet
-                FROM publications_fts f
-                JOIN publications p ON p.id = f.rowid
-                WHERE {where}
-                ORDER BY f.rank
-                LIMIT ?""",
-            params,
-        ).fetchall()
+            filt.append("p.year <= ?")
+            filt_params.append(int(year_max))
+
+        if sort in ("year", "year_desc", "newest"):
+            order_by = "p.year DESC, p.id DESC"
+        elif sort in ("year_asc", "oldest"):
+            order_by = "p.year ASC, p.id ASC"
+        else:
+            order_by = None  # relevance (BM25) for FTS; newest-first for browse
+
+        cols = ("p.pub_id, p.source, p.pub_type, p.title, p.authors, "
+                "p.language, p.year, p.journal, p.doi, p.url, p.pdf_url, p.license")
+        if safe_query:
+            # Topical full-text search, optionally narrowed by the filters above.
+            where = " AND ".join(["f.publications_fts MATCH ?"] + filt)
+            params = [safe_query] + filt_params + [limit]
+            rows = conn.execute(
+                f"""SELECT {cols},
+                           snippet(publications_fts, 2, '>>>', '<<<', '...', 30) AS snippet
+                    FROM publications_fts f
+                    JOIN publications p ON p.id = f.rowid
+                    WHERE {where}
+                    ORDER BY {order_by or 'f.rank'}
+                    LIMIT ?""",
+                params,
+            ).fetchall()
+        elif filt:
+            # Bibliographic browse — no topic query, just filters (e.g. all works by
+            # an author / from a source / in a year range), newest-first by default.
+            params = filt_params + [limit]
+            rows = conn.execute(
+                f"""SELECT {cols}, '' AS snippet
+                    FROM publications p
+                    WHERE {" AND ".join(filt)}
+                    ORDER BY {order_by or 'p.year DESC, p.id DESC'}
+                    LIMIT ?""",
+                params,
+            ).fetchall()
+        else:
+            return {"query": query or "", "count": 0, "results": []}
         results = []
         sources_seen: set[str] = set()
         licenses_seen: set[str] = set()
@@ -13784,7 +13865,7 @@ def search_scholarship(
         attributions = [_scholarship_attribution(s) for s in sorted(sources_seen)]
         license_usage = [_scholarship_license_hint(l) for l in sorted(licenses_seen)]
         return {
-            "query": query,
+            "query": query or "",
             "count": len(results),
             "results": results,
             # CC-BY / CC-BY-SA attribution requirement — every consumer of
@@ -16544,7 +16625,21 @@ def _search_practice(
                             "search_stack/build_practice_db.py.")}
 
     limit = max(1, min(int(limit), 50))
-    where, params = ["practice_fts MATCH ?"], [query]
+    # Sanitize FTS5 input (invariant #3) — every sibling FTS handler does this.
+    # Without it a query with an apostrophe / hyphen / `Art.` / unbalanced quote
+    # raises sqlite3.OperationalError and returns an error instead of results.
+    safe_query = _sanitize_fts5(query)
+    if not safe_query:
+        return {
+            "query": query,
+            "filters": {k: v for k, v in {
+                "source": source, "issuing_authority": issuing_authority,
+                "doc_type": doc_type, "language": language,
+            }.items() if v},
+            "total": 0,
+            "results": [],
+        }
+    where, params = ["practice_fts MATCH ?"], [safe_query]
     if source:
         where.append("p.source = ?"); params.append(source)
     if issuing_authority:
@@ -17601,6 +17696,8 @@ def _list_tools() -> list[Tool]:
                             "Botschaft passages."
                         ),
                     },
+                    "year_min": {"type": "integer", "description": "Earliest publication year of the source Botschaft (inclusive) — scope legislative history to an era."},
+                    "year_max": {"type": "integer", "description": "Latest publication year of the source Botschaft (inclusive)."},
                     "limit": {
                         "type": "integer",
                         "default": 20,
@@ -18133,14 +18230,16 @@ def _list_tools() -> list[Tool]:
                 "from Swiss university repositories, and federal legal-policy "
                 "reports. Returns ranked results with snippets, authors, DOI, "
                 "and direct links. Filters by source, publication type, language, "
-                "and year range."
+                "and year range. Sort by relevance or year; an author filter "
+                "may be used on its own (no query) for a bibliographic browse, "
+                "e.g. all works by a given author, newest first."
             ),
             inputSchema={
                 "type": "object",
                 "properties": {
                     "query": {
                         "type": "string",
-                        "description": "Search query (FTS5 syntax: quotes for phrases, OR for alternatives).",
+                        "description": "Topic query (FTS5 syntax: quotes for phrases, OR for alternatives). Optional — may be omitted when an `author` (or other) filter is given, which returns a bibliographic browse instead of a topical search.",
                     },
                     "source": {
                         "type": "string",
@@ -18156,9 +18255,11 @@ def _list_tools() -> list[Tool]:
                     },
                     "year_min": {"type": "integer", "description": "Earliest publication year."},
                     "year_max": {"type": "integer", "description": "Latest publication year."},
+                    "author": {"type": "string", "description": "Filter by author (substring match on the authors field). May be used WITHOUT a query for a pure bibliographic browse (all works by an author)."},
+                    "sort": {"type": "string", "enum": ["relevance", "year", "year_asc"], "description": "Order: 'relevance' (BM25, default for a topic query), 'year' (newest first), 'year_asc' (oldest first). With no query the default is newest-first."},
                     "limit": {"type": "integer", "description": "Maximum results (1-50, default 10).", "default": 10},
                 },
-                "required": ["query"],
+                "required": [],
             },
         ),
         Tool(
@@ -18624,6 +18725,41 @@ DEEP_RESEARCH_SEARCH_LIMIT = 10
 _FETCH_TEXT_CAP = 200_000
 
 
+def _lookup_case_number(q: str, limit: int = 8) -> dict:
+    """Instant case-number / docket lookup for the public site search box.
+
+    Guards to docket-style input via _looks_like_docket_query, so it never triggers the
+    Haiku query-parse / rerank path — a case number resolves in tens of ms via search_fts5's
+    exact-docket fast-path. Returns lean hits with /entscheid/ links. R1-safe: citation
+    strings come from _build_citation_strings (the pipeline), never constructed here. A
+    non-case-number input returns instantly with a hint, not a slow full-text fallback.
+    """
+    qn = (q or "").strip()
+    if not qn:
+        return {"query": "", "is_case_number": False, "total": 0, "results": []}
+    if not _looks_like_docket_query(qn):
+        return {"query": qn, "is_case_number": False, "total": 0, "results": [],
+                "hint": "Not a recognised Swiss case number — use full-text search for topics."}
+    rows, _total = search_fts5(query=qn, limit=max(1, min(int(limit), 25)))
+    out = []
+    for r in rows:
+        did = r.get("decision_id", "")
+        if not did:
+            continue
+        cit = _build_citation_strings(r)  # R1: citations from the pipeline, never built here
+        out.append({
+            "decision_id": did,
+            "docket_number": r.get("docket_number"),
+            "court": r.get("court"),
+            "canton": r.get("canton"),
+            "decision_date": r.get("decision_date"),
+            "title": r.get("title"),
+            "citation": cit.get("citation_string_de"),
+            "url": cit.get("canonical_url") or _canonical_decision_url(did),
+        })
+    return {"query": qn, "is_case_number": True, "total": len(out), "results": out}
+
+
 def _deep_research_search(query: str, limit: int = DEEP_RESEARCH_SEARCH_LIMIT) -> dict:
     """OpenAI deep-research `search`: query -> {results:[{id,title,url,...}]}."""
     rows, _total = search_fts5(query=query, limit=max(1, min(limit, 50)))
@@ -18698,9 +18834,37 @@ def _deep_research_fetch(doc_id: str) -> dict:
     }
 
 
+async def _dispatch_with_timeout(name: str, arguments: dict):
+    """Run one tool dispatch under TOOL_DISPATCH_TIMEOUT_S. On timeout, return a
+    clean error payload instead of letting the client hang indefinitely. (wait_for
+    cancels the awaiting coroutine; the underlying to_thread thread finishes in the
+    background, but the request is freed.) Separate from the decorated wrapper so
+    it is unit-testable."""
+    try:
+        return await asyncio.wait_for(
+            _handle_call_tool_inner(name, arguments),
+            timeout=TOOL_DISPATCH_TIMEOUT_S,
+        )
+    except asyncio.TimeoutError:
+        logger.warning(
+            "tool dispatch aborted: %s exceeded %ss server-side timeout (load/backlog)",
+            name, TOOL_DISPATCH_TIMEOUT_S,
+        )
+        return [TextContent(type="text", text=json.dumps({
+            "error": "server_timeout",
+            "tool": name,
+            "timeout_seconds": TOOL_DISPATCH_TIMEOUT_S,
+            "message": (
+                f"This call exceeded the server-side limit of {int(TOOL_DISPATCH_TIMEOUT_S)}s "
+                "and was aborted so your connection is not left hanging. The server may be "
+                "under temporary load — please retry; typical calls return in 1-10s."
+            ),
+        }, ensure_ascii=False))]
+
+
 @server.call_tool()
 async def _handle_call_tool_wrapper(name: str, arguments: dict):
-    result = await _handle_call_tool_inner(name, arguments)
+    result = await _dispatch_with_timeout(name, arguments)
     # Deep-research search/fetch return a (content, structuredContent) tuple —
     # pass through verbatim. The open-access note must NOT be appended (it
     # would corrupt the JSON payload deep research parses).
@@ -19154,6 +19318,8 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 _handle_search_botschaft,
                 query=arguments.get("query", ""),
                 language=arguments.get("language") or None,
+                year_min=arguments.get("year_min"),
+                year_max=arguments.get("year_max"),
                 limit=int(arguments.get("limit", 20) or 20),
             )
             return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False, indent=2))]
@@ -19242,12 +19408,14 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
         elif name == "search_scholarship":
             result = await asyncio.to_thread(
                 search_scholarship,
-                query=arguments["query"],
+                query=arguments.get("query", ""),
                 source=arguments.get("source"),
                 pub_type=arguments.get("pub_type"),
                 language=arguments.get("language"),
                 year_min=arguments.get("year_min"),
                 year_max=arguments.get("year_max"),
+                author=arguments.get("author"),
+                sort=arguments.get("sort"),
                 limit=int(arguments.get("limit", 10)),
             )
             return [TextContent(type="text", text=_format_search_scholarship_response(result))]
@@ -20123,36 +20291,21 @@ setInterval(load, 30000);
     class _MetricsMiddleware(BaseHTTPMiddleware):
         async def dispatch(self, request, call_next):
             t0 = time.monotonic()
-            err = False
+            status = 500  # an unhandled exception below is a genuine 5xx fault
             try:
                 response = await call_next(request)
-                if response.status_code >= 400:
-                    err = True
+                status = response.status_code
                 return response
-            except Exception:
-                err = True
-                raise
             finally:
-                path = request.url.path.strip("/")
-                if path.startswith("api/"):
-                    # Use the route pattern, not the actual path
-                    # api/decisions → "search", api/decision/{id} → "get_decision"
-                    parts = path.split("/")
-                    if len(parts) >= 2:
-                        endpoint = parts[1]  # "decisions", "decision", "laws", etc.
-                        if endpoint == "decisions":
-                            tool = "search_decisions"
-                        elif endpoint == "decision":
-                            tool = "get_decision"
-                        elif endpoint in ("docs", "openapi.json", "redoc"):
-                            tool = None
-                        else:
-                            tool = endpoint
-                        if tool:
-                            _record_tool_call(tool, (time.monotonic() - t0) * 1000, error=err)
-                            # Track word-addin client
-                            if request.headers.get("x-client") == "word-addin":
-                                _record_tool_call("word-addin:" + tool, (time.monotonic() - t0) * 1000, error=err)
+                # Path-depth-aware classification + 5xx-only error flag (see
+                # _classify_rest_metric) so crawler 4xx on sub-resources don't
+                # inflate a tool's error rate — and exports get their own metric.
+                tool, err = _classify_rest_metric(request.url.path, status)
+                if tool:
+                    _record_tool_call(tool, (time.monotonic() - t0) * 1000, error=err)
+                    # Track word-addin client
+                    if request.headers.get("x-client") == "word-addin":
+                        _record_tool_call("word-addin:" + tool, (time.monotonic() - t0) * 1000, error=err)
 
     # OpenAPI `servers` policy (refined 2026-04-21 after integrator feedback):
     #
@@ -21083,6 +21236,21 @@ setInterval(load, 30000);
 
         return spec
 
+    @rest_api.get("/lookup", tags=["Case Law"],
+                  summary="Instant case-number lookup",
+                  description="Resolve a Swiss case number / docket (e.g. 'BGE 140 III 86', "
+                              "'4A_636/2025', 'WBE.2026.33') straight to the matching "
+                              "decision(s) — no Haiku, no rerank, tens of ms. Returns lean "
+                              "hits with citation + /entscheid/ link. Use /decisions for "
+                              "topic search; `is_case_number=false` when the input is not a "
+                              "recognised docket.")
+    async def api_lookup(
+        q: str = Query(None, description="A Swiss case number / docket (BGE/BGer/cantonal)"),
+        query: str = Query(None, description="Alias for `q`."),
+        limit: int = Query(8, ge=1, le=25),
+    ):
+        return await asyncio.to_thread(_lookup_case_number, (q or query or ""), limit)
+
     @rest_api.get("/decisions", tags=["Case Law"],
                   summary="Search court decisions",
                   description="Full-text search across 956k Swiss court decisions. "
@@ -21719,21 +21887,24 @@ setInterval(load, 30000);
                       "license terms — preserve when re-using)."
                   ))
     async def api_search_scholarship(
-        query: str = Query(None, description="Search query (FTS5 syntax)"),
+        query: str = Query(None, description="Topic query (FTS5 syntax); optional if `author` or a filter is given"),
         q: str = Query(None, description="Alias for `query`."),
         source: str = Query(None, description="Filter by source slug"),
         pub_type: str = Query(None, description="Filter by publication type"),
         language: str = Query(None, description="Language filter (de/fr/it/en)"),
         year_min: int = Query(None, description="Earliest publication year"),
         year_max: int = Query(None, description="Latest publication year"),
+        author: str = Query(None, description="Filter by author (substring); usable without a query for a bibliographic browse"),
+        sort: str = Query(None, description="Order: relevance (default) / year / year_asc"),
         limit: int = Query(10, ge=1, le=50, description="Max results"),
     ):
         query = query or q
-        if not query:
-            raise HTTPException(status_code=422, detail="A search query is required; pass it as `query` or `q`.")
+        if not query and not (author or source or pub_type or language or year_min or year_max):
+            raise HTTPException(status_code=422, detail="Provide a `query` (or `q`), or at least one filter (author/source/pub_type/language/year).")
         return await asyncio.to_thread(
-            search_scholarship, query=query, source=source, pub_type=pub_type,
-            language=language, year_min=year_min, year_max=year_max, limit=limit,
+            search_scholarship, query=query or "", source=source, pub_type=pub_type,
+            language=language, year_min=year_min, year_max=year_max,
+            author=author, sort=sort, limit=limit,
         )
 
     @rest_api.get("/scholarship/sources", tags=["Scholarship"],
@@ -22308,6 +22479,8 @@ setInterval(load, 30000);
                 "three official languages of the verbatim Botschaft corpus."
             ),
         ),
+        year_min: int = Query(None, description="Earliest source-Botschaft publication year (inclusive)"),
+        year_max: int = Query(None, description="Latest source-Botschaft publication year (inclusive)"),
         limit: int = Query(20, ge=1, le=50),
     ):
         query = query or q
@@ -22315,7 +22488,7 @@ setInterval(load, 30000);
             raise HTTPException(status_code=422, detail="A search query is required; pass it as `query` or `q`.")
         return await asyncio.to_thread(
             _handle_search_botschaft,
-            query=query, language=language, limit=limit,
+            query=query, language=language, year_min=year_min, year_max=year_max, limit=limit,
         )
 
     @rest_api.get("/article-history/{sr_number}/{article}", tags=["Materialien"],
