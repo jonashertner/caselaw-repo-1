@@ -513,7 +513,9 @@ function applyStats(s){
 }
 fetch('/stats.json?v='+Math.floor(Date.now()/60000)).then(function(r){return r.ok?r.json():null;}).then(applyStats).catch(function(){});
 fetch('https://mcp.opencaselaw.ch/health',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(h){
-  if(h&&h.decisions)animateNum(document.getElementById('bignum'),h.decisions);
+  // Let the live /health count update the hero only when it's sane vs the published total
+  // (guards against transient live-DB anomalies, e.g. a quick_publish before the nightly dedup).
+  if(h&&h.decisions){var st=window._stats&&window._stats.total;if(!st||h.decisions<=st*1.02)animateNum(document.getElementById('bignum'),h.decisions);}
 }).catch(function(){});
 
 /* ── reveal on scroll ──────────────────────────────────────── */
