@@ -75,6 +75,19 @@ DECISION_SCHEMA = pa.schema([
 ])
 
 
+def _coerce_bool(v):
+    """SQLite has no boolean type; map a stored 0/1/NULL (or '0'/'1' string) to
+    a real bool or None so a pa.bool_() Parquet column accepts it. Without this,
+    pa.Table.from_pylist raises ArrowInvalid converting int 0 to boolean."""
+    if v is None or v == "":
+        return None
+    if isinstance(v, bool):
+        return v
+    if isinstance(v, (int, float)):
+        return bool(v)
+    return str(v).strip().lower() in ("1", "true", "t", "yes")
+
+
 def normalize_row(row: dict) -> dict:
     """Normalize a decision dict for Parquet export."""
     # Convert date/datetime objects to ISO strings
@@ -118,6 +131,8 @@ def normalize_row(row: dict) -> dict:
     full_text = row.get("full_text") or ""
     row["has_full_text"] = bool(full_text.strip())
     row["text_length"] = len(full_text)
+    # marked_for_publication is stored as SQLite 0/1/NULL but the schema is bool.
+    row["marked_for_publication"] = _coerce_bool(row.get("marked_for_publication"))
 
     # Ensure all schema fields exist
     for field in DECISION_SCHEMA:
