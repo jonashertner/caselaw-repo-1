@@ -114,3 +114,45 @@ def test_format_search_legislation_highlights_plain_snippet():
     }
     out = m._format_search_legislation_response(result)
     assert "**Kündigung**" in out  # on-the-fly fallback (LexFind plain text)
+
+
+# ── A3: structuredContent payloads (feed the Tier B widgets) ──────
+def test_law_hits_structured_shape_and_highlight():
+    result = {
+        "query": "kündigung", "count": 1, "federal_hits": 1, "cantonal_hits": 0,
+        "results": [{
+            "level": "federal", "canton": "CH", "article_num": "336",
+            "abbreviation": "OR", "sr_number": "220", "heading": "h",
+            "snippet": "Die >>>Kündigung<<< ist",
+        }],
+    }
+    sc = m._law_hits_structured(result)
+    assert sc["total"] == 1 and len(sc["hits"]) == 1
+    h = sc["hits"][0]
+    assert h["reference"] == "Art. 336 OR"
+    assert h["snippet_text"] == "Die Kündigung ist"               # plain, verbatim
+    assert h["snippet_html"] == "Die <mark>Kündigung</mark> ist"  # widget surface
+
+
+def test_legislation_hits_structured_shape():
+    result = {
+        "query": "kündigung", "total": 1,
+        "laws": [{
+            "title": "Obligationenrecht", "systematic_number": "220",
+            "entity": "CH", "entity_name": "Bund", "is_active": True,
+            "snippet": "Die Kündigung des Arbeitsverhältnisses",
+            "original_url": "https://example/or",
+        }],
+    }
+    sc = m._legislation_hits_structured(result)
+    h = sc["hits"][0]
+    assert h["level"] == "federal" and h["url"] == "https://example/or"
+    assert "<mark>Kündigung</mark>" in h["snippet_html"]
+
+
+def test_with_open_access_note_no_ua_is_noop():
+    tok = m._ctx_client_ua.set("")
+    try:
+        assert m._with_open_access_note("body") == "body"
+    finally:
+        m._ctx_client_ua.reset(tok)

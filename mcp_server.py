@@ -15645,6 +15645,81 @@ def _build_law_reference(hit: dict) -> str:
     return ref or (hit.get("title") or "")[:60]
 
 
+def _with_open_access_note(text: str) -> str:
+    """Append the open-access note for commercial clients. The list-return
+    path in _handle_call_tool_wrapper does this automatically, but it is
+    bypassed for the tuple returns we use to carry structuredContent, so the
+    two law-search branches call this explicitly to preserve parity."""
+    ua = _ctx_client_ua.get("")
+    if ua and not _KNOWN_FREE_CLIENTS.search(ua):
+        return text + _OPEN_ACCESS_NOTE
+    return text
+
+
+def _law_hits_structured(result: dict) -> dict:
+    """Machine-readable law-search payload (the canonical LawHit list) for
+    structured clients and the Tier B widgets. snippet_html carries <mark>
+    highlights; snippet_text is the plain verbatim snippet."""
+    terms = _query_terms(result.get("query", ""))
+    hits = []
+    for r in result.get("results", []):
+        snip = _normalize_law_snippet(r.get("snippet", ""), terms)
+        hits.append({
+            "level": r.get("level", "federal"),
+            "canton": r.get("canton"),
+            "sr_number": r.get("sr_number"),
+            "abbreviation": r.get("abbreviation"),
+            "title": r.get("title"),
+            "article_num": r.get("article_num"),
+            "marker": _law_marker(r.get("canton")),
+            "heading": r.get("heading"),
+            "reference": _build_law_reference(r),
+            "snippet_text": _strip_highlight(snip),
+            "snippet_html": _render_highlight(snip, "html"),
+            "lexfind_id": r.get("lexfind_id"),
+        })
+    return {
+        "query": result.get("query", ""),
+        "total": result.get("count", len(hits)),
+        "federal_hits": result.get("federal_hits", 0),
+        "cantonal_hits": result.get("cantonal_hits", 0),
+        "hits": hits,
+    }
+
+
+def _legislation_hits_structured(result: dict) -> dict:
+    """Machine-readable legislation-search payload (the LexFind law list)."""
+    terms = _query_terms(result.get("query", ""))
+    hits = []
+    for law in result.get("laws", []):
+        snip = _normalize_law_snippet(law.get("snippet", ""), terms)
+        entity = law.get("entity")
+        canton = None if entity in ("CH", None, "") else entity
+        hits.append({
+            "level": "federal" if canton is None else "cantonal",
+            "title": law.get("title"),
+            "systematic_number": law.get("systematic_number"),
+            "entity": entity,
+            "entity_name": law.get("entity_name"),
+            "category": law.get("category"),
+            "is_active": law.get("is_active", True),
+            "reference": _build_law_reference({
+                "systematic_number": law.get("systematic_number"),
+                "title": law.get("title"),
+                "canton": canton,
+            }),
+            "snippet_text": _strip_highlight(snip),
+            "snippet_html": _render_highlight(snip, "html"),
+            "url": law.get("original_url"),
+            "lexfind_id": law.get("lexfind_id"),
+        })
+    return {
+        "query": result.get("query", ""),
+        "total": result.get("total", len(hits)),
+        "hits": hits,
+    }
+
+
 def _format_get_law_response(result: dict) -> str:
     if result.get("error"):
         return result["error"]
@@ -19496,7 +19571,8 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 limit=int(arguments.get("limit", 10)),
                 jurisdiction=arguments.get("jurisdiction", "all"),
             )
-            return [TextContent(type="text", text=_format_search_laws_response(result))]
+            _text = _with_open_access_note(_format_search_laws_response(result))
+            return ([TextContent(type="text", text=_text)], _law_hits_structured(result))
 
         elif name == "get_commentary":
             result = await asyncio.to_thread(
@@ -19614,7 +19690,8 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 limit=int(arguments.get("limit", 20)),
                 fetch_top_n_texts=int(arguments.get("fetch_top_n_texts", 0)),
             )
-            return [TextContent(type="text", text=_format_search_legislation_response(result))]
+            _text = _with_open_access_note(_format_search_legislation_response(result))
+            return ([TextContent(type="text", text=_text)], _legislation_hits_structured(result))
 
         elif name == "get_legislation":
             result = await asyncio.to_thread(
