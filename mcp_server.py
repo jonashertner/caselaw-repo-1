@@ -15661,6 +15661,50 @@ def _build_law_reference(hit: dict) -> str:
     return ref or (hit.get("title") or "")[:60]
 
 
+_FEDLEX_WORK_URI_MAP: dict | None = None
+
+
+def _fedlex_work_uri_map() -> dict:
+    """Lazy {sr_number: work_uri} map from statutes.db for federal source links."""
+    global _FEDLEX_WORK_URI_MAP
+    if _FEDLEX_WORK_URI_MAP is None:
+        m: dict = {}
+        try:
+            conn = _get_statutes_conn()
+            if conn is not None:
+                for sr, uri in conn.execute(
+                    "SELECT sr_number, work_uri FROM laws WHERE work_uri IS NOT NULL AND work_uri != ''"
+                ):
+                    m[str(sr)] = uri
+        except Exception as e:  # pragma: no cover
+            logger.debug("fedlex work_uri map load failed: %s", e)
+        _FEDLEX_WORK_URI_MAP = m
+    return _FEDLEX_WORK_URI_MAP
+
+
+def _fedlex_url(sr_number, article_num=None, lang: str = "de") -> str | None:
+    """Public Fedlex page URL for a federal law (optionally an article anchor),
+    derived from the law's ELI work_uri."""
+    if not sr_number:
+        return None
+    uri = _fedlex_work_uri_map().get(str(sr_number))
+    if not uri:
+        return None
+    url = uri.replace("fedlex.data.admin.ch", "www.fedlex.admin.ch").rstrip("/") + "/" + (lang or "de")
+    if article_num:
+        anchor = "".join(ch for ch in str(article_num).lower() if ch.isalnum())
+        if anchor:
+            url += "#art_" + anchor
+    return url
+
+
+def _lexfind_url(lexfind_id, lang: str = "de") -> str | None:
+    """LexFind detail-page URL for a cantonal law."""
+    if not lexfind_id:
+        return None
+    return f"https://www.lexfind.ch/fe/{lang or 'de'}/tol/{lexfind_id}"
+
+
 def _with_open_access_note(text: str) -> str:
     """Append the open-access note for commercial clients. The list-return
     path in _handle_call_tool_wrapper does this automatically, but it is
@@ -15672,16 +15716,23 @@ def _with_open_access_note(text: str) -> str:
     return text
 
 
-def _law_hits_structured(result: dict) -> dict:
+def _law_hits_structured(result: dict, lang: str = "de") -> dict:
     """Machine-readable law-search payload (the canonical LawHit list) for
     structured clients and the Tier B widgets. snippet_html carries <mark>
-    highlights; snippet_text is the plain verbatim snippet."""
+    highlights; snippet_text is the plain verbatim snippet; source_url links to
+    Fedlex (federal) or LexFind (cantonal)."""
+    lang = lang or "de"
     terms = _query_terms(result.get("query", ""))
     hits = []
     for r in result.get("results", []):
         snip = _normalize_law_snippet(r.get("snippet", ""), terms)
+        level = r.get("level", "federal")
+        if level == "federal":
+            src_url, src_label = _fedlex_url(r.get("sr_number"), r.get("article_num"), lang), "Fedlex"
+        else:
+            src_url, src_label = _lexfind_url(r.get("lexfind_id"), lang), "LexFind"
         hits.append({
-            "level": r.get("level", "federal"),
+            "level": level,
             "canton": r.get("canton"),
             "sr_number": r.get("sr_number"),
             "abbreviation": r.get("abbreviation"),
@@ -15693,9 +15744,12 @@ def _law_hits_structured(result: dict) -> dict:
             "snippet_text": _strip_highlight(snip),
             "snippet_html": _render_highlight(snip, "html"),
             "lexfind_id": r.get("lexfind_id"),
+            "source_url": src_url,
+            "source_label": src_label,
         })
     return {
         "query": result.get("query", ""),
+        "query_lang": lang,
         "total": result.get("count", len(hits)),
         "federal_hits": result.get("federal_hits", 0),
         "cantonal_hits": result.get("cantonal_hits", 0),
@@ -15703,16 +15757,24 @@ def _law_hits_structured(result: dict) -> dict:
     }
 
 
-def _legislation_hits_structured(result: dict) -> dict:
+def _legislation_hits_structured(result: dict, lang: str = "de") -> dict:
     """Machine-readable legislation-search payload (the LexFind law list)."""
+    lang = lang or "de"
     terms = _query_terms(result.get("query", ""))
     hits = []
     for law in result.get("laws", []):
         snip = _normalize_law_snippet(law.get("snippet", ""), terms)
         entity = law.get("entity")
         canton = None if entity in ("CH", None, "") else entity
+        level = "federal" if canton is None else "cantonal"
+        if level == "federal":
+            src_url, src_label = _fedlex_url(law.get("systematic_number"), None, lang), "Fedlex"
+        else:
+            src_url = _lexfind_url(law.get("lexfind_id"), lang) or law.get("original_url")
+            src_label = "LexFind"
         hits.append({
-            "level": "federal" if canton is None else "cantonal",
+            "level": level,
+            "canton": canton,
             "title": law.get("title"),
             "systematic_number": law.get("systematic_number"),
             "entity": entity,
@@ -15728,9 +15790,12 @@ def _legislation_hits_structured(result: dict) -> dict:
             "snippet_html": _render_highlight(snip, "html"),
             "url": law.get("original_url"),
             "lexfind_id": law.get("lexfind_id"),
+            "source_url": src_url,
+            "source_label": src_label,
         })
     return {
         "query": result.get("query", ""),
+        "query_lang": lang,
         "total": result.get("total", len(hits)),
         "hits": hits,
     }
@@ -19612,7 +19677,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 jurisdiction=arguments.get("jurisdiction", "all"),
             )
             _text = _with_open_access_note(_format_search_laws_response(result))
-            return ([TextContent(type="text", text=_text)], _law_hits_structured(result))
+            return ([TextContent(type="text", text=_text)], _law_hits_structured(result, arguments.get("language") or "de"))
 
         elif name == "get_commentary":
             result = await asyncio.to_thread(
@@ -19731,7 +19796,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 fetch_top_n_texts=int(arguments.get("fetch_top_n_texts", 0)),
             )
             _text = _with_open_access_note(_format_search_legislation_response(result))
-            return ([TextContent(type="text", text=_text)], _legislation_hits_structured(result))
+            return ([TextContent(type="text", text=_text)], _legislation_hits_structured(result, arguments.get("language") or "de"))
 
         elif name == "get_legislation":
             result = await asyncio.to_thread(

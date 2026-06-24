@@ -31,7 +31,11 @@ def test_widget_module_contract():
     assert "window.openai" in html and "postMessage" in html
     assert 'callTool("get_law"' in html and "search_laws" in html
     assert "<mark>" in html
-    # sandbox-safe: no external resource loads
+    # Fedlex/LexFind two-style cards + source links + DE/FR/IT/EN labels
+    assert "federal" in html and "cantonal" in html
+    assert "source_url" in html and "src-link" in html
+    assert "Recherche de lois" in html and "Ricerca di leggi" in html
+    # sandbox-safe: no external resource loads baked in (source_url is runtime)
     assert "http://" not in html and "https://" not in html
     assert "<script src" not in html and "<link" not in html
 

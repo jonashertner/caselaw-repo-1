@@ -156,3 +156,40 @@ def test_with_open_access_note_no_ua_is_noop():
         assert m._with_open_access_note("body") == "body"
     finally:
         m._ctx_client_ua.reset(tok)
+
+
+# ── source links: Fedlex (federal) / LexFind (cantonal) ──────────
+def test_fedlex_url_from_work_uri(monkeypatch):
+    monkeypatch.setattr(m, "_FEDLEX_WORK_URI_MAP",
+                        {"220": "https://fedlex.data.admin.ch/eli/cc/27/317_321_377"})
+    assert m._fedlex_url("220", "269d", "de") == \
+        "https://www.fedlex.admin.ch/eli/cc/27/317_321_377/de#art_269d"
+    assert m._fedlex_url("220", None, "fr") == \
+        "https://www.fedlex.admin.ch/eli/cc/27/317_321_377/fr"
+    assert m._fedlex_url("999", "1", "de") is None  # sr not in map
+
+
+def test_lexfind_url():
+    assert m._lexfind_url("6275", "fr") == "https://www.lexfind.ch/fe/fr/tol/6275"
+    assert m._lexfind_url(None, "de") is None
+
+
+def test_law_hits_structured_carries_source_links(monkeypatch):
+    monkeypatch.setattr(m, "_FEDLEX_WORK_URI_MAP",
+                        {"220": "https://fedlex.data.admin.ch/eli/cc/27/317_321_377"})
+    result = {
+        "query": "x", "count": 2, "federal_hits": 1, "cantonal_hits": 1,
+        "results": [
+            {"level": "federal", "canton": "CH", "article_num": "269d",
+             "abbreviation": "OR", "sr_number": "220", "snippet": "a >>>x<<< b"},
+            {"level": "cantonal", "canton": "ZH", "article_num": "5",
+             "sr_number": "700.1", "lexfind_id": "6275", "snippet": "c <b>x</b> d"},
+        ],
+    }
+    sc = m._law_hits_structured(result, "de")
+    assert sc["query_lang"] == "de"
+    fed, can = sc["hits"]
+    assert fed["source_label"] == "Fedlex"
+    assert fed["source_url"] == "https://www.fedlex.admin.ch/eli/cc/27/317_321_377/de#art_269d"
+    assert can["source_label"] == "LexFind"
+    assert can["source_url"] == "https://www.lexfind.ch/fe/de/tol/6275"
