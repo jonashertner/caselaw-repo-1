@@ -532,14 +532,13 @@ TOOL_DISPATCH_TIMEOUT_S = float(os.environ.get("OCL_TOOL_TIMEOUT_S", "120"))
 # guarded so a missing widget module can never break serving.
 # Spec: docs/superpowers/specs/2026-06-24-cross-provider-law-search-ux-design.md
 OCL_UI_WIDGETS = os.environ.get("OCL_UI_WIDGETS", "").strip().lower() in {"1", "true", "yes", "on"}
-_LAW_TOOL_META = None
-if OCL_UI_WIDGETS:
-    try:
-        import law_widget
-        _LAW_TOOL_META = law_widget.tool_ui_meta()
-    except Exception as _widget_err:  # pragma: no cover
-        logger.warning("OCL_UI_WIDGETS set but law_widget unavailable: %s", _widget_err)
-        OCL_UI_WIDGETS = False
+try:
+    import law_widget
+except Exception as _widget_err:  # pragma: no cover
+    logger.warning("law_widget import failed: %s", _widget_err)
+    law_widget = None
+# _meta is set on the law tools only when the widget is enabled.
+_LAW_TOOL_META = law_widget.tool_ui_meta() if (OCL_UI_WIDGETS and law_widget) else None
 
 
 def _past_deadline(deadline: float | None) -> bool:
@@ -19133,14 +19132,22 @@ async def _dispatch_with_timeout(name: str, arguments: dict):
         }, ensure_ascii=False))]
 
 
-if OCL_UI_WIDGETS:
-    # Resource handlers are registered ONLY when the flag is on, so the
-    # server advertises the `resources` capability only when widgets are live.
+if law_widget is not None:
+    # Resource handlers are registered whenever the widget module is importable,
+    # NOT gated on the flag. This way, turning the widget off never leaves a
+    # client that cached the tool's _meta with a hard "failed to load" error:
+    # the resource still reads, returning a benign empty panel. Whether the
+    # widget is advertised (list_resources) or served (read_resource) is
+    # flag-gated; the tool _meta (_LAW_TOOL_META) is the real on/off switch.
     from mcp.types import Resource as _Resource
     from mcp.server.lowlevel.helper_types import ReadResourceContents as _RRC
 
+    _EMPTY_WIDGET_HTML = '<!doctype html><html><head><meta charset="utf-8"></head><body></body></html>'
+
     @server.list_resources()
     async def _list_ui_resources():
+        if not OCL_UI_WIDGETS:
+            return []
         return [_Resource(
             uri=law_widget.WIDGET_URI,
             name=law_widget.WIDGET_NAME,
@@ -19151,7 +19158,8 @@ if OCL_UI_WIDGETS:
     @server.read_resource()
     async def _read_ui_resource(uri):
         if str(uri).rstrip("/") == law_widget.WIDGET_URI:
-            return [_RRC(content=law_widget.LAW_SEARCH_WIDGET_HTML, mime_type=law_widget.WIDGET_MIME)]
+            html = law_widget.LAW_SEARCH_WIDGET_HTML if OCL_UI_WIDGETS else _EMPTY_WIDGET_HTML
+            return [_RRC(content=html, mime_type=law_widget.WIDGET_MIME)]
         return [_RRC(content="Resource not found", mime_type="text/plain")]
 
 

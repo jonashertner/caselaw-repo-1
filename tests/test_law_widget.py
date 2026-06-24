@@ -43,10 +43,13 @@ def test_widget_module_contract():
 def test_flag_off_is_default_and_inert():
     import mcp_server as m
     assert m.OCL_UI_WIDGETS is False, "widget flag must default OFF"
-    assert m._LAW_TOOL_META is None, "no tool _meta when flag off"
-    from mcp.types import ListResourcesRequest, ReadResourceRequest
-    assert ListResourcesRequest not in m.server.request_handlers
-    assert ReadResourceRequest not in m.server.request_handlers
+    # The tool _meta is the real on/off switch: with the flag off the law tools
+    # advertise no widget, so a fresh client sees plain (highlighted) results.
+    assert m._LAW_TOOL_META is None
+    # Resource handlers ARE registered (for graceful degradation), so a client
+    # that cached the widget reference reads a benign empty panel instead of a
+    # hard "failed to load". The empty-panel fallback is defined for off.
+    assert m.law_widget is not None
 
 
 def test_flag_on_registers_widget_and_meta():
