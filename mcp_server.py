@@ -15536,6 +15536,115 @@ def search_laws(
     }
 
 
+# ── Cross-provider law-search highlighting (Tier A) ──────────────
+# One internal highlight convention, rendered per surface so matched
+# terms read well on every LLM client. Private-use sentinels cannot
+# collide with statute text. Spec: docs/superpowers/specs/
+# 2026-06-24-cross-provider-law-search-ux-design.md
+_HL_OPEN = ""
+_HL_CLOSE = ""
+_SECTION_MARK_CANTONS = {"ZH", "SH", "AI", "AR", "AG", "BS", "BL"}
+
+
+def _law_marker(canton: str | None) -> str:
+    """'§' for cantons that number statutes by paragraph, else 'Art.'."""
+    return "§" if (canton or "").upper() in _SECTION_MARK_CANTONS else "Art."
+
+
+def _strip_highlight(text: str) -> str:
+    """Drop highlight sentinels (for verbatim and length comparisons)."""
+    return (text or "").replace(_HL_OPEN, "").replace(_HL_CLOSE, "")
+
+
+def _render_highlight(text: str, surface: str = "text") -> str:
+    """Render highlight sentinels for a target surface.
+
+    text -> markdown bold (renders identically on Claude, ChatGPT, Gemini,
+    Copilot; <mark> does not render on all four). html -> <mark> for the
+    MCP-Apps / Apps-SDK widgets. Unbalanced sentinels (e.g. a snippet
+    truncated mid-mark) are stripped so we never emit malformed markup.
+    """
+    if not text:
+        return text or ""
+    if text.count(_HL_OPEN) != text.count(_HL_CLOSE):
+        return _strip_highlight(text)
+    if surface == "html":
+        return text.replace(_HL_OPEN, "<mark>").replace(_HL_CLOSE, "</mark>")
+    return text.replace(_HL_OPEN, "**").replace(_HL_CLOSE, "**")
+
+
+def _query_terms(query: str) -> list[str]:
+    """Plain word tokens from a (possibly FTS-expanded) query, for the
+    on-the-fly highlight fallback. Drops quotes, operators, bare numbers."""
+    if not query:
+        return []
+    import re
+    ops = {"AND", "OR", "NOT", "NEAR"}
+    seen: set[str] = set()
+    out: list[str] = []
+    for tok in re.split(r"[\s,;:()\"]+", query):
+        tok = tok.strip().strip("*")
+        if len(tok) >= 2 and tok.upper() not in ops and not tok.isdigit():
+            k = tok.lower()
+            if k not in seen:
+                seen.add(k)
+                out.append(tok)
+    return out
+
+
+def _highlight_terms_inline(snippet: str, terms: list[str]) -> str:
+    """Wrap query terms in a snippet with sentinels. Word-boundary,
+    case-insensitive, idempotent (no-op if already sentinelled)."""
+    if not snippet or not terms or _HL_OPEN in snippet:
+        return snippet
+    import re
+    toks = sorted({t for t in terms if t}, key=len, reverse=True)
+    if not toks:
+        return snippet
+    pat = re.compile(
+        r"(?<!\w)(" + "|".join(re.escape(t) for t in toks) + r")(?!\w)",
+        re.IGNORECASE | re.UNICODE,
+    )
+    return pat.sub(lambda mt: _HL_OPEN + mt.group(0) + _HL_CLOSE, snippet)
+
+
+def _normalize_law_snippet(snippet: str, terms: list[str] | None = None) -> str:
+    """Map any law-source highlight markers (federal '>>>...<<<',
+    cantonal-local '<b>...</b>') to internal sentinels; fall back to inline
+    term marking when the source provided none (e.g. LexFind plain text).
+    Returns sentinelled text ready for _render_highlight."""
+    if not snippet:
+        return ""
+    s = _truncate(snippet, MAX_SNIPPET_LEN) or ""
+    s = (
+        s.replace(">>>", _HL_OPEN).replace("<<<", _HL_CLOSE)
+        .replace("<b>", _HL_OPEN).replace("</b>", _HL_CLOSE)
+    )
+    if _HL_OPEN not in s and terms:
+        s = _highlight_terms_inline(s, terms)
+    return s
+
+
+def _build_law_reference(hit: dict) -> str:
+    """Display reference assembled from VERBATIM components (marker, article
+    number, abbreviation or SR number). A scannable label, NOT a quotable
+    citation: direct quotes still come from get_law (R1 to R3)."""
+    canton = hit.get("canton")
+    marker = hit.get("marker") or _law_marker(canton)
+    art = hit.get("article_num")
+    abbr = hit.get("abbreviation")
+    sr = hit.get("sr_number") or hit.get("systematic_number")
+    parts: list[str] = []
+    if art:
+        parts.append(f"{marker} {art}")
+    if abbr:
+        parts.append(abbr)
+    elif sr:
+        parts.append(f"SR {sr}" if (canton in (None, "", "CH")) else f"{canton} {sr}")
+    ref = " ".join(parts).strip()
+    return ref or (hit.get("title") or "")[:60]
+
+
 def _format_get_law_response(result: dict) -> str:
     if result.get("error"):
         return result["error"]
@@ -15597,6 +15706,7 @@ def _format_search_laws_response(result: dict) -> str:
     else:
         text += f"Found {result['count']} articles.\n\n"
 
+    terms = _query_terms(result.get("query", ""))
     for i, r in enumerate(results, 1):
         level = r.get("level", "federal")
         canton = r.get("canton", "CH")
@@ -15613,7 +15723,8 @@ def _format_search_laws_response(result: dict) -> str:
             abbr = r.get("abbreviation") or "?"
             sr = r.get("sr_number") or "?"
             text += f"**{i}. [CH] Art. {r['article_num']} {abbr}** (SR {sr}){heading}\n"
-        text += f"   {r['snippet']}\n\n"
+        snippet = _render_highlight(_normalize_law_snippet(r.get("snippet", ""), terms), "text")
+        text += f"   {snippet}\n\n"
 
     return text
 
@@ -16836,6 +16947,7 @@ def _format_search_legislation_response(result: dict) -> str:
     text = f"# Legislation Search: \"{result['query']}\"\n"
     text += f"Found {total} legislative texts ({len(laws)} shown).\n\n"
 
+    terms = _query_terms(result.get("query", ""))
     for i, law in enumerate(laws, 1):
         status = "" if law.get("is_active") else " [ABROGATED]"
         text += f"**{i}. {law['title']}**{status}\n"
@@ -16846,7 +16958,8 @@ def _format_search_legislation_response(result: dict) -> str:
         if law.get("keywords"):
             text += f"   Keywords: {law['keywords']}\n"
         if law.get("snippet"):
-            text += f"   Snippet: {law['snippet']}\n"
+            _snip = _render_highlight(_normalize_law_snippet(law["snippet"], terms), "text")
+            text += f"   Snippet: {_snip}\n"
         if law.get("original_url"):
             text += f"   URL: {law['original_url']}\n"
         if law.get("lexfind_id"):
