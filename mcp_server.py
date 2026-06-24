@@ -525,6 +525,22 @@ SEARCH_DEADLINE_MS = int(os.environ.get("OCL_SEARCH_DEADLINE_MS", "20000"))
 # instead of an indefinite hang. Generous so only pathological calls trip it.
 TOOL_DISPATCH_TIMEOUT_S = float(os.environ.get("OCL_TOOL_TIMEOUT_S", "120"))
 
+# ── In-client UI widgets (Tier B, flag-gated, default OFF) ────────
+# When OCL_UI_WIDGETS is on, search_laws/search_legislation advertise an
+# MCP-Apps law-search widget (tool _meta + resource handlers). Off by default
+# so the server's MCP surface stays byte-identical to before. The import is
+# guarded so a missing widget module can never break serving.
+# Spec: docs/superpowers/specs/2026-06-24-cross-provider-law-search-ux-design.md
+OCL_UI_WIDGETS = os.environ.get("OCL_UI_WIDGETS", "").strip().lower() in {"1", "true", "yes", "on"}
+_LAW_TOOL_META = None
+if OCL_UI_WIDGETS:
+    try:
+        import law_widget
+        _LAW_TOOL_META = law_widget.tool_ui_meta()
+    except Exception as _widget_err:  # pragma: no cover
+        logger.warning("OCL_UI_WIDGETS set but law_widget unavailable: %s", _widget_err)
+        OCL_UI_WIDGETS = False
+
 
 def _past_deadline(deadline: float | None) -> bool:
     """True if a monotonic-clock deadline has passed (None = no deadline set)."""
@@ -18262,6 +18278,7 @@ def _list_tools() -> list[Tool]:
         ),
         Tool(
             annotations=_READ_ONLY,
+            _meta=_LAW_TOOL_META,
             name="search_laws",
             description=(
                 "UNIFIED full-text search across every Swiss statute article "
@@ -18614,6 +18631,7 @@ def _list_tools() -> list[Tool]:
         *([] if not LEXFIND_ENABLED else [
             Tool(
                 annotations=_READ_ONLY,
+                _meta=_LAW_TOOL_META,
                 name="search_legislation",
                 description=(
                     "NATURAL-LANGUAGE SEARCH across all Swiss legislation — 33,000+ "
@@ -19048,6 +19066,28 @@ async def _dispatch_with_timeout(name: str, arguments: dict):
                 "under temporary load — please retry; typical calls return in 1-10s."
             ),
         }, ensure_ascii=False))]
+
+
+if OCL_UI_WIDGETS:
+    # Resource handlers are registered ONLY when the flag is on, so the
+    # server advertises the `resources` capability only when widgets are live.
+    from mcp.types import Resource as _Resource
+    from mcp.server.lowlevel.helper_types import ReadResourceContents as _RRC
+
+    @server.list_resources()
+    async def _list_ui_resources():
+        return [_Resource(
+            uri=law_widget.WIDGET_URI,
+            name=law_widget.WIDGET_NAME,
+            description="Interactive law-search results: highlighted articles, full text on click.",
+            mimeType=law_widget.WIDGET_MIME,
+        )]
+
+    @server.read_resource()
+    async def _read_ui_resource(uri):
+        if str(uri).rstrip("/") == law_widget.WIDGET_URI:
+            return [_RRC(content=law_widget.LAW_SEARCH_WIDGET_HTML, mime_type=law_widget.WIDGET_MIME)]
+        return [_RRC(content="Resource not found", mime_type="text/plain")]
 
 
 @server.call_tool()
