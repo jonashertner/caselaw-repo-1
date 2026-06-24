@@ -39,8 +39,8 @@ LAW_SEARCH_WIDGET_HTML = r"""<!doctype html>
   * { box-sizing:border-box; }
   body { margin:0; padding:14px; color:var(--ink); background:var(--bg);
          font:14.5px/1.55 "Helvetica Neue",-apple-system,Segoe UI,Roboto,Arial,sans-serif; }
-  .hd { display:flex; align-items:baseline; gap:10px; margin:0 0 13px; padding-bottom:9px;
-        border-bottom:2px solid var(--ink); }
+  .hd { display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 10px; margin:0 0 13px;
+        padding-bottom:9px; border-bottom:2px solid var(--ink); }
   .hd h1 { font-size:16px; font-weight:700; margin:0; letter-spacing:.01em; }
   .hd .count { color:var(--muted); font-size:13px; }
   .langs { margin-left:auto; display:flex; gap:3px; }
