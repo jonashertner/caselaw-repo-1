@@ -89,10 +89,23 @@ LAW_SEARCH_WIDGET_HTML = r"""<!doctype html>
   };
   function L() { return LABELS[UI_LANG] || LABELS.de; }
 
-  function pickData() {
-    try { if (window.openai && window.openai.toolOutput) return window.openai.toolOutput; } catch (e) {}
-    if (window.__TOOL_OUTPUT__) return window.__TOOL_OUTPUT__;
-    if (window.structuredContent) return window.structuredContent;
+  // Locate the structuredContent (the object carrying .hits) anywhere inside a
+  // global or a host message, regardless of nesting/wrapper shape.
+  function findHits(o, depth) {
+    if (!o || typeof o !== "object" || depth > 5) return null;
+    if (Array.isArray(o.hits)) return o;
+    for (var k in o) { try { var r = findHits(o[k], depth + 1); if (r) return r; } catch (e) {} }
+    return null;
+  }
+  function applyData(out) {
+    if (!out || !out.hits) return false;
+    DATA = out; if (out.query_lang) UI_LANG = out.query_lang; render(); return true;
+  }
+  function fromGlobals() {
+    var srcs = [];
+    try { if (window.openai && window.openai.toolOutput) srcs.push(window.openai.toolOutput); } catch (e) {}
+    srcs.push(window.__TOOL_OUTPUT__, window.structuredContent, window.toolOutput);
+    for (var i = 0; i < srcs.length; i++) { var h = findHits(srcs[i], 0); if (h) return h; }
     return null;
   }
   function esc(s) { var d = document.createElement("div"); d.textContent = s == null ? "" : String(s); return d.innerHTML; }
@@ -148,18 +161,28 @@ LAW_SEARCH_WIDGET_HTML = r"""<!doctype html>
     Array.prototype.forEach.call(app.querySelectorAll(".vt"), function (b) { b.onclick = function () { onFull(hits[+b.getAttribute("data-i")]); }; });
   }
 
-  function boot() {
-    var d = pickData();
-    if (d && d.hits) { DATA = d; if (d.query_lang) UI_LANG = d.query_lang; render(); }
-  }
+  function boot() { return applyData(fromGlobals()); }
+
+  // Inbound data arrives as: a global (window.openai.toolOutput), the
+  // openai:set_globals event, OR a postMessage (MCP-UI / a JSON-RPC
+  // ui/notifications/tool-result notification). findHits handles any shape.
   window.addEventListener("message", function (e) {
-    var d = e && e.data; if (!d) return;
-    var out = d.toolOutput || d.structuredContent || (d.type === "tool-output" ? d.payload : null);
-    if (out && out.hits) { DATA = out; if (out.query_lang) UI_LANG = out.query_lang; render(); }
+    var d = e && e.data; if (d == null) return;
+    if (typeof d === "string") { try { d = JSON.parse(d); } catch (x) { return; } }
+    applyData(findHits(d, 0));
   });
   window.addEventListener("openai:set_globals", boot);
   document.addEventListener("DOMContentLoaded", boot);
-  boot();
+
+  // Some MCP-UI hosts only send the render data after the iframe announces it
+  // is ready; post a few common ready signals (harmless if unused).
+  ["ui-lifecycle-iframe-ready", "iframe-ready", "mcp-ui-ready", "ready"].forEach(function (t) {
+    try { if (window.parent && window.parent !== window) window.parent.postMessage({ type: t }, "*"); } catch (e) {}
+  });
+
+  // Poll briefly for late-injected globals (host may set window.openai after load).
+  var _tries = 0;
+  (function poll() { if (boot()) return; if (_tries++ < 40) setTimeout(poll, 200); })();
 })();
 </script>
 </body>
