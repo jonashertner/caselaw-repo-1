@@ -19142,7 +19142,20 @@ if law_widget is not None:
     from mcp.types import Resource as _Resource
     from mcp.server.lowlevel.helper_types import ReadResourceContents as _RRC
 
-    _EMPTY_WIDGET_HTML = '<!doctype html><html><head><meta charset="utf-8"></head><body></body></html>'
+    # When the widget is off but a client still has the tool _meta cached, it
+    # will render this. Make it collapse to zero height and ask the host to
+    # close it, so no blank box lingers (best-effort; client must re-fetch tools
+    # to drop the reference entirely).
+    _EMPTY_WIDGET_HTML = (
+        '<!doctype html><html><head><meta charset="utf-8">'
+        '<style>html,body{margin:0;padding:0;height:0;min-height:0;overflow:hidden}</style></head>'
+        '<body><script>(function(){function c(){'
+        'try{if(window.openai&&window.openai.requestClose)window.openai.requestClose();}catch(e){}'
+        'try{if(window.parent&&window.parent!==window){'
+        'window.parent.postMessage({type:"ui-size-change",payload:{height:0}},"*");'
+        'window.parent.postMessage({type:"ui-lifecycle-iframe-close"},"*");}}catch(e){}}'
+        'c();document.addEventListener("DOMContentLoaded",c);})();</script></body></html>'
+    )
 
     @server.list_resources()
     async def _list_ui_resources():
