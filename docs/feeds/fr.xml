@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/fr.xml</link>
     <description>Latest published Swiss court decisions in Français.</description>
     <language>de-CH</language>
-    <lastBuildDate>Sun, 21 Jun 2026 11:31:55 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 24 Jun 2026 09:14:20 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/fr.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -152,6 +152,42 @@ Laurent Sc…</description>
       <pubDate>Fri, 26 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">fr_gerichte_502 2026 31</guid>
       <category>fr_gerichte</category>
+    </item>
+    <item>
+      <title>ecthr_chamber 13250/23 vom 2026-06-23</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ecthr_chamber_13250_23</link>
+      <description>Violation de l'article 8 - Droit au respect de la vie privée et familiale (Article 8-1 - Respect de la vie familiale);Violation de l'article 13+8-1 - Droit à un recours effectif (Article 13 - Recours effectif) (Article 8-1 - Respect de la vie familiale;Article 8 - Droit au respect de la vie privée et familiale);Préjudice moral - réparation (Article 41 - Préjudice moral;Satisfaction équitable); Violation: 8;8-1;13;13+8-1</description>
+      <pubDate>Tue, 23 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ecthr_chamber_13250_23</guid>
+      <category>ecthr_chamber</category>
+      <category>CEDH / Droits humains</category>
+    </item>
+    <item>
+      <title>ecthr_chamber 25916/18_37429/18 vom 2026-06-23</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ecthr_chamber_25916_18_37429_18</link>
+      <description>Violation de l'article 6 - Droit à un procès équitable (Article 6-2 - Présomption d'innocence);Violation de l'article 6 - Droit à un procès équitable (Article 6-2 - Présomption d'innocence);Préjudice moral - réparation (Article 41 - Préjudice moral;Satisfaction équitable); Violation: 6;6-2</description>
+      <pubDate>Tue, 23 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ecthr_chamber_25916_18_37429_18</guid>
+      <category>ecthr_chamber</category>
+      <category>CEDH / Droits humains</category>
+    </item>
+    <item>
+      <title>ecthr_chamber 31077/23 vom 2026-06-23</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ecthr_chamber_31077_23</link>
+      <description>Violation de l'article 8 - Droit au respect de la vie privée et familiale (Article 8-1 - Respect de la vie familiale);Violation de l'article 13+8 - Droit à un recours effectif (Article 13 - Recours effectif) (Article 8 - Droit au respect de la vie privée et familiale;Article 8-1 - Respect de la vie familiale);Préjudice moral - réparation (Article 41 - Préjudice moral;Satisfaction équitable); Violation: 8;8-1;13;13+8</description>
+      <pubDate>Tue, 23 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ecthr_chamber_31077_23</guid>
+      <category>ecthr_chamber</category>
+      <category>CEDH / Droits humains</category>
+    </item>
+    <item>
+      <title>ecthr_chamber 41855/23 vom 2026-06-23</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ecthr_chamber_41855_23</link>
+      <description>Violation de l'article 8 - Droit au respect de la vie privée et familiale (Article 8-1 - Respect de la vie familiale);Violation de l'article 13+8 - Droit à un recours effectif (Article 13 - Recours effectif) (Article 8 - Droit au respect de la vie privée et familiale;Article 8-1 - Respect de la vie familiale);Préjudice moral - réparation (Article 41 - Préjudice moral;Satisfaction équitable); Violation: 8;8-1;13;13+8</description>
+      <pubDate>Tue, 23 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ecthr_chamber_41855_23</guid>
+      <category>ecthr_chamber</category>
+      <category>CEDH / Droits humains</category>
     </item>
     <item>
       <title>fr_gerichte 501 2025 119 vom 2026-06-22</title>
@@ -363,6 +399,14 @@ Hoirie de feu A._____…</description>
       <category>ju_gerichte</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht F-3922/2026 vom 2026-06-15</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-3922_2026</link>
+      <description>Asile (non-entrée en matière) et renvoi (procédure Dublin - art. 31a al. 1 let. b LAsi)</description>
+      <pubDate>Mon, 15 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-3922.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>fr_gerichte 501 2025 157 vom 2026-06-15</title>
       <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_501%202025%20157</link>
       <description>Tribunal cantonal TC
@@ -401,6 +445,108 @@ Pré…</description>
       <pubDate>Mon, 15 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">fr_gerichte_608 2025 122</guid>
       <category>fr_gerichte</category>
+    </item>
+    <item>
+      <title>ge_gerichte JTAPI/570/2026 vom 2026-06-15</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ge_gerichte_JTAPI_570_2026</link>
+      <description>REPUBLIQUE ET 
+ 
+CANTON DE GENEVE 
+POUVOIR JUDICIAIRE 
+A/591/2025 IMPV 
+JTAPI/570/2026 
+ 
+JUGEMENT 
+DU TRIBUNAL ADMINISTRATIF 
+DE PREMIÈRE INSTANCE 
+du 15 juin 2026 
+ 
+dans la cause 
+ 
+Madame A______, représentée par LAMBELET &amp; ASSOCIES SA, avec élec…</description>
+      <pubDate>Mon, 15 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ge_gerichte_JTAPI_570_2026</guid>
+      <category>ge_gerichte</category>
+    </item>
+    <item>
+      <title>ge_gerichte JTAPI/576/2026 vom 2026-06-15</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ge_gerichte_JTAPI_576_2026</link>
+      <description>REPUBLIQUE ET 
+ 
+CANTON DE GENEVE 
+POUVOIR JUDICIAIRE 
+A/436/2025 IMPV 
+JTAPI/576/2026 
+ 
+JUGEMENT 
+DU TRIBUNAL ADMINISTRATIF 
+DE PREMIÈRE INSTANCE 
+du 15 juin 2026 
+ 
+dans la cause 
+ 
+Madame A______, représentée par B______ Sàrl, avec élection de do…</description>
+      <pubDate>Mon, 15 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ge_gerichte_JTAPI_576_2026</guid>
+      <category>ge_gerichte</category>
+    </item>
+    <item>
+      <title>ge_gerichte JTAPI/581/2026 vom 2026-06-15</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ge_gerichte_JTAPI_581_2026</link>
+      <description>REPUBLIQUE ET 
+ 
+CANTON DE GENEVE 
+POUVOIR JUDICIAIRE 
+A/4360/2025 IMPV 
+JTAPI/581/2026 
+ 
+JUGEMENT 
+DU TRIBUNAL ADMINISTRATIF 
+DE PREMIÈRE INSTANCE 
+du 15 juin 2026 
+ 
+dans la cause 
+ 
+Monsieur A______ 
+ 
+contre 
+OFFICE CANTONAL DES VÉHICULES 
+ 
+ 
+ …</description>
+      <pubDate>Mon, 15 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ge_gerichte_JTAPI_581_2026</guid>
+      <category>ge_gerichte</category>
+    </item>
+    <item>
+      <title>Bundesgericht 9C_343/2026 vom 2026-06-12</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_9C_343_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+9C_343/2026
+
+Arrêt du 12 juin 2026
+
+IIIe Cour de droit public
+
+Composition
+
+Mme la Juge fédérale Moser-Szeless, Présidente.
+
+Greffier : M. Cretton.
+
+Participants à la procédure
+
+A…</description>
+      <pubDate>Fri, 12 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:9C_343.2026</guid>
+      <category>bger</category>
     </item>
     <item>
       <title>fr_gerichte 604 2024 135 vom 2026-06-12</title>
@@ -523,6 +669,47 @@ bénéfice dun contrat de travail de durée indétermin…</description>
       <pubDate>Thu, 11 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ne_gerichte_CDP.2025.255</guid>
       <category>ne_gerichte</category>
+    </item>
+    <item>
+      <title>ne_gerichte CDP.2026.15 vom 2026-06-11</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ne_gerichte_CDP.2026.15</link>
+      <description>A.A.________,
+né en 1970, domicilié à Z.________ jusquau 31 janvier 2025, puis à Y.________
+dès le lendemain, a conclu un contrat de travail avec la société de placement B.________
+AG, portant sur une mission temporaire de peintre à compter du 26…</description>
+      <pubDate>Thu, 11 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ne_gerichte_CDP.2026.15</guid>
+      <category>ne_gerichte</category>
+    </item>
+    <item>
+      <title>Bundesgericht 5A_408/2026 vom 2026-06-10</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_408_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+5A_408/2026
+
+Arrêt du 10 juin 2026
+
+IIe Cour de droit civil
+
+Composition
+
+MM. les Juges fédéraux Bovey, Président,
+
+Herrmann et Hartmann.
+
+Greffière : Mme Achtari.
+
+Participants à…</description>
+      <pubDate>Wed, 10 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_408.2026</guid>
+      <category>bger</category>
     </item>
     <item>
       <title>Bundesgericht 5A_496/2026 vom 2026-06-10</title>
@@ -745,244 +932,6 @@ r…</description>
       <pubDate>Tue, 09 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_512.2026</guid>
       <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 8C_30/2026 vom 2026-06-09</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_8C_30_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-8C_30/2026
-
-Arrêt du 9 juin 2026
-
-IVe Cour de droit public
-
-Composition
-
-M. le Juge fédéral Métral, en qualité de juge unique.
-
-Greffière : Mme Barman Ionta.
-
-Participants à la pr…</description>
-      <pubDate>Tue, 09 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:8C_30.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 8C_31/2026 vom 2026-06-09</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_8C_31_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-8C_31/2026
-
-Arrêt du 9 juin 2026
-
-IVe Cour de droit public
-
-Composition
-
-M. le Juge fédéral Métral, en qualité de juge unique.
-
-Greffière : Mme Barman Ionta.
-
-Participants à la pr…</description>
-      <pubDate>Tue, 09 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:8C_31.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 8C_742/2025 vom 2026-06-09</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_8C_742_2025</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-8C_742/2025
-
-Arrêt du 9 juin 2026
-
-IVe Cour de droit public
-
-Composition
-
-M. le Juge fédéral Métral, en qualité de juge unique.
-
-Greffière : Mme Barman Ionta.
-
-Participants à la p…</description>
-      <pubDate>Tue, 09 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:8C_742.2025</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>ecthr_chamber 56007/21 vom 2026-06-09</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ecthr_chamber_56007_21</link>
-      <description>Violation de l'article 9 - Liberté de pensée, de conscience et de religion (Article 9-1 - Liberté de religion);Préjudice moral - constat de violation suffisant (Article 41 - Préjudice moral;Satisfaction équitable); Violation: 9;9-1</description>
-      <pubDate>Tue, 09 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ecthr_chamber_56007_21</guid>
-      <category>ecthr_chamber</category>
-      <category>CEDH / Droits humains</category>
-    </item>
-    <item>
-      <title>fr_gerichte 102 2026 96 vom 2026-06-09</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_102%202026%2096</link>
-      <description>Tribunal cantonal TC
-Kantonsgericht KG
-Rue des Augustins 3, case postale 630, 1701 Fribourg
-T +41 26 304 15 00
-www.fr.ch/tc
-—
-Pouvoir Judiciaire PJ
-Gerichtsbehörden GB
-102 2026 96
-Arrêt du 21 mai 2026
-IIe Cour d’appel civil
-Composition
-Vice-président…</description>
-      <pubDate>Tue, 09 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">fr_gerichte_102 2026 96</guid>
-      <category>fr_gerichte</category>
-    </item>
-    <item>
-      <title>Bundesgericht 5A_405/2026 vom 2026-06-08</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_405_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-5A_405/2026
-
-Arrêt du 8 juin 2026
-
-IIe Cour de droit civil
-
-Composition
-
-MM. et Mme les Juges fédéraux Bovey, Président,
-
-Hartmann et De Rossa.
-
-Greffière : Mme de Poret Bortolaso…</description>
-      <pubDate>Mon, 08 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_405.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 5A_453/2026 vom 2026-06-08</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_453_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-5A_453/2026
-
-Ordonnance du 8 juin 2026
-
-IIe Cour de droit civil
-
-Composition
-
-M. le Juge fédéral Bovey, Président.
-
-Greffière : Mme Mairot.
-
-Participants à la procédure
-
-A._______…</description>
-      <pubDate>Mon, 08 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_453.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 5A_519/2026 vom 2026-06-08</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_519_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-5A_519/2026
-
-Arrêt du 8 juin 2026
-
-IIe Cour de droit civil
-
-Composition
-
-M. le Juge fédéral Bovey, Président.
-
-Greffière : Mme Mairot.
-
-Participants à la procédure
-
-1. A.________,…</description>
-      <pubDate>Mon, 08 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_519.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht E-3267/2025 vom 2026-06-08</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-3267_2025</link>
-      <description>Asile et renvoi</description>
-      <pubDate>Mon, 08 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-3267.2025</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht F-2799/2026 vom 2026-06-08</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-2799_2026</link>
-      <description>Attribution d'un demandeur d'asile à un canton</description>
-      <pubDate>Mon, 08 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-2799.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>fr_gerichte 101 2026 117 vom 2026-06-08</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_101%202026%20117</link>
-      <description>Tribunal cantonal TC
-Kantonsgericht KG
-Rue des Augustins 3, case postale 630, 1701 Fribourg
-T +41 26 304 15 00
-www.fr.ch/tc
-—
-Pouvoir Judiciaire PJ
-Gerichtsbehörden GB
-101 2026 117
-101 2026 118
-Arrêt du 19 mai 2026
-Ie Cour d’appel civil
-Composition
-P…</description>
-      <pubDate>Mon, 08 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">fr_gerichte_101 2026 117</guid>
-      <category>fr_gerichte</category>
     </item>
   </channel>
 </rss>
