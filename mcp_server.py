@@ -1739,6 +1739,49 @@ def _classify_rest_metric(path: str, status: int) -> tuple[str | None, bool]:
     return tool, (status >= 500)
 
 
+# Crawler policy. The corpus is CC0 and every /entscheid/ decision page carries
+# Schema.org markup, so all HTML content + the sitemaps stay fully crawlable.
+# We disallow the per-decision API subtree (/api/decisions/...): its export
+# renderers (.pdf/.docx via reportlab/python-docx on the shared
+# asyncio.to_thread pool) were the bulk crawler load that starved search + MCP,
+# and the JSON variants are redundant reformats of the crawlable /entscheid/
+# HTML page. A plain prefix (no wildcard) so every crawler honours it.
+# /metrics and /dev stay operational-only. NB: a crawler obeys ONLY its
+# most-specific User-agent group, so the disallows must be repeated in every
+# named group, otherwise the AI bots (each with its own group) would ignore them.
+_ROBOTS_AGENTS = (
+    "*", "GPTBot", "ChatGPT-User", "OAI-SearchBot", "ClaudeBot", "anthropic-ai",
+    "Claude-Web", "Google-Extended", "GoogleOther", "PerplexityBot",
+    "Perplexity-User", "CCBot", "cohere-ai", "Meta-ExternalAgent", "Bytespider",
+    "Applebot", "Applebot-Extended",
+)
+_ROBOTS_DISALLOW = (
+    "Disallow: /api/decisions/\n"
+    "Disallow: /metrics\n"
+    "Disallow: /dev\n"
+)
+
+
+def _build_robots_txt(base_url: str) -> str:
+    """Render robots.txt: HTML pages + sitemaps open to all crawlers, the
+    per-decision /api/decisions/ subtree disallowed in EVERY User-agent group."""
+    # Disallow lines come BEFORE "Allow: /": longest-match crawlers (Google,
+    # Bing) are order-independent, but first-match parsers (urllib, simpler
+    # bots) return the first matching rule, so a leading "Allow: /" would
+    # nullify the disallows. This order is correct for both.
+    groups = "\n".join(
+        "User-agent: %s\n%sAllow: /\n" % (ua, _ROBOTS_DISALLOW)
+        for ua in _ROBOTS_AGENTS
+    )
+    return (
+        "# OpenCaseLaw crawl policy (CC0 corpus). HTML content and sitemaps are\n"
+        "# open to every crawler; per-decision export renderers under /api/ are\n"
+        "# disallowed (redundant reformats; expensive to render for bots).\n\n"
+        + groups
+        + "\nSitemap: %s/sitemap.xml\n" % base_url
+    )
+
+
 def _init_metrics_db():
     """Create persistent metrics tables if they don't exist."""
     try:
@@ -23353,38 +23396,7 @@ setInterval(load, 30000);
         return Response(content, media_type="application/xml")
 
     async def handle_robots(request):
-        # AI / LLM crawlers explicitly allowed: corpus is CC0, every
-        # decision page carries Schema.org markup, the verification
-        # surface stays intact regardless of crawler. Crawlers we DO
-        # NOT want indexing: see /metrics/* (operational data) — those
-        # are blocked individually.
-        body = (
-            "User-agent: *\n"
-            "Allow: /\n"
-            "Disallow: /metrics\n"
-            "Disallow: /dev\n"
-            "\n"
-            "# AI / LLM crawlers — explicitly allowed.\n"
-            "User-agent: GPTBot\nAllow: /\n"
-            "User-agent: ChatGPT-User\nAllow: /\n"
-            "User-agent: OAI-SearchBot\nAllow: /\n"
-            "User-agent: ClaudeBot\nAllow: /\n"
-            "User-agent: anthropic-ai\nAllow: /\n"
-            "User-agent: Claude-Web\nAllow: /\n"
-            "User-agent: Google-Extended\nAllow: /\n"
-            "User-agent: GoogleOther\nAllow: /\n"
-            "User-agent: PerplexityBot\nAllow: /\n"
-            "User-agent: Perplexity-User\nAllow: /\n"
-            "User-agent: CCBot\nAllow: /\n"
-            "User-agent: cohere-ai\nAllow: /\n"
-            "User-agent: Meta-ExternalAgent\nAllow: /\n"
-            "User-agent: Bytespider\nAllow: /\n"
-            "User-agent: Applebot\nAllow: /\n"
-            "User-agent: Applebot-Extended\nAllow: /\n"
-            "\n"
-            f"Sitemap: {BASE_URL}/sitemap.xml\n"
-        )
-        return Response(body, media_type="text/plain")
+        return Response(_build_robots_txt(BASE_URL), media_type="text/plain")
 
     async def handle_llms_txt(request):
         # /llms.txt is the emerging convention for an LLM-readable site
