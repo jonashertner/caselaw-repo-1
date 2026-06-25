@@ -30,7 +30,7 @@ this manifest can be dropped in directly:
 {
   "name": "swiss-caselaw",
   "displayName": "Swiss Caselaw",
-  "description": "969,000+ Swiss court decisions, 5,500 federal + 15,700 cantonal statutes, 9M-edge citation graph, scholarly commentary (DE/FR/IT). 6-layer verification architecture catches AI hallucination of case references before answers ship. CC0 data, MIT code, no API key.",
+  "description": "990,000+ Swiss court decisions, 5,519 federal + 15,589 cantonal statutes, 8.65M-edge citation graph, scholarly commentary (DE/FR/IT). 6-layer verification architecture catches AI hallucination of case references before answers ship. CC0 data, MIT code, no API key.",
   "vendor": "Jonas Hertner / OpenCaseLaw contributors",
   "sourceUrl": "https://github.com/jonashertner/caselaw-repo-1",
   "homepage": "https://opencaselaw.ch",

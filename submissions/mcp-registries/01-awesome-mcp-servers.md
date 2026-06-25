@@ -13,7 +13,7 @@ entry under **"Knowledge & Memory"** with a clear domain tag.
 ## The line to add (Markdown)
 
 ```md
-- [Swiss Caselaw](https://github.com/jonashertner/caselaw-repo-1) - 969,000+ Swiss court decisions, 5,500 federal + 15,700 cantonal statutes, 9M-edge citation graph (DE/FR/IT). 6-layer verification architecture catches AI hallucination of case references. Public endpoint at `https://mcp.opencaselaw.ch`. CC0 data, MIT code.
+- [Swiss Caselaw](https://github.com/jonashertner/caselaw-repo-1) - 990,000+ Swiss court decisions, 5,519 federal + 15,589 cantonal statutes, 8.65M-edge citation graph (DE/FR/IT). 6-layer verification architecture catches AI hallucination of case references. Public endpoint at `https://mcp.opencaselaw.ch`. CC0 data, MIT code.
 ```
 
 ## PR description (paste verbatim)
@@ -22,15 +22,15 @@ entry under **"Knowledge & Memory"** with a clear domain tag.
 Add Swiss Caselaw MCP server (legal/government category)
 
 This adds the OpenCaseLaw MCP server, which serves the entire published
-Swiss federal and cantonal court corpus (969k+ decisions), Swiss
-federal and cantonal legislation (5,500 + 15,700 articles), scholarly
-commentary (362 OnlineKommentar.ch entries) and a 9M-edge citation
+Swiss federal and cantonal court corpus (990k+ decisions), Swiss
+federal and cantonal legislation (5,519 + 15,589 articles), scholarly
+commentary (362 OnlineKommentar.ch entries) and a 8.65M-edge citation
 graph — all CC0 / MIT, no API key, no registration.
 
 Of particular interest to LLM users: the server implements a six-layer
 verification architecture (cite, check_claim_support, attest_response)
 designed to catch the "fabricated case reference" failure mode
-documented by Stanford RegLab (Dahl et al. 2024 — 58–82% on general
+documented by Stanford RegLab (Dahl et al. 2024 — 58–88% on general
 LLMs; Magesh et al. 2024 — 17–33% on commercial legal-RAG tools).
 Every case reference an LLM emits is verified against the corpus
 before the answer ships, and rendered as a clickable Markdown link

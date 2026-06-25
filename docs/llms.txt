@@ -49,7 +49,7 @@ Per-decision exports for citation managers and word processors:
 
 ## Verification (anti-hallucination)
 
-OpenCaseLaw exists in part because peer-reviewed measurement (Dahl et al., Stanford RegLab, 2024 — *Large Legal Fictions*) found that 58–82 % of legal queries to general-purpose LLMs produce at least one fabricated authority, and even commercial legal-RAG tools (Magesh et al., 2024 — *Hallucination-Free?*) show 17–33 %.
+OpenCaseLaw exists in part because peer-reviewed measurement (Dahl et al., Stanford RegLab, 2024 — *Large Legal Fictions*) found that 58–88 % of legal queries to general-purpose LLMs produce at least one fabricated authority, and even commercial legal-RAG tools (Magesh et al., 2024 — *Hallucination-Free?*) show 17–33 %.
 
 A six-layer verification architecture closes this gap when an LLM uses our MCP server:
 

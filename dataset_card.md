@@ -55,7 +55,7 @@ The largest open collection of Swiss court decisions: 991,000+ decisions from 10
 - **Temporal range**: 1875–present (BGE historical vol. 1 from 1875)
 - **9.2 million extracted case-citation references** (8.6 million resolved, with confidence scores)
 - **11.8 million statute-decision links** (e.g., which decisions cite Art. 41 OR)
-- **5,510 federal laws indexed** with 132,586 articles in 3 languages (from Fedlex SPARQL)
+- **5,519 federal laws indexed** with 132,586 articles in 3 languages (from Fedlex SPARQL)
 - **15,589 cantonal laws** with 353,464 articles (direct-scraped from 19 cantonal portals; LexFind fallback for the rest)
 - **Legislative history (Materialien)** for 2,500 federal laws: Botschaft references for 33,000 statute articles, structured Botschaft digests for BV and BGFA, parliamentary debate transcripts (Amtliches Bulletin) for the BV
 - **34 structured fields** per decision in Parquet; 27 in the FTS5 search index
@@ -170,7 +170,7 @@ This snapshot is intended for local MCP/server bootstrap tools that want to avoi
 | Federal laws indexed | 5,519 (400,405 articles total / ~133,359 per DE/FR/IT) |
 | Cantonal laws indexed | 15,589 (361,430 articles, direct-scraped + LexFind) |
 | Laws with Botschaft refs | 2,615 (33,465 articles) |
-| Verbatim Botschaft corpus | 5,900+ documents / ~409K FTS5-indexed paragraphs (Phase 2, scaling) |
+| Verbatim Botschaft corpus | 5,900+ documents / ~410K FTS5-indexed paragraphs (Phase 2, scaling) |
 | Legislation texts searchable | 33,000+ (federal + cantonal + intercantonal) |
 | Scholarly commentaries | 1,100+ (OnlineKommentar.ch + OpenLegalCommentary.ch) |
 | MCP tools | 40 total (38 remote in public mode + 2 local-only) |

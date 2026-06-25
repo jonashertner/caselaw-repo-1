@@ -8330,16 +8330,16 @@ server = Server(
         "federal + cantonal courts, ~2,800 European Court of Human Rights "
         "decisions concerning Switzerland (BGE-published EGMR translations, "
         "HUDOC.CH, plus ECtHR Chamber / Committee / Grand Chamber direct), "
-        "5,516 federal laws (Fedlex SPARQL), 15,722 cantonal laws (direct "
+        "5,519 federal laws (Fedlex SPARQL), 15,589 cantonal laws (direct "
         "portal scraping for 19 cantons + LexFind fallback for the rest), "
         "1,100+ scholarly commentaries, a verbatim Federal Council Botschaft "
-        "corpus (5,900+ documents, ~409K FTS5-indexed paragraphs), "
+        "corpus (5,900+ documents, ~410K FTS5-indexed paragraphs), "
         "25,000+ open-access scholarship records from 23 Swiss legal sources "
         "(thousands with full-text — see find_scholarship_citing_decision and "
         "find_scholarship_citing_statute for the bidirectional bridge), "
         "structured federal decisions (Sachverhalt/Erwägungen/Dispositiv), "
-        "and the citation graph (8.3M resolved decision-to-decision edges from "
-        "8.9M extracted citations). Updated daily. "
+        "and the citation graph (8.65M resolved decision-to-decision edges from "
+        "9.2M extracted citations). Updated daily. "
         "Languages: DE, FR, IT — tools handle cross-language matching "
         "automatically.\n\n"
 
@@ -11194,7 +11194,7 @@ def _pinpoint_in_text(full_text: str, pinpoint: str) -> bool:
 # These extend attest_response from "case-citation existence" to a
 # full closing audit that catches the three remaining hallucination
 # classes documented for legal LLMs (Dahl, Magesh, Suzgun & Ho,
-# "Large Legal Fictions", Stanford RegLab, 2024 — 58-82% on general-
+# "Large Legal Fictions", Stanford RegLab, 2024 — 58-88% on general-
 # purpose LLMs; Magesh et al., "Hallucination-Free?", Stanford RegLab,
 # 2024 — 17-33% on commercial legal-RAG tools):
 #
@@ -17567,7 +17567,7 @@ def _list_tools() -> list[Tool]:
             name="find_citations",
             description=(
                 "Given a decision_id, show what it cites and what cites it. "
-                "Uses the reference graph database with 9.86M citation edges. "
+                "Uses the reference graph database with 8.65M citation edges. "
                 "Returns resolved citations with confidence scores and unresolved references."
             ),
             inputSchema={
@@ -20698,7 +20698,7 @@ setInterval(load, 30000);
         description=(
             "Swiss court decisions, statutes, commentaries, scholarship, and citation graph. "
             "990,000+ published decisions from Swiss federal, cantonal, and regulatory bodies, "
-            "5,516 federal laws, 15,722 cantonal acts, 1,100+ commentaries, 25,000+ OA scholarship records."
+            "5,519 federal laws, 15,589 cantonal acts, 1,100+ commentaries, 25,000+ OA scholarship records."
         ),
         version="1.0.0",
         docs_url="/docs",
@@ -21872,7 +21872,7 @@ setInterval(load, 30000);
 
     @rest_api.get("/citations/{decision_id}", tags=["Citation Graph"],
                   summary="Find citations for a decision",
-                  description="Show what a decision cites and what cites it. Uses the reference graph with 9.86M citation edges.")
+                  description="Show what a decision cites and what cites it. Uses the reference graph with 8.65M citation edges.")
     async def api_find_citations(
         decision_id: str = PathParam(description="Decision ID (e.g., bger_6B_1_2025)"),
         direction: str = Query("both", description="Citation direction: both, outgoing, or incoming"),

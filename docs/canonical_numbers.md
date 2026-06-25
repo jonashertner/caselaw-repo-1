@@ -24,7 +24,7 @@ update all listed consumers in the same commit.
 | Quantity | Snapshot value (paper) | Live value | Source of truth | Consumers |
 |---|---:|---|---|---|
 | Decisions | **971,992** | **~990k** | `docs/paper/v3/tables/corpus_graph_stats.json::total_decisions` (live: `decisions.db`) | paper §3 abstract, dataset_card.md, README.md, methodology.html, index.html |
-| Courts | 108 | 109 | same JSON (live: `decisions.db`) | all |
+| Courts | 108 | 118 | same JSON (live: `decisions.db`) | all |
 | Cantons | 26 | 26 | constant | all |
 | Languages | DE 449,575 (46.3 %), FR 441,158 (45.4 %), IT 80,704 (8.3 %) | same | corpus_overview.tex | paper §3, methodology.html |
 | Date range | 1875–2026 | 1875–2026 | constant | all |
@@ -36,8 +36,8 @@ update all listed consumers in the same commit.
 |---|---:|---|---|
 | Citation edges extracted (paper snapshot) | 8,649,879 | `corpus_graph_stats.json::rg_citation_edges` | paper §4 |
 | Resolved edges (paper snapshot) | 8,089,112 (93.5 %) | same | paper |
-| **Citation edges extracted (live)** | **~8.9M** | `reference_graph.db::decision_citations` | README, dataset_card, dashboards |
-| **Resolved edges (live)** | **~8.3M** | `reference_graph.db::citation_targets` | README, dataset_card, dashboards |
+| **Citation edges extracted (live)** | **~9.2M** | `reference_graph.db::decision_citations` | README, dataset_card, dashboards |
+| **Resolved edges (live)** | **~8.65M** | `reference_graph.db::citation_targets` | README, dataset_card, dashboards |
 | Cited ≥ 100 times | 10,874 | `in_degree_buckets` | paper Table 2 |
 | Cited ≥ 1,000 times | 999 | same | paper |
 | Cited ≥ 10,000 times | **47** | same | paper §4, citation_graph.tex |
@@ -49,11 +49,11 @@ update all listed consumers in the same commit.
 | Quantity | Value | Source | Consumers |
 |---|---:|---|---|
 | Decision–statute edges (paper snapshot) | 11,261,717 | `corpus_graph_stats.json::rg_statute_edges` | paper |
-| **Decision–statute edges (live)** | **~11.47M** | `reference_graph.db::decision_statutes` | README, dataset_card, dashboards |
+| **Decision–statute edges (live)** | **~11.85M** | `reference_graph.db::decision_statutes` | README, dataset_card, dashboards |
 | Distinct provisions | 283,119 | `rg_distinct_statutes` | all |
-| Federal SR laws | 5,516 | constant (Fedlex) | all |
+| Federal SR laws | 5,519 | live (Fedlex; grows) | all |
 | Federal articles | 400,405 (across DE/FR/IT) | constant | all |
-| Cantonal laws | 15,722 | `cantonal_laws.db` | all |
+| Cantonal laws | 15,589 | `cantonal_laws.db` | all |
 | Cantonal articles | 353,437 | same | all |
 | Direct portal coverage | **all 26 cantons** (LexWork 18 + SIL 2 + ZH 1 + TI 1) | `cantonal_laws.db.laws.text_source` | paper §3, README, methodology |
 | LexFind PDF supplements | **4 cantons** | same | same |
@@ -66,7 +66,7 @@ update all listed consumers in the same commit.
 | Botschaft documents (paper snapshot) | 5,292 | `corpus_graph_stats.json` | paper §4 |
 | Botschaft documents (live) | **5,900+** | `botschaft.db` | dataset_card, README, dashboards |
 | Paragraphs (paper snapshot) | 381,711 | same | paper |
-| Paragraphs (live) | **~409K** | `botschaft.db` | dataset_card, README |
+| Paragraphs (live) | **~410K** | `botschaft.db` | dataset_card, README |
 | Article-anchored links | 8,124 | same | paper |
 
 ### Commentaries
@@ -162,4 +162,4 @@ Source: `analytics.db::weekly_reach` (after 2026-05-18 cohort-derivation upgrade
 3. Grep this doc + every consumer for the old number; update them.
 4. Bump the "Last verified" line below.
 
-**Last verified:** 2026-06-16 (live-figure sweep: decisions ~990k, courts 109, citation edges 8.3M resolved / 8.9M extracted, statute 11.47M, Botschaft 5,900+/~409K, commentaries 1,100+, tools 43/41/2; paper-snapshot rows unchanged).
+**Last verified:** 2026-06-25 (live-figure sweep vs stats.json + reference_graph.db: decisions ~994k, courts 118, citation edges 8.65M resolved / 9.2M extracted, statute 11.85M, Botschaft 5,989/~410K, commentaries 1,131, scholarship 25,676/23 sources, tools 43/41/2; paper-snapshot rows unchanged).

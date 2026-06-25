@@ -41,7 +41,7 @@ RESULTS_DIR = REPO_ROOT / "scripts" / "search_optimizer" / "results"
 
 PROPOSER_SYSTEM = """You are an expert search engineer optimizing a Swiss legal case law retrieval system.
 
-The system searches 965,000+ court decisions using:
+The system searches 990,000+ court decisions using:
 - FTS5 full-text search with BM25 ranking (column weights: bm25_title, bm25_regeste, bm25_full_text, etc.)
 - Reciprocal Rank Fusion (RRF) to merge multiple retrieval strategies (each with its own weight: sw_*)
 - Reranking signals: term coverage (w_title_cov, w_regeste_cov, w_snippet_cov), phrase hits, docket matching

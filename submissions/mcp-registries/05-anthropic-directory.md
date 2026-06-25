@@ -21,9 +21,9 @@ MCP server directory.
 WHAT IT IS
 OpenCaseLaw is a public, open MCP server for the entire published
 Swiss federal and cantonal court corpus, federal and cantonal
-legislation, scholarly commentary, and the citation graph. 969,000+
-decisions, 5,500 federal + 15,700 cantonal statutes, 362
-commentaries, 9M citation edges. Daily refresh. CC0 data, MIT code.
+legislation, scholarly commentary, and the citation graph. 990,000+
+decisions, 5,519 federal + 15,589 cantonal statutes, 362
+commentaries, 8.65M citation edges. Daily refresh. CC0 data, MIT code.
 No API key, no registration.
 
 Live: https://mcp.opencaselaw.ch  (auth: none, /health green)
@@ -35,7 +35,7 @@ WHY IT'S INTERESTING FOR THE DIRECTORY
 The server is built around a six-layer verification architecture that
 directly addresses the hallucination class measured by Stanford
 RegLab (Dahl et al. 2024 — Large Legal Fictions; Magesh et al. 2024
-— Hallucination-Free?): 58–82 % of legal queries to general LLMs and
+— Hallucination-Free?): 58–88 % of legal queries to general LLMs and
 17–33 % to commercial legal-RAG tools produce a fabricated authority.
 Our attest_response tool parses every case reference an LLM emits,
 verifies it against the corpus + statute mirror + the cited Erwägung
