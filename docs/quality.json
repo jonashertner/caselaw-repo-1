@@ -1,7 +1,7 @@
 {
-  "run_at": "2026-06-25T10:44:14+00:00",
+  "run_at": "2026-06-26T11:04:50+00:00",
   "db_path": "/opt/caselaw/repo/output/decisions.db",
-  "duration_seconds": 2462.66,
+  "duration_seconds": 3408.89,
   "summary": {
     "total": 52,
     "passed": 52,
@@ -94,17 +94,17 @@
       "fix_advice": "check INSERT OR IGNORE / INSERT OR REPLACE in scrapers and build_fts5.merge_shards",
       "court": null,
       "extra": {
-        "total": 994486,
-        "distinct": 994486
+        "total": 994655,
+        "distinct": 994655
       }
     },
     {
       "name": "schema.corpus_total_count",
       "severity": "critical",
       "passed": true,
-      "metric_value": 994486,
+      "metric_value": 994655,
       "threshold": 950000,
-      "message": "corpus total: 994,486",
+      "message": "corpus total: 994,655",
       "sample_rows": [],
       "fix_advice": "check publish.py Step 2 build_fts5 logs; verify .tmp swap completed atomically",
       "court": null,
@@ -114,9 +114,9 @@
       "name": "mcp_tools.search_fts_returns_hits",
       "severity": "critical",
       "passed": true,
-      "metric_value": 379714,
+      "metric_value": 379785,
       "threshold": 100,
-      "message": "FTS5 'Beschwerde' query: 379,714 hits",
+      "message": "FTS5 'Beschwerde' query: 379,785 hits",
       "sample_rows": [],
       "fix_advice": "if 0, FTS5 build never indexed; rerun build_fts5",
       "court": null,
@@ -170,9 +170,9 @@
       "court": null,
       "extra": {
         "distribution": {
-          "de": 463964,
-          "fr": 448710,
-          "it": 81812
+          "de": 464056,
+          "fr": 448780,
+          "it": 81819
         }
       }
     },
@@ -180,16 +180,16 @@
       "name": "languages.distribution_plausible",
       "severity": "critical",
       "passed": true,
-      "metric_value": 46.653648216264486,
+      "metric_value": 46.6549708190277,
       "threshold": 30.0,
       "message": "DE 46.7% / FR 45.1% / IT 8.2% / RM 0.00%",
       "sample_rows": [],
       "fix_advice": "DE and FR each need ≥30%, IT ≥3%; under-floor means a language-block of scrapers crashed in publish.py Step 1",
       "court": null,
       "extra": {
-        "de": 463964,
-        "fr": 448710,
-        "it": 81812
+        "de": 464056,
+        "fr": 448780,
+        "it": 81819
       }
     },
     {
@@ -520,9 +520,9 @@
       "name": "courts.federal_present.bvger",
       "severity": "critical",
       "passed": true,
-      "metric_value": 92872,
+      "metric_value": 92883,
       "threshold": 1,
-      "message": "bvger: 92,872 decisions",
+      "message": "bvger: 92,883 decisions",
       "sample_rows": [],
       "fix_advice": null,
       "court": "bvger",
@@ -532,9 +532,9 @@
       "name": "courts.federal_present.bstger",
       "severity": "critical",
       "passed": true,
-      "metric_value": 11523,
+      "metric_value": 11524,
       "threshold": 1,
-      "message": "bstger: 11,523 decisions",
+      "message": "bstger: 11,524 decisions",
       "sample_rows": [],
       "fix_advice": null,
       "court": "bstger",
@@ -556,9 +556,9 @@
       "name": "courts.federal_present.bger",
       "severity": "critical",
       "passed": true,
-      "metric_value": 191257,
+      "metric_value": 191289,
       "threshold": 1,
-      "message": "bger: 191,257 decisions",
+      "message": "bger: 191,289 decisions",
       "sample_rows": [],
       "fix_advice": null,
       "court": "bger",
@@ -630,10 +630,16 @@
       "name": "dates.future_window",
       "severity": "quarantine",
       "passed": true,
-      "metric_value": 0,
+      "metric_value": 1,
       "threshold": 50,
-      "message": "0 future-dated rows (within tolerance)",
-      "sample_rows": [],
+      "message": "1 future-dated rows (within tolerance)",
+      "sample_rows": [
+        {
+          "decision_id": "fr_gerichte_101 2026 140",
+          "court": "fr_gerichte",
+          "decision_date": "2026-08-17"
+        }
+      ],
       "fix_advice": "if >50, expect a scraper date-parsing regression",
       "court": null,
       "extra": {}

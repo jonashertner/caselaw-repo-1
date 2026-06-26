@@ -5,9 +5,17 @@
     <link>https://opencaselaw.ch/feeds/it.xml</link>
     <description>Latest published Swiss court decisions in Italiano.</description>
     <language>de-CH</language>
-    <lastBuildDate>Thu, 25 Jun 2026 10:03:11 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 26 Jun 2026 10:08:01 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/it.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Bundesverwaltungsgericht F-4218/2026 vom 2026-06-19</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-4218_2026</link>
+      <description>Asilo (non entrata nel merito) ed allontanamento (procedura Dublino - art. 31a cpv. 1 lett. b LAsi)</description>
+      <pubDate>Fri, 19 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-4218.2026</guid>
+      <category>bvger</category>
+    </item>
     <item>
       <title>Bundesverwaltungsgericht D-974/2025 vom 2026-06-15</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-974_2025</link>
@@ -38,6 +46,14 @@
       <description>Prestazione di lavoro di pubblico interesse (servizio civile)</description>
       <pubDate>Thu, 11 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:B-3309.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht C-1478/2024 vom 2026-06-10</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-1478_2024</link>
+      <description>Revisione della rendita</description>
+      <pubDate>Wed, 10 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-1478.2024</guid>
       <category>bvger</category>
     </item>
     <item>
@@ -927,22 +943,6 @@ A…</description>
       <pubDate>Mon, 18 May 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BGer:2026:8C_247.2026</guid>
       <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht C-4379/2023 vom 2026-05-18</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-4379_2023</link>
-      <description>Assicurazione per la vecchiaia e i superstiti (altro)</description>
-      <pubDate>Mon, 18 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-4379.2023</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht C-6814/2025 vom 2026-05-18</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-6814_2025</link>
-      <description>Parte generale dell'assicurazione sociale</description>
-      <pubDate>Mon, 18 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-6814.2025</guid>
-      <category>bvger</category>
     </item>
   </channel>
 </rss>
