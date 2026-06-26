@@ -397,7 +397,11 @@ def step_2_build_fts5(
             return False
 
     # Use ionice/nice to prevent I/O starvation of live MCP workers.
-    cmd = ["ionice", "-c3", "nice", "-n", "19",
+    # Best-effort class (-c2), not idle (-c3): under serving load the idle class
+    # got fully starved, stalling build_fts5 optimize past the nightly cap.
+    # Proven 2026-06-23: optimize 35min (best-effort) vs >4h (idle). See memory
+    # incident_2026_06_23_build_starvation_salvage.
+    cmd = ["ionice", "-c2", "nice", "-n", "10",
            sys.executable, str(script), "--output", str(OUTPUT_DIR),
            "--full-rebuild"]
 
@@ -937,8 +941,9 @@ def step_7_publish_delta(dry_run: bool = False) -> bool:
 
 
 def step_6_git_push(dry_run: bool = False) -> bool:
-    """Step 6: Git commit + push docs/stats.json + docs/feed.xml + docs/feeds/."""
-    logger.info("Step 6: Git commit + push stats.json + feeds")
+    """Step 6: Git commit + push docs/stats.json + docs/feed.xml + docs/feeds/
+    + docs/integrity/ (the daily Merkle root from Step 5f)."""
+    logger.info("Step 6: Git commit + push stats.json + feeds + integrity")
 
     stats_file = DOCS_DIR / "stats.json"
     if not stats_file.exists():
@@ -948,7 +953,12 @@ def step_6_git_push(dry_run: bool = False) -> bool:
     # Files we publish on every cycle. The diff check below short-circuits
     # if none of them changed.
     paths = ["docs/stats.json", "docs/feed.xml", "docs/feeds",
-             "docs/quality.json", "docs/quality.html"]
+             "docs/quality.json", "docs/quality.html",
+             # docs/integrity/ = the daily RFC-6962 Merkle root (Step 5f). It
+             # was omitted here, so the public integrity page froze at the
+             # 2026-05-21 commit while the nightly kept regenerating it
+             # uncommitted. Including it keeps the provenance root current.
+             "docs/integrity"]
 
     # Check if any of these have unstaged changes
     result = subprocess.run(
