@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/fr.xml</link>
     <description>Latest published Swiss court decisions in Français.</description>
     <language>de-CH</language>
-    <lastBuildDate>Fri, 26 Jun 2026 10:08:01 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 27 Jun 2026 09:25:56 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/fr.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -430,6 +430,14 @@ Marc Sugnaux…</description>
       <description>Asile (sans excécution du renvoi) (procédure accélérée)</description>
       <pubDate>Tue, 16 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-165.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht E-2449/2022 vom 2026-06-16</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-2449_2022</link>
+      <description>Asile et renvoi</description>
+      <pubDate>Tue, 16 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-2449.2022</guid>
       <category>bvger</category>
     </item>
     <item>
@@ -939,14 +947,6 @@ représenté par …</description>
       <pubDate>Thu, 11 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">be_verwaltungsgericht_100 2025 348</guid>
       <category>be_verwaltungsgericht</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht A-989/2026 vom 2026-06-11</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_A-989_2026</link>
-      <description>Responsabilité de l'Etat (Confédération)</description>
-      <pubDate>Thu, 11 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:A-989.2026</guid>
-      <category>bvger</category>
     </item>
   </channel>
 </rss>

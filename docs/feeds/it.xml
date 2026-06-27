@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/it.xml</link>
     <description>Latest published Swiss court decisions in Italiano.</description>
     <language>de-CH</language>
-    <lastBuildDate>Fri, 26 Jun 2026 10:08:01 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 27 Jun 2026 09:25:56 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/it.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -14,6 +14,14 @@
       <description>Asilo (non entrata nel merito) ed allontanamento (procedura Dublino - art. 31a cpv. 1 lett. b LAsi)</description>
       <pubDate>Fri, 19 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-4218.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht F-4214/2026 vom 2026-06-18</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-4214_2026</link>
+      <description>Asilo (non entrata nel merito) ed allontanamento (procedura Dublino - art. 31a cpv. 1 lett. b LAsi)</description>
+      <pubDate>Thu, 18 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-4214.2026</guid>
       <category>bvger</category>
     </item>
     <item>
@@ -241,6 +249,36 @@ Cancelliere Savoldelli.
 Part…</description>
       <pubDate>Thu, 04 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BGer:2026:2C_285.2026</guid>
+      <category>bger</category>
+    </item>
+    <item>
+      <title>Bundesgericht 6B_80/2026 vom 2026-06-04</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_6B_80_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+6B_80/2026
+
+Sentenza del 4 giugno 2026
+
+I Corte di diritto penale
+
+Composizione
+
+Giudici federali Muschietti, Presidente,
+
+Heine, Glassey,
+
+Cancelliere Gadoni.
+
+Partecipanti al pr…</description>
+      <pubDate>Thu, 04 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:6B_80.2026</guid>
       <category>bger</category>
     </item>
     <item>
@@ -883,66 +921,6 @@ A.__…</description>
       <pubDate>Tue, 19 May 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BStGer:2026:RR.2026.46</guid>
       <category>bstger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 5A_219/2026 vom 2026-05-18</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_219_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-5A_219/2026
-
-Sentenza del 18 maggio 2026
-
-II Corte di diritto civile
-
-Composizione
-
-Giudici federali Bovey, Presidente,
-
-Herrmann, De Rossa,
-
-Cancelliera Antonini.
-
-Partecipanti a…</description>
-      <pubDate>Mon, 18 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_219.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 8C_247/2026 vom 2026-05-18</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_8C_247_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-8C_247/2026
-
-Sentenza del 18 maggio 2026
-
-IV Corte di diritto pubblico
-
-Composizione
-
-Giudice federale Viscione, Presidente,
-
-Cancelliere Colombi.
-
-Partecipanti al procedimento
-
-A…</description>
-      <pubDate>Mon, 18 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:8C_247.2026</guid>
-      <category>bger</category>
     </item>
   </channel>
 </rss>
