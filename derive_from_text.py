@@ -168,6 +168,35 @@ def derive_date(stored_date: str | None, text: str | None,
     return None, "null"
 
 
+def derive_dates(stored_decision: str | None, stored_pub: str | None,
+                 text: str | None, max_year: int | None = None
+                 ) -> tuple[str | None, str, str | None, str]:
+    """Demux a conflated date into DISTINCT (decision_date, dprov, publication_date, pprov).
+
+    decision_date and publication_date are different things. A BGE's synthetic
+    'YYYY-01-01' is the Amtliche-Sammlung VOLUME (publication) year mis-filed into
+    decision_date (verified: YYYY == 1874+volume for 97% of them). So:
+      - decision_date  <- the real Urteilsdatum recovered from the text, else None
+                          (never leave the volume year masquerading as a decision date)
+      - publication_date <- the volume year (year-precision, provenance 'volume_year')
+                          when no real publication date is stored
+    A real stored decision date is trusted; a real stored publication date is kept.
+
+    pprov in {source_metadata, volume_year, null}; dprov as in derive_date().
+    """
+    dd, dprov = derive_date(stored_decision, text, max_year=max_year)
+    if stored_pub:
+        pd, pprov = stored_pub, "source_metadata"
+    elif is_synthetic_date(stored_decision) and stored_decision:
+        # the synthetic value is the volume/publication year, not a decision date
+        pd, pprov = stored_decision, "volume_year"
+        if dprov == "volume_synthetic":        # decision date not recoverable
+            dd, dprov = None, "null"            # -> unknown, not the volume year
+    else:
+        pd, pprov = None, "null"
+    return dd, dprov, pd, pprov
+
+
 def build_ecli(court: str | None, decision_date: str | None,
                docket: str | None) -> str | None:
     """ECLI:CH:<court>:<year>:<ordinal> from the VERIFIED year + normalized docket.

@@ -106,6 +106,25 @@ def test_derive_date_provenance():
     assert d.derive_date(None, "no date here") == (None, "null")
 
 
+def test_derive_dates_demuxes_decision_and_publication():
+    # BGE: synthetic decision_date is the VOLUME (publication) year; the real
+    # decision date comes from text. They are distinct and both recovered.
+    dd, dprov, pd, pprov = d.derive_dates("2026-01-01", None, BGE_152_II_1)
+    assert dd == "2025-09-27" and dprov == "extracted_from_text"      # Urteilsdatum
+    assert pd == "2026-01-01" and pprov == "volume_year"             # AS volume year
+
+    # real stored dates on both axes are trusted, not overwritten
+    dd, dprov, pd, pprov = d.derive_dates("2025-04-29", "2025-06-01", "body")
+    assert (dd, dprov) == ("2025-04-29", "source_metadata")
+    assert (pd, pprov) == ("2025-06-01", "source_metadata")
+
+    # synthetic decision date, no recoverable text date -> decision unknown,
+    # but the volume year is preserved as the publication signal (not a fake date)
+    dd, dprov, pd, pprov = d.derive_dates("2026-01-01", None, "no date here")
+    assert (dd, dprov) == (None, "null")
+    assert (pd, pprov) == ("2026-01-01", "volume_year")
+
+
 def test_is_synthetic_date():
     assert d.is_synthetic_date("2026-01-01") is True
     assert d.is_synthetic_date("") is True

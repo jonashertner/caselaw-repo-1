@@ -114,6 +114,27 @@ date after docket-year validation. NULL-dated — **68.5% recovered (891/1,301)*
 docket where available) vs `extracted_unverified` (bare-date fallback). Anything
 safety-critical (limitation-period reasoning) uses only the verified tier.
 
+#### 4.1.1 decision_date vs publication_date are DISTINCT (the both-dates rule)
+
+A ruling has two different dates and both matter: the **decision date**
+(Urteilsdatum — governs limitation periods, chronology, "still good law") and the
+**publication date** (when it became citable/indexed). 68.3% of the corpus
+(679,744 rows) currently lacks a publication date (led by 189k BGer dockets).
+
+Key finding: a BGE's synthetic `YYYY-01-01` is **not a wrong decision date — it is
+the Amtliche-Sammlung VOLUME (publication) year mis-filed into `decision_date`**
+(verified: `YYYY == 1874 + volume` for 97% of synthetic BGE). So the fix is to
+**demux**, not overwrite (`derive_dates()`):
+
+- `decision_date` ← the real Urteilsdatum from the text, else `null` (never leave
+  the volume year masquerading as a decision date);
+- `publication_date` ← the volume year (year-precision, provenance `volume_year`)
+  when no real publication date is stored.
+
+**Measured (read-only):** 19,837 decision dates corrected **and** 25,493
+publication dates recovered from the volume year (previously NULL) — the both-dates
+requirement advanced in the same pass.
+
 ### 4.2 Canonical identifier (ECLI) — built
 
 `build_ecli(court, date, docket)` → `ECLI:CH:<court>:<year>:<ordinal>` from the
@@ -165,9 +186,14 @@ Add to `decisions` (and the build/export):
 
 | Column | Type | Meaning |
 |---|---|---|
-| `date_provenance` | TEXT | `source_metadata` / `extracted_verified` / `extracted_unverified` / `volume_synthetic` / `null` |
+| `decision_date` | TEXT | the Urteilsdatum — corrected in place for `extracted_*`; `null` if unrecoverable (never the volume year) |
+| `decision_date_provenance` | TEXT | `source_metadata` / `extracted_verified` / `extracted_unverified` / `null` |
+| `publication_date` | TEXT | distinct from decision_date; recovered from the volume year where NULL |
+| `publication_date_provenance` | TEXT | `source_metadata` / `volume_year` (year-precision) / `null` |
 | `ecli` | TEXT | canonical `ECLI:CH:…` (docket ordinal preferred, volume-page fallback) |
 | `canonical_key` | TEXT | logical-decision key (= ECLI); shared by an excerpt/docket pair |
+
+`decision_date` and `publication_date` are **never conflated** (§4.1.1).
 
 `canonical_key` already exists as a column; repurpose/populate it as the ECLI.
 The BGE↔docket relation is derivable by grouping on `canonical_key` (no separate

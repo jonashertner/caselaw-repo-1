@@ -56,19 +56,25 @@ def run_report(db_path: str, max_year: int) -> None:
     future = c.execute("SELECT COUNT(*) FROM decisions WHERE decision_date > ?", (today,)).fetchone()[0]
 
     prov = {"source_metadata": real, "extracted_from_text": 0, "volume_synthetic": 0, "null": 0}
+    pub_recovered = 0          # publication_date recovered from the volume year
     date_changed = 0
     canon: dict[str, int] = {}     # ECLI -> members (collisions = dedup pairs)
     ecli_total = 0
 
     # only rows that need extraction (synthetic / NULL) read full_text
     need = c.execute(
-        "SELECT decision_id,court,decision_date,docket_number,full_text FROM decisions "
-        "WHERE decision_date IS NULL OR decision_date='' OR decision_date LIKE '%-01-01'")
-    for did, court, sd, docket, ft in need:
-        best, p, nd, ecli = _enrich_row(court, sd, docket, ft, max_year)
-        prov[p] += 1
-        if p == "extracted_from_text":
+        "SELECT decision_id,court,decision_date,publication_date,docket_number,full_text "
+        "FROM decisions WHERE decision_date IS NULL OR decision_date='' OR decision_date LIKE '%-01-01'")
+    for did, court, sd, spub, docket, ft in need:
+        # demux decision vs publication date (they are distinct)
+        dd, dprov, pd, pprov = d.derive_dates(sd, spub, ft, max_year=max_year)
+        prov[dprov] += 1
+        if dprov == "extracted_from_text":
             date_changed += 1
+        if pprov == "volume_year" and not spub:
+            pub_recovered += 1
+        # ECLI keyed on the DECISION year + federal docket
+        _, _, nd, ecli = _enrich_row(court, sd, docket, ft, max_year)
         if ecli:
             ecli_total += 1
             canon[ecli] = canon.get(ecli, 0) + 1
@@ -90,8 +96,9 @@ def run_report(db_path: str, max_year: int) -> None:
     print(f"  date provenance distribution:")
     for k in ("source_metadata", "extracted_from_text", "volume_synthetic", "null"):
         print(f"    {k:22} {prov[k]:>8,} ({100*prov[k]/total:.1f}%)")
-    print(f"  dates CORRECTED (synthetic/NULL -> real from text): {date_changed:,}")
-    print(f"  still-unverified after extraction (flagged): {prov['volume_synthetic']+prov['null']:,}")
+    print(f"  DECISION dates CORRECTED (synthetic/NULL -> real from text): {date_changed:,}")
+    print(f"  PUBLICATION dates recovered from volume year (were NULL): {pub_recovered:,}")
+    print(f"  still-unverified decision dates after extraction (flagged): {prov['volume_synthetic']+prov['null']:,}")
     print(f"  impossible future dates currently served: {future}")
     print(f"  ECLI built (federal): {ecli_total:,}")
     print(f"  canonical-key collisions (BGE<->docket dedup pairs): {dedup_pairs:,}")
