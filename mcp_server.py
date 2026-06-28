@@ -342,9 +342,13 @@ def _llm_usage_log(*, model: str, feature: str, response_json: dict | None,
 
 GRAPH_DB_PATH = Path(os.environ.get("SWISS_CASELAW_GRAPH_DB", str(DATA_DIR / "reference_graph.db")))
 # canonical_identity sidecar (derive-from-text enrichment): decision_id ->
-# corrected decision_date + provenance, publication_date, ecli, canonical_key.
+# corrected decision_date + provenance, publication_date, canonical_key.
 # See docs/superpowers/specs/2026-06-28-canonical-decision-identity-design.md.
 CANONICAL_DB_PATH = Path(os.environ.get("SWISS_CASELAW_CANONICAL_DB", str(DATA_DIR / "canonical_identity.db")))
+try:
+    from cli_ch import mint_cli_ch_from_row as _mint_cli_ch  # Swiss-native caselaw identifier
+except Exception:  # pragma: no cover
+    _mint_cli_ch = None
 STATUTES_DB_PATH = Path(os.environ.get("SWISS_CASELAW_STATUTES_DB", str(DATA_DIR / "statutes.db")))
 CANTONAL_LAWS_DB_PATH = Path(os.environ.get("SWISS_CASELAW_CANTONAL_DB", str(DATA_DIR / "cantonal_laws.db")))
 OK_COMMENTARIES_DB_PATH = Path(os.environ.get("SWISS_CASELAW_OK_DB", str(DATA_DIR / "ok_commentaries.db")))
@@ -6411,15 +6415,19 @@ def get_decision_by_id(decision_id: str) -> dict | None:
         if ci.get("publication_date"):
             result["publication_date"] = ci["publication_date"]
             result["publication_date_provenance"] = ci.get("publication_date_provenance")
-        if ci.get("ecli"):
-            result["ecli"] = ci["ecli"]
         if ci.get("canonical_key"):
-            result["canonical_key"] = ci["canonical_key"]
+            result["canonical_key"] = ci["canonical_key"]  # internal logical-decision key
     _dd = result.get("decision_date") or ""
     _prov = result.get("date_provenance")
     result["date_is_estimated"] = bool(
         (not _dd or _dd.endswith("-01-01")) and _prov != "extracted_from_text"
     )
+    # cli:ch — the Swiss-native caselaw identifier (Switzerland is not an ECLI
+    # member; cli:ch is the appropriate identifier). Minted on the fly from the row.
+    if _mint_cli_ch is not None:
+        cid = _mint_cli_ch(result)
+        if cid:
+            result["cli_ch"] = cid
 
     # BGE-bound flag: DB stores 0/1/NULL; present it as a real bool (or None
     # when unknown). The column exists only after a post-schema-change rebuild,
@@ -19640,7 +19648,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 + (f" | **Published:** {result['publication_date']}"
                    if result.get("publication_date") else "")
                 + f" | **Language:** {result['language']}\n"
-                + (f"**ECLI:** `{result['ecli']}`\n" if result.get("ecli") else "")
+                + (f"**cli:ch:** `{result['cli_ch']}`\n" if result.get("cli_ch") else "")
                 + "\n"
                 f"## Citation — copy verbatim (do NOT reconstruct)\n"
                 f"- DE: `{citation['citation_string_de']}`\n"

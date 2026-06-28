@@ -1,6 +1,6 @@
 """Phase 2: get_decision reads the canonical_identity sidecar to serve a
 text-verified decision date over a synthetic YYYY-01-01 placeholder (C-2), adds
-publication_date + ECLI, and a date_is_estimated flag. Degrades gracefully when
+publication_date + cli:ch, and a date_is_estimated flag. Degrades gracefully when
 the sidecar is absent (never overrides a real date).
 """
 from __future__ import annotations
@@ -43,7 +43,7 @@ def _rconn(p):
     return c
 
 
-def test_get_decision_serves_corrected_date_and_ecli(tmp_path, monkeypatch):
+def test_get_decision_serves_corrected_date_and_cli_ch(tmp_path, monkeypatch):
     dbp = _decisions(tmp_path / "d.db")
     scp = _sidecar(tmp_path / "ci.db")
     monkeypatch.setattr(m, "get_db", lambda: _rconn(dbp))
@@ -53,7 +53,7 @@ def test_get_decision_serves_corrected_date_and_ecli(tmp_path, monkeypatch):
     assert out["decision_date"] == "2025-09-27"          # text-verified, overrides 2026-01-01
     assert out["date_provenance"] == "extracted_from_text"
     assert out["publication_date"] == "2026-01-01"
-    assert out["ecli"] == "ECLI:CH:BGER:2025:9C_113.2025"
+    assert out["cli_ch"] == "cli:ch:bge:152.II.1"   # Swiss-native identifier, minted on the fly
     assert out["date_is_estimated"] is False
 
 
