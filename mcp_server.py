@@ -7972,7 +7972,19 @@ def list_courts() -> list[dict]:
         ORDER BY decision_count DESC
     """).fetchall()
     conn.close()
-    return _cache_set(key, [dict(r) for r in rows])
+    today = datetime.now().date().isoformat()
+    out = []
+    for r in rows:
+        d = dict(r)
+        # L-2: flag near-empty collections — a null result there proves nothing.
+        d["sparse"] = (d.get("decision_count") or 0) < 15
+        # L-4: `latest` is an unvalidated max(date); flag when it is in the future
+        # (the M-1 cantonal date-parse bug surfaces here as a headline figure).
+        lat = d.get("latest") or ""
+        if lat and lat > today:
+            d["latest_unvalidated"] = True
+        out.append(d)
+    return _cache_set(key, out)
 
 
 def _list_recent(
@@ -9070,6 +9082,50 @@ def _clean_docket(docket: str | None) -> str:
     return docket.strip()
 
 
+# Cantonal court-code suffixes are canton-prefixed German court names
+# (zh_obergericht, be_verwaltungsgericht). Map the suffix to a readable label so
+# the citation never emits the raw collection code as a court abbreviation
+# ('FR_GERICHTE 101 2026 140' — bug M-3).
+_CANTONAL_COURT_TYPE = {
+    "obergericht": "Obergericht", "kantonsgericht": "Kantonsgericht",
+    "verwaltungsgericht": "Verwaltungsgericht", "appellationsgericht": "Appellationsgericht",
+    "sozialversicherungsgericht": "Sozialversicherungsgericht",
+    "versicherungsgericht": "Versicherungsgericht", "handelsgericht": "Handelsgericht",
+    "zivilgericht": "Zivilgericht", "strafgericht": "Strafgericht",
+    "zivilstraf": "Zivil- und Strafgericht", "obergerichtskommission": "Obergerichtskommission",
+    "anwaltskommission": "Anwaltskommission", "anwaltsaufsicht": "Anwaltsaufsichtsbehörde",
+    "steuerrekurs": "Steuerrekursgericht", "steuerrekurskommission": "Steuerrekurskommission",
+    "steuerrekursgericht": "Steuerrekursgericht", "personalrekurs": "Personalrekurskommission",
+    "baurekursgericht": "Baurekursgericht", "regierungsrat": "Regierungsrat",
+}
+_GENERIC_COURT = {"de": "Gericht", "fr": "Tribunal", "it": "Tribunale"}
+
+
+def _cantonal_court_label(court: str, canton: str | None, lang: str = "de") -> str:
+    """Readable cantonal court label, e.g. zh_obergericht -> 'Obergericht ZH',
+    fr_gerichte -> 'Tribunal FR'. Generic for platform-named codes (gerichte/
+    findinfo/omni/publikationen)."""
+    canton = (canton or "").upper()
+    suffix = court
+    pre = canton.lower() + "_"
+    if court.startswith(pre):
+        suffix = court[len(pre):]
+    label = _CANTONAL_COURT_TYPE.get(suffix) or _GENERIC_COURT.get(lang, "Gericht")
+    return (f"{label} {canton}").strip() if canton else label
+
+
+def _citation_date_reliable(decision_date: str | None) -> bool:
+    """A date safe to print inside a citation: present, not a YYYY-01-01 placeholder
+    (C-2), and not in the future (M-1)."""
+    dd = (decision_date or "").strip()
+    if not dd or dd.endswith("-01-01"):
+        return False
+    try:
+        return dd <= datetime.now().date().isoformat()
+    except Exception:
+        return True
+
+
 def _build_citation_strings(decision: dict, pinpoint: str | None = None) -> dict:
     """Return {citation_string_de/fr/it, canonical_url, pinpoint_anchor} for a decision.
 
@@ -9131,19 +9187,23 @@ def _build_citation_strings(decision: dict, pinpoint: str | None = None) -> dict
             "canonical_url": url,
         }
 
-    # Cantonal + regulatory + anything else: safe generic form.
-    court_label = (decision.get("court") or "court").upper()
-    date_de = _format_date_localized(decision_date, "de")
-    date_fr = _format_date_localized(decision_date, "fr")
-    date_it = _format_date_localized(decision_date, "it")
+    # Cantonal + regulatory + anything else: readable court label per language,
+    # never the raw collection code (M-3). Suppress an unreliable placeholder/
+    # future date from the citation (M-3/M-1) — printing a wrong date in a
+    # citable string is worse than omitting it.
+    canton = decision.get("canton")
+    reliable = _citation_date_reliable(decision_date)
+    date_de = _format_date_localized(decision_date, "de") if reliable else ""
+    date_fr = _format_date_localized(decision_date, "fr") if reliable else ""
+    date_it = _format_date_localized(decision_date, "it") if reliable else ""
     vom_de = f" vom {date_de}" if date_de else ""
     vom_fr = f" du {date_fr}" if date_fr else ""
     vom_it = f" del {date_it}" if date_it else ""
     pde, pfr, pit = _pin_suffix("E.", "consid.", "consid.")
     return {
-        "citation_string_de": f"{court_label} {docket}{vom_de}{pde}".strip(),
-        "citation_string_fr": f"{court_label} {docket}{vom_fr}{pfr}".strip(),
-        "citation_string_it": f"{court_label} {docket}{vom_it}{pit}".strip(),
+        "citation_string_de": f"{_cantonal_court_label(court, canton, 'de')} {docket}{vom_de}{pde}".strip(),
+        "citation_string_fr": f"{_cantonal_court_label(court, canton, 'fr')} {docket}{vom_fr}{pfr}".strip(),
+        "citation_string_it": f"{_cantonal_court_label(court, canton, 'it')} {docket}{vom_it}{pit}".strip(),
         "canonical_url": url,
     }
 
@@ -19594,15 +19654,24 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
             if not courts:
                 return [TextContent(type="text", text="No data available. Run 'update_database' first.")]
             text = "Available courts:\n\n"
-            text += f"{'Court':<25} {'Canton':<8} {'Decisions':>10}  {'Languages':>4}  {'Earliest':>12} {'Latest':>12}\n"
-            text += "-" * 83 + "\n"
+            text += f"{'Court':<25} {'Canton':<8} {'Decisions':>10}  {'Languages':>4}  {'Earliest':>12} {'Latest':>12}  Flags\n"
+            text += "-" * 92 + "\n"
             for c in courts:
+                flags = []
+                if c.get("sparse"):
+                    flags.append("⚠ sparse (<15 — a null result here proves nothing)")
+                if c.get("latest_unvalidated"):
+                    flags.append("⚠ Latest is a future date, unvalidated")
                 text += (
                     f"{c['court']:<25} {(c['canton'] or ''):8s} "
                     f"{c['decision_count']:>10,}  "
                     f"{c['languages']:>4}  "
-                    f"{(c['earliest'] or 'n/a'):>12} {(c['latest'] or 'n/a'):>12}\n"
+                    f"{(c['earliest'] or 'n/a'):>12} {(c['latest'] or 'n/a'):>12}  "
+                    f"{'; '.join(flags)}\n"
                 )
+            text += ("\nFlags: 'sparse' collections (<15 decisions) are not representative; "
+                     "a 'future Latest' is an unvalidated max(date) from a known cantonal "
+                     "date-parse issue.\n")
             return [TextContent(type="text", text=text)]
 
         elif name == "get_statistics":
