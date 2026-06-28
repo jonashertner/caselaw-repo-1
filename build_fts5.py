@@ -1900,6 +1900,26 @@ def build_database(
         with _phase_timer("log quality summary"):
             _log_quality_summary(conn)
 
+    # Canonical-identity date correction: replace synthetic YYYY-01-01 BGE dates
+    # with the text-verified Urteilsdatum so search/sort/filter/by_year use the
+    # real date and agree with get_decision (audit 2026-06-28 C-2). Runs BEFORE
+    # optimize so the FTS trigger churn from the UPDATEs is cleaned up. DEFENSIVE:
+    # any failure is logged and skipped — it can never fail the build.
+    if total_imported > 0:
+        with _phase_timer("canonical date correction"):
+            try:
+                import backfill_canonical_identity as _bci
+                _n_d, _n_p = _bci.apply_to_db(conn)
+                logger.info("canonical dates: %d decision dates corrected, %d publication dates set", _n_d, _n_p)
+            except Exception as _cd_err:
+                # discard any partial UPDATE transaction so the open conn proceeds
+                # to optimize/swap in the pre-correction (status-quo) state.
+                try:
+                    conn.rollback()
+                except Exception:
+                    pass
+                logger.warning("canonical date correction skipped (non-fatal): %s", _cd_err)
+
     if not no_optimize and total_imported > 0:
         with _phase_timer("FTS5 optimize"):
             # heartbeat-wrapped so the publish stall-watchdog doesn't false-kill this ~4h

@@ -45,6 +45,39 @@ def _enrich_row(court, stored_date, docket, full_text, max_year, max_date=None):
     return best, prov, nd, ecli
 
 
+def apply_to_db(conn, max_date: str | None = None) -> tuple[int, int]:
+    """In-build correction: replace synthetic YYYY-01-01 BGE decision dates with the
+    text-verified Urteilsdatum, and set publication_date from the volume year, on an
+    OPEN sqlite connection to a decisions DB. Adds a `date_provenance` column.
+
+    Only touches synthetic/NULL BGE dates — never a real (source_metadata) date.
+    Returns (n_decision_dates_corrected, n_publication_dates_set). Caller wraps
+    defensively so the build never fails on this.
+    """
+    from datetime import date as _date
+    md = max_date or _date.today().isoformat()
+    yr = int(md[:4])
+    cols = [r[1] for r in conn.execute("PRAGMA table_info(decisions)")]
+    if "date_provenance" not in cols:
+        conn.execute("ALTER TABLE decisions ADD COLUMN date_provenance TEXT")
+    rows = conn.execute(
+        "SELECT decision_id, decision_date, publication_date, full_text FROM decisions "
+        "WHERE court='bge' AND (decision_date IS NULL OR decision_date='' OR decision_date LIKE '%-01-01')"
+    ).fetchall()
+    n_date = n_pub = 0
+    for did, sd, spub, ft in rows:
+        dd, dprov, pd, pprov = d.derive_dates(sd, spub, ft, max_year=yr, max_date=md)
+        sets, params = ["date_provenance = ?"], [dprov]
+        if dprov == "extracted_from_text" and dd:        # only high-confidence, docket-validated
+            sets.append("decision_date = ?"); params.append(dd); n_date += 1
+        if pprov == "volume_year" and not spub and pd:
+            sets.append("publication_date = ?"); params.append(pd); n_pub += 1
+        params.append(did)
+        conn.execute(f"UPDATE decisions SET {', '.join(sets)} WHERE decision_id = ?", params)
+    conn.commit()
+    return n_date, n_pub
+
+
 def run_report(db_path: str, max_year: int) -> None:
     c = sqlite3.connect(f"file:{db_path}?mode=ro&immutable=1", uri=True)
     today = date.today().isoformat()
