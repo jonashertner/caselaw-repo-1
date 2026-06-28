@@ -125,6 +125,19 @@ def test_derive_dates_demuxes_decision_and_publication():
     assert (pd, pprov) == ("2026-01-01", "volume_year")
 
 
+def test_derive_date_rejects_synthetic_and_future_extractions():
+    # a text date that is itself YYYY-01-01 is an artifact (no court rules Jan 1) ->
+    # must NOT replace the synthetic stored date as 'extracted'
+    best, prov = d.derive_date("2026-01-01", "Vereinbarung vom 1. Januar 2009 ...")
+    assert prov != "extracted_from_text"
+    # a future extracted date is rejected when max_date caps it
+    best, prov = d.derive_date("2026-01-01", "9C_9/2026 vom 17. August 2026", max_date="2026-06-28")
+    assert prov != "extracted_from_text"
+    # the clean case still works
+    best, prov = d.derive_date("2026-01-01", BGE_152_II_1, max_date="2026-06-28")
+    assert (best, prov) == ("2025-09-27", "extracted_from_text")
+
+
 def test_is_synthetic_date():
     assert d.is_synthetic_date("2026-01-01") is True
     assert d.is_synthetic_date("") is True

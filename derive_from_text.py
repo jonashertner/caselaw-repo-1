@@ -152,16 +152,21 @@ def is_synthetic_date(stored: str | None) -> bool:
 
 
 def derive_date(stored_date: str | None, text: str | None,
-                max_year: int | None = None) -> tuple[str | None, str | None]:
+                max_year: int | None = None, max_date: str | None = None
+                ) -> tuple[str | None, str | None]:
     """(best_date, provenance): a real stored date is trusted; a synthetic/empty
     one is overridden by the docket-validated text date; else kept-but-flagged.
+
+    A text date is accepted only if it is itself non-synthetic (a YYYY-01-01
+    extraction is an artifact — no court rules on Jan 1) and not after max_date
+    (today), so future-dated artifacts can't replace a synthetic date.
 
     provenance in {source_metadata, extracted_from_text, volume_synthetic, null}.
     """
     if stored_date and not is_synthetic_date(stored_date):
         return stored_date, "source_metadata"
     iso, _ = extract_text_date(text, max_year=max_year)
-    if iso:
+    if iso and not is_synthetic_date(iso) and (max_date is None or iso <= max_date):
         return iso, "extracted_from_text"
     if stored_date:
         return stored_date, "volume_synthetic"
@@ -169,7 +174,8 @@ def derive_date(stored_date: str | None, text: str | None,
 
 
 def derive_dates(stored_decision: str | None, stored_pub: str | None,
-                 text: str | None, max_year: int | None = None
+                 text: str | None, max_year: int | None = None,
+                 max_date: str | None = None
                  ) -> tuple[str | None, str, str | None, str]:
     """Demux a conflated date into DISTINCT (decision_date, dprov, publication_date, pprov).
 
@@ -184,7 +190,7 @@ def derive_dates(stored_decision: str | None, stored_pub: str | None,
 
     pprov in {source_metadata, volume_year, null}; dprov as in derive_date().
     """
-    dd, dprov = derive_date(stored_decision, text, max_year=max_year)
+    dd, dprov = derive_date(stored_decision, text, max_year=max_year, max_date=max_date)
     if stored_pub:
         pd, pprov = stored_pub, "source_metadata"
     elif is_synthetic_date(stored_decision) and stored_decision:
