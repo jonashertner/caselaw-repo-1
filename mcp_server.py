@@ -4494,6 +4494,30 @@ def _search_statute_graph(
         conn.close()
 
 
+def _bge_ref_candidates(ref: str) -> list[str]:
+    """Canonical decision_id candidates for a BGE reference, by EXACT (vol, part,
+    page) tuple — so '131 III 12' resolves to bge_BGE_131_III_12 and never
+    prefix-matches the different ruling '131 III 121' (bug C-1). The trailing
+    anchor keeps the page exact."""
+    m = re.match(r"(?:BGE\s+|ATF\s+|DTF\s+)?(\d+)\s+([IVX]+)\s+(\d+)\s*$", (ref or "").strip())
+    if not m:
+        return []
+    vol, div, page = m.groups()
+    return [f"bge_BGE_{vol}_{div}_{page}", f"bge_{vol}_{div}_{page}", f"bge_{vol} {div} {page}"]
+
+
+def _docket_is_prefix_of_longer(inp: str, docket: str | None) -> bool:
+    """True if `docket` is the input followed by extra digit(s) — '131 III 12' vs
+    '131 III 121'. Such a LIKE '%inp%' hit is a DIFFERENT decision and must be
+    rejected (silently returning the wrong authority is the worst failure mode)."""
+    inp = (inp or "").strip()
+    d = (docket or "").strip()
+    if not d or d == inp or not d.startswith(inp):
+        return False
+    rest = d[len(inp):]
+    return bool(rest) and rest[0].isdigit()
+
+
 def _resolve_decision_id(decision_id: str) -> str:
     """Resolve a user-supplied decision_id to the actual stored decision_id.
 
@@ -4534,13 +4558,15 @@ def _resolve_decision_id(decision_id: str) -> str:
         # Skip when input clearly looks like a canonical decision_id
         # (it would have hit step 1 if it existed).
         if not _CANONICAL_ID_PREFIX_RE.match(decision_id or ""):
-            row = conn.execute(
-                "SELECT decision_id FROM decisions WHERE docket_number LIKE ? "
-                "ORDER BY decision_date DESC LIMIT 1",
+            for cand in conn.execute(
+                "SELECT decision_id, docket_number FROM decisions WHERE docket_number LIKE ? "
+                "ORDER BY decision_date DESC LIMIT 8",
                 (f"%{decision_id}%",),
-            ).fetchone()
-            if row:
-                return row[0]
+            ).fetchall():
+                # never resolve to a longer docket that merely contains the input
+                # as a numeric prefix (131 III 12 -> 131 III 121); see bug C-1.
+                if not _docket_is_prefix_of_longer(decision_id, cand["docket_number"]):
+                    return cand["decision_id"]
     finally:
         conn.close()
     return decision_id
@@ -6289,6 +6315,17 @@ def get_decision_by_id(decision_id: str) -> dict | None:
     ).fetchone()
 
     if not row:
+        # BGE/short-reference exact resolution BEFORE any docket fallback, so
+        # '131 III 12' resolves to its exact canonical id and never prefix-matches
+        # '131 III 121' (bug C-1).
+        for cid in _bge_ref_candidates(decision_id):
+            row = conn.execute(
+                "SELECT * FROM decisions WHERE decision_id = ?", (cid,)
+            ).fetchone()
+            if row:
+                break
+
+    if not row:
         # Try searching by docket number — prefer newest decision
         row = conn.execute(
             "SELECT * FROM decisions WHERE docket_number = ? "
@@ -6297,12 +6334,16 @@ def get_decision_by_id(decision_id: str) -> dict | None:
         ).fetchone()
 
     if not row and not _CANONICAL_ID_PREFIX_RE.match(decision_id or ""):
-        # Partial match — only worthwhile for hand-typed dockets
-        row = conn.execute(
+        # Partial match — only for hand-typed dockets, and NEVER a longer docket
+        # that merely contains the input as a numeric prefix (131 III 12 -> 121).
+        for cand in conn.execute(
             "SELECT * FROM decisions WHERE docket_number LIKE ? "
-            "ORDER BY decision_date DESC LIMIT 1",
+            "ORDER BY decision_date DESC LIMIT 8",
             (f"%{decision_id}%",),
-        ).fetchone()
+        ).fetchall():
+            if not _docket_is_prefix_of_longer(decision_id, cand["docket_number"]):
+                row = cand
+                break
 
     conn.close()
 
@@ -7688,16 +7729,28 @@ def _format_leading_cases_response(result: dict) -> str:
         header_parts.append(f'"{query}"')
     header = " + ".join(header_parts) if header_parts else "all"
 
-    text = f"# Leading Cases ({header}, top {total} most-cited)\n\n"
+    topical = bool(items) and any("topic_citation_count" in r for r in items)
+    if topical:
+        text = (f"# Leading Cases on {header} "
+                f"(top {total}, ranked by citations from decisions applying this provision)\n\n")
+    else:
+        text = f"# Leading Cases ({header}, top {total} most-cited)\n\n"
     if not items:
         text += "No results found.\n"
         return text
 
     for i, r in enumerate(items, 1):
         link = _md_link(r['docket_number'], _canonical_decision_url(r['decision_id']))
+        tc = r.get("topic_citation_count")
+        if tc is not None:
+            # statute path: ranked by topical citations (the list IS sorted by this);
+            # the global count is shown for context, not the ranking key.
+            cite_str = (f"**{tc} citations from {header} cases** "
+                        f"({r['citation_count']} total)")
+        else:
+            cite_str = f"**{r['citation_count']} citations**"
         text += (
-            f"**{i}.** {link} ({r['decision_date']}) "
-            f"[{r['court']}] \u2014 **{r['citation_count']} citations**\n"
+            f"**{i}.** {link} ({r['decision_date']}) [{r['court']}] \u2014 {cite_str}\n"
         )
         if r.get("regeste"):
             text += f"   Regeste: {_auto_link_citations(r['regeste'])}\n"
