@@ -32,10 +32,14 @@ def _enrich_row(court, stored_date, docket, full_text, max_year):
         best, prov = stored_date, "source_metadata"
     else:
         best, prov = d.derive_date(stored_date, full_text, max_year=max_year)
-        # for BGE the docket lives in the header, not the docket_number field
-        if not docket and court == "bge":
-            uk = d.extract_urteilskopf(full_text, max_year=max_year)
-            docket = uk.get("docket") or docket
+    # For BGE the docket_number field holds the BGE CITATION ('152 II 1'), not the
+    # originating federal docket. The canonical key must be the FEDERAL docket
+    # (it is what the paired docket row also yields), so always read it from the
+    # Urteilskopf for BGE.
+    if court == "bge":
+        uk = d.extract_urteilskopf(full_text, max_year=max_year)
+        if uk.get("docket"):
+            docket = uk["docket"]
     nd = d.normalize_docket(docket) if docket else None
     ecli = d.build_ecli(court, best, nd)
     return best, prov, nd, ecli
