@@ -1,0 +1,185 @@
+"""Derive authoritative decision fields from the decision's OWN text — the source
+of truth — and emit the standardized case identifier (ECLI) from them.
+
+Root-cause principle (2026-06-28 audit): the corpus asserts scraped metadata as
+fact (volume-year dates, empty date fields, source labels) even when the
+authoritative answer is in the document text. This module re-derives the real
+values from text, reports provenance, and builds the canonical identifier — so a
+decision is referenced by what its document actually says, not by a scrape fallback.
+
+Coupling with standardized referencing (ECLI:CH:<court>:<year>:<ordinal>):
+  1. ECLI needs the REAL year — a synthetic 2026-01-01 yields a wrong ECLI. So
+     this extraction is the prerequisite that makes the identifier correct.
+  2. The docket number embeds the filing year (9C_113/2025 -> 2025). A ruling
+     cannot predate its docket, so the docket year VALIDATES the extracted date
+     (this rejects a cited case's date grabbed from the head).
+  3. The ECLI is one identifier per ruling, so the BGE excerpt and its docket
+     map to the SAME ECLI — the identifier IS the dedup/join key for the
+     logical-decision layer.
+
+Pure functions (text in, values out) — no DB access — trivially testable.
+The canonical Urteilskopf/rubrum states both together:
+    "... 9C_113/2025 vom 27. September 2025 Regeste ..."
+"""
+from __future__ import annotations
+
+import re
+from datetime import date as _date
+
+_MONTHS: dict[str, int] = {
+    "januar": 1, "februar": 2, "märz": 3, "maerz": 3, "april": 4, "mai": 5,
+    "juni": 6, "juli": 7, "august": 8, "september": 9, "oktober": 10,
+    "november": 11, "dezember": 12,
+    "janvier": 1, "février": 2, "fevrier": 2, "mars": 3, "avril": 4,
+    "juin": 6, "juillet": 7, "août": 8, "aout": 8, "septembre": 9,
+    "octobre": 10, "novembre": 11, "décembre": 12, "decembre": 12,
+    "gennaio": 1, "febbraio": 2, "marzo": 3, "aprile": 4, "maggio": 5,
+    "giugno": 6, "luglio": 7, "agosto": 8, "settembre": 9, "ottobre": 10,
+    "dicembre": 12,
+}
+_MONTH_ALT = "|".join(sorted((re.escape(m) for m in _MONTHS), key=len, reverse=True))
+
+_DOCKET_RE = r"\d[A-Za-z]{1,3}[_.]\d{1,5}/\d{4}"
+_MARK = r"\s+(?:vom|du|del|dell['’]a?)\s+"   # DE 'vom' / FR 'du' / IT 'del'
+
+# Precise: the decision's date immediately after its docket ('<docket> vom <date>').
+_DK_DATE_TEXT = re.compile(
+    r"(" + _DOCKET_RE + r")" + _MARK + r"(\d{1,2})\.?\s+(" + _MONTH_ALT + r")\s+(\d{4})\b", re.IGNORECASE)
+_DK_DATE_NUM = re.compile(
+    r"(" + _DOCKET_RE + r")" + _MARK + r"(\d{1,2})\.(\d{1,2})\.(\d{4})\b", re.IGNORECASE)
+# Fallback: any plausible date / docket in the head.
+_TEXT_DATE = re.compile(r"\b(\d{1,2})\.?\s+(" + _MONTH_ALT + r")\s+(\d{4})\b", re.IGNORECASE)
+_NUM_DATE = re.compile(r"\b(\d{1,2})\.(\d{1,2})\.(\d{4})\b")
+_DOCKET = re.compile(r"\b(" + _DOCKET_RE + r")\b")
+
+_MIN_YEAR = 1875
+# ECLI court tokens for the Swiss federal tier (BGE excerpt shares BGER with its docket).
+_ECLI_COURT = {"bge": "BGER", "bger": "BGER", "bvger": "BVGER",
+               "bstger": "BSTGER", "bpatger": "BPATGER", "mkg": "MKG"}
+
+
+def normalize_docket(d: str | None) -> str | None:
+    """Canonical docket: '2P.139/2004'/'2C 838/2018' -> '2P_139/2004'/'2C_838/2018'."""
+    if not d:
+        return d
+    d = d.strip()
+    m = re.match(r"^(\d[A-Za-z]{1,3})[\s._]+(\d{1,5}/\d{4})$", d)
+    return (m.group(1) + "_" + m.group(2)) if m else d.replace(" ", "")
+
+
+def docket_year(docket: str | None) -> int | None:
+    """Filing year embedded in the docket ('9C_113/2025' -> 2025)."""
+    m = re.search(r"/(\d{4})\b", docket or "")
+    return int(m.group(1)) if m else None
+
+
+def _valid(y: int, m: int, dy: int, max_year: int | None) -> str | None:
+    if y < _MIN_YEAR or (max_year is not None and y > max_year):
+        return None
+    try:
+        return _date(y, m, dy).isoformat()
+    except ValueError:
+        return None
+
+
+def extract_urteilskopf(text: str | None, head: int = 2500,
+                        max_year: int | None = None) -> dict:
+    """Docket + decision date from the header, the date VALIDATED by the docket
+    year (a ruling cannot predate its own docket). Returns {docket?, date?, date_raw?}.
+    """
+    out: dict = {}
+    if not text:
+        return out
+    h = text[:head]
+    iso = raw = None
+    m = _DK_DATE_TEXT.search(h)
+    if m:
+        out["docket"] = normalize_docket(m.group(1))
+        iso = _valid(int(m.group(4)), _MONTHS[m.group(3).lower()], int(m.group(2)), max_year)
+        raw = m.group(0)
+    else:
+        m = _DK_DATE_NUM.search(h)
+        if m:
+            out["docket"] = normalize_docket(m.group(1))
+            iso = _valid(int(m.group(4)), int(m.group(3)), int(m.group(2)), max_year)
+            raw = m.group(0)
+    # Validate: decision year must be >= docket (filing) year.
+    if iso:
+        dy = docket_year(out.get("docket"))
+        if dy and int(iso[:4]) < dy:
+            iso = raw = None
+    if iso:
+        out["date"] = iso
+        out["date_raw"] = raw
+    if "docket" not in out:  # no docket-adjacent date; still capture a docket
+        dk = _DOCKET.search(h)
+        if dk:
+            out["docket"] = normalize_docket(dk.group(1))
+    return out
+
+
+def extract_text_date(text: str | None, head: int = 2500,
+                      max_year: int | None = None) -> tuple[str | None, str | None]:
+    """Best decision date as (iso, raw): the docket-validated Urteilskopf date if
+    present, else the first plausible bare date in the head."""
+    uk = extract_urteilskopf(text, head=head, max_year=max_year)
+    if uk.get("date"):
+        return uk["date"], uk.get("date_raw")
+    if not text:
+        return None, None
+    h = text[:head]
+    for mo in _TEXT_DATE.finditer(h):
+        iso = _valid(int(mo.group(3)), _MONTHS[mo.group(2).lower()], int(mo.group(1)), max_year)
+        if iso:
+            return iso, mo.group(0)
+    for mo in _NUM_DATE.finditer(h):
+        iso = _valid(int(mo.group(3)), int(mo.group(2)), int(mo.group(1)), max_year)
+        if iso:
+            return iso, mo.group(0)
+    return None, None
+
+
+def extract_docket(text: str | None, head: int = 2500) -> str | None:
+    if not text:
+        return None
+    m = _DOCKET.search(text[:head])
+    return normalize_docket(m.group(1)) if m else None
+
+
+def is_synthetic_date(stored: str | None) -> bool:
+    """YYYY-01-01 (volume placeholder) or empty — courts do not rule on Jan 1."""
+    return not stored or stored.endswith("-01-01")
+
+
+def derive_date(stored_date: str | None, text: str | None,
+                max_year: int | None = None) -> tuple[str | None, str | None]:
+    """(best_date, provenance): a real stored date is trusted; a synthetic/empty
+    one is overridden by the docket-validated text date; else kept-but-flagged.
+
+    provenance in {source_metadata, extracted_from_text, volume_synthetic, null}.
+    """
+    if stored_date and not is_synthetic_date(stored_date):
+        return stored_date, "source_metadata"
+    iso, _ = extract_text_date(text, max_year=max_year)
+    if iso:
+        return iso, "extracted_from_text"
+    if stored_date:
+        return stored_date, "volume_synthetic"
+    return None, "null"
+
+
+def build_ecli(court: str | None, decision_date: str | None,
+               docket: str | None) -> str | None:
+    """ECLI:CH:<court>:<year>:<ordinal> from the VERIFIED year + normalized docket.
+
+    The year comes from the real decision date, so a synthetic date can't produce a
+    wrong-year ECLI. The BGE excerpt and its docket yield the SAME ECLI (same court,
+    year, docket) — the identifier is the logical-decision join key.
+    """
+    yr = (decision_date or "")[:4]
+    token = _ECLI_COURT.get((court or "").lower())
+    nd = normalize_docket(docket)
+    if not (yr.isdigit() and token and nd):
+        return None
+    ordinal = nd.replace("/", ".")          # 9C_113/2025 -> 9C_113.2025
+    return f"ECLI:CH:{token}:{yr}:{ordinal}"
