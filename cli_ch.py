@@ -124,14 +124,19 @@ def _normalize_docket(docket: str) -> str:
 
 
 def _bge_docket_compact(docket_number: str) -> Optional[str]:
-    """Convert 'BGE 140 III 86' → '140-III-86'.
+    """Convert 'BGE 140 III 86' OR '140 III 86' → '140-III-86'.
 
+    The corpus stores BGE citations both with and without the collection
+    prefix; both must yield the SAME canonical hyphenated form (else the same
+    kind of citation renders inconsistently, e.g. '152.II.1' vs '131-III-12').
     Returns None if `docket_number` is not in canonical BGE form.
     """
     parts = docket_number.strip().split()
-    if len(parts) != 4 or parts[0].upper() != "BGE":
+    if parts and parts[0].upper() in ("BGE", "ATF", "DTF"):
+        parts = parts[1:]                      # drop an optional collection prefix
+    if len(parts) != 3:
         return None
-    vol, div, page = parts[1], parts[2].upper(), parts[3]
+    vol, div, page = parts[0], parts[1].upper(), parts[2]
     if not vol.isdigit() or not page.isdigit():
         return None
     # Roman numeral check — BGE has divisions I, II, III, IV, V, VI, Ia, …

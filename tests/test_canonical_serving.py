@@ -53,7 +53,7 @@ def test_get_decision_serves_corrected_date_and_cli_ch(tmp_path, monkeypatch):
     assert out["decision_date"] == "2025-09-27"          # text-verified, overrides 2026-01-01
     assert out["date_provenance"] == "extracted_from_text"
     assert out["publication_date"] == "2026-01-01"
-    assert out["cli_ch"] == "cli:ch:bge:152.II.1"   # Swiss-native identifier, minted on the fly
+    assert out["cli_ch"] == "cli:ch:bge:152-II-1"   # Swiss-native id, consistent hyphenation
     assert out["date_is_estimated"] is False
 
 

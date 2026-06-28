@@ -6432,6 +6432,21 @@ def get_decision_by_id(decision_id: str) -> dict | None:
         cid = _mint_cli_ch(result)
         if cid:
             result["cli_ch"] = cid
+        # A BGE is a published excerpt of an underlying full decision; surface that
+        # decision's docket-based cli:ch as the navigation cross-link (the linkage
+        # the old docket-encoded identifier provided). Caption docket from the head.
+        if (result.get("court") or "").lower() == "bge" and _dft is not None:
+            try:
+                cap = _dft.extract_urteilskopf(result.get("full_text")).get("docket") \
+                    or _dft.extract_docket(result.get("full_text"))
+                if cap:
+                    dcid = _mint_cli_ch({"decision_id": "bger_" + cap,
+                                         "court": "bger", "docket_number": cap})
+                    if dcid:
+                        result["underlying_docket"] = cap
+                        result["cli_ch_full_decision"] = dcid
+            except Exception:
+                pass
 
     # BGE-bound flag: DB stores 0/1/NULL; present it as a real bool (or None
     # when unknown). The column exists only after a post-schema-change rebuild,
@@ -19686,6 +19701,9 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                    if result.get("publication_date") else "")
                 + f" | **Language:** {result['language']}\n"
                 + (f"**cli:ch:** `{result['cli_ch']}`\n" if result.get("cli_ch") else "")
+                + (f"**Full decision:** `{result['cli_ch_full_decision']}` "
+                   f"(docket {result['underlying_docket']})\n"
+                   if result.get("cli_ch_full_decision") else "")
                 + "\n"
                 f"## Citation — copy verbatim (do NOT reconstruct)\n"
                 f"- DE: `{citation['citation_string_de']}`\n"
