@@ -349,6 +349,10 @@ try:
     from cli_ch import mint_cli_ch_from_row as _mint_cli_ch  # Swiss-native caselaw identifier
 except Exception:  # pragma: no cover
     _mint_cli_ch = None
+try:
+    import derive_from_text as _dft  # caption-docket extraction (self-citation filter)
+except Exception:  # pragma: no cover
+    _dft = None
 STATUTES_DB_PATH = Path(os.environ.get("SWISS_CASELAW_STATUTES_DB", str(DATA_DIR / "statutes.db")))
 CANTONAL_LAWS_DB_PATH = Path(os.environ.get("SWISS_CASELAW_CANTONAL_DB", str(DATA_DIR / "cantonal_laws.db")))
 OK_COMMENTARIES_DB_PATH = Path(os.environ.get("SWISS_CASELAW_OK_DB", str(DATA_DIR / "ok_commentaries.db")))
@@ -7667,6 +7671,39 @@ def _dedup_bge_citations(items: list[dict], id_key: str) -> list[dict]:
             seen.add(key)
             out.append(c)
     return out
+
+
+def _norm_cite_ref(s: str | None) -> str:
+    """Normalize a citation ref (docket or BGE) for self-reference comparison:
+    strip a BGE/ATF/DTF prefix, reduce to uppercase alphanumerics."""
+    u = re.sub(r"[^A-Z0-9]", "", (s or "").upper())
+    return re.sub(r"^(?:CH)?(?:BGE|ATF|DTF)", "", u)
+
+
+def _filter_self_citations(raw_cited, result: dict):
+    """Drop self-references from a decision's cited_decisions list (audit M-2):
+    a BGE excerpt regex-harvests its OWN caption docket (e.g. 9C_113/2025 for BGE
+    152 II 1) and BGE number into its own citation list. Returns a cleaned
+    list[str], or None if nothing meaningful remains."""
+    if not raw_cited:
+        return None
+    try:
+        refs = json.loads(raw_cited) if isinstance(raw_cited, str) else raw_cited
+    except Exception:
+        return raw_cited if isinstance(raw_cited, list) else None
+    if not isinstance(refs, list):
+        return None
+    selves = {_norm_cite_ref(result.get("docket_number")), _norm_cite_ref(result.get("decision_id"))}
+    if _dft is not None:
+        try:
+            cap = _dft.extract_docket(result.get("full_text"))
+            if cap:
+                selves.add(_norm_cite_ref(cap))
+        except Exception:
+            pass
+    selves.discard("")
+    out = [r for r in refs if _norm_cite_ref(r) not in selves]
+    return out or None
 
 
 def _format_citations_response(result: dict) -> str:
@@ -19689,8 +19726,9 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 text += f"\n**Source:** {result['source_url']}\n"
             if result.get("pdf_url"):
                 text += f"**PDF:** {result['pdf_url']}\n"
-            if result.get("cited_decisions"):
-                text += f"\n**Citations:** {result['cited_decisions']}\n"
+            _cited = _filter_self_citations(result.get("cited_decisions"), result)
+            if _cited:
+                text += f"\n**Citations:** {', '.join(_cited)}\n"
             # Add citation graph counts
             incoming, outgoing = _count_citations(result["decision_id"])
             if incoming > 0 or outgoing > 0:
