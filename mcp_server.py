@@ -341,6 +341,10 @@ def _llm_usage_log(*, model: str, feature: str, response_json: dict | None,
             pass
 
 GRAPH_DB_PATH = Path(os.environ.get("SWISS_CASELAW_GRAPH_DB", str(DATA_DIR / "reference_graph.db")))
+# canonical_identity sidecar (derive-from-text enrichment): decision_id ->
+# corrected decision_date + provenance, publication_date, ecli, canonical_key.
+# See docs/superpowers/specs/2026-06-28-canonical-decision-identity-design.md.
+CANONICAL_DB_PATH = Path(os.environ.get("SWISS_CASELAW_CANONICAL_DB", str(DATA_DIR / "canonical_identity.db")))
 STATUTES_DB_PATH = Path(os.environ.get("SWISS_CASELAW_STATUTES_DB", str(DATA_DIR / "statutes.db")))
 CANTONAL_LAWS_DB_PATH = Path(os.environ.get("SWISS_CASELAW_CANTONAL_DB", str(DATA_DIR / "cantonal_laws.db")))
 OK_COMMENTARIES_DB_PATH = Path(os.environ.get("SWISS_CASELAW_OK_DB", str(DATA_DIR / "ok_commentaries.db")))
@@ -3382,6 +3386,45 @@ def _get_graph_conn() -> sqlite3.Connection | None:
         return None
 
 
+_canonical_warned = False
+
+
+def _get_canonical_conn() -> sqlite3.Connection | None:
+    """Open a read-only connection to the canonical_identity sidecar, or None."""
+    global _canonical_warned
+    if not CANONICAL_DB_PATH.exists():
+        if not _canonical_warned:
+            logger.info("canonical_identity sidecar not found at %s — date/dedup enrichment disabled", CANONICAL_DB_PATH)
+            _canonical_warned = True
+        return None
+    try:
+        conn = sqlite3.connect(f"file:{CANONICAL_DB_PATH}?immutable=1", uri=True, timeout=0.5)
+        conn.row_factory = sqlite3.Row
+        return conn
+    except sqlite3.Error as e:
+        logger.warning("Failed to open canonical_identity sidecar: %s", e)
+        return None
+
+
+def _canonical_for(decision_id: str | None) -> dict | None:
+    """Sidecar enrichment for one decision_id (corrected date, provenance, ecli,
+    canonical_key), or None. Tolerant of the sidecar being absent."""
+    if not decision_id:
+        return None
+    conn = _get_canonical_conn()
+    if conn is None:
+        return None
+    try:
+        row = conn.execute(
+            "SELECT * FROM canonical_identity WHERE decision_id = ?", (decision_id,)
+        ).fetchone()
+        return dict(row) if row else None
+    except sqlite3.Error:
+        return None
+    finally:
+        conn.close()
+
+
 _anwaltsrecht_warned = False
 
 def _get_anwaltsrecht_conn() -> sqlite3.Connection | None:
@@ -6353,6 +6396,30 @@ def get_decision_by_id(decision_id: str) -> dict | None:
     result = dict(row)
     # Remove json_data blob from response (redundant)
     result.pop("json_data", None)
+
+    # Canonical-identity enrichment (C-2): a text-verified decision date overrides
+    # a synthetic YYYY-01-01 placeholder; publication_date and ECLI are added; a
+    # date_is_estimated flag lets consumers tell a real date from a placeholder.
+    # Never overrides a real (source_metadata) date — the sidecar holds no entry
+    # for those. Degrades gracefully when the sidecar is absent.
+    ci = _canonical_for(result.get("decision_id"))
+    if ci:
+        if ci.get("decision_date") and ci.get("decision_date_provenance") == "extracted_from_text":
+            result["decision_date"] = ci["decision_date"]
+        if ci.get("decision_date_provenance"):
+            result["date_provenance"] = ci["decision_date_provenance"]
+        if ci.get("publication_date"):
+            result["publication_date"] = ci["publication_date"]
+            result["publication_date_provenance"] = ci.get("publication_date_provenance")
+        if ci.get("ecli"):
+            result["ecli"] = ci["ecli"]
+        if ci.get("canonical_key"):
+            result["canonical_key"] = ci["canonical_key"]
+    _dd = result.get("decision_date") or ""
+    _prov = result.get("date_provenance")
+    result["date_is_estimated"] = bool(
+        (not _dd or _dd.endswith("-01-01")) and _prov != "extracted_from_text"
+    )
 
     # BGE-bound flag: DB stores 0/1/NULL; present it as a real bool (or None
     # when unknown). The column exists only after a post-schema-change rebuild,
@@ -19567,8 +19634,14 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
             text = (
                 f"# {h1}\n"
                 f"**Court:** {result['court']} | "
-                f"**Date:** {result['decision_date']} | "
-                f"**Language:** {result['language']}\n\n"
+                f"**Date:** {result['decision_date']}"
+                + (" ⚠ (estimated — placeholder, not the real Urteilsdatum)"
+                   if result.get("date_is_estimated") else "")
+                + (f" | **Published:** {result['publication_date']}"
+                   if result.get("publication_date") else "")
+                + f" | **Language:** {result['language']}\n"
+                + (f"**ECLI:** `{result['ecli']}`\n" if result.get("ecli") else "")
+                + "\n"
                 f"## Citation — copy verbatim (do NOT reconstruct)\n"
                 f"- DE: `{citation['citation_string_de']}`\n"
                 f"- FR: `{citation['citation_string_fr']}`\n"
