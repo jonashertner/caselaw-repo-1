@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/fr.xml</link>
     <description>Latest published Swiss court decisions in Français.</description>
     <language>de-CH</language>
-    <lastBuildDate>Sat, 27 Jun 2026 09:25:56 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 28 Jun 2026 09:58:58 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/fr.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -423,6 +423,14 @@ Marc Sugnaux…</description>
       <pubDate>Wed, 17 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">fr_gerichte_604 2025 23</guid>
       <category>fr_gerichte</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht D-3003/2026 vom 2026-06-16</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-3003_2026</link>
+      <description>Refus de la protection provisoire</description>
+      <pubDate>Tue, 16 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-3003.2026</guid>
+      <category>bvger</category>
     </item>
     <item>
       <title>Bundesverwaltungsgericht E-165/2026 vom 2026-06-16</title>
@@ -928,25 +936,6 @@ Présid…</description>
       <pubDate>Fri, 12 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">fr_gerichte_605 2025 96</guid>
       <category>fr_gerichte</category>
-    </item>
-    <item>
-      <title>be_verwaltungsgericht 100 2025 348 vom 2026-06-11</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/be_verwaltungsgericht_100%202025%20348</link>
-      <description>100.2025.348
-RAD
-MAU/EGC
-Tribunal administratif du canton de Berne
-Cour des affaires de langue française
-Jugement du 12 mai 2026
-Droit administratif
-C. Tissot, président
-M. Marti et G. Niederer, juges
-A. Mariotti, greffière
-A.________
-représenté par …</description>
-      <pubDate>Thu, 11 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">be_verwaltungsgericht_100 2025 348</guid>
-      <category>be_verwaltungsgericht</category>
     </item>
   </channel>
 </rss>

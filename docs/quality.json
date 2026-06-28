@@ -1,7 +1,7 @@
 {
-  "run_at": "2026-06-27T09:45:08+00:00",
+  "run_at": "2026-06-28T10:22:11+00:00",
   "db_path": "/opt/caselaw/repo/output/decisions.db",
-  "duration_seconds": 1151.27,
+  "duration_seconds": 1392.7,
   "summary": {
     "total": 52,
     "passed": 52,
@@ -94,17 +94,17 @@
       "fix_advice": "check INSERT OR IGNORE / INSERT OR REPLACE in scrapers and build_fts5.merge_shards",
       "court": null,
       "extra": {
-        "total": 994747,
-        "distinct": 994747
+        "total": 994759,
+        "distinct": 994759
       }
     },
     {
       "name": "schema.corpus_total_count",
       "severity": "critical",
       "passed": true,
-      "metric_value": 994747,
+      "metric_value": 994759,
       "threshold": 950000,
-      "message": "corpus total: 994,747",
+      "message": "corpus total: 994,759",
       "sample_rows": [],
       "fix_advice": "check publish.py Step 2 build_fts5 logs; verify .tmp swap completed atomically",
       "court": null,
@@ -114,9 +114,9 @@
       "name": "mcp_tools.search_fts_returns_hits",
       "severity": "critical",
       "passed": true,
-      "metric_value": 379832,
+      "metric_value": 379835,
       "threshold": 100,
-      "message": "FTS5 'Beschwerde' query: 379,832 hits",
+      "message": "FTS5 'Beschwerde' query: 379,835 hits",
       "sample_rows": [],
       "fix_advice": "if 0, FTS5 build never indexed; rerun build_fts5",
       "court": null,
@@ -170,8 +170,8 @@
       "court": null,
       "extra": {
         "distribution": {
-          "de": 464107,
-          "fr": 448823,
+          "de": 464112,
+          "fr": 448830,
           "it": 81817
         }
       }
@@ -180,15 +180,15 @@
       "name": "languages.distribution_plausible",
       "severity": "critical",
       "passed": true,
-      "metric_value": 46.65578282719124,
+      "metric_value": 46.65572264236865,
       "threshold": 30.0,
       "message": "DE 46.7% / FR 45.1% / IT 8.2% / RM 0.00%",
       "sample_rows": [],
       "fix_advice": "DE and FR each need ≥30%, IT ≥3%; under-floor means a language-block of scrapers crashed in publish.py Step 1",
       "court": null,
       "extra": {
-        "de": 464107,
-        "fr": 448823,
+        "de": 464112,
+        "fr": 448830,
         "it": 81817
       }
     },
@@ -520,9 +520,9 @@
       "name": "courts.federal_present.bvger",
       "severity": "critical",
       "passed": true,
-      "metric_value": 92900,
+      "metric_value": 92901,
       "threshold": 1,
-      "message": "bvger: 92,900 decisions",
+      "message": "bvger: 92,901 decisions",
       "sample_rows": [],
       "fix_advice": null,
       "court": "bvger",

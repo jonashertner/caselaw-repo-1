@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/bvger.xml</link>
     <description>Latest published Bundesverwaltungsgericht decisions.</description>
     <language>de-CH</language>
-    <lastBuildDate>Sat, 27 Jun 2026 09:25:53 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 28 Jun 2026 09:58:53 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/bvger.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -46,6 +46,14 @@
       <description>Nichteintreten auf Asylgesuch und Wegweisung (sicherer Drittstaat - Art. 31a Abs. 1 Bst. a AsylG)</description>
       <pubDate>Wed, 17 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-4158.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht D-3003/2026 vom 2026-06-16</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-3003_2026</link>
+      <description>Refus de la protection provisoire</description>
+      <pubDate>Tue, 16 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-3003.2026</guid>
       <category>bvger</category>
     </item>
     <item>
@@ -398,14 +406,6 @@
       <description>Asyl (ohne Wegweisungsvollzug) (Wiedererwägung)</description>
       <pubDate>Wed, 10 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-1726.2023</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht E-3880/2026 vom 2026-06-10</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-3880_2026</link>
-      <description>Flughafenverfahren (Asyl und Wegweisung)</description>
-      <pubDate>Wed, 10 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-3880.2026</guid>
       <category>bvger</category>
     </item>
   </channel>
