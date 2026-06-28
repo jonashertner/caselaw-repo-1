@@ -2377,7 +2377,7 @@
     "2026-05": 1810,
     "2026-06": 626
   },
-  "generated_at": "2026-06-27T14:41:48.397118+00:00",
+  "generated_at": "2026-06-27T21:51:22.487227+00:00",
   "scraper_health": {
     "run_at": "2026-06-27T02:34:30.322994+00:00",
     "run_duration_s": 5609.9,
@@ -2805,7 +2805,7 @@
         "note": null,
         "state_count": 97222,
         "jsonl_size_mb": 1465.6,
-        "jsonl_mtime": "2026-06-27T01:18:51.959540+00:00"
+        "jsonl_mtime": "2026-06-27T20:55:11.269450+00:00"
       },
       "bge": {
         "success": true,
@@ -3451,7 +3451,7 @@
         "note": "1542 listed on portal but content not downloadable (empty page or missing PDF)",
         "state_count": 1517,
         "jsonl_size_mb": 91.9,
-        "jsonl_mtime": "2026-06-27T02:03:16.942318+00:00"
+        "jsonl_mtime": "2026-06-27T15:00:33.482347+00:00"
       },
       "emark": {
         "success": true,
