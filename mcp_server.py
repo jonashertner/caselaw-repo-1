@@ -711,7 +711,11 @@ CORS_ORIGINS: list[str] = [o.strip() for o in _cors_raw.split(",") if o.strip()]
 LEXFIND_ENABLED = os.environ.get("LEXFIND_ENABLED", "true").lower() in {"1", "true", "yes"}
 LEXFIND_BASE_URL = "https://www.lexfind.ch/api/fe"
 LEXFIND_SEARCH_TIMEOUT = float(os.environ.get("LEXFIND_SEARCH_TIMEOUT", "10"))
-LEXFIND_LOOKUP_TIMEOUT = float(os.environ.get("LEXFIND_LOOKUP_TIMEOUT", "30"))
+# Law-TEXT fetch timeout (the slow systematic-search/pagination uses the separate
+# 10s SEARCH timeout). 30s let a degraded LexFind tie up a worker thread per call,
+# amplifying get_law pile-ups under load; 15s fails over to the mirror faster while
+# still allowing a slow-but-valid single text fetch (recall preserved).
+LEXFIND_LOOKUP_TIMEOUT = float(os.environ.get("LEXFIND_LOOKUP_TIMEOUT", "15"))
 LEXFIND_ENTITY_IDS: dict[str, int] = {
     "CH": 27, "AG": 1, "AI": 2, "AR": 3, "BE": 4, "BL": 5, "BS": 6,
     "FR": 7, "GE": 8, "GL": 9, "GR": 10, "JU": 11, "LU": 12, "NE": 13,
