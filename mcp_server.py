@@ -6400,37 +6400,45 @@ def _find_leading_cases(
         return {"error": "Reference graph not available."}
 
     try:
-        candidates: list[tuple[str, int]] = []  # (decision_id, citation_count)
+        candidates: list[tuple[str, int]] = []  # (decision_id, ranking_count)
+        global_by_id: dict[str, int] = {}       # decision_id -> global citation count
 
         if law_code and article:
-            # Statute-filtered: find decisions citing this statute, ranked by incoming citations
-            # Graph DB uses uppercase law codes (STGB, OR, ZGB)
+            # Statute path: candidates are decisions applying this provision, ranked
+            # by TOPICAL authority — citations FROM other decisions that also apply
+            # the provision — not by global citation count. Ranking by global count
+            # surfaced procedural megacases that cite the provision once (audit
+            # 2026-06-28: BGE 126 I 97, right-to-be-heard, 6,535 global cites). The
+            # global count is kept for context. Graph DB uses uppercase law codes.
             law_code = law_code.upper()
             overfetch = limit * 3 if query else limit
+            _statute_sub = (
+                "SELECT ds.decision_id FROM decision_statutes ds "
+                "JOIN statutes s ON s.statute_id = ds.statute_id "
+                "WHERE s.law_code = ? AND s.article = ?")
             rows = conn.execute(
-                """
-                SELECT ct.target_decision_id AS decision_id, COUNT(*) AS cite_count
+                f"""
+                SELECT ct.target_decision_id AS decision_id,
+                       COUNT(*) AS global_count,
+                       SUM(CASE WHEN ct.source_decision_id IN ({_statute_sub})
+                                THEN 1 ELSE 0 END) AS topic_count
                 FROM citation_targets ct
                 JOIN decisions d ON d.decision_id = ct.target_decision_id
-                WHERE ct.target_decision_id IN (
-                    SELECT ds.decision_id
-                    FROM decision_statutes ds
-                    JOIN statutes s ON s.statute_id = ds.statute_id
-                    WHERE s.law_code = ? AND s.article = ?
-                )
+                WHERE ct.target_decision_id IN ({_statute_sub})
                 """
                 + (" AND d.court = ?" if court else "")
                 + (" AND d.decision_date >= ?" if date_from else "")
                 + (" AND d.decision_date <= ?" if date_to else "")
                 + """
                 GROUP BY ct.target_decision_id
-                ORDER BY cite_count DESC
+                ORDER BY topic_count DESC, global_count DESC
                 LIMIT ?
                 """,
                 tuple(
                     v
                     for v in (
-                        law_code, article,
+                        law_code, article,          # source subquery (topic_count)
+                        law_code, article,          # target subquery (candidate set)
                         court if court else None,
                         date_from if date_from else None,
                         date_to if date_to else None,
@@ -6439,7 +6447,8 @@ def _find_leading_cases(
                     if v is not None
                 ),
             ).fetchall()
-            candidates = [(r["decision_id"], int(r["cite_count"])) for r in rows]
+            candidates = [(r["decision_id"], int(r["topic_count"])) for r in rows]
+            global_by_id = {r["decision_id"]: int(r["global_count"]) for r in rows}
         elif query:
             # Query-only: FTS-first approach — find matching decisions, then rank by citations
             conn.close()
@@ -6590,17 +6599,23 @@ def _find_leading_cases(
         row = rows_by_id.get(did, {})
         url = _canonical_decision_url(did)
         docket = row.get("docket_number", did)
-        results.append({
+        glob = global_by_id.get(did)
+        entry = {
             "decision_id": did,
             "docket_number": docket,
             "decision_date": row.get("decision_date", ""),
             "court": row.get("court", ""),
-            "citation_count": cite_count,
+            # citation_count stays the GLOBAL count (overall stature); in the
+            # statute path topic_citation_count is the topical ranking basis.
+            "citation_count": glob if glob is not None else cite_count,
             "regeste": (row.get("regeste") or "")[:300],
             "source_url": row.get("source_url", ""),
             "canonical_url": url,
             "markdown_link": _md_link(docket, url),
-        })
+        }
+        if glob is not None:
+            entry["topic_citation_count"] = cite_count
+        results.append(entry)
 
     out = {
         "results": results,
