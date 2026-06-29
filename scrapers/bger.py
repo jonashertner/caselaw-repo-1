@@ -508,14 +508,20 @@ class BgerScraper(BaseScraper):
             self._incapsula.is_incapsula_blocked(resp.text)
             or (len(resp.text) < 10 and resp.status_code == 200)
         )
-        if is_blocked and retry < self.MAX_RETRIES:
-            if self.session.proxies.get("http") or self.session.proxies.get("https"):
-                # Residential egress: a short/empty response is a transient tunnel
-                # hiccup, not a real Incapsula block — retry WITHOUT re-harvesting
-                # cookies (camoufox would only hammer the hard-blocked datacenter IP).
-                logger.info(f"Short response ({len(resp.text)} chars) via proxy — retry without cookie refresh ({retry+1}/{self.MAX_RETRIES})")
-                time.sleep(2 + retry * 2)
+        proxied = bool(self.session.proxies.get("http") or self.session.proxies.get("https"))
+        if is_blocked and proxied:
+            # Residential egress: a short/empty response is a transient tunnel
+            # hiccup, not a real Incapsula block. A couple of plain retries (NO
+            # camoufox — that would only hammer the blocked IP), then give up on
+            # this URL so the scrape moves on instead of burning the retry budget
+            # (CLIR/index_atf.php consistently returns 1 char via the tunnel).
+            if retry < 2:
+                logger.info(f"Short response ({len(resp.text)} chars) via proxy — retry without cookie refresh ({retry+1}/2)")
+                time.sleep(1 + retry)
                 return self._get_with_pow(url, retry + 1)
+            logger.warning(f"Short response persists via proxy after retries — skipping {url}")
+            return resp
+        if is_blocked and retry < self.MAX_RETRIES:
             logger.info(f"Block detected ({len(resp.text)} chars), refreshing {domain} cookies ({retry+1}/{self.MAX_RETRIES})")
             time.sleep(2 + retry * 2)  # Backoff before retry
             try:
