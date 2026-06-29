@@ -28,6 +28,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import os
 import re
 import subprocess
 import sys
@@ -49,6 +50,21 @@ NEUHEITEN_URL = (
 )
 
 DOCKET_RE = re.compile(r"\b\d[A-Z]_\d+/\d{4}\b")
+
+_UA = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+)
+
+
+def _proxy() -> str | None:
+    """Residential reverse-SOCKS tunnel for BGer egress, if configured.
+
+    search.bger.ch (Incapsula) hard-blocks the Hetzner datacenter IP, so the
+    poller egresses via the Mac's residential tunnel (same as NE/JU). A residential
+    IP is NOT challenged, so the proxy path skips the cookie/PoW dance entirely.
+    """
+    return os.environ.get("BGER_PROXY") or os.environ.get("SCRAPER_PROXY") or None
 
 # quick_publish copies the full decisions.db before inserting (64 GB on
 # 2026-06-11, growing daily); that copy+insert took 10m19s under
@@ -79,33 +95,50 @@ def _get_pow_cookies() -> dict:
 def _fetch_neuheiten(date_str: str) -> set[str]:
     """Fetch today's Neuheiten page and extract docket numbers.
 
-    The endpoint sits behind Imperva/Incapsula on Hetzner IPs, so a
-    bare requests.Session gets a 838-byte iframe stub instead of the
-    real page. We harvest valid Incapsula cookies via the same
-    IncapsulaCookieManager bger.py uses (browser-automated, then
-    cached on disk), and detect block-pages on the response so we
-    raise loudly instead of silently logging "0 decisions".
+    Prefers the residential tunnel (BGER_PROXY/SCRAPER_PROXY): Incapsula does NOT
+    challenge a residential IP, so we skip the cookie/PoW dance entirely. Falls
+    back to the direct Incapsula-bypass path only when no proxy is set, or the
+    proxied fetch errors (the Hetzner IP is hard-blocked as of 2026-06-29, so the
+    direct path currently fails — the fallback is there for if/when it recovers).
     """
+    url = NEUHEITEN_URL.format(date=date_str)
+    proxy = _proxy()
+    if proxy:
+        try:
+            return _fetch_neuheiten_via_proxy(url, proxy)
+        except Exception as e:  # connection/tunnel error — try direct as a backstop
+            logger.warning("Neuheiten proxy fetch failed (%s) — falling back to direct", e)
+    return _fetch_neuheiten_direct(url)
+
+
+def _fetch_neuheiten_via_proxy(url: str, proxy: str) -> set[str]:
+    """Residential egress (reverse-SOCKS tunnel). A residential IP is not
+    challenged, so a plain GET returns the real page — no Incapsula cookies, no
+    PoW. An empty result is genuine (e.g. weekend with no publications)."""
+    import requests
+    session = requests.Session()
+    session.headers["User-Agent"] = _UA
+    session.proxies = {"http": proxy, "https": proxy}
+    r = session.get(url, timeout=45)
+    r.raise_for_status()
+    return set(DOCKET_RE.findall(r.text))
+
+
+def _fetch_neuheiten_direct(url: str) -> set[str]:
+    """Direct (datacenter IP): harvest Incapsula cookies + PoW. Works only while
+    the IP is not hard-blocked; raises loudly on a persistent block."""
     import requests
     sys.path.insert(0, str(REPO_DIR))
     from incapsula_bypass import IncapsulaCookieManager
 
     session = requests.Session()
-    session.headers["User-Agent"] = (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-        "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-    )
-    # Incapsula cookies first; PoW cookies on top.
+    session.headers["User-Agent"] = _UA
     incap_mgr = IncapsulaCookieManager(cache_dir=REPO_DIR / "state")
     session.cookies.update(incap_mgr.get_cookies("search.bger.ch"))
     session.cookies.update(_get_pow_cookies())
 
-    url = NEUHEITEN_URL.format(date=date_str)
     r = session.get(url, timeout=30)
     r.raise_for_status()
-
-    # Detect Incapsula block page. If we got one, force-refresh the
-    # cookies (re-runs the headless-browser challenge) and retry once.
     if IncapsulaCookieManager.is_incapsula_blocked_response(r):
         logger.warning("Incapsula block detected — refreshing cookies and retrying")
         session.cookies.clear()
@@ -118,9 +151,33 @@ def _fetch_neuheiten(date_str: str) -> set[str]:
                 "Incapsula still blocking after cookie refresh — manual "
                 "intervention needed (browser automation not bypassing)"
             )
+    return set(DOCKET_RE.findall(r.text))
 
-    dockets = set(DOCKET_RE.findall(r.text))
-    return dockets
+
+def _is_workday(d=None) -> bool:
+    """Mon-Fri. BGer does not publish on weekends, so an empty Neuheiten feed is
+    only suspicious on a workday."""
+    from datetime import date as _date
+    return (d or _date.today()).weekday() < 5
+
+
+def _alert_empty_neuheiten(today_iso: str) -> None:
+    """Workday + zero dockets ⇒ the fetch is almost certainly blocked (the feed is
+    never empty on a business day). Surface it loudly — the silent count:0 path is
+    exactly what hid a multi-week BGer gap in 2026-06."""
+    msg = (f"BGer Neuheiten returned 0 dockets on a workday ({today_iso}) — fetch "
+           f"likely Incapsula-blocked. Check the reverse-SOCKS tunnel / BGER_PROXY.")
+    logger.error(msg)
+    try:
+        import requests
+        topic = os.environ.get("NTFY_TOPIC", "opencaselaw-prod")
+        base = os.environ.get("NTFY_URL", "https://ntfy.sh")
+        requests.post(f"{base}/{topic}", data=msg.encode("utf-8"),
+                      headers={"Title": "BGer poller: empty Neuheiten on a workday",
+                               "Priority": "high", "Tags": "warning,rotating_light"},
+                      timeout=10)
+    except Exception as e:
+        logger.warning("ntfy alert failed: %s", e)
 
 
 def _load_state() -> dict:
@@ -297,6 +354,12 @@ def _trigger_scraper():
     ]
     logger.info("Triggering BGer scraper: %s", " ".join(cmd))
     SCRAPER_TIMEOUT_S = 600
+    # Route the scraper's egress through the same residential tunnel (the direct
+    # datacenter IP is Incapsula-blocked). base_scraper reads SCRAPER_PROXY.
+    scraper_env = dict(os.environ)
+    _p = _proxy()
+    if _p:
+        scraper_env["SCRAPER_PROXY"] = _p
     proc = subprocess.Popen(
         cmd,
         cwd=str(REPO_DIR),
@@ -304,6 +367,7 @@ def _trigger_scraper():
         stderr=subprocess.PIPE,
         text=True,
         start_new_session=True,
+        env=scraper_env,
     )
     try:
         out, err = proc.communicate(timeout=SCRAPER_TIMEOUT_S)
@@ -574,6 +638,12 @@ def main():
         return
 
     logger.info("Neuheiten %s: %d decisions", today_iso, len(current_dockets))
+
+    # Silent-failure guard: the feed is never empty on a business day, so 0 dockets
+    # on a workday means the fetch is blocked (not "no new decisions"). Alert
+    # instead of quietly recording count:0 — that path hid a multi-week gap.
+    if not current_dockets and _is_workday():
+        _alert_empty_neuheiten(today_iso)
 
     # Compare against last state
     state = _load_state()
