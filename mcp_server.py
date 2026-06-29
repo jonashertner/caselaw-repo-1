@@ -7721,6 +7721,30 @@ def _filter_self_citations(raw_cited, result: dict):
     return out or None
 
 
+def _override_citation_dates(items, id_key):
+    """find_citations dates come from the citation graph's OWN decisions copy,
+    which carries the pre-correction synthetic dates (audit v5: the date re-index
+    reached search + record view but not reference_graph.db). Override each item's
+    decision_date with the corrected FTS decisions.db value. Graceful: on any
+    failure the original (graph) date is kept."""
+    ids = [c.get(id_key) for c in (items or []) if c.get(id_key)]
+    if not ids:
+        return items
+    try:
+        conn = get_db()
+        ph = ",".join("?" * len(ids))
+        dm = {r[0]: r[1] for r in conn.execute(
+            f"SELECT decision_id, decision_date FROM decisions WHERE decision_id IN ({ph})",
+            ids)}
+    except Exception:
+        return items
+    for c in items:
+        cid = c.get(id_key)
+        if cid and dm.get(cid):
+            c["decision_date"] = dm[cid]
+    return items
+
+
 def _format_citations_response(result: dict) -> str:
     """Format find_citations result into markdown.
     Every cited/citing decision is rendered as a Markdown link so the
@@ -7735,6 +7759,7 @@ def _format_citations_response(result: dict) -> str:
     outgoing = result.get("outgoing", [])
     if outgoing is not None:
         outgoing = _dedup_bge_citations(outgoing, "target_decision_id")
+        outgoing = _override_citation_dates(outgoing, "target_decision_id")
         text += f"## Outgoing ({len(outgoing)} \u2014 what this decision cites)\n"
         if not outgoing:
             text += "No outgoing citations found.\n"
@@ -7759,6 +7784,7 @@ def _format_citations_response(result: dict) -> str:
     incoming = result.get("incoming", [])
     if incoming is not None:
         incoming = _dedup_bge_citations(incoming, "source_decision_id")
+        incoming = _override_citation_dates(incoming, "source_decision_id")
         text += f"## Incoming ({len(incoming)} \u2014 what cites this decision)\n"
         if not incoming:
             text += "No incoming citations found.\n"
