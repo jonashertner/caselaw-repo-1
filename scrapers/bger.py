@@ -363,6 +363,10 @@ class BgerScraper(BaseScraper):
     # Search in 4-day windows for manageable result sets
     WINDOW_DAYS = 4
     MAX_RETRIES = 5  # pow.php redirect retries
+    # search.bger.ch (Incapsula) hard-blocks the Hetzner IP — egress via the
+    # residential reverse-SOCKS tunnel like NE/JU. BaseScraper falls back to
+    # SCRAPER_PROXY (set by the poller); empty here means direct.
+    PROXY = os.environ.get("BGER_PROXY", "")
 
     def __init__(self, state_dir: Path = Path("state")):
         super().__init__(state_dir=state_dir)
@@ -505,6 +509,13 @@ class BgerScraper(BaseScraper):
             or (len(resp.text) < 10 and resp.status_code == 200)
         )
         if is_blocked and retry < self.MAX_RETRIES:
+            if self.session.proxies.get("http") or self.session.proxies.get("https"):
+                # Residential egress: a short/empty response is a transient tunnel
+                # hiccup, not a real Incapsula block — retry WITHOUT re-harvesting
+                # cookies (camoufox would only hammer the hard-blocked datacenter IP).
+                logger.info(f"Short response ({len(resp.text)} chars) via proxy — retry without cookie refresh ({retry+1}/{self.MAX_RETRIES})")
+                time.sleep(2 + retry * 2)
+                return self._get_with_pow(url, retry + 1)
             logger.info(f"Block detected ({len(resp.text)} chars), refreshing {domain} cookies ({retry+1}/{self.MAX_RETRIES})")
             time.sleep(2 + retry * 2)  # Backoff before retry
             try:

@@ -32,6 +32,7 @@ Rate limiting: 3 seconds between requests.
 from __future__ import annotations
 
 import logging
+import os
 import re
 from datetime import date, datetime, timezone
 from pathlib import Path
@@ -142,6 +143,10 @@ class BGELeitentscheideScraper(BaseScraper):
 
     REQUEST_DELAY = 3.0  # Generous rate limit for CLIR
     TIMEOUT = 60         # CLIR can be slow
+    # search.bger.ch (Incapsula) hard-blocks the Hetzner IP — egress via the
+    # residential reverse-SOCKS tunnel. Empty here means direct; BaseScraper also
+    # falls back to SCRAPER_PROXY.
+    PROXY = os.environ.get("BGER_PROXY", "")
 
     @property
     def court_code(self) -> str:
@@ -199,13 +204,17 @@ class BGELeitentscheideScraper(BaseScraper):
         2. Apply to requests.Session
         3. Hit CLIR initial URL to get session cookies
         """
-        # Step 1: Incapsula cookies
-        try:
-            incap_cookies = self._incapsula.get_cookies("search.bger.ch")
-            self.session.cookies.update(incap_cookies)
-            logger.info(f"Applied {len(incap_cookies)} Incapsula cookies for search.bger.ch")
-        except Exception as e:
-            logger.warning(f"Incapsula cookie harvest failed: {e}")
+        # Step 1: Incapsula cookies — skipped when egressing via a residential
+        # proxy (not challenged; harvesting would only hammer the blocked IP).
+        if self.session.proxies.get("http") or self.session.proxies.get("https"):
+            logger.info("Egress via proxy (residential) — skipping Incapsula harvest")
+        else:
+            try:
+                incap_cookies = self._incapsula.get_cookies("search.bger.ch")
+                self.session.cookies.update(incap_cookies)
+                logger.info(f"Applied {len(incap_cookies)} Incapsula cookies for search.bger.ch")
+            except Exception as e:
+                logger.warning(f"Incapsula cookie harvest failed: {e}")
 
         # Step 2: CLIR session
         logger.info("Establishing CLIR session...")
