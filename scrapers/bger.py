@@ -411,7 +411,18 @@ class BgerScraper(BaseScraper):
            - Yes → mine PoW, set PoW cookies
            - No  → skip PoW (saves time and avoids infinite mining loops)
         4. If still blocked by Incapsula, force-refresh cookies
+
+        When egressing via a proxy (the residential reverse-SOCKS tunnel),
+        Incapsula does NOT challenge the request, so the entire cookie-harvest +
+        PoW is skipped. This also stops the hourly poller-triggered scrape from
+        hammering the hard-blocked datacenter IP with camoufox (which is plausibly
+        what sustains the block).
         """
+        if self.session.proxies.get("http") or self.session.proxies.get("https"):
+            logger.info("Egress via proxy (residential) — skipping Incapsula harvest + PoW")
+            self._pow_required = False
+            return
+
         # Step 1: Incapsula cookies (browser automation) for both domains
         for domain in ["www.bger.ch", "search.bger.ch"]:
             try:
