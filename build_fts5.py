@@ -300,10 +300,23 @@ def _fix_mojibake(text: str) -> str:
     return text
 
 
+# C0 control chars except tab/newline/CR. An embedded NUL (\x00) in Omnis/
+# Findinfo portal text (ti/ne/ge/so) makes SQLite's length() stop at the NUL, so
+# the structure builder's `WHERE length(full_text) >= 500` filter silently drops
+# the row (and the VPS's older sqlite3 truncates the read outright) — only the
+# ~500-char header survived, zeroing decision_structure Erwaegungen extraction
+# and costing search recall. Proven 2026-06-29 on ti_gerichte_34.2024.28
+# (NUL at offset 498; length()=495 vs the JSONL shard's 77,544 chars).
+_CONTROL_CHARS_RE = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")
+
+
 def _clean_text(text: str | None) -> str | None:
-    """Strip HTML tags, fix HTML entities, fix mojibake, normalize whitespace."""
+    """Strip control chars + HTML tags, fix entities/mojibake, normalize whitespace."""
     if not text:
         return text
+
+    # Remove control chars first so a NUL can't truncate the body downstream.
+    text = _CONTROL_CHARS_RE.sub("", text)
 
     # Strip HTML tags
     text = _HTML_TAG_RE.sub(" ", text)
