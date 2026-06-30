@@ -15323,6 +15323,31 @@ def get_law(
                        AND (article_num = ? OR article_num LIKE ?)""",
                     (sr_number, language, article, f"{article}%"),
                 ).fetchall()
+            if not articles:
+                # Issue #32: the article may exist only in another language (a gap
+                # in the Fedlex mirror — e.g. ZPO Art. 168 is present in fr/it but
+                # not de). Fall back to any available language so the caller gets
+                # the verbatim text plus a clear note, not "No articles found".
+                for alt in ("de", "fr", "it"):
+                    if alt == language:
+                        continue
+                    articles = conn.execute(
+                        f"""SELECT {_art_cols} FROM articles
+                           WHERE sr_number = ? AND lang = ?
+                           AND (article_num = ? OR article_num LIKE ?)""",
+                        (sr_number, alt, article, f"{article}%"),
+                    ).fetchall()
+                    if articles:
+                        result["article_language_fallback"] = {
+                            "requested": language,
+                            "served": alt,
+                            "note": (
+                                f"Article {article} is not available in "
+                                f"'{language}' in the current Fedlex mirror; "
+                                f"showing '{alt}'."
+                            ),
+                        }
+                        break
             result["articles"] = [dict(a) for a in articles]
 
             # Enrich with Materialien (legislative history) when fetching
@@ -16138,6 +16163,8 @@ def _format_get_law_response(result: dict) -> str:
         text += f"Consolidation date: {result['consolidation_date']}\n"
     if result.get("category"):
         text += f"Category: {result['category']}\n"
+    if result.get("article_language_fallback"):
+        text += f"Note: {result['article_language_fallback']['note']}\n"
     text += "\n"
 
     articles = result.get("articles", [])
