@@ -15470,12 +15470,37 @@ def _abbreviation_lookup_federal(
             conn.close()
 
 
+def _run_articles_fts(conn, match_query, sr_number, language, limit):
+    """One BM25-ranked articles_fts MATCH with optional sr/lang filters. Shared
+    by the strict (AND) and broadened (OR) passes of search_laws (issue #31)."""
+    sql = [
+        "SELECT a.sr_number, a.article_num, a.heading,",
+        "       snippet(articles_fts, 3, '>>>', '<<<', '...', 40) AS snippet,",
+        "       l.abbr_de, l.abbr_fr, l.abbr_it, l.title_de, l.title_fr, l.title_it",
+        "FROM articles_fts f",
+        "JOIN articles a ON a.id = f.rowid",
+        "LEFT JOIN laws l ON a.sr_number = l.sr_number",
+        "WHERE articles_fts MATCH ?",
+    ]
+    params: list = [match_query]
+    if sr_number:
+        sql.append("AND a.sr_number = ?")
+        params.append(sr_number)
+    if language:
+        sql.append("AND a.lang = ?")
+        params.append(language)
+    sql.append("ORDER BY f.rank LIMIT ?")
+    params.append(limit)
+    return conn.execute("\n".join(sql), params).fetchall()
+
+
 def _search_laws_federal(
     query: str,
     sr_number: str | None,
     language: str,
     limit: int,
     raw_query: str | None = None,
+    or_query: str | None = None,
 ) -> list[dict]:
     """Federal-only FTS5 search against statutes.db. Returns a ranked list.
 
@@ -15504,84 +15529,38 @@ def _search_laws_federal(
                 seen_keys.add(key)
                 priority.append(entry)
 
-        # When language is omitted (None), drop the a.lang filter so the FTS
-        # query returns matches in ALL 3 languages (otherwise the bound
-        # NULL value matches zero rows). Use display_lang for the result
-        # row's column selection. Caught in 2026-05-16 review.
+        # When language is omitted (None), the per-pass helper drops the a.lang
+        # filter so matches in ALL 3 languages return. Use display_lang for the
+        # result row's column selection. Caught in 2026-05-16 review.
         display_lang = language if language in ("de", "fr", "it") else "de"
-        if language and sr_number:
-            rows = conn.execute(
-                """SELECT a.sr_number, a.article_num, a.heading,
-                          snippet(articles_fts, 3, '>>>', '<<<', '...', 40) AS snippet,
-                          l.abbr_de, l.abbr_fr, l.abbr_it,
-                          l.title_de, l.title_fr, l.title_it
-                   FROM articles_fts f
-                   JOIN articles a ON a.id = f.rowid
-                   LEFT JOIN laws l ON a.sr_number = l.sr_number
-                   WHERE articles_fts MATCH ? AND a.sr_number = ? AND a.lang = ?
-                   ORDER BY f.rank
-                   LIMIT ?""",
-                (query, sr_number, language, limit),
-            ).fetchall()
-        elif sr_number:
-            rows = conn.execute(
-                """SELECT a.sr_number, a.article_num, a.heading,
-                          snippet(articles_fts, 3, '>>>', '<<<', '...', 40) AS snippet,
-                          l.abbr_de, l.abbr_fr, l.abbr_it,
-                          l.title_de, l.title_fr, l.title_it
-                   FROM articles_fts f
-                   JOIN articles a ON a.id = f.rowid
-                   LEFT JOIN laws l ON a.sr_number = l.sr_number
-                   WHERE articles_fts MATCH ? AND a.sr_number = ?
-                   ORDER BY f.rank
-                   LIMIT ?""",
-                (query, sr_number, limit),
-            ).fetchall()
-        elif language:
-            rows = conn.execute(
-                """SELECT a.sr_number, a.article_num, a.heading,
-                          snippet(articles_fts, 3, '>>>', '<<<', '...', 40) AS snippet,
-                          l.abbr_de, l.abbr_fr, l.abbr_it,
-                          l.title_de, l.title_fr, l.title_it
-                   FROM articles_fts f
-                   JOIN articles a ON a.id = f.rowid
-                   LEFT JOIN laws l ON a.sr_number = l.sr_number
-                   WHERE articles_fts MATCH ? AND a.lang = ?
-                   ORDER BY f.rank
-                   LIMIT ?""",
-                (query, language, limit),
-            ).fetchall()
-        else:
-            rows = conn.execute(
-                """SELECT a.sr_number, a.article_num, a.heading,
-                          snippet(articles_fts, 3, '>>>', '<<<', '...', 40) AS snippet,
-                          l.abbr_de, l.abbr_fr, l.abbr_it,
-                          l.title_de, l.title_fr, l.title_it
-                   FROM articles_fts f
-                   JOIN articles a ON a.id = f.rowid
-                   LEFT JOIN laws l ON a.sr_number = l.sr_number
-                   WHERE articles_fts MATCH ?
-                   ORDER BY f.rank
-                   LIMIT ?""",
-                (query, limit),
-            ).fetchall()
-        for r in rows:
-            key = (r["sr_number"], r["article_num"])
-            if key in seen_keys:
-                continue
-            seen_keys.add(key)
-            abbr = r[f"abbr_{display_lang}"] or r["abbr_de"] or "?"
-            title = r[f"title_{display_lang}"] or r["title_de"] or ""
-            priority.append({
-                "level": "federal",
-                "canton": "CH",
-                "sr_number": r["sr_number"],
-                "abbreviation": abbr,
-                "title": title,
-                "article_num": r["article_num"],
-                "heading": r["heading"],
-                "snippet": r["snippet"],
-            })
+
+        def _absorb(rows):
+            for r in rows:
+                key = (r["sr_number"], r["article_num"])
+                if key in seen_keys:
+                    continue
+                seen_keys.add(key)
+                abbr = r[f"abbr_{display_lang}"] or r["abbr_de"] or "?"
+                title = r[f"title_{display_lang}"] or r["title_de"] or ""
+                priority.append({
+                    "level": "federal",
+                    "canton": "CH",
+                    "sr_number": r["sr_number"],
+                    "abbreviation": abbr,
+                    "title": title,
+                    "article_num": r["article_num"],
+                    "heading": r["heading"],
+                    "snippet": r["snippet"],
+                })
+                if len(priority) >= limit:
+                    break
+
+        # Issue #31: AND-first-fill. Run the strict (all-terms) query first so
+        # exact hits rank on top; only if it under-fills the page broaden to the
+        # OR/relevance form, appended below via the seen_keys dedup.
+        _absorb(_run_articles_fts(conn, query, sr_number, language, limit))
+        if or_query and or_query != query and len(priority) < limit:
+            _absorb(_run_articles_fts(conn, or_query, sr_number, language, limit))
         return priority[:limit]
     except sqlite3.Error as e:
         logger.error("Federal statute search error: %s", e)
@@ -15719,7 +15698,7 @@ def _search_laws_cantonal(
         conn.close()
 
 
-def _expand_law_query(sanitized_query: str) -> str:
+def _expand_law_query(sanitized_query: str, multi_or: bool = False) -> str:
     """Expand a sanitized query with colloquial→statute-text synonyms.
 
     Transforms e.g. ``"Vaterschaftsurlaub Dauer"`` into
@@ -15776,9 +15755,15 @@ def _expand_law_query(sanitized_query: str) -> str:
         else:
             parts.append(tok)
 
+    # Issue #31: callers run this twice — strict first (AND, multi_or=False),
+    # then, only if that under-fills the page, broadened (OR, multi_or=True).
+    # OR-joining lets an article missing one guessed term still surface, ranked
+    # below the exact hits. Quoted phrases and single terms are never broadened.
+    has_phrase = '"' in sanitized_query
+    if multi_or and len(parts) >= 2 and not has_phrase:
+        return " OR ".join(parts)
     # FTS5 does NOT support implicit AND after parenthesized OR groups:
     # "(a OR b) c" is a syntax error; "(a OR b) AND c" is required.
-    # Use explicit AND when any term was expanded.
     joiner = " AND " if has_or_group else " "
     return joiner.join(parts)
 
@@ -15844,13 +15829,14 @@ def search_laws(
         # Echo the user's original input, not the sanitised empty string,
         # so log lines and downstream telemetry record what was searched.
         return {"query": raw_query, "count": 0, "results": []}
-    query = _expand_law_query(query)
+    or_query = _expand_law_query(query, multi_or=True)  # issue #31 broadened form
+    query = _expand_law_query(query)                     # strict (all-terms) form
 
     federal_results: list[dict] = []
     cantonal_results: list[dict] = []
     if hit_federal:
         federal_results = _search_laws_federal(
-            query, sr_number, language, limit, raw_query=raw_query,
+            query, sr_number, language, limit, raw_query=raw_query, or_query=or_query,
         )
     if hit_cantonal:
         cantonal_results = _search_laws_cantonal(
