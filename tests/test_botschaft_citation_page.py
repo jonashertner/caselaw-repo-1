@@ -54,3 +54,10 @@ def test_malformed_uri_returns_none():
     assert _fga_candidate("", "7705", "x") is None
     assert _fga_candidate(None, None, "x") is None
     assert _fga_candidate(f"{BASE}/notayear/1325", "7705", "x") is None
+
+
+def test_citation_label_is_per_language():
+    from search_stack.build_botschaft_corpus import bbl_citation
+    assert bbl_citation(2011, 7705, "de") == "BBl 2011 7705"
+    assert bbl_citation(2011, 7091, "fr") == "FF 2011 7091"
+    assert bbl_citation(2011, 6837, "it") == "FF 2011 6837"

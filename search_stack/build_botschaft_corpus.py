@@ -166,8 +166,11 @@ def bbl_eli_uri(year: int, page: int) -> str:
     return f"https://fedlex.data.admin.ch/eli/fga/{year}/{page}"
 
 
-def bbl_citation(year: int, page: int) -> str:
-    return f"BBl {year} {page}"
+def bbl_citation(year: int, page: int, language: str = "de") -> str:
+    # German = Bundesblatt (BBl); French/Italian = Feuille fédérale / Foglio
+    # federale, both cited "FF". The page is the print/PDF-edition gazette page.
+    label = "BBl" if language == "de" else "FF"
+    return f"{label} {year} {page}"
 
 
 _LANG_URI_DEU = "http://publications.europa.eu/resource/authority/language/DEU"
@@ -573,7 +576,7 @@ def ingest_one(
     """
     ensure_schema(conn)
 
-    citation = bbl_citation(year, page)
+    citation = bbl_citation(year, page, language)
     # The ELI keeps its real fga segment (for fetch/resolve); the citation +
     # bbl_page use the printed memorialPage. These differ (issue #30), so never
     # rebuild the ELI from ``page``.
