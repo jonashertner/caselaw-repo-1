@@ -166,12 +166,28 @@ def parse_article(article_elem) -> tuple[str, str | None, str, str | None]:
     m = re.match(r"(\d+)\s*((?:bis|ter|quater|quinquies|sexies|septies|octies|novies)|[a-z])?", article_num)
     if m:
         article_num = m.group(1) + (m.group(2) or "")
+    eid = article_elem.get("eId", "")
     if not article_num:
-        # Try eId attribute: "art_41" -> "41"
-        eid = article_elem.get("eId", "")
+        # Try eId attribute: "art_41" -> "41", "art_38_a" -> "38a"
         m = re.search(r"art_(\w+)", eid)
         if m:
-            article_num = m.group(1)
+            article_num = m.group(1).replace("_", "")
+    # Issue #32: some Fedlex <num> elements split the number across sibling <b>
+    # tags, e.g. "<b>Art. 16</b><b>8</b>" -> extract_text "Art. 16 8", so the
+    # regex above captures only the leading digits ("16" for Art. 168) and the
+    # article gets stored under the wrong number. When the parsed value is pure
+    # digits AND a strict prefix of the eId's number, the <num> was truncated:
+    # trust the authoritative eId. Suffixed articles ("38a", eId "art_38_a") are
+    # never pure digits, so they keep their corpus format untouched.
+    m_eid = re.search(r"art_(\w+)", eid)
+    if m_eid:
+        eid_num = m_eid.group(1).replace("_", "")
+        parsed_digits = re.match(r"\d*", article_num).group(0)
+        eid_digits = re.match(r"\d*", eid_num).group(0)
+        if (parsed_digits and article_num == parsed_digits
+                and parsed_digits != eid_digits
+                and eid_digits.startswith(parsed_digits)):
+            article_num = eid_num
 
     # Extract heading (marginal note / Randtitel)
     heading = None
