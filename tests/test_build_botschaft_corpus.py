@@ -296,10 +296,13 @@ def test_discover_fga_botschaften_parses_sparql_rows(monkeypatch) -> None:
 
     fake_rows = [
         {
-            "act": {"value": "https://fedlex.data.admin.ch/eli/fga/2024/2945"},
-            "title": {"value": "Botschaft zum Bundesgesetz X"},
+            # memorialPage (7705) differs from the ELI segment (1325) — issue #30.
+            "act": {"value": "https://fedlex.data.admin.ch/eli/fga/2011/1325"},
+            "title": {"value": "Botschaft VVG"},
+            "memPage": {"value": "7705"},
         },
         {
+            # No memorialPage (post-2022 style) — the segment is the doc number.
             "act": {"value": "https://fedlex.data.admin.ch/eli/fga/2013/823"},
             "title": {"value": "Botschaft zum Weiterbildungsgesetz"},
         },
@@ -313,10 +316,11 @@ def test_discover_fga_botschaften_parses_sparql_rows(monkeypatch) -> None:
         fedlex_materialien, "sparql_query", lambda q, timeout=120: fake_rows,
     )
     out = fedlex_materialien.discover_fga_botschaften(language="de")
-    # Two valid rows, one garbage filtered
+    # Two valid rows, one garbage filtered. Tuple = (year, citation_page, eli_uri, title);
+    # the citation page is memorialPage (7705), not the ELI segment, and the ELI is kept.
     assert len(out) == 2
-    assert (2024, 2945, "Botschaft zum Bundesgesetz X") in out
-    assert (2013, 823, "Botschaft zum Weiterbildungsgesetz") in out
+    assert (2011, 7705, "https://fedlex.data.admin.ch/eli/fga/2011/1325", "Botschaft VVG") in out
+    assert (2013, 823, "https://fedlex.data.admin.ch/eli/fga/2013/823", "Botschaft zum Weiterbildungsgesetz") in out
 
 
 def test_discover_fga_botschaften_rejects_unsupported_language() -> None:

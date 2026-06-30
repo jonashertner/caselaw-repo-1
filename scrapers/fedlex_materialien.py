@@ -584,10 +584,47 @@ BOTSCHAFT_TYPE_DOC_URI = (
 )
 
 
+def _fga_candidate(
+    act_uri: str | None, mem_page: str | None, title: str
+) -> tuple[int, int, str, str] | None:
+    """Map a Fedlex ``fga`` act URI + its (optional) ``jolux:memorialPage`` to a
+    Botschaft candidate ``(year, citation_page, eli_uri, title)``.
+
+    Issue #30: the citable Bundesblatt page is ``memorialPage`` — the page in the
+    print/PDF gazette edition. The trailing ELI segment is Fedlex's internal
+    ``fga`` index (a sequence number, sometimes a composite like
+    ``1_9194_8542_8123``), NOT the page. When Fedlex has no ``memorialPage``
+    (post-2022 Bundesblatt) the segment doubles as the document number, so it is
+    the citation. The full ``act_uri`` is preserved for fetching. Returns
+    ``None`` if neither source yields a usable integer page.
+    """
+    parts = (act_uri or "").rstrip("/").rsplit("/", 2)
+    if len(parts) < 3:
+        return None
+    try:
+        year = int(parts[-2])
+    except ValueError:
+        return None
+    seg = parts[-1]
+    if mem_page is not None:
+        try:
+            page = int(mem_page)
+        except (TypeError, ValueError):
+            return None
+    elif seg.isdigit():
+        # No memorialPage (post-2022 Bundesblatt): the segment is the doc number.
+        # ``.isdigit()`` rejects composite ELI segments (e.g. "1_9194_8542_8123"),
+        # which int() would otherwise mis-parse via underscore digit grouping.
+        page = int(seg)
+    else:
+        return None
+    return (year, page, act_uri, title)
+
+
 def discover_fga_botschaften(
     language: str = "de",
     timeout: int = 120,
-) -> list[tuple[int, int, str]]:
+) -> list[tuple[int, int, str, str]]:
     """Enumerate every Bundesblatt-published Botschaft via Fedlex SPARQL.
 
     Returns ``[(year, page, title), ...]`` for every FGA URI of
@@ -607,30 +644,24 @@ def discover_fga_botschaften(
 
     query = f"""
     PREFIX jolux: <{JOLUX}>
-    SELECT DISTINCT ?act ?title WHERE {{
+    SELECT DISTINCT ?act ?title ?memPage WHERE {{
       ?act jolux:typeDocument <{BOTSCHAFT_TYPE_DOC_URI}> .
       ?act jolux:isRealizedBy ?expr .
       ?expr jolux:language <{LANG_URIS[language]}> .
       OPTIONAL {{ ?expr jolux:title ?title }}
+      OPTIONAL {{ ?expr jolux:memorialPage ?memPage }}
       FILTER(strstarts(STR(?act), "https://fedlex.data.admin.ch/eli/fga/"))
     }}
     ORDER BY DESC(?act)
     """
     rows = sparql_query(query, timeout=timeout)
-    out: list[tuple[int, int, str]] = []
+    out: list[tuple[int, int, str, str]] = []
     for r in rows:
-        uri = _val(r, "act") or ""
-        title = _val(r, "title") or ""
-        # URI shape: https://fedlex.data.admin.ch/eli/fga/{year}/{page}
-        parts = uri.rsplit("/", 2)
-        if len(parts) < 3:
-            continue
-        try:
-            year = int(parts[-2])
-            page = int(parts[-1])
-        except ValueError:
-            continue
-        out.append((year, page, title))
+        # bbl page = memorialPage (print/PDF edition); ELI segment is Fedlex's
+        # internal fga index, not the page (issue #30).
+        cand = _fga_candidate(_val(r, "act"), _val(r, "memPage"), _val(r, "title") or "")
+        if cand is not None:
+            out.append(cand)
     log.info(
         "discover_fga_botschaften(%s): %d Botschaften in Fedlex SPARQL",
         language, len(out),

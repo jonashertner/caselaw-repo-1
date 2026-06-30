@@ -561,6 +561,7 @@ def ingest_one(
     article: str | None = None,
     relation: str = "considered",
     prefiltered: bool = False,
+    eli_uri: str | None = None,
 ) -> int | None:
     """Fetch, parse, and store one Botschaft. Returns botschaft_id, or
     None if Fedlex has no manifestation (pre-~2003 BBl) or the URI
@@ -573,7 +574,10 @@ def ingest_one(
     ensure_schema(conn)
 
     citation = bbl_citation(year, page)
-    eli = bbl_eli_uri(year, page)
+    # The ELI keeps its real fga segment (for fetch/resolve); the citation +
+    # bbl_page use the printed memorialPage. These differ (issue #30), so never
+    # rebuild the ELI from ``page``.
+    eli = eli_uri if eli_uri else bbl_eli_uri(year, page)
     log.info(f"Ingesting {citation} ({language}) for sr={sr_number} art={article}")
 
     # v0.3 (2026-05-07): pre-filter via Fedlex SPARQL — only ingest
@@ -929,7 +933,7 @@ def main() -> int:
                 ).fetchall()
             }
             candidates = [
-                (y, p) for (y, p, _t) in sparql_rows
+                (y, p, eli) for (y, p, eli, _t) in sparql_rows
                 if y >= args.min_year and (y, p) not in existing
             ]
             # Newest first — same convention as amendment_refs path.
@@ -955,7 +959,7 @@ def main() -> int:
                 """,
                 (args.language, args.min_year),
             ).fetchall()
-            candidates = [(int(r[0]), int(r[1])) for r in rows]
+            candidates = [(int(r[0]), int(r[1]), None) for r in rows]
             log.info(
                 f"--ingest-all (amendment_refs): {len(candidates)} unique "
                 f"(year, page) candidates ≥ {args.min_year} not yet in "
@@ -964,7 +968,7 @@ def main() -> int:
         if args.limit:
             candidates = candidates[: args.limit]
         if args.dry_run:
-            for year, page in candidates[:25]:
+            for year, page, _eli in candidates[:25]:
                 log.info(f"  candidate: BBl {year} {page}")
             if len(candidates) > 25:
                 log.info(f"  … and {len(candidates) - 25} more")
@@ -974,10 +978,10 @@ def main() -> int:
         stats = {"accepted": 0, "rejected_by_filter": 0, "errors": 0,
                  "total": len(candidates), "started_at": datetime.now(timezone.utc).isoformat()}
         t0 = _time.time()
-        for i, (year, page) in enumerate(candidates, 1):
+        for i, (year, page, eli) in enumerate(candidates, 1):
             try:
                 bid = ingest_one(
-                    conn, year=year, page=page,
+                    conn, year=year, page=page, eli_uri=eli,
                     language=args.language,
                     sr_number=None, article=None,
                     relation="considered",
