@@ -1,13 +1,13 @@
 {
-  "total": 994865,
+  "total": 994911,
   "by_court": [
     {
       "court": "bger",
       "canton": "CH",
-      "count": 191376,
+      "count": 191422,
       "earliest": "1986-10-06",
-      "latest": "2026-06-18",
-      "last_scraped": "2026-06-29T10:48:13.411370+00:00",
+      "latest": "2026-06-22",
+      "last_scraped": "2026-06-30T10:01:10.123682+00:00",
       "languages": [
         "de",
         "fr",
@@ -1830,9 +1830,9 @@
     }
   ],
   "by_language": {
-    "de": 464174,
-    "fr": 448870,
-    "it": 81821
+    "de": 464202,
+    "fr": 448883,
+    "it": 81826
   },
   "by_year": {
     "1875": 179,
@@ -1967,8 +1967,8 @@
     "2004": 19039,
     "2005": 21455,
     "2006": 22622,
-    "2007": 28487,
-    "2008": 27723,
+    "2007": 28491,
+    "2008": 27724,
     "2009": 32108,
     "2010": 34235,
     "2011": 35255,
@@ -1981,30 +1981,30 @@
     "2018": 47900,
     "2019": 48361,
     "2020": 49157,
-    "2021": 50763,
+    "2021": 50764,
     "2022": 47251,
     "2023": 47133,
-    "2024": 46801,
-    "2025": 43734,
-    "2026": 13502
+    "2024": 46805,
+    "2025": 43744,
+    "2026": 13528
   },
   "recent_daily": {
     "2026-06-01": 95,
-    "2026-06-02": 79,
-    "2026-06-03": 86,
-    "2026-06-04": 54,
+    "2026-06-02": 80,
+    "2026-06-03": 88,
+    "2026-06-04": 56,
     "2026-06-05": 57,
-    "2026-06-08": 62,
-    "2026-06-09": 44,
-    "2026-06-10": 41,
-    "2026-06-11": 60,
-    "2026-06-12": 15,
-    "2026-06-15": 35,
-    "2026-06-16": 22,
+    "2026-06-08": 63,
+    "2026-06-09": 46,
+    "2026-06-10": 42,
+    "2026-06-11": 62,
+    "2026-06-12": 18,
+    "2026-06-15": 36,
+    "2026-06-16": 25,
     "2026-06-17": 14,
     "2026-06-18": 12,
-    "2026-06-19": 7,
-    "2026-06-22": 3,
+    "2026-06-19": 8,
+    "2026-06-22": 4,
     "2026-06-23": 7,
     "2026-06-24": 4,
     "2026-06-25": 2,
@@ -2020,7 +2020,7 @@
     {
       "court": "bger",
       "canton": "CH",
-      "count": 191376
+      "count": 191422
     },
     {
       "court": "ge_gerichte",
@@ -2218,11 +2218,11 @@
     "2022": -6.9,
     "2023": -0.2,
     "2024": -0.7,
-    "2025": -6.6,
+    "2025": -6.5,
     "2026": -69.1
   },
   "federal_vs_cantonal": {
-    "federal": 364261,
+    "federal": 364307,
     "cantonal": 630604
   },
   "language_by_year": {
@@ -2237,12 +2237,12 @@
       "it": 3364
     },
     "2007": {
-      "de": 16083,
-      "fr": 8916,
+      "de": 16086,
+      "fr": 8917,
       "it": 3488
     },
     "2008": {
-      "de": 13988,
+      "de": 13989,
       "fr": 10559,
       "it": 3176
     },
@@ -2309,7 +2309,7 @@
     "2021": {
       "de": 22175,
       "fr": 26047,
-      "it": 2541
+      "it": 2542
     },
     "2022": {
       "de": 20536,
@@ -2322,18 +2322,18 @@
       "it": 2106
     },
     "2024": {
-      "de": 19888,
+      "de": 19891,
       "fr": 25051,
-      "it": 1862
+      "it": 1863
     },
     "2025": {
-      "de": 19637,
-      "fr": 22864,
-      "it": 1233
+      "de": 19642,
+      "fr": 22866,
+      "it": 1236
     },
     "2026": {
-      "de": 7187,
-      "fr": 5845,
+      "de": 7203,
+      "fr": 5855,
       "it": 470
     }
   },
@@ -2351,32 +2351,32 @@
     "2024-04": 3828,
     "2024-05": 4039,
     "2024-06": 4393,
-    "2024-07": 3585,
-    "2024-08": 3577,
-    "2024-09": 3718,
-    "2024-10": 3981,
+    "2024-07": 3586,
+    "2024-08": 3578,
+    "2024-09": 3719,
+    "2024-10": 3982,
     "2024-11": 4045,
     "2024-12": 3953,
     "2025-01": 3830,
     "2025-02": 3700,
-    "2025-03": 3830,
+    "2025-03": 3832,
     "2025-04": 3584,
-    "2025-05": 3811,
+    "2025-05": 3813,
     "2025-06": 4183,
-    "2025-07": 3341,
-    "2025-08": 3348,
-    "2025-09": 3784,
+    "2025-07": 3342,
+    "2025-08": 3352,
+    "2025-09": 3785,
     "2025-10": 3755,
     "2025-11": 3441,
     "2025-12": 3127,
     "2026-01": 2545,
     "2026-02": 3043,
     "2026-03": 2942,
-    "2026-04": 2428,
-    "2026-05": 1829,
-    "2026-06": 707
+    "2026-04": 2429,
+    "2026-05": 1834,
+    "2026-06": 727
   },
-  "generated_at": "2026-06-30T10:08:48.492655+00:00",
+  "generated_at": "2026-06-30T15:15:34.786618+00:00",
   "scraper_health": {
     "run_at": "2026-06-30T02:35:19.711421+00:00",
     "run_duration_s": 5658.7,
@@ -3263,7 +3263,7 @@
         "note": null,
         "state_count": 7613,
         "jsonl_size_mb": 188.8,
-        "jsonl_mtime": "2026-06-30T01:52:45.648304+00:00"
+        "jsonl_mtime": "2026-06-30T10:43:32.787488+00:00"
       },
       "vs_gerichte": {
         "success": true,
@@ -3499,9 +3499,9 @@
         "duration_s": 5284.3,
         "error": null,
         "note": "1838 listed on portal but content not downloadable (empty page or missing PDF)",
-        "state_count": 1517,
+        "state_count": 1518,
         "jsonl_size_mb": 91.9,
-        "jsonl_mtime": "2026-06-30T02:33:30.497633+00:00"
+        "jsonl_mtime": "2026-06-30T14:53:29.042216+00:00"
       },
       "emark": {
         "success": true,
@@ -3611,8 +3611,8 @@
       "reference_article": 40,
       "bachelor_thesis": 3
     },
-    "citation_edges": 9241618,
-    "statute_edges": 11861024
+    "citation_edges": 9242885,
+    "statute_edges": 11862510
   },
   "interesting_stats": {
     "most_cited_decision": {
@@ -3623,7 +3623,7 @@
     "most_cited_statute": {
       "law_code": "LTF",
       "article": "100",
-      "ref_count": 182426
+      "ref_count": 182428
     },
     "oldest_decision": {
       "docket": "1_I_26",
@@ -3635,27 +3635,27 @@
       "de_pct": 46.7,
       "fr_pct": 45.1,
       "it_pct": 8.2,
-      "total": 994823
+      "total": 994912
     },
     "regeste_coverage": {
       "pct": 38.0,
-      "with_regeste": 377881,
-      "total": 994823
+      "with_regeste": 377857,
+      "total": 994912
     },
     "graph_size": {
-      "decision_edges": 8658985,
-      "statute_edges": 11861024,
-      "total": 20520009
+      "decision_edges": 8660111,
+      "statute_edges": 11862510,
+      "total": 20522621
     },
     "echr_switzerland": {
-      "total": 2839,
-      "grand_chamber": 94,
-      "in_2026": 115,
+      "total": 2840,
+      "grand_chamber": 95,
+      "in_2026": 116,
       "most_recent": {
-        "decision_date": "2026-06-23",
-        "docket": "13250/23",
-        "regeste_excerpt": "Violation de l'article 8 - Droit au respect de la vie privée et familiale (Article 8-1 - Respect de la vie familiale);Violation de l'article",
-        "url": "https://mcp.opencaselaw.ch/entscheid/ecthr_chamber_13250_23"
+        "decision_date": "2026-06-30",
+        "docket": "17982/21_43852/21_44600/21",
+        "regeste_excerpt": "Radiation du rôle (Art. 37) Radiation du rôle-{général};(Art. 37-1) Radiation du rôle;(Art. 37-1-c) Poursuite de l'examen non justifiée;Radi",
+        "url": "https://mcp.opencaselaw.ch/entscheid/ecthr_grand_chamber_17982_21_43852_21_44600_21"
       }
     },
     "top_5_decisions": [
@@ -3667,13 +3667,13 @@
       },
       {
         "docket": "BGE 122 V 157",
-        "citation_count": 53805,
+        "citation_count": 53807,
         "regeste_excerpt": "Regeste\n Art. 4 BV, Art. 6 Ziff. 1 EMRK. - Art. 4 BV und Art. 6 Ziff. 1 EMRK umfassen keinen formellen Anspruch auf Beizug versicherungsexterner medizinischer G",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_122_V_157"
       },
       {
         "docket": "BGE 134 V 231",
-        "citation_count": 37358,
+        "citation_count": 37357,
         "regeste_excerpt": "Regeste\n Art. 6 Abs. 1 UVG; Beweiswert diagnostischer Methoden; funktionelle Magnetresonanztomographie; Schleudertrauma. Eine medizinisch-diagnostische Methode ",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_134_V_231"
       },
@@ -3684,37 +3684,37 @@
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_126_V_75"
       },
       {
-        "docket": "BGE 115 V 133",
+        "docket": "BGE 130 V 343",
         "citation_count": 32905,
-        "regeste_excerpt": "Regeste\n Art. 67 und 76 KUVG, Art. 6 und 18 UVG. Präzisierung der in BGE 113 V 307 veröffentlichten Rechtsprechung zum adäquaten Kausalzusammenhang.\nRegeste\n Ar",
-        "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_115_V_133"
+        "regeste_excerpt": "Regeste\n Art. 1 Abs. 1 IVG (in der seit 1. Januar 2003 geltenden Fassung) in Verbindung mit Art. 6, 7, 8 Abs. 1, Art. 16 und 17 ATSG; Art. 4 Abs. 1, Art. 28 Abs",
+        "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_130_V_343"
       }
     ],
     "top_5_statutes": [
       {
         "law_code": "LTF",
         "article": "100",
-        "ref_count": 182426
+        "ref_count": 182428
       },
       {
         "law_code": "LTF",
         "article": "113",
-        "ref_count": 112030
+        "ref_count": 112035
       },
       {
         "law_code": "LTF",
         "article": "42",
-        "ref_count": 105364
+        "ref_count": 105380
       },
       {
         "law_code": "BGG",
         "article": "42",
-        "ref_count": 93465
+        "ref_count": 93475
       },
       {
         "law_code": "BGG",
         "article": "66",
-        "ref_count": 59802
+        "ref_count": 59815
       }
     ],
     "materialien_coverage": {
@@ -3770,9 +3770,9 @@
       {
         "court": "ge_gerichte",
         "earliest": "1908-11-08",
-        "latest": "2026-06-15",
+        "latest": "2026-06-23",
         "span_years": 118,
-        "decision_count": 168593
+        "decision_count": 168611
       }
     ]
   },
@@ -4062,6 +4062,22 @@
   "recent": {
     "bge": [
       {
+        "decision_id": "bger_1C_221_2024",
+        "docket": "1C_221/2024",
+        "date": "2026-06-22",
+        "court": "bger",
+        "language": "de",
+        "summary": "Baugesuch und Wiederherstellung des gesetzmässigen Zustands,"
+      },
+      {
+        "decision_id": "bger_5A_12_2026",
+        "docket": "5A_12/2026",
+        "date": "2026-06-19",
+        "court": "bger",
+        "language": "fr",
+        "summary": "mesures superprovisionnelles, droits parentaux (retrait du droit de déterminer le lieu de résidence, etc.),"
+      },
+      {
         "decision_id": "bger_5A_195_2026",
         "docket": "5A_195/2026",
         "date": "2026-06-18",
@@ -4110,39 +4126,32 @@
         "summary": "1C_733/2025 Ausstandsbegehren,"
       },
       {
-        "decision_id": "bger_7B_651_2026",
-        "docket": "7B_651/2026",
+        "decision_id": "bger_9C_195_2026",
+        "docket": "9C_195/2026",
         "date": "2026-06-16",
         "court": "bger",
-        "language": "de",
-        "summary": "Haftentlassungsgesuch,"
+        "language": "fr",
+        "summary": "Assurance-invalidité (retrait du"
       },
       {
-        "decision_id": "bger_7B_641_2026",
-        "docket": "7B_641/2026",
+        "decision_id": "bger_8C_690_2025",
+        "docket": "8C_690/2025",
         "date": "2026-06-16",
         "court": "bger",
-        "language": "de",
-        "summary": "Sicherheitshaft,"
-      },
-      {
-        "decision_id": "bger_9C_374_2026",
-        "docket": "9C_374/2026",
-        "date": "2026-06-15",
-        "court": "bger",
-        "language": "de",
-        "summary": "Haushaltabgabe gemäss Art. 69 ff. RTVG,"
-      },
-      {
-        "decision_id": "bger_8C_359_2026",
-        "docket": "8C_359/2026",
-        "date": "2026-06-15",
-        "court": "bger",
-        "language": "de",
-        "summary": "Invalidenversicherung (Prozessvoraussetzung),"
+        "language": "fr",
+        "summary": "Prestation complémentaire à l'AVS/AI (restitution),"
       }
     ],
     "cantonal": [
+      {
+        "decision_id": "ecthr_grand_chamber_17982_21_43852_21_44600_21",
+        "docket": "17982/21_43852/21_44600/21",
+        "date": "2026-06-30",
+        "court": "ecthr_grand_chamber",
+        "language": "fr",
+        "summary": "Radiation du rôle (Art. 37) Radiation du rôle-{général};(Art. 37-1) Radiation du rôle;(Art. 37-1-c) Poursuite de l'examen non justifiée;Radiation du rôle (Art. 37) Radiation du rôle-{général};(Art. 37-1) Radiation du rô…",
+        "canton": "CE"
+      },
       {
         "decision_id": "ecthr_chamber_41855_23",
         "docket": "41855/23",
@@ -4222,15 +4231,6 @@
         "court": "ecthr_committee",
         "language": "fr",
         "summary": "Violation de l'article 6 - Droit à un procès équitable (Article 6 - Procédure d'exécution;Article 6-1 - Accès à un tribunal;Délai raisonnable);Violation de l'article 1 du Protocole n° 1 - Protection de la propriété (Art…",
-        "canton": "CE"
-      },
-      {
-        "decision_id": "ecthr_committee_24104_20",
-        "docket": "24104/20",
-        "date": "2026-06-11",
-        "court": "ecthr_committee",
-        "language": "fr",
-        "summary": "Violation de l'article 6 - Droit à un procès équitable (Article 6 - Procédure d'exécution;Article 6-1 - Accès à un tribunal);Violation de l'article 1 du Protocole n° 1 - Protection de la propriété (Article 1 al. 1 du Pr…",
         "canton": "CE"
       }
     ]
@@ -4358,8 +4358,9 @@
     }
   ],
   "delta": {
-    "total": 42,
+    "total": 88,
     "by_court": {
+      "bger": 26,
       "ge_gerichte": 18,
       "bvger": 18,
       "gr_gerichte": 5,
@@ -4384,7 +4385,10 @@
       "AG": 7,
       "BS": 2
     },
-    "corpus": {},
+    "corpus": {
+      "citation_edges": 1267,
+      "statute_edges": 1486
+    },
     "previous_generated_at": "2026-06-29T19:08:32.319278+00:00"
   }
 }
