@@ -1,0 +1,10 @@
+[Unit]
+Description=OpenCaseLaw production-smoke probe
+OnFailure=ntfy-alert@%n.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/caselaw/repo
+ExecStart=/usr/bin/python3 -m quality.smoke --url https://mcp.opencaselaw.ch \
+  --output /var/log/opencaselaw-smoke/latest.json
+TimeoutStartSec=30

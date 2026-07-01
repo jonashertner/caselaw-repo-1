@@ -1,0 +1,6 @@
+[Service]
+# 2026-05-04: disable concurrent post-build batch — running build_fts5 (60 GB
+# .tmp) in parallel with extract_decision_structure (41 GB .tmp) hit ENOSPC
+# at 1.7 GB free, killing the publish. Sequential post-build trades ~1.5h of
+# walltime for 41 GB of headroom. Re-enable when /mnt has >=300 GB.
+Environment=OCL_PARALLEL_POST_BUILD=0

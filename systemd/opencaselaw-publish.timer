@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily OpenCaseLaw publish (03:30 UTC, waits for scrape)
+
+[Timer]
+OnCalendar=*-*-* 03:30:00 UTC
+Persistent=true
+RandomizedDelaySec=60
+
+[Install]
+WantedBy=timers.target

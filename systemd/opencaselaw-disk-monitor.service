@@ -1,0 +1,8 @@
+[Unit]
+Description=OpenCaseLaw disk-space monitor
+OnFailure=ntfy-alert@%n.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/caselaw/repo/scripts/disk_monitor.py
+TimeoutStartSec=30

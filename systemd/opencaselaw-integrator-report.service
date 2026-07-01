@@ -1,0 +1,10 @@
+[Unit]
+Description=OpenCaseLaw daily integrator detection report
+After=network.target
+
+[Service]
+Type=oneshot
+User=root
+WorkingDirectory=/opt/caselaw/repo
+ExecStart=/usr/bin/python3 /opt/caselaw/repo/scripts/daily_integrator_report.py --days 1 --notify --print
+TimeoutStartSec=120

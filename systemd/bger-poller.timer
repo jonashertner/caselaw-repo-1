@@ -1,10 +1,15 @@
 [Unit]
-Description=BGer Neuheiten poller — every 15 min Mon-Fri 07:00-18:00 CET
+Description=BGer Neuheiten poller — hourly Mon-Fri 07:00-18:00 CET
 
 [Timer]
-# Every 15 min, Mon-Fri. The poller script itself is cheap (~1s).
-# Runs 05:00-16:45 UTC (07:00-18:45 CET) to cover business hours.
-OnCalendar=Mon..Fri *-*-* 05..16:00/15:00 UTC
+# Once per hour, Mon-Fri, 05:00-16:00 UTC (= 07:00-18:00 CET).
+# Cadence: 60 min — bumped 2026-05-13 from 15 min. BGer releases
+# the days batch once per day (~10:00 UTC); 15-min polling was
+# over-aggressive and caused frequent Incapsula challenges (each
+# triggering a 60-90 s camoufox cookie harvest). 60 min cadence
+# still catches the release within 1 h while cutting load and
+# challenge frequency by 75%.
+OnCalendar=Mon..Fri *-*-* 05..16:00:00 UTC
 Persistent=true
 
 [Install]

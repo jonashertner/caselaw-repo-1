@@ -1,0 +1,31 @@
+[Unit]
+Description=OpenCaseLaw weekly interesting_stats refresh (Notable section)
+After=network.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/caselaw/repo
+EnvironmentFile=/opt/caselaw/repo/.env.publish
+# Avoid running while a full publish is mid-flight (would race on stats.json + git push)
+ExecStartPre=/bin/bash -c "for i in $(seq 1 60); do systemctl is-active --quiet opencaselaw-publish.service || exit 0; echo \"Waiting for publish to finish ($i/60)...\"; sleep 60; done; echo \"WARNING: publish still running after 1h, skipping interesting_stats\"; exit 1"
+ExecStart=/bin/bash -c '\
+  set -e; \
+  /usr/bin/python3 generate_stats.py \
+    --db /opt/caselaw/repo/output/decisions.db \
+    --output /opt/caselaw/repo/docs/stats.json \
+    --interesting-stats-only; \
+  cd /opt/caselaw/repo; \
+  if git diff --quiet docs/stats.json; then \
+    echo "No interesting_stats changes; skipping commit"; \
+    exit 0; \
+  fi; \
+  git stash --include-untracked || true; \
+  git pull --rebase origin main; \
+  git stash pop || true; \
+  git add docs/stats.json; \
+  git commit -m "Update interesting_stats ($(date -u +%Y-%m-%d))"; \
+  git push origin main\
+'
+TimeoutStartSec=5400
+StandardOutput=append:/opt/caselaw/repo/logs/interesting_stats.log
+StandardError=append:/opt/caselaw/repo/logs/interesting_stats.log

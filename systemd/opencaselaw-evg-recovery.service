@@ -1,0 +1,17 @@
+[Unit]
+Description=OpenCaseLaw one-time pre-2007 EVG recovery (pure-official; ~15,215 absences)
+After=network.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/caselaw/repo
+# Isolated --output/--state so it NEVER touches the live bger.jsonl (which the
+# nightly scrape + bger-poller also write). Pure-official: AZA discovery,
+# relevancy.bger.ch fetch, --evg-only single-letter chambers, no entscheidsuche.
+ExecStart=/usr/bin/python3 run_scraper.py bger --since 1998-01-01 --until 2007-12-31 --evg-only --output /opt/caselaw/repo/recovery_evg --state /opt/caselaw/repo/recovery_evg/state --no-coverage-snapshot
+# On success, atomically publish the recovered shard into the corpus (mv within
+# /mnt is atomic) so the next nightly publish folds in the EVG decisions.
+ExecStartPost=/bin/bash -c 'cp /opt/caselaw/repo/recovery_evg/decisions/bger.jsonl /opt/caselaw/repo/output/decisions/bger_evg.jsonl.tmp && mv /opt/caselaw/repo/output/decisions/bger_evg.jsonl.tmp /opt/caselaw/repo/output/decisions/bger_evg.jsonl && echo "published $(wc -l < /opt/caselaw/repo/output/decisions/bger_evg.jsonl) EVG rows to bger_evg.jsonl"'
+TimeoutStartSec=64800
+StandardOutput=append:/opt/caselaw/repo/logs/evg_recovery.log
+StandardError=append:/opt/caselaw/repo/logs/evg_recovery.log

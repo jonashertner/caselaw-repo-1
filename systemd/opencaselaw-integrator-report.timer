@@ -1,0 +1,9 @@
+[Unit]
+Description=Daily integrator report at 08:00 UTC
+
+[Timer]
+OnCalendar=*-*-* 08:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

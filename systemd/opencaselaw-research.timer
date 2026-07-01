@@ -1,0 +1,9 @@
+[Unit]
+Description=Weekly research benchmark (Sunday 09:30 UTC)
+
+[Timer]
+OnCalendar=Sun *-*-* 09:30:00 UTC
+Persistent=true
+
+[Install]
+WantedBy=timers.target

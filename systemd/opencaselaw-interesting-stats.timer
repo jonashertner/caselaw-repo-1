@@ -1,0 +1,12 @@
+[Unit]
+Description=Weekly refresh of interesting_stats (Notable section)
+
+[Timer]
+# Sunday 04:30 UTC — well after Sunday 22:00 entscheidsuche scrape and after
+# the 03:00 daily publish has had time to finish. Persistent so a missed
+# wake-up (e.g. boot) still fires.
+OnCalendar=Sun 04:30 UTC
+Persistent=true
+
+[Install]
+WantedBy=timers.target

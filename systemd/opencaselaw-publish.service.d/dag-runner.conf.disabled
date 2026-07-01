@@ -1,0 +1,13 @@
+[Service]
+# Phase B v0.4 — DAG runner A/B test, OPERATOR-ACTIVATED.
+# Activate with:
+#   mv dag-runner.conf.disabled dag-runner.conf
+#   systemctl daemon-reload
+#   systemctl start opencaselaw-publish.service
+# Rollback:
+#   rm dag-runner.conf
+#   systemctl daemon-reload
+# Currently sequential (workers=1) — strict apples-to-apples vs the
+# linear path. v0.5 will set OCL_DAG_WORKERS=4 once the sequential
+# A/B is clean.
+Environment=OCL_USE_DAG=1

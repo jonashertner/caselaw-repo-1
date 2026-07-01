@@ -1,0 +1,15 @@
+[Unit]
+Description=One-time BGer backfill re-run (recover late-uploads the pre-5f10adf pagination bug missed)
+# Triggers the (now-fixed) opencaselaw-bger-backfill.service ONCE at a clean slot:
+# Tue 2026-06-09 17:17 UTC — after the weekday poller (off 16:45), after the EVG
+# recovery is done (~22:30 Mon), and before Wed's 01:00 nightly scrape, so it
+# never collides with another writer of the live bger.jsonl. The weekly Saturday
+# timer continues normally afterward.
+
+[Timer]
+OnCalendar=2026-06-09 17:17:00 UTC
+Persistent=true
+Unit=opencaselaw-bger-backfill.service
+
+[Install]
+WantedBy=timers.target

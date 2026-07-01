@@ -1,0 +1,10 @@
+[Unit]
+Description=Weekly federal Verwaltungspraxis refresh
+
+[Timer]
+# Saturday 06:00 UTC — after fedlex (04:07) and before cantonal (07:01)
+OnCalendar=Sat 06:00 UTC
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,12 @@
+[Unit]
+Description=OpenCaseLaw weekly ablation benchmark + research summary
+After=network.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/caselaw/repo
+Environment=SWISS_CASELAW_DIR=/opt/caselaw/repo/output
+ExecStart=/bin/bash -c "/usr/bin/python3 scripts/research_benchmark.py && /usr/bin/python3 scripts/research_summary.py"
+TimeoutStartSec=7200
+StandardOutput=append:/opt/caselaw/repo/logs/research_benchmark.log
+StandardError=append:/opt/caselaw/repo/logs/research_benchmark.log

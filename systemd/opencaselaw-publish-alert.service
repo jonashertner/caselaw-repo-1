@@ -1,0 +1,9 @@
+[Unit]
+Description=Alert dispatcher for opencaselaw-publish.service failures
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/caselaw/repo
+ExecStart=/usr/bin/python3 /opt/caselaw/repo/scripts/publish_failure_alert.py
+StandardOutput=append:/opt/caselaw/repo/logs/publish_alert.log
+StandardError=append:/opt/caselaw/repo/logs/publish_alert.log

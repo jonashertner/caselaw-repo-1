@@ -1,0 +1,33 @@
+[Unit]
+Description=OpenCaseLaw nightly cohort derivation from tier-1 nginx log
+After=network.target opencaselaw-analytics.service
+Wants=network.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/caselaw/repo
+# Derives a privacy-preserving cohort hash (SHA256(ip + ua + YYYY-MM)[:8])
+# from the 72h tier-1 nginx log, in memory only, and upserts the per-
+# (day, client_class) HLL estimate into analytics.db.daily_reach. Raw IPs
+# and UAs are never persisted. Without this script, daily_reach HLL only
+# captures Word add-in users (the only clients that send X-Install-Cohort);
+# with it, browser_chrome/chatgpt/claude_*/etc. get real reach numbers.
+# See scripts/derive_cohorts_from_tier1.py for the privacy contract.
+Environment=SWISS_CASELAW_DIR=/opt/caselaw/repo/output
+ExecStart=/usr/bin/python3 /opt/caselaw/repo/scripts/derive_cohorts_from_tier1.py --days 3
+ExecStartPost=/usr/bin/python3 /opt/caselaw/repo/scripts/active_clients.py --window both --db /opt/caselaw/repo/output/analytics.db
+TimeoutStartSec=600
+StandardOutput=append:/opt/caselaw/repo/logs/analytics_rollup.log
+StandardError=append:/opt/caselaw/repo/logs/analytics_rollup.log
+
+# Hardening — read-only access to nginx logs, read/write access only
+# to analytics.db and the log file. PrivateTmp + NoNewPrivileges match
+# the sibling opencaselaw-analytics.service.
+ProtectSystem=strict
+ReadWritePaths=/opt/caselaw/repo/output /opt/caselaw/repo/logs
+ReadOnlyPaths=/var/log/nginx
+PrivateTmp=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

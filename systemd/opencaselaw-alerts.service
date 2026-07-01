@@ -1,0 +1,10 @@
+[Unit]
+Description=OpenCaseLaw scraper freshness check (alerts on stale/failed scrapers)
+After=network.target opencaselaw-scrape.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/caselaw/repo
+ExecStart=/usr/bin/python3 /opt/caselaw/repo/scripts/check_scraper_freshness.py
+StandardOutput=append:/opt/caselaw/repo/logs/scraper_alerts_run.log
+StandardError=append:/opt/caselaw/repo/logs/scraper_alerts_run.log

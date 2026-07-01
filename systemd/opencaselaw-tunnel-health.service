@@ -1,0 +1,9 @@
+[Unit]
+Description=Detect zombie MacBook SOCKS tunnel and kill listener for clean reconnect
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/caselaw/repo/scripts/scraper_tunnel_healthcheck.sh
+StandardOutput=append:/opt/caselaw/repo/logs/tunnel_health.log
+StandardError=append:/opt/caselaw/repo/logs/tunnel_health.log

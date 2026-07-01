@@ -1,0 +1,16 @@
+[Unit]
+Description=OpenCaseLaw publish pipeline (full rebuild)
+After=network.target opencaselaw-scrape.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/caselaw/repo
+# Wait up to 2h for scrape to finish before starting
+ExecStartPre=/bin/bash -c "for i in $(seq 1 240); do systemctl is-active --quiet opencaselaw-scrape.service || exit 0; echo \"Waiting for scrape to finish ($i/240)...\"; sleep 30; done; echo \"WARNING: scrape still running after 2h, proceeding anyway\""
+ExecStart=/usr/bin/python3 publish.py --full-rebuild
+EnvironmentFile=/opt/caselaw/repo/.env.publish
+TimeoutStartSec=28800
+StandardOutput=append:/opt/caselaw/repo/logs/publish.log
+StandardError=append:/opt/caselaw/repo/logs/publish.log
+# Prevent concurrent publish runs
+ExecCondition=/bin/bash -c "! systemctl is-active --quiet opencaselaw-publish.service"

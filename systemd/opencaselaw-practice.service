@@ -1,0 +1,14 @@
+[Unit]
+Description=OpenCaseLaw federal Verwaltungspraxis scrape (ESTV + SEM + BAFU)
+After=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/caselaw/repo
+Environment=PYTHONPATH=/opt/caselaw/repo
+ExecStart=/usr/bin/python3 -m scrapers.practice.runner
+ExecStartPost=/usr/bin/python3 -m search_stack.build_practice_db --jsonl-dir /opt/caselaw/repo/output/practice --db /opt/caselaw/repo/output/practice.db
+ExecStartPost=/bin/systemctl restart mcp-server@8770 mcp-server@8771 mcp-server@8772 mcp-server@8773
+TimeoutStartSec=3600
+StandardOutput=append:/opt/caselaw/repo/logs/practice_scrape.log
+StandardError=append:/opt/caselaw/repo/logs/practice_scrape.log

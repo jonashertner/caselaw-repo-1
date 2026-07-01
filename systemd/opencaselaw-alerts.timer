@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily scraper freshness check (03:00 UTC after scrape finishes)
+
+[Timer]
+OnCalendar=*-*-* 03:00:00 UTC
+Persistent=true
+RandomizedDelaySec=60
+
+[Install]
+WantedBy=timers.target

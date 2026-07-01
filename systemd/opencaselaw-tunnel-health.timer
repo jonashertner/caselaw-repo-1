@@ -1,0 +1,10 @@
+[Unit]
+Description=Hourly SOCKS tunnel health check
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=1h
+AccuracySec=30s
+
+[Install]
+WantedBy=timers.target
