@@ -24,12 +24,12 @@ OpenCaseLaw fixes this. **Every published Swiss court decision, every federal an
 
 ## What you get
 
-**Case law** — 991,000+ decisions from 1875 to today across **110 courts**, full text + structured metadata, covering:
+**Case law** — 991,000+ decisions from 1875 to today across **118 courts**, full text + structured metadata, covering:
 - All 7 federal courts (BGer, BVGer, BStGer, BPatGer, BGE, BGE historical, BGE-EGMR)
 - Federal military court (Militärkassationsgericht / MKG, 1,244 decisions 1915–2025)
 - All 26 cantonal court systems (first, second, and third instance)
 - Regulatory decisions (FINMA, ComCo, FDPIC, IndepBC, ElCom, PostCom, ComCom)
-- **ECHR/EGMR**: 834 Swiss-respondent (HUDOC) + general ECtHR Grand Chamber/Chamber/Committee (1,421 judgments live, full-corpus backfill in progress)
+- **ECHR/EGMR**: 841 Swiss-respondent (HUDOC) + general ECtHR Grand Chamber/Chamber/Committee — 2,840 judgments live (481 BGE-published EGMR translations, 841 HUDOC, 1,186 Chamber, 237 Committee, 95 Grand Chamber)
 - Three official languages: German 463,012 (46.7%), French 446,869 (45.1%), Italian 81,796 (8.2%); schema reserves `rm` for Romansh
 - Deduplicated via docket normalisation + content-length-aware merge
 - Updated daily; BGer decisions available within ~15 minutes of court publication
