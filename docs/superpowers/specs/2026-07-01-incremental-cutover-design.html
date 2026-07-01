@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ge_gerichte OCR recovery + incremental cutover — design</title>
+<style>
+  :root{
+    --ink:#14181d; --muted:#5b6671; --line:#e3e7ec; --bg:#fbfcfd; --card:#ffffff;
+    --accent:#b5121b; --accent2:#0b6e8a; --ok:#1a7f4b; --warn:#b5731a; --bad:#b5121b;
+    --code:#0d1b2a;
+    --mono:"SFMono-Regular",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6;font-size:16px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:920px;margin:0 auto;padding:56px 28px 120px}
+  header.doc{border-bottom:3px solid var(--ink);padding-bottom:22px;margin-bottom:34px}
+  .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:600}
+  h1{font-family:var(--serif);font-weight:600;font-size:38px;line-height:1.14;margin:.32em 0 .2em}
+  .sub{color:var(--muted);font-size:18px;max-width:64ch}
+  .meta{margin-top:18px;font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:8px 16px}
+  .badge{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.04em;padding:3px 9px;border-radius:999px;border:1px solid var(--line);background:#fff}
+  .badge.proven{color:var(--ok);border-color:#bfe0cd}
+  .badge.gate{color:var(--warn);border-color:#eccfa6}
+  h2{font-family:var(--serif);font-size:26px;font-weight:600;margin:52px 0 6px;padding-left:14px;border-left:4px solid var(--accent)}
+  h2 .n{font-family:var(--mono);font-size:14px;color:var(--accent);font-weight:600;margin-right:10px}
+  h3{font-size:17px;margin:26px 0 6px}
+  p{margin:10px 0;max-width:74ch}
+  .tldr{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent2);border-radius:10px;padding:20px 24px;margin:8px 0 4px}
+  code,.mono{font-family:var(--mono);font-size:.875em;background:#eef1f4;padding:1px 5px;border-radius:4px;color:var(--code)}
+  pre{background:var(--code);color:#dfe7ee;font-family:var(--mono);font-size:12.5px;line-height:1.55;padding:15px 17px;border-radius:10px;overflow:auto;margin:13px 0}
+  pre .ok{color:#79d39b}.pre .bad{color:#e88}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.5px}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-family:var(--mono);font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+  td.mono{font-family:var(--mono);font-size:13px}
+  .ok{color:var(--ok);font-weight:600}.bad{color:var(--bad);font-weight:600}.warn{color:var(--warn);font-weight:600}
+  .chain{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin:18px 0;font-size:13.5px}
+  .chain .box{background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-family:var(--mono);font-size:12px}
+  .chain .arrow{color:var(--accent);font-weight:700}
+  .phase{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px 24px 18px;margin:18px 0}
+  .phase .ptag{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:var(--accent);padding:3px 10px;border-radius:6px;margin:18px 0 0}
+  .phase.p2 .ptag{background:var(--accent2)} .phase.p3 .ptag{background:#3a4654}
+  ol.steps{padding-left:20px} ol.steps>li{margin:8px 0}
+  ul.tight{margin:8px 0;padding-left:20px} ul.tight li{margin:4px 0}
+  .risk .item{border:1px solid var(--line);border-radius:9px;padding:12px 15px;background:#fff;margin:9px 0}
+  .risk .item b{display:block;font-size:14px;margin-bottom:2px}
+  .risk .item span{font-size:14px;color:var(--muted)}
+  .callout{border:1px dashed #a9cdd9;background:#f4fafc;border-radius:9px;padding:13px 17px;margin:14px 0;font-size:14.5px}
+  .foot{margin-top:58px;padding-top:18px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+  .quote{border-left:3px solid var(--ok);padding:8px 14px;margin:12px 0;background:#f6fbf8;font-size:14px;color:#22513a}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="doc">
+  <div class="kicker">OpenCaseLaw · Completeness + Pipeline Design</div>
+  <h1>Recovering 7,052 garbled ge_gerichte decisions by OCR — and unblocking the cutover</h1>
+  <p class="sub">The incremental‑cutover blocker turned out to be a data‑quality defect, not a build mechanism: thousands of Geneva PDFs use CID‑encoded fonts with no Unicode map, so the scraper stored binary garbage. Neither re‑extraction nor an es copy can fix it — but OCR recovers clean text, proven end‑to‑end.</p>
+  <div class="meta">
+    <span class="badge">2026‑07‑01 · supersedes the dedup‑truncation draft</span>
+    <span class="badge proven">root cause + recovery PROVEN</span>
+    <span class="badge gate">gated · shard write + multi‑hour OCR</span>
+  </div>
+</header>
+
+<div class="tldr">
+  <p style="margin-top:0"><b>TL;DR.</b> ~<b>7,052 ge_gerichte</b> decisions (4.2% of the court) have <code>full_text</code> that is <b>58% C0 control characters</b> — a failed extraction of CID‑encoded PDFs (no ToUnicode CMap). fitz yields glyph‑byte garbage; pdfplumber yields <code>(cid:N)</code> placeholders; <b>0 have an entscheidsuche fallback</b>. <b>OCR (tesseract <code>fra</code>) recovers clean text</b> — verified. The "structure drift" blocking the cutover was the full builder mining false Erwägungen from this garbage while the incremental (cleaned text) correctly found none. Fix: <b>OCR‑backfill the 7,052</b> → search recall + structure recover, and the ge half of the drift closes. A separate, smaller ne/ti/so es‑vs‑direct structure nuance (~3,600, text is fine) is handled last.</p>
+</div>
+
+<h2><span class="n">01</span>Verified root cause</h2>
+<p>Traced the drift to the decision and ran every extractor on the live PDF of <code>ge_gerichte_ATAS_1001_2007</code> (single shard copy, no dedup sibling, text already NUL‑clean):</p>
+<table>
+  <tr><th>Extractor</th><th>Output</th><th>Usable?</th></tr>
+  <tr><td>scraper (stored)</td><td class="mono">14,730 chars, 58% control</td><td class="bad">no — binary garbage</td></tr>
+  <tr><td>fitz / PyMuPDF</td><td class="mono">14,718 chars, 57.9% control</td><td class="bad">no — raw glyph bytes</td></tr>
+  <tr><td>pdfplumber</td><td class="mono">107,783 chars, "(cid:2)(cid:3)…"</td><td class="bad">no — unmapped CIDs</td></tr>
+  <tr><td><b>OCR (tesseract fra)</b></td><td class="mono">clean, 0.0% control</td><td class="ok">yes</td></tr>
+</table>
+<div class="quote">REPUBLIQUE ET CANTON DE GENEVE · POUVOIR JUDICIAIRE · A/4159/2006 ATAS/1001/2007 · ARRET DU TRIBUNAL CANTONAL DES ASSURANCES SOCIALES · Chambre 4 du 19 septembre 2007 · En la cause Madame K…</div>
+<p>The PDFs embed custom fonts whose glyph IDs are not mapped to Unicode, so any text‑layer extraction fails; OCR reads the rendered glyphs as images and bypasses the encoding entirely. The PDFs are fetchable from Hetzner and <code>tesseract‑fra</code> is installed.</p>
+
+<div class="chain">
+  <span class="box">CID font, no ToUnicode</span><span class="arrow">→</span>
+  <span class="box">scraper stores garbage</span><span class="arrow">→</span>
+  <span class="box">decisions.db serves garbage</span><span class="arrow">→</span>
+  <span class="box">0 structure + broken search</span><span class="arrow">→</span>
+  <span class="box">full builder mines FALSE structure → drift</span>
+</div>
+
+<h2><span class="n">02</span>The drift, decomposed (corpus‑wide sizing)</h2>
+<table>
+  <tr><th>Cause</th><th>Count</th><th>es‑recoverable</th><th>Correct builder</th></tr>
+  <tr><td><b>ge_gerichte CID‑font garbling</b></td><td class="mono">7,052</td><td class="mono">0</td><td>incremental (full = false positives)</td></tr>
+  <tr><td>ne/ti/so es‑vs‑direct structure</td><td class="mono">~3,600</td><td class="mono">text is fine</td><td>full (es copy parses better)</td></tr>
+</table>
+<p>So the garbling is essentially one court's scraper defect. The incremental builder is <em>correct</em> on the garbage; the cutover gate was tripping on the full builder's noise.</p>
+
+<h2><span class="n">03</span>Plan</h2>
+
+<div class="phase p1">
+  <span class="ptag">Phase 1 · completeness (primary)</span>
+  <h3>OCR‑backfill the 7,052 garbled ge_gerichte decisions</h3>
+  <p><code>backfill_ge_ocr.py</code> (written, sample‑validated): for each garbled row → fetch <code>pdf_url</code> → render pages (fitz) → OCR (<code>fra</code>) → normalize → clean <code>full_text</code>.</p>
+  <ol class="steps">
+    <li><b>Sample (no shard write):</b> 20 decisions → scratch file; review recovered‑text quality + length/control deltas. ← we are here.</li>
+    <li><b>Full run (gated):</b> all 7,052, parallel across the 16 cores; writes a NEW <code>ge_gerichte.jsonl.ocr</code> with a resumable checkpoint — never edits the live shard in place. Mark rows <code>text_source:"ocr"</code> for idempotency.</li>
+    <li>Operator reviews counts + a sample, then swaps <code>.ocr</code> → live shard. Next nightly rebuild ingests clean text.</li>
+    <li>Verify: search recall on a recovered docket; <code>get_decision_structure</code> now returns real Erwägungen.</li>
+  </ol>
+</div>
+
+<div class="phase p2">
+  <span class="ptag">Phase 2 · cutover</span>
+  <h3>Close the structure drift, flip to daily‑incremental + Sunday‑full</h3>
+  <ol class="steps">
+    <li>With ge text clean, both builders extract real structure from the same text → the ge half of the drift disappears.</li>
+    <li>Stop the full structure builder mining raw shards for the remaining garbled tail (point it at cleaned <code>decisions.db</code>, or down‑weight false positives) so the gate compares like with like.</li>
+    <li>7 green shadow nights → flip <code>publish.timer</code> to Sunday‑only; promote the incremental to serving Mon–Sat.</li>
+  </ol>
+</div>
+
+<div class="phase p3">
+  <span class="ptag">Phase 3 · the es‑structure tail</span>
+  <h3>ne/ti/so: prefer the better‑parsed copy</h3>
+  <p>~3,600 decisions where dedup kept the longer <em>direct</em> copy but the <em>es</em> copy parses more Erwägungen. Smallest, lowest‑risk: bias the structure build toward the copy that yields more structure for the same decision, or re‑run extraction on both and keep the richer parse. Independent of the cutover; do after Phase 1–2.</p>
+</div>
+
+<h2><span class="n">04</span>Impact</h2>
+<table>
+  <tr><th>Win</th><th>Detail</th></tr>
+  <tr><td><b>Completeness</b></td><td>7,052 Geneva decisions go from unusable garbage to clean full text — the on‑mission prize.</td></tr>
+  <tr><td><b>Search recall</b></td><td>FTS5 indexes real French legal text instead of control‑char noise.</td></tr>
+  <tr><td><b>Structure</b></td><td>get_erwaegung / find_relevant_erwaegung gain real Erwägungen for those decisions.</td></tr>
+  <tr><td><b>Cutover</b></td><td>Removes the dominant drift cause → ~12 h/day → ~2 h once flipped.</td></tr>
+</table>
+
+<h2><span class="n">05</span>Risks &amp; safety</h2>
+<div class="risk">
+  <div class="item"><b>Writes a scraper shard (invariant #5/#6)</b><span>Full run writes <code>ge_gerichte.jsonl.ocr</code>, never the live shard; operator swaps after review. Sample mode writes only scratch.</span></div>
+  <div class="item"><b>OCR quality / accuracy</b><span>Legal text needs accuracy → 300 dpi, <code>fra</code>. Sample reviewed before committing. OCR text carries a <code>text_source:"ocr"</code> marker for transparency + future re‑processing.</span></div>
+  <div class="item"><b>Cost / time</b><span>~7,052 PDFs × ~7 pages; parallelized across 16 cores ≈ a few hours, run off‑peak so it doesn't contend with serving.</span></div>
+  <div class="item"><b>Fetch failures / portal load</b><span>Retries + polite UA + rate sense; failures logged and skipped, resumable checkpoint so a re‑run only does the remainder.</span></div>
+  <div class="item"><b>Reversible</b><span>Old shard kept until the swap; the OCR shard is a separate file; revert = keep the original.</span></div>
+</div>
+
+<div class="foot">
+  Evidence: live fitz / pdfplumber / tesseract runs on <code>ge_gerichte_ATAS_1001_2007</code>, a corpus‑wide control‑char sizing scan (7,052 ge garbled, 0 es‑recoverable), and source reads of <code>build_fts5.py</code> + the structure builders — all 2026‑07‑01. Gated: full run + shard swap await approval; sample is non‑destructive.
+</div>
+
+</div>
+</body>
+</html>
