@@ -81,12 +81,18 @@ ENTSCHEIDSUCHE_ONLY = {
 TOLERATED_PARTIAL_SOURCES = {
     "ecthr",
 }
-# JU/NE depend on the MacBook reverse-SOCKS tunnel which sleeps when the
-# laptop sleeps. Failures during the 01:00 UTC window are normal; the
-# late-scrapers timer at 10:00 UTC retries once the tunnel is back.
+# These scrapers egress through the MacBook reverse-SOCKS tunnel, which
+# sleeps when the laptop sleeps (JU/NE portals block Hetzner at TCP;
+# search.bger.ch Incapsula-blocks the Hetzner IP since 2026-06-29, so
+# BGer/BGE discovery is proxied too). Failures during the 01:00 UTC
+# window are normal; the late-scrapers timer at 10:00 UTC retries once
+# the tunnel is back. Keep in sync with run_all_scrapers.TUNNEL_DEPENDENT.
 TUNNEL_DEPENDENT_SOURCES = {
+    "bger",
+    "bge",
     "ju_gerichte",
     "ne_gerichte",
+    "ne_jurisprudence_adm",
 }
 
 # Courts that legitimately publish rarely (small chamber, archival

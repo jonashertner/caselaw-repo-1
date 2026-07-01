@@ -199,3 +199,18 @@ def test_reconciliation_skipped_on_partial_run(tmp_path):
         "bger": {"success": True, "new_count": 0, "our_count": 50, "duration_s": 90}})
     assert res.returncode == 0
     assert "registered scraper absent" not in res.stdout
+
+
+def test_tunnel_dependent_sources_cover_proxied_courts():
+    """bger/bge were Incapsula-blocked from Hetzner on 2026-06-29 and now
+    egress via the Mac tunnel like ju/ne. The freshness classifier must
+    treat all tunnel-dependent courts the same, and the set must stay a
+    superset-match of run_all_scrapers.TUNNEL_DEPENDENT so the two never
+    drift apart."""
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    import check_scraper_freshness as csf
+    import run_all_scrapers as ras
+
+    assert {"bger", "bge", "ju_gerichte", "ne_gerichte"} <= csf.TUNNEL_DEPENDENT_SOURCES
+    assert csf.TUNNEL_DEPENDENT_SOURCES == ras.TUNNEL_DEPENDENT
