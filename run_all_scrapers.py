@@ -74,6 +74,27 @@ SKIP_BY_DEFAULT: set[str] = {
     "be_steuerrekurs",  # Portal DB disconnected (Feb 2026), returns 0 results
 }
 
+# Scrapers that route through the Mac reverse-SOCKS tunnel (127.0.0.1:1080) via
+# BGER_PROXY / JU_PROXY / NE_PROXY because their portals block the Hetzner IP.
+# When the tunnel is down (the Mac is asleep at the 01:00 UTC scrape) the portal
+# is unreachable through no fault of the scraper, producing a burst of
+# discovery-phase connection failures. That must read as "skipped (tunnel down)",
+# not a portal-down failure, so a Mac-off night doesn't fire a false alert. The
+# bger poller keeps bger current whenever the tunnel is up.
+TUNNEL_DEPENDENT: set[str] = {
+    "bger", "bge", "ju_gerichte", "ne_gerichte", "ne_jurisprudence_adm",
+}
+
+
+def _socks_tunnel_up(host: str = "127.0.0.1", port: int = 1080) -> bool:
+    """True if something is listening on the reverse-SOCKS tunnel port."""
+    import socket
+    try:
+        with socket.create_connection((host, port), timeout=1.0):
+            return True
+    except OSError:
+        return False
+
 # Scrapers where a high none_count (>=200) is expected and not a portal failure.
 #
 # ecthr (HUDOC): the listing exposes ~88k judgments across all Council of
@@ -283,6 +304,18 @@ def run_single_scraper(court: str, timeout: int) -> dict:
                 f"{discovery_errors} discovery-phase connection failures "
                 f"(portal unreachable)"
             )
+            # ...unless the scraper depends on the SOCKS tunnel and the tunnel is
+            # down: then the portal was unreachable because the Mac was asleep at
+            # scrape time, not because the scraper broke. Reclassify as skipped so
+            # a Mac-off night doesn't fire a false portal-down alert. A genuine
+            # break (tunnel UP but portal failing) still fails.
+            if court in TUNNEL_DEPENDENT and not _socks_tunnel_up():
+                failed = False
+                error = None
+                note = (
+                    f"tunnel down (:1080) — skipped this run; "
+                    f"{discovery_errors} unreachable is expected, not a portal failure"
+                )
 
         # NoneReturns are expected for portals with a few broken entries.
         # Only flag as a note, not an error, unless excessive — and never for
