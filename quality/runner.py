@@ -107,6 +107,25 @@ def _run_one(fn: Callable, db_path: Path, ctx: dict) -> list[CheckResult]:
                 pass
 
 
+def gate_visible_results(results: list[CheckResult]) -> list[CheckResult]:
+    """Filter for --critical-only (gate) runs.
+
+    Keep CRITICAL (gating) and QUARANTINE (count-bounded, non-blocking
+    but must still alert + render on the dashboard during the gate run).
+    Keep WARNING results ONLY when they FAILED: publish.py Step 6c fires
+    ntfy via severity.alerting_results, and dropping failing WARNINGs
+    here made that alert path unreachable from the nightly (dark from
+    2026-05-02 to 2026-07-01). Passing WARNINGs and INFO belong to the
+    full QC run. Gate semantics are unchanged: report.passed and
+    exit_code_for stay CRITICAL-only, so nothing kept here can block.
+    """
+    return [
+        r for r in results
+        if r.severity in (Severity.CRITICAL, Severity.QUARANTINE)
+        or (r.severity is Severity.WARNING and not r.passed)
+    ]
+
+
 def run(
     db_path: Path | str = DEFAULT_DB,
     only: Iterable[str] | None = None,
@@ -155,14 +174,7 @@ def run(
             results.extend(_run_one(fn, db_path, ctx))
 
     if critical_only:
-        # Keep CRITICAL (gating) AND QUARANTINE (count-bounded, non-blocking but
-        # must still alert + render on the dashboard during the gate run); drop
-        # WARNING/INFO, which belong to the full QC run. report.passed stays
-        # critical-only, so QUARANTINE results are visible yet never block.
-        results = [
-            r for r in results
-            if r.severity in (Severity.CRITICAL, Severity.QUARANTINE)
-        ]
+        results = gate_visible_results(results)
 
     duration = time.monotonic() - started
     report = CheckRunReport(

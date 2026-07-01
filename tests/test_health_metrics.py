@@ -268,6 +268,31 @@ def test_quick_publish_stale_clear_on_weekday():
     assert health_alerts.check_quick_publish_stale(health, now=now) is None
 
 
+def test_quick_publish_stale_quiet_in_the_evening():
+    """Poller's last fire is 16:00 UTC; by 20:00 the age is legitimately
+    ~4h. Pre-fix this false-fired every weekday evening."""
+    now = _monday_2026_05_18_12_00_utc() + 8 * 3600  # Monday 20:00 UTC
+    health = {"quick_publish_last_run_ts": now - 4 * 3600}
+    assert health_alerts.check_quick_publish_stale(health, now=now) is None
+
+
+def test_quick_publish_stale_quiet_pre_dawn():
+    """Before the 05:00 UTC first fire the overnight gap is expected."""
+    now = _monday_2026_05_18_12_00_utc() - 9 * 3600  # Monday 03:00 UTC
+    health = {"quick_publish_last_run_ts": now - 11 * 3600}
+    assert health_alerts.check_quick_publish_stale(health, now=now) is None
+
+
+def test_quick_publish_stale_fires_monday_morning_after_missed_polls():
+    """Monday 08:00 UTC with the last run still Friday afternoon means
+    the 05/06/07:00 polls all failed — that must fire."""
+    now = _monday_2026_05_18_12_00_utc() - 4 * 3600  # Monday 08:00 UTC
+    health = {"quick_publish_last_run_ts": now - 64 * 3600}  # Friday ~16:00
+    result = health_alerts.check_quick_publish_stale(health, now=now)
+    assert result is not None
+    assert result["key"] == "quick_publish_stale"
+
+
 def test_mcp_error_rate_silent_below_samples():
     metrics = {
         "tool_calls": {"search": 30, "get_decision": 20},  # 50 < 100

@@ -1,0 +1,9 @@
+[Unit]
+Description=Poll /metrics/health and dispatch alerts every 15 minutes
+
+[Timer]
+OnCalendar=*:0/15
+Persistent=false
+
+[Install]
+WantedBy=timers.target

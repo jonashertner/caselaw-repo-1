@@ -11,8 +11,9 @@ Until then, operators read ``/metrics/health`` (which embeds
 Rules currently encoded:
 
 - ``pipeline_stale``: full-pipeline last success > 26 h ago.
-- ``quick_publish_stale``: on a weekday (Mon-Fri UTC), quick_publish
-  hasn't run in > 2 h.
+- ``quick_publish_stale``: inside the bger-poller operating window
+  (Mon-Fri, 07:00-18:00 UTC = fire hours 05..16 + 2 h threshold),
+  quick_publish hasn't run in > 2 h.
 - ``mcp_error_rate_high``: error count / total tool calls > 1% over
   the in-process metric counters (requires ≥ 100 samples).
 
@@ -32,6 +33,15 @@ QUICK_PUBLISH_STALE_THRESHOLD_HOURS = 2.0
 MCP_ERROR_RATE_THRESHOLD = 0.01
 MCP_ERROR_RATE_MIN_SAMPLES = 100
 
+# bger-poller.timer fires Mon-Fri, hourly 05:00..16:00 UTC. Outside that
+# operating window quick_publish is LEGITIMATELY stale (last fire 16:00,
+# next 05:00 the following weekday), so the staleness rule only evaluates
+# while a fresh poll is actually expected: weekdays from (first fire +
+# threshold) until (last fire + threshold). Without this the rule
+# would-fire every weekday 18:00-24:00 and 00:00-05:00 UTC.
+POLLER_FIRST_FIRE_HOUR_UTC = 5
+POLLER_LAST_FIRE_HOUR_UTC = 16
+
 
 def _is_weekday_utc(ts: int) -> bool:
     """Mon-Fri in UTC.
@@ -40,6 +50,21 @@ def _is_weekday_utc(ts: int) -> bool:
     Using UTC because the bger-poller timer schedules in UTC.
     """
     return datetime.fromtimestamp(ts, tz=timezone.utc).weekday() < 5
+
+
+def _in_quick_publish_alert_window(ts: int) -> bool:
+    """True while a quick_publish staleness alert is meaningful.
+
+    Weekday, and between (first poller fire + threshold) and (last
+    poller fire + threshold) UTC — inside that band, an age above the
+    threshold means at least two consecutive polls were missed.
+    """
+    if not _is_weekday_utc(ts):
+        return False
+    hour = datetime.fromtimestamp(ts, tz=timezone.utc).hour
+    start = POLLER_FIRST_FIRE_HOUR_UTC + int(QUICK_PUBLISH_STALE_THRESHOLD_HOURS)
+    end = POLLER_LAST_FIRE_HOUR_UTC + int(QUICK_PUBLISH_STALE_THRESHOLD_HOURS)
+    return start <= hour < end
 
 
 def check_pipeline_stale(
@@ -74,13 +99,14 @@ def check_pipeline_stale(
 def check_quick_publish_stale(
     health: dict, now: Optional[int] = None,
 ) -> Optional[dict]:
-    """On a weekday, quick_publish hasn't run recently.
+    """Inside the poller's operating window, quick_publish hasn't run.
 
-    Weekends are exempt because ``bger-poller.timer`` fires Mon-Fri
-    only (by design — courts don't publish on weekends).
+    Weekends and the nightly gap are exempt because ``bger-poller.timer``
+    fires Mon-Fri 05:00..16:00 UTC only (by design — courts don't
+    publish on weekends, and staleness overnight is expected).
     """
     now = now if now is not None else int(time.time())
-    if not _is_weekday_utc(now):
+    if not _in_quick_publish_alert_window(now):
         return None
     ts = health.get("quick_publish_last_run_ts")
     if ts is None:

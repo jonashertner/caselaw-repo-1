@@ -1,0 +1,10 @@
+[Unit]
+Description=OpenCaseLaw health-alert dispatcher (alerts_dry_run -> ntfy)
+After=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/caselaw/repo
+ExecStart=/usr/bin/python3 scripts/dispatch_health_alerts.py
+StandardOutput=append:/opt/caselaw/repo/logs/health_alerts.log
+StandardError=append:/opt/caselaw/repo/logs/health_alerts.log

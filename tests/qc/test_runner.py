@@ -48,17 +48,53 @@ def test_critical_only_filter(temp_db):
         db_path=temp_db, record_history=False, critical_only=True,
         parallel=False,
     )
-    # critical_only keeps CRITICAL (gating) + QUARANTINE (non-blocking but must
-    # still alert/render); it drops the WARNING/INFO noise.
+    # critical_only keeps CRITICAL (gating) + QUARANTINE (non-blocking but
+    # must still alert/render) + FAILED WARNINGs (so the ntfy alert path is
+    # reachable from the nightly gate); passing WARNINGs and INFO are dropped.
     assert all(
         r.severity in (types.Severity.CRITICAL, types.Severity.QUARANTINE)
+        or (r.severity is types.Severity.WARNING and not r.passed)
         for r in crit.results
     )
-    assert not any(
-        r.severity in (types.Severity.WARNING, types.Severity.INFO)
-        for r in crit.results
-    )
+    assert not any(r.severity is types.Severity.INFO for r in crit.results)
     assert len(crit.results) <= len(full.results)
+
+
+def test_gate_keeps_failed_warnings_but_never_blocks():
+    """A FAILED WARNING must survive the gate filter (for alerting) while a
+    passing WARNING and INFO are dropped — and a failed WARNING alone must
+    never flip the gate (passed stays CRITICAL-only)."""
+    from quality import severity
+
+    def mk(sev, passed):
+        return types.CheckResult(
+            name=f"synthetic.{sev.value}.{'pass' if passed else 'fail'}",
+            severity=sev, passed=passed, metric_value=0, threshold=None,
+            message="synthetic")
+
+    results = [
+        mk(types.Severity.CRITICAL, True),
+        mk(types.Severity.QUARANTINE, False),
+        mk(types.Severity.WARNING, False),
+        mk(types.Severity.WARNING, True),
+        mk(types.Severity.INFO, False),
+    ]
+    kept = runner.gate_visible_results(results)
+    kinds = {(r.severity, r.passed) for r in kept}
+    assert (types.Severity.WARNING, False) in kinds
+    assert (types.Severity.WARNING, True) not in kinds
+    assert (types.Severity.INFO, False) not in kinds
+    assert (types.Severity.CRITICAL, True) in kinds
+    assert (types.Severity.QUARANTINE, False) in kinds
+
+    report = types.CheckRunReport(
+        run_at="2026-07-01T00:00:00+00:00", db_path="synthetic",
+        duration_seconds=0.0, results=kept,
+    )
+    assert report.passed is True          # no CRITICAL failure
+    assert severity.exit_code_for(report) == 0   # gate does not block
+    assert any(r.severity is types.Severity.WARNING
+               for r in severity.alerting_results(report))  # alert reachable
 
 
 def test_only_filter_subset(temp_db):
