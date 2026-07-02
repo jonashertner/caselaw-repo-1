@@ -99,9 +99,11 @@ def test_db_parquet_alignment():
 
     # These columns are only in the DB (json_data is a blob, canonical_key is dedup index)
     db_only_expected = {"json_data", "canonical_key"}
-    # These columns are only in Parquet (computed fields)
+    # These columns are only in Parquet (computed fields). branch is derived
+    # post-insert (branch_map.derive_branch) — a DB column but not an INSERT
+    # column, and computed on the fly in normalize_row for the parquet path.
     pq_only_expected = {
-        "has_full_text", "text_length", "chamber", "docket_number_2",
+        "has_full_text", "text_length", "branch", "chamber", "docket_number_2",
         "abstract_de", "abstract_fr", "abstract_it",
         "decision_date", "publication_date",
         "title", "legal_area", "regeste", "outcome", "decision_type",
