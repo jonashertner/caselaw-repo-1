@@ -137,7 +137,102 @@ COURT_PROCEEDING = {
     "zh_mietgericht": ("zpo_erstinstanz", "zpo"),
     "zh_arbeitsgericht": ("zpo_erstinstanz", "zpo"),
     "bpatger": ("zpo_ordentlich", "zpo"),          # PatGG-Verfahren, zivil
+    # uniform-by-nature sources
+    "ch_vb": ("vwv_verwaltungspraxis", "vwvg"),    # VPB practice collection
+    "ch_bundesrat": ("vwv_beschwerde", "vwvg"),
+    "ecthr_chamber": ("emrk_individualbeschwerde", "emrk"),
+    "ecthr_committee": ("emrk_individualbeschwerde", "emrk"),
+    "ecthr_grand_chamber": ("emrk_individualbeschwerde", "emrk"),
+    "hudoc_ch": ("emrk_individualbeschwerde", "emrk"),
+    "bge_egmr": ("emrk_individualbeschwerde", "emrk"),
+    "mkg": ("militaer_kassationsbeschwerde", "mstp"),
+    "zh_kassationsgericht": ("kassationsbeschwerde", "zh_alt"),
+    # regulators / supervisory authorities (Verfügungen & Aufsicht)
+    "finma": ("aufsichtsverfuegung", "vwvg"),
+    "finma_versicherungsrecht": ("aufsichtsverfuegung", "vwvg"),
+    "weko": ("kartellverfahren", "kg"),
+    "elcom": ("aufsichtsverfuegung", "vwvg"),
+    "comcom": ("aufsichtsverfuegung", "vwvg"),
+    "postcom": ("aufsichtsverfuegung", "vwvg"),
+    "ubi": ("aufsichtsbeschwerde", "vwvg"),
+    "edoeb": ("aufsichtsverfuegung", "vwvg"),
+    "esbk": ("aufsichtsverfuegung", "vwvg"),
+    "eschk": ("tarifgenehmigung", "urg"),
+    "estv": ("steuerverfuegung", "vwvg"),
+    "bazg": ("zollverfuegung", "vwvg"),
+    "rab": ("aufsichtsverfuegung", "vwvg"),
+    "preisueberwacher": ("preisempfehlung", "pueg"),
+    # attorney supervision
+    "be_anwaltsaufsicht": ("anwaltsaufsicht", "bgfa"),
+    "ag_anwaltskommission": ("anwaltsaufsicht", "bgfa"),
+    "ag_aufsichtskommission": ("anwaltsaufsicht", "bgfa"),
+    "tg_anwaltskommission": ("anwaltsaufsicht", "bgfa"),
+    "sav_kantone": ("anwaltsaufsicht", "bgfa"),
+    "sav_international": ("anwaltsaufsicht", "bgfa"),
+    # directorate/department recourse decisions
+    "be_direktionen": ("vwv_beschwerde", "vrg_be"),
+    "be_bvd": ("vwv_beschwerde", "vrg_be"),
+    "ag_regierungsrat": ("vwv_beschwerde", "vrg_ag"),
+    "ag_departement_bvu": ("vwv_beschwerde", "vrg_ag"),
+    "ag_departement_vi": ("vwv_beschwerde", "vrg_ag"),
+    "ag_departement_gs": ("vwv_beschwerde", "vrg_ag"),
+    "ag_departement_bks": ("vwv_beschwerde", "vrg_ag"),
 }
+
+# ── text-derived proceeding (EXPERIMENTAL — measured, NOT wired) ────────
+# Measured 2026-07-02 against register-code ground truth (4k random rows):
+# Rechtsmittel-family precision 83.0%, incremental yield on unmapped rows
+# only 12.1%. The failure modes are structural for bag-of-words on the
+# head: the text names the SUBJECT matter ("Rechtsöffnung" in a BGer
+# Beschwerde about a Rechtsöffnung case) or the LOWER instance's remedy.
+# Per NULL-over-guess this tier is deliberately NOT called by
+# derive_proceeding; a future variant must anchor on the "Gegenstand:" /
+# object-of-proceedings line and re-validate to >95% before wiring.
+_TEXT_CLAMP = re.compile(
+    r"(Sachverhalt|Erwägung|Aus den Erwägungen|Faits|consid[ée]rant|"
+    r"Fatti|in fatto|Considerando|Vu\s*:)", re.I)
+
+# ordered most-specific-first: (regex, {branch: (slug, code)} or fixed)
+_TEXT_RULES = [
+    (re.compile(r"\bRechts[öo]ffnung|\bmainlev[ée]e|\brigetto\s+dell", re.I),
+     {"*": ("schkg_rechtsoeffnung", "schkg")}),
+    (re.compile(r"\bBerufung\b|\bappel\b|\bappello\b|\bappellazione\b", re.I),
+     {"zivil": ("zpo_berufung", "zpo"), "straf": ("stpo_berufung", "stpo")}),
+    (re.compile(r"\bReklamation\b|\breclamo\b", re.I),
+     {"zivil": ("zpo_beschwerde", "zpo")}),
+    (re.compile(r"\bRevisionsgesuch\b|\bRevision\b|\br[ée]vision\b|\brevisione\b", re.I),
+     {"zivil": ("zpo_revision", "zpo"), "straf": ("stpo_revision", "stpo"),
+      "oeffentlich": ("vwv_revision", "vwvg"),
+      "sozialversicherung": ("atsg_revision", "atsg")}),
+    (re.compile(r"\bRekurs\b", re.I),
+     {"oeffentlich": ("vwv_rekurs", "vrg"), "zivil": ("zpo_rekurs_alt", "zpo_alt")}),
+    (re.compile(r"\bEinsprache\b|\bopposition\b|\bopposizione\b", re.I),
+     {"straf": ("stpo_einsprache", "stpo"), "oeffentlich": ("vwv_einsprache", "vwvg")}),
+    (re.compile(r"\bBeschwerde\b|\brecours\b|\bricorso\b", re.I),
+     {"zivil": ("zpo_beschwerde", "zpo"), "straf": ("stpo_beschwerde", "stpo"),
+      "oeffentlich": ("vwv_beschwerde", "vwvg"),
+      "sozialversicherung": ("sozialversicherungsbeschwerde", "atsg")}),
+    (re.compile(r"\bKlage\b|\bdemande\b|\bazione\b", re.I),
+     {"zivil": ("zpo_klage", "zpo")}),
+]
+
+
+def derive_proceeding_from_text(full_text, branch):
+    """Rechtsmittel word from the clamped head + coarse branch. None-safe."""
+    if not full_text:
+        return None, None
+    head = full_text[:2000]
+    m = _TEXT_CLAMP.search(head)
+    if m:
+        head = head[:m.start()]
+    for rx, table in _TEXT_RULES:
+        if rx.search(head):
+            hit = table.get(branch or "") or table.get("*")
+            if hit:
+                slug, code = hit
+                # canton-generic vrg gets no canton suffix from text alone
+                return slug, code
+    return None, None
 
 
 def derive_proceeding(court, chamber=None, docket_number=None):
