@@ -1,20 +1,20 @@
 {
  "version": 3,
- "generated_at": "2026-07-02T19:16:46+00:00",
+ "generated_at": "2026-07-02T19:32:09+00:00",
  "description": "Stratified statute-keyed candidates (graph-derived labels); dev/test split hash-frozen at generation.",
  "strata": {
   "oeffentlich": 102,
   "2000-2014": 286,
-  "de": 88,
+  "de": 82,
   "2015+": 121,
   "pre2000": 35,
-  "fr": 23,
+  "fr": 20,
   "sozialversicherung": 117,
   "straf": 118,
   "it": 3,
   "zivil": 105
  },
- "total": 556,
+ "total": 547,
  "queries": [
   {
    "id": "s2f7b30d4",
@@ -81,6 +81,7 @@
     "natural-language"
    ],
    "statute": "ART.42.BGG",
+   "source_decision": "bge_BGE_134_II_244",
    "relevant": [
     {
      "decision_id": "bge_BGE_134_II_244",
@@ -213,6 +214,7 @@
     "natural-language"
    ],
    "statute": "ART.63.ABS.1.VWVG",
+   "source_decision": "bvger_E-1488_2020_d20200302",
    "relevant": [
     {
      "decision_id": "bvger_E-1488_2020_d20200302",
@@ -561,6 +563,7 @@
     "natural-language"
    ],
    "statute": "ART.52.ABS.1.VWVG",
+   "source_decision": "bge_BGE_110_V_48",
    "relevant": [
     {
      "decision_id": "bge_BGE_110_V_48",
@@ -877,6 +880,7 @@
     "natural-language"
    ],
    "statute": "ART.6.ASYLG",
+   "source_decision": "bvger_E-1488_2020_d20200302",
    "relevant": [
     {
      "decision_id": "bvger_E-1488_2020_d20200302",
@@ -1057,6 +1061,7 @@
     "natural-language"
    ],
    "statute": "ART.111.ASYLG",
+   "source_decision": "bvger_D-1611_2016",
    "relevant": [
     {
      "decision_id": "bvger_D-1611_2016",
@@ -1177,6 +1182,7 @@
     "natural-language"
    ],
    "statute": "ART.108.ABS.1.BGG",
+   "source_decision": "bge_BGE_134_II_244",
    "relevant": [
     {
      "decision_id": "bge_BGE_134_II_244",
@@ -1357,6 +1363,7 @@
     "natural-language"
    ],
    "statute": "ART.44.ASYLG",
+   "source_decision": "bvger_E-3427_2021_d20210720",
    "relevant": [
     {
      "decision_id": "bvger_E-3427_2021_d20210720",
@@ -1433,6 +1440,7 @@
     "natural-language"
    ],
    "statute": "ART.111a.ABS.1.ASYLG",
+   "source_decision": "bvger_D-2590_2025_d20250404",
    "relevant": [
     {
      "decision_id": "bvger_D-2590_2025_d20250404",
@@ -1569,6 +1577,7 @@
     "natural-language"
    ],
    "statute": "ART.111a.ABS.2.ASYLG",
+   "source_decision": "bvger_D-1241_2022_d20220308",
    "relevant": [
     {
      "decision_id": "bvger_D-1241_2022_d20220308",
@@ -1641,6 +1650,7 @@
     "natural-language"
    ],
    "statute": "ART.5.ABS.1.ASYLG",
+   "source_decision": "bvger_E-3427_2021_d20210720",
    "relevant": [
     {
      "decision_id": "bvger_E-3427_2021_d20210720",
@@ -1725,6 +1735,7 @@
     "natural-language"
    ],
    "statute": "ART.52.VWVG",
+   "source_decision": "bge_BGE_136_II_165",
    "relevant": [
     {
      "decision_id": "bge_BGE_136_II_165",
@@ -1801,6 +1812,7 @@
     "natural-language"
    ],
    "statute": "ART.8.ABS.4.ASYLG",
+   "source_decision": "bvger_E-4103_2024_d20240528",
    "relevant": [
     {
      "decision_id": "bvger_E-4103_2024_d20240528",
@@ -2057,6 +2069,7 @@
     "natural-language"
    ],
    "statute": "ART.106.ASYLG",
+   "source_decision": "bvger_D-1611_2016",
    "relevant": [
     {
      "decision_id": "bvger_D-1611_2016",
@@ -2325,6 +2338,7 @@
     "natural-language"
    ],
    "statute": "ART.64.ABS.1.BGG",
+   "source_decision": "bger_5A_247_2013",
    "relevant": [
     {
      "decision_id": "bger_5A_247_2013",
@@ -2469,6 +2483,7 @@
     "natural-language"
    ],
    "statute": "ART.108.ABS.2.ASYLG",
+   "source_decision": "bvger_E-4103_2024_d20240528",
    "relevant": [
     {
      "decision_id": "bvger_E-4103_2024_d20240528",
@@ -2705,62 +2720,6 @@
    ]
   },
   {
-   "id": "s82e57d59",
-   "query": "Verwaltungsgerichtsbeschwerde",
-   "split": "test",
-   "tags": [
-    "oeffentlich",
-    "BV",
-    "fr",
-    "2000-2014",
-    "statute-keyed",
-    "natural-language"
-   ],
-   "statute": "ART.29.ABS.1.BV",
-   "relevant": [
-    {
-     "decision_id": "bge_BGE_137_V_210",
-     "grade": 3
-    },
-    {
-     "decision_id": "bge_BGE_134_I_140",
-     "grade": 3
-    },
-    {
-     "decision_id": "bge_BGE_140_V_193",
-     "grade": 2
-    },
-    {
-     "decision_id": "bge_BGE_137_III_617",
-     "grade": 2
-    },
-    {
-     "decision_id": "bge_BGE_132_II_485",
-     "grade": 2
-    },
-    {
-     "decision_id": "bge_BGE_130_I_312",
-     "grade": 1
-    },
-    {
-     "decision_id": "bge_BGE_142_I_99",
-     "grade": 1
-    },
-    {
-     "decision_id": "bge_BGE_127_I_31",
-     "grade": 1
-    },
-    {
-     "decision_id": "bge_BGE_137_I_1",
-     "grade": 1
-    },
-    {
-     "decision_id": "bge_BGE_135_III_127",
-     "grade": 1
-    }
-   ]
-  },
-  {
    "id": "s8aca1a05",
    "query": "Art. 89 Abs. 1 BGG",
    "split": "dev",
@@ -2877,6 +2836,7 @@
     "natural-language"
    ],
    "statute": "ART.68.ABS.3.BGG",
+   "source_decision": "bge_BGE_134_IV_1",
    "relevant": [
     {
      "decision_id": "bge_BGE_134_IV_1",
@@ -3005,6 +2965,7 @@
     "natural-language"
    ],
    "statute": "ART.93.BGG",
+   "source_decision": "bge_BGE_134_I_83",
    "relevant": [
     {
      "decision_id": "bge_BGE_134_I_83",
@@ -3109,6 +3070,7 @@
     "natural-language"
    ],
    "statute": "ART.31a.ABS.1.ASYLG",
+   "source_decision": "bvger_E-1488_2020_d20200302",
    "relevant": [
     {
      "decision_id": "bvger_E-1488_2020_d20200302",
@@ -3201,6 +3163,7 @@
     "natural-language"
    ],
    "statute": "ART.74.ABS.1.BGG",
+   "source_decision": "bger_5A_247_2013",
    "relevant": [
     {
      "decision_id": "bger_5A_247_2013",
@@ -3277,6 +3240,7 @@
     "natural-language"
    ],
    "statute": "ART.62.ABS.4.VWVG",
+   "source_decision": "bge_BGE_110_V_48",
    "relevant": [
     {
      "decision_id": "bge_BGE_110_V_48",
@@ -3485,6 +3449,7 @@
     "natural-language"
    ],
    "statute": "ART.83.ABS.4.AIG",
+   "source_decision": "bvger_E-3427_2021_d20210720",
    "relevant": [
     {
      "decision_id": "bvger_E-3427_2021_d20210720",
@@ -3601,6 +3566,7 @@
     "natural-language"
    ],
    "statute": "ART.83.ABS.3.AIG",
+   "source_decision": "bvger_E-3427_2021_d20210720",
    "relevant": [
     {
      "decision_id": "bvger_E-3427_2021_d20210720",
@@ -3681,6 +3647,7 @@
     "natural-language"
    ],
    "statute": "ART.83.ABS.2.AIG",
+   "source_decision": "bvger_E-3427_2021_d20210720",
    "relevant": [
     {
      "decision_id": "bvger_E-3427_2021_d20210720",
@@ -3853,6 +3820,7 @@
     "natural-language"
    ],
    "statute": "ART.72.BGG",
+   "source_decision": "bge_BGE_133_III_545",
    "relevant": [
     {
      "decision_id": "bge_BGE_135_I_6",
@@ -3880,7 +3848,7 @@
     },
     {
      "decision_id": "bge_BGE_133_III_545",
-     "grade": 1
+     "grade": 3
     },
     {
      "decision_id": "bge_BGE_138_III_2",
@@ -3985,6 +3953,7 @@
     "natural-language"
    ],
    "statute": "ART.29.ABS.3.BV",
+   "source_decision": "bge_BGE_133_III_614",
    "relevant": [
     {
      "decision_id": "bge_BGE_128_I_225",
@@ -4000,7 +3969,7 @@
     },
     {
      "decision_id": "bge_BGE_133_III_614",
-     "grade": 2
+     "grade": 3
     },
     {
      "decision_id": "bge_BGE_142_III_138",
@@ -4097,6 +4066,7 @@
     "natural-language"
    ],
    "statute": "ART.98.BGG",
+   "source_decision": "bge_BGE_134_I_83",
    "relevant": [
     {
      "decision_id": "bge_BGE_134_I_83",
@@ -4153,6 +4123,7 @@
     "natural-language"
    ],
    "statute": "ART.98.BGG",
+   "source_decision": "bge_BGE_137_III_475",
    "relevant": [
     {
      "decision_id": "bge_BGE_134_I_83",
@@ -4164,7 +4135,7 @@
     },
     {
      "decision_id": "bge_BGE_137_III_475",
-     "grade": 2
+     "grade": 3
     },
     {
      "decision_id": "bge_BGE_138_IV_186",
@@ -4261,6 +4232,7 @@
     "natural-language"
    ],
    "statute": "ART.29.VWVG",
+   "source_decision": "bge_BGE_129_II_497",
    "relevant": [
     {
      "decision_id": "bge_BGE_143_III_65",
@@ -4276,7 +4248,7 @@
     },
     {
      "decision_id": "bge_BGE_129_II_497",
-     "grade": 2
+     "grade": 3
     },
     {
      "decision_id": "bge_BGE_137_II_266",
@@ -4457,6 +4429,7 @@
     "natural-language"
    ],
    "statute": "ART.83.ABS.7.AIG",
+   "source_decision": "bvger_E-4103_2024_d20240528",
    "relevant": [
     {
      "decision_id": "bvger_E-4103_2024_d20240528",
@@ -4557,6 +4530,7 @@
     "natural-language"
    ],
    "statute": "ART.108.ABS.3.ASYLG",
+   "source_decision": "bvger_E-1488_2020_d20200302",
    "relevant": [
     {
      "decision_id": "bvger_E-1488_2020_d20200302",
@@ -4645,6 +4619,7 @@
     "natural-language"
    ],
    "statute": "ART.8.ASYLG",
+   "source_decision": "bvger_E-1488_2020_d20200302",
    "relevant": [
     {
      "decision_id": "bvger_E-1488_2020_d20200302",
@@ -4949,6 +4924,7 @@
     "natural-language"
    ],
    "statute": "ART.65.ABS.2.BGG",
+   "source_decision": "bger_6B_824_2016",
    "relevant": [
     {
      "decision_id": "bger_6B_824_2016",
@@ -5121,6 +5097,7 @@
     "natural-language"
    ],
    "statute": "ART.4.BV",
+   "source_decision": "bge_BGE_122_II_464",
    "relevant": [
     {
      "decision_id": "bge_BGE_125_V_351",
@@ -5136,7 +5113,7 @@
     },
     {
      "decision_id": "bge_BGE_122_II_464",
-     "grade": 2
+     "grade": 3
     },
     {
      "decision_id": "bge_BGE_124_I_170",
@@ -5175,54 +5152,6 @@
     "2000-2014",
     "statute-keyed",
     "citation-form"
-   ],
-   "statute": "ART.66.ABS.4.BGG",
-   "relevant": [
-    {
-     "decision_id": "bge_BGE_137_IV_285",
-     "grade": 3
-    },
-    {
-     "decision_id": "bge_BGE_138_IV_248",
-     "grade": 3
-    },
-    {
-     "decision_id": "bge_BGE_142_V_551",
-     "grade": 2
-    },
-    {
-     "decision_id": "bger_6B_466_2013",
-     "grade": 2
-    },
-    {
-     "decision_id": "bge_BGE_134_II_45",
-     "grade": 2
-    },
-    {
-     "decision_id": "bge_BGE_148_I_104",
-     "grade": 1
-    },
-    {
-     "decision_id": "bge_BGE_133_V_640",
-     "grade": 1
-    },
-    {
-     "decision_id": "bge_BGE_138_III_471",
-     "grade": 1
-    }
-   ]
-  },
-  {
-   "id": "s6a51396e",
-   "query": "Nichtanhandnahmeverfügung",
-   "split": "dev",
-   "tags": [
-    "oeffentlich",
-    "BGG",
-    "de",
-    "2000-2014",
-    "statute-keyed",
-    "natural-language"
    ],
    "statute": "ART.66.ABS.4.BGG",
    "relevant": [
@@ -5417,6 +5346,7 @@
     "natural-language"
    ],
    "statute": "ART.13.BV",
+   "source_decision": "bge_BGE_129_I_232",
    "relevant": [
     {
      "decision_id": "bge_BGE_129_I_232",
@@ -5681,6 +5611,7 @@
     "natural-language"
    ],
    "statute": "ART.30.ABS.1.BV",
+   "source_decision": "bge_BGE_139_III_120",
    "relevant": [
     {
      "decision_id": "bge_BGE_137_V_210",
@@ -5696,7 +5627,7 @@
     },
     {
      "decision_id": "bge_BGE_139_III_120",
-     "grade": 2
+     "grade": 3
     },
     {
      "decision_id": "bge_BGE_134_I_20",
@@ -6069,6 +6000,7 @@
     "natural-language"
    ],
    "statute": "ART.75.ABS.1.BGG",
+   "source_decision": "bge_BGE_133_III_393",
    "relevant": [
     {
      "decision_id": "bge_BGE_133_III_393",
@@ -6217,6 +6149,7 @@
     "natural-language"
    ],
    "statute": "ART.109.ABS.2.ASYLG",
+   "source_decision": "bvger_D-1728_2022_d20220311",
    "relevant": [
     {
      "decision_id": "bvger_D-1728_2022_d20220311",
@@ -9509,6 +9442,7 @@
     "natural-language"
    ],
    "statute": "ART.43.ABS.3.ATSG",
+   "source_decision": "bge_BGE_139_V_164",
    "relevant": [
     {
      "decision_id": "bge_BGE_137_V_210",
@@ -9528,7 +9462,7 @@
     },
     {
      "decision_id": "bge_BGE_139_V_164",
-     "grade": 2
+     "grade": 3
     },
     {
      "decision_id": "bge_BGE_138_V_271",
@@ -9747,54 +9681,6 @@
     "pre2000",
     "statute-keyed",
     "citation-form"
-   ],
-   "statute": "ART.17.IVG",
-   "relevant": [
-    {
-     "decision_id": "bge_BGE_124_V_108",
-     "grade": 3
-    },
-    {
-     "decision_id": "bge_BGE_130_V_488",
-     "grade": 3
-    },
-    {
-     "decision_id": "bge_BGE_110_V_263",
-     "grade": 2
-    },
-    {
-     "decision_id": "bge_BGE_108_V_210",
-     "grade": 2
-    },
-    {
-     "decision_id": "bge_BGE_112_V_275",
-     "grade": 2
-    },
-    {
-     "decision_id": "bge_BGE_99_V_34",
-     "grade": 1
-    },
-    {
-     "decision_id": "bger_8C_588_2013",
-     "grade": 1
-    },
-    {
-     "decision_id": "bge_BGE_118_V_7",
-     "grade": 1
-    }
-   ]
-  },
-  {
-   "id": "s3c8d33a1",
-   "query": "Sprachheilstunden",
-   "split": "dev",
-   "tags": [
-    "sozialversicherung",
-    "IVG",
-    "fr",
-    "pre2000",
-    "statute-keyed",
-    "natural-language"
    ],
    "statute": "ART.17.IVG",
    "relevant": [
@@ -12225,6 +12111,7 @@
     "natural-language"
    ],
    "statute": "ART.382.ABS.1.STPO",
+   "source_decision": "bger_6B_360_2014",
    "relevant": [
     {
      "decision_id": "bge_BGE_146_IV_76",
@@ -12401,6 +12288,7 @@
     "natural-language"
    ],
    "statute": "ART.426.ABS.1.STPO",
+   "source_decision": "bger_6B_1025_2014",
    "relevant": [
     {
      "decision_id": "bger_6B_1025_2014",
@@ -12489,6 +12377,7 @@
     "natural-language"
    ],
    "statute": "ART.292.STGB",
+   "source_decision": "bge_BGE_142_IV_45",
    "relevant": [
     {
      "decision_id": "bge_BGE_134_I_140",
@@ -12516,7 +12405,7 @@
     },
     {
      "decision_id": "bge_BGE_142_IV_45",
-     "grade": 1
+     "grade": 3
     },
     {
      "decision_id": "bge_BGE_135_II_356",
@@ -12625,6 +12514,7 @@
     "natural-language"
    ],
    "statute": "ART.47.STGB",
+   "source_decision": "bge_BGE_134_IV_1",
    "relevant": [
     {
      "decision_id": "bge_BGE_134_IV_1",
@@ -12793,6 +12683,7 @@
     "natural-language"
    ],
    "statute": "ART.391.ABS.2.STPO",
+   "source_decision": "bge_BGE_141_IV_132",
    "relevant": [
     {
      "decision_id": "bge_BGE_141_IV_132",
@@ -12905,6 +12796,7 @@
     "natural-language"
    ],
    "statute": "ART.429.ABS.1.STPO",
+   "source_decision": "bge_BGE_137_IV_352",
    "relevant": [
     {
      "decision_id": "bge_BGE_137_IV_352",
@@ -13001,6 +12893,7 @@
     "natural-language"
    ],
    "statute": "ART.393.ABS.2.STPO",
+   "source_decision": "bstger_SN.2011.16",
    "relevant": [
     {
      "decision_id": "bstger_SN.2011.16",
@@ -13141,6 +13034,7 @@
     "natural-language"
    ],
    "statute": "ART.42.ABS.1.STGB",
+   "source_decision": "bge_BGE_134_IV_1",
    "relevant": [
     {
      "decision_id": "bge_BGE_134_IV_1",
@@ -13373,6 +13267,7 @@
     "natural-language"
    ],
    "statute": "ART.404.ABS.1.STPO",
+   "source_decision": "bge_BGE_139_IV_282",
    "relevant": [
     {
      "decision_id": "bge_BGE_139_IV_282",
@@ -13441,6 +13336,7 @@
     "natural-language"
    ],
    "statute": "ART.428.ABS.3.STPO",
+   "source_decision": "bger_6B_415_2021",
    "relevant": [
     {
      "decision_id": "bger_6B_415_2021",
@@ -13529,6 +13425,7 @@
     "natural-language"
    ],
    "statute": "ART.66a.STGB",
+   "source_decision": "bger_6B_371_2018",
    "relevant": [
     {
      "decision_id": "bge_BGE_144_IV_332",
@@ -13568,7 +13465,7 @@
     },
     {
      "decision_id": "bger_6B_371_2018",
-     "grade": 1
+     "grade": 3
     }
    ]
   },
@@ -13623,46 +13520,6 @@
     "2000-2014",
     "statute-keyed",
     "citation-form"
-   ],
-   "statute": "ART.310.ABS.1.STPO",
-   "relevant": [
-    {
-     "decision_id": "bge_BGE_137_IV_285",
-     "grade": 3
-    },
-    {
-     "decision_id": "bge_BGE_140_IV_123",
-     "grade": 3
-    },
-    {
-     "decision_id": "bge_BGE_136_II_415",
-     "grade": 2
-    },
-    {
-     "decision_id": "bger_6B_127_2013",
-     "grade": 2
-    },
-    {
-     "decision_id": "bge_BGE_148_V_195",
-     "grade": 2
-    },
-    {
-     "decision_id": "bger_6B_617_2016",
-     "grade": 1
-    }
-   ]
-  },
-  {
-   "id": "s6a51396e",
-   "query": "Nichtanhandnahmeverfügung",
-   "split": "dev",
-   "tags": [
-    "straf",
-    "STPO",
-    "de",
-    "2000-2014",
-    "statute-keyed",
-    "natural-language"
    ],
    "statute": "ART.310.ABS.1.STPO",
    "relevant": [
@@ -13801,6 +13658,7 @@
     "natural-language"
    ],
    "statute": "ART.221.ABS.1.STPO",
+   "source_decision": "bge_BGE_137_IV_122",
    "relevant": [
     {
      "decision_id": "bge_BGE_137_IV_122",
@@ -14065,6 +13923,7 @@
     "natural-language"
    ],
    "statute": "ART.393.STPO",
+   "source_decision": "bge_BGE_139_IV_199",
    "relevant": [
     {
      "decision_id": "bge_BGE_139_IV_199",
@@ -14177,6 +14036,7 @@
     "natural-language"
    ],
    "statute": "ART.73.STBOG",
+   "source_decision": "bstger_BK.2011.21",
    "relevant": [
     {
      "decision_id": "bstger_BK.2011.21",
@@ -14429,6 +14289,7 @@
     "natural-language"
    ],
    "statute": "ART.59.STGB",
+   "source_decision": "bge_BGE_135_IV_180",
    "relevant": [
     {
      "decision_id": "bge_BGE_126_I_97",
@@ -14937,6 +14798,7 @@
     "natural-language"
    ],
    "statute": "ART.44.ABS.1.STGB",
+   "source_decision": "bge_BGE_134_IV_1",
    "relevant": [
     {
      "decision_id": "bge_BGE_134_IV_1",
@@ -15055,46 +14917,6 @@
     "2000-2014",
     "statute-keyed",
     "citation-form"
-   ],
-   "statute": "ART.309.ABS.1.STPO",
-   "relevant": [
-    {
-     "decision_id": "bge_BGE_137_IV_285",
-     "grade": 3
-    },
-    {
-     "decision_id": "bge_BGE_140_IV_123",
-     "grade": 3
-    },
-    {
-     "decision_id": "bge_BGE_143_IV_397",
-     "grade": 2
-    },
-    {
-     "decision_id": "bger_6B_127_2013",
-     "grade": 2
-    },
-    {
-     "decision_id": "bger_6B_1070_2018",
-     "grade": 2
-    },
-    {
-     "decision_id": "bger_6B_415_2021",
-     "grade": 1
-    }
-   ]
-  },
-  {
-   "id": "s6a51396e",
-   "query": "Nichtanhandnahmeverfügung",
-   "split": "dev",
-   "tags": [
-    "straf",
-    "STPO",
-    "de",
-    "2000-2014",
-    "statute-keyed",
-    "natural-language"
    ],
    "statute": "ART.309.ABS.1.STPO",
    "relevant": [
@@ -15473,6 +15295,7 @@
     "natural-language"
    ],
    "statute": "ART.186.STGB",
+   "source_decision": "bge_BGE_141_IV_132",
    "relevant": [
     {
      "decision_id": "bge_BGE_141_IV_132",
@@ -15617,6 +15440,7 @@
     "natural-language"
    ],
    "statute": "ART.42.STGB",
+   "source_decision": "bge_BGE_134_IV_1",
    "relevant": [
     {
      "decision_id": "bge_BGE_134_IV_1",
@@ -15787,58 +15611,6 @@
     "2000-2014",
     "statute-keyed",
     "citation-form"
-   ],
-   "statute": "ART.319.STPO",
-   "relevant": [
-    {
-     "decision_id": "bge_BGE_138_IV_86",
-     "grade": 3
-    },
-    {
-     "decision_id": "bge_BGE_137_IV_285",
-     "grade": 3
-    },
-    {
-     "decision_id": "bge_BGE_138_IV_186",
-     "grade": 2
-    },
-    {
-     "decision_id": "bge_BGE_137_IV_219",
-     "grade": 2
-    },
-    {
-     "decision_id": "bge_BGE_146_IV_68",
-     "grade": 2
-    },
-    {
-     "decision_id": "bger_6B_127_2013",
-     "grade": 1
-    },
-    {
-     "decision_id": "bge_BGE_148_IV_124",
-     "grade": 1
-    },
-    {
-     "decision_id": "bger_6B_1362_2020",
-     "grade": 1
-    },
-    {
-     "decision_id": "bger_6B_617_2016",
-     "grade": 1
-    }
-   ]
-  },
-  {
-   "id": "s6a51396e",
-   "query": "Nichtanhandnahmeverfügung",
-   "split": "dev",
-   "tags": [
-    "straf",
-    "STPO",
-    "de",
-    "2000-2014",
-    "statute-keyed",
-    "natural-language"
    ],
    "statute": "ART.319.STPO",
    "relevant": [
@@ -16477,6 +16249,7 @@
     "natural-language"
    ],
    "statute": "ART.135.ABS.1.STPO",
+   "source_decision": "bge_BGE_126_I_19",
    "relevant": [
     {
      "decision_id": "bge_BGE_126_I_19",
@@ -16669,6 +16442,7 @@
     "natural-language"
    ],
    "statute": "ART.426.STPO",
+   "source_decision": "bge_BGE_139_IV_199",
    "relevant": [
     {
      "decision_id": "bge_BGE_139_IV_199",
@@ -16759,58 +16533,6 @@
     "2000-2014",
     "statute-keyed",
     "citation-form"
-   ],
-   "statute": "ART.310.STPO",
-   "relevant": [
-    {
-     "decision_id": "bge_BGE_137_IV_285",
-     "grade": 3
-    },
-    {
-     "decision_id": "bge_BGE_145_IV_462",
-     "grade": 3
-    },
-    {
-     "decision_id": "bge_BGE_139_IV_241",
-     "grade": 2
-    },
-    {
-     "decision_id": "bge_BGE_138_IV_29",
-     "grade": 2
-    },
-    {
-     "decision_id": "bger_6B_127_2013",
-     "grade": 2
-    },
-    {
-     "decision_id": "bge_BGE_148_IV_124",
-     "grade": 1
-    },
-    {
-     "decision_id": "bger_6B_1362_2020",
-     "grade": 1
-    },
-    {
-     "decision_id": "bge_BGE_148_V_195",
-     "grade": 1
-    },
-    {
-     "decision_id": "bger_6B_617_2016",
-     "grade": 1
-    }
-   ]
-  },
-  {
-   "id": "s6a51396e",
-   "query": "Nichtanhandnahmeverfügung",
-   "split": "dev",
-   "tags": [
-    "straf",
-    "STPO",
-    "de",
-    "2000-2014",
-    "statute-keyed",
-    "natural-language"
    ],
    "statute": "ART.310.STPO",
    "relevant": [
@@ -17153,6 +16875,7 @@
     "natural-language"
    ],
    "statute": "ART.69.STGB",
+   "source_decision": "bge_BGE_137_IV_249",
    "relevant": [
     {
      "decision_id": "bge_BGE_137_IV_249",
@@ -17333,6 +17056,7 @@
     "natural-language"
    ],
    "statute": "ART.398.ABS.3.STPO",
+   "source_decision": "bger_7B_8_2021",
    "relevant": [
     {
      "decision_id": "bger_7B_8_2021",
@@ -17669,6 +17393,7 @@
     "natural-language"
    ],
    "statute": "ART.43.ABS.1.STGB",
+   "source_decision": "bge_BGE_134_IV_1",
    "relevant": [
     {
      "decision_id": "bge_BGE_134_IV_1",
@@ -17797,6 +17522,7 @@
     "natural-language"
    ],
    "statute": "ART.42.ABS.4.STGB",
+   "source_decision": "bge_BGE_134_IV_1",
    "relevant": [
     {
      "decision_id": "bge_BGE_134_IV_1",
@@ -17941,6 +17667,7 @@
     "natural-language"
    ],
    "statute": "ART.398.ABS.2.STPO",
+   "source_decision": "bger_6B_105_2021",
    "relevant": [
     {
      "decision_id": "bger_6B_105_2021",
@@ -18125,6 +17852,7 @@
     "natural-language"
    ],
    "statute": "ART.12.ABS.3.STGB",
+   "source_decision": "bge_BGE_134_IV_255",
    "relevant": [
     {
      "decision_id": "bge_BGE_141_IV_249",
@@ -18136,7 +17864,7 @@
     },
     {
      "decision_id": "bge_BGE_134_IV_255",
-     "grade": 2
+     "grade": 3
     },
     {
      "decision_id": "bge_BGE_148_IV_39",
@@ -18365,6 +18093,7 @@
     "natural-language"
    ],
    "statute": "ART.221.STPO",
+   "source_decision": "bge_BGE_137_IV_122",
    "relevant": [
     {
      "decision_id": "bge_BGE_137_IV_122",
@@ -18453,6 +18182,7 @@
     "natural-language"
    ],
    "statute": "ART.42.ABS.2.STGB",
+   "source_decision": "bge_BGE_134_IV_1",
    "relevant": [
     {
      "decision_id": "bge_BGE_134_IV_1",
@@ -18557,6 +18287,7 @@
     "natural-language"
    ],
    "statute": "ART.325.ABS.1.STPO",
+   "source_decision": "bge_BGE_141_IV_132",
    "relevant": [
     {
      "decision_id": "bge_BGE_141_IV_132",
@@ -18685,6 +18416,7 @@
     "natural-language"
    ],
    "statute": "ART.126.ABS.2.STPO",
+   "source_decision": "bge_BGE_139_IV_102",
    "relevant": [
     {
      "decision_id": "bge_BGE_139_IV_102",
@@ -18765,6 +18497,7 @@
     "natural-language"
    ],
    "statute": "ART.180.STGB",
+   "source_decision": "bge_BGE_137_IV_122",
    "relevant": [
     {
      "decision_id": "bge_BGE_141_IV_1",
@@ -18851,50 +18584,6 @@
     "2015+",
     "statute-keyed",
     "citation-form"
-   ],
-   "statute": "ART.390.ABS.2.STPO",
-   "relevant": [
-    {
-     "decision_id": "bger_6B_322_2019",
-     "grade": 3
-    },
-    {
-     "decision_id": "bstger_BB.2018.89",
-     "grade": 3
-    },
-    {
-     "decision_id": "bstger_BG.2019.43",
-     "grade": 2
-    },
-    {
-     "decision_id": "bstger_BB.2015.18",
-     "grade": 2
-    },
-    {
-     "decision_id": "bstger_BB.2018.171",
-     "grade": 2
-    },
-    {
-     "decision_id": "bger_1B_303_2017",
-     "grade": 1
-    },
-    {
-     "decision_id": "bstger_BB.2013.9",
-     "grade": 1
-    }
-   ]
-  },
-  {
-   "id": "se7f44faf",
-   "query": "Nichtanhandnahme",
-   "split": "test",
-   "tags": [
-    "straf",
-    "STPO",
-    "de",
-    "2015+",
-    "statute-keyed",
-    "natural-language"
    ],
    "statute": "ART.390.ABS.2.STPO",
    "relevant": [
@@ -19037,6 +18726,7 @@
     "natural-language"
    ],
    "statute": "ART.430.ABS.1.STPO",
+   "source_decision": "bge_BGE_137_IV_352",
    "relevant": [
     {
      "decision_id": "bge_BGE_137_IV_352",
@@ -19109,6 +18799,7 @@
     "natural-language"
    ],
    "statute": "ART.394.STPO",
+   "source_decision": "bge_BGE_139_IV_199",
    "relevant": [
     {
      "decision_id": "bge_BGE_139_IV_199",
@@ -19337,6 +19028,7 @@
     "natural-language"
    ],
    "statute": "ART.22.STGB",
+   "source_decision": "bge_BGE_133_IV_1",
    "relevant": [
     {
      "decision_id": "bge_BGE_133_IV_1",
@@ -19437,6 +19129,7 @@
     "natural-language"
    ],
    "statute": "ART.135.STPO",
+   "source_decision": "bge_BGE_139_IV_199",
    "relevant": [
     {
      "decision_id": "bge_BGE_139_IV_199",
@@ -19629,6 +19322,7 @@
     "natural-language"
    ],
    "statute": "ART.320.ZPO",
+   "source_decision": "bger_5A_247_2013",
    "relevant": [
     {
      "decision_id": "bger_5A_247_2013",
@@ -19969,6 +19663,7 @@
     "natural-language"
    ],
    "statute": "ART.326.ABS.1.ZPO",
+   "source_decision": "bge_BGE_145_III_422",
    "relevant": [
     {
      "decision_id": "bge_BGE_138_III_232",
@@ -19988,7 +19683,7 @@
     },
     {
      "decision_id": "bge_BGE_145_III_422",
-     "grade": 2
+     "grade": 3
     },
     {
      "decision_id": "bge_BGE_140_III_444",
@@ -20093,6 +19788,7 @@
     "natural-language"
    ],
    "statute": "ART.321.ABS.1.ZPO",
+   "source_decision": "bger_5A_247_2013",
    "relevant": [
     {
      "decision_id": "bger_5A_247_2013",
@@ -20245,6 +19941,7 @@
     "natural-language"
    ],
    "statute": "ART.41.OR",
+   "source_decision": "bge_BGE_133_III_323",
    "relevant": [
     {
      "decision_id": "bge_BGE_126_I_97",
@@ -20264,7 +19961,7 @@
     },
     {
      "decision_id": "bge_BGE_133_III_323",
-     "grade": 2
+     "grade": 3
     },
     {
      "decision_id": "bge_BGE_143_I_147",
@@ -20425,6 +20122,7 @@
     "natural-language"
    ],
    "statute": "ART.326.ZPO",
+   "source_decision": "bger_5A_247_2013",
    "relevant": [
     {
      "decision_id": "bger_5A_247_2013",
@@ -20653,6 +20351,7 @@
     "natural-language"
    ],
    "statute": "ART.308.ABS.2.ZPO",
+   "source_decision": "bger_4A_622_2013",
    "relevant": [
     {
      "decision_id": "bger_4A_622_2013",
@@ -20845,6 +20544,7 @@
     "natural-language"
    ],
    "statute": "ART.321.ABS.2.ZPO",
+   "source_decision": "bger_5A_82_2013",
    "relevant": [
     {
      "decision_id": "bge_BGE_141_III_270",
@@ -21005,6 +20705,7 @@
     "natural-language"
    ],
    "statute": "ART.321.ZPO",
+   "source_decision": "bger_5A_247_2013",
    "relevant": [
     {
      "decision_id": "bger_5A_247_2013",
@@ -21097,6 +20798,7 @@
     "natural-language"
    ],
    "statute": "ART.2.ZGB",
+   "source_decision": "bge_BGE_123_III_445",
    "relevant": [
     {
      "decision_id": "bge_BGE_123_III_445",
@@ -21153,6 +20855,7 @@
     "natural-language"
    ],
    "statute": "ART.2.ZGB",
+   "source_decision": "bge_BGE_120_II_177",
    "relevant": [
     {
      "decision_id": "bge_BGE_123_III_445",
@@ -21180,7 +20883,7 @@
     },
     {
      "decision_id": "bge_BGE_120_II_177",
-     "grade": 1
+     "grade": 3
     },
     {
      "decision_id": "bge_BGE_123_III_35",
@@ -21329,6 +21032,7 @@
     "natural-language"
    ],
    "statute": "ART.2.ABS.2.ZGB",
+   "source_decision": "bge_BGE_115_III_18",
    "relevant": [
     {
      "decision_id": "bge_BGE_147_IV_73",
@@ -21344,7 +21048,7 @@
     },
     {
      "decision_id": "bge_BGE_115_III_18",
-     "grade": 2
+     "grade": 3
     },
     {
      "decision_id": "bge_BGE_138_III_123",
@@ -21383,62 +21087,6 @@
     "2000-2014",
     "statute-keyed",
     "citation-form"
-   ],
-   "statute": "ART.93.SCHKG",
-   "relevant": [
-    {
-     "decision_id": "bge_BGE_140_III_337",
-     "grade": 3
-    },
-    {
-     "decision_id": "bge_BGE_134_IV_60",
-     "grade": 3
-    },
-    {
-     "decision_id": "bge_BGE_121_III_20",
-     "grade": 2
-    },
-    {
-     "decision_id": "bge_BGE_140_III_485",
-     "grade": 2
-    },
-    {
-     "decision_id": "bge_BGE_126_III_353",
-     "grade": 2
-    },
-    {
-     "decision_id": "bge_BGE_119_III_70",
-     "grade": 1
-    },
-    {
-     "decision_id": "bge_BGE_112_III_19",
-     "grade": 1
-    },
-    {
-     "decision_id": "bge_BGE_126_III_89",
-     "grade": 1
-    },
-    {
-     "decision_id": "bge_BGE_115_III_103",
-     "grade": 1
-    },
-    {
-     "decision_id": "bge_BGE_137_III_193",
-     "grade": 1
-    }
-   ]
-  },
-  {
-   "id": "scb32a075",
-   "query": "Einkommenspfändung",
-   "split": "test",
-   "tags": [
-    "zivil",
-    "SCHKG",
-    "fr",
-    "2000-2014",
-    "statute-keyed",
-    "natural-language"
    ],
    "statute": "ART.93.SCHKG",
    "relevant": [
@@ -21537,6 +21185,7 @@
     "natural-language"
    ],
    "statute": "ART.60.ZPO",
+   "source_decision": "bge_BGE_140_III_159",
    "relevant": [
     {
      "decision_id": "bge_BGE_140_III_159",
@@ -21685,6 +21334,7 @@
     "natural-language"
    ],
    "statute": "ART.308.ZPO",
+   "source_decision": "bge_BGE_137_III_417",
    "relevant": [
     {
      "decision_id": "bge_BGE_137_III_417",
@@ -21797,6 +21447,7 @@
     "natural-language"
    ],
    "statute": "ART.114.ZPO",
+   "source_decision": "bger_2C_930_2011",
    "relevant": [
     {
      "decision_id": "bger_2C_930_2011",
@@ -22001,6 +21652,7 @@
     "natural-language"
    ],
    "statute": "ART.20a.ABS.3.SCHKG",
+   "source_decision": "bge_BGE_127_III_178",
    "relevant": [
     {
      "decision_id": "bge_BGE_127_III_178",
@@ -22045,6 +21697,7 @@
     "natural-language"
    ],
    "statute": "ART.20a.ABS.3.SCHKG",
+   "source_decision": "bger_5A_265_2018",
    "relevant": [
     {
      "decision_id": "bge_BGE_127_III_178",
@@ -22068,7 +21721,7 @@
     },
     {
      "decision_id": "bger_5A_265_2018",
-     "grade": 1
+     "grade": 3
     },
     {
      "decision_id": "bger_5A_448_2011",
@@ -22185,6 +21838,7 @@
     "natural-language"
    ],
    "statute": "ART.18.ABS.1.OR",
+   "source_decision": "bge_BGE_131_III_606",
    "relevant": [
     {
      "decision_id": "bge_BGE_131_III_606",
@@ -22297,6 +21951,7 @@
     "natural-language"
    ],
    "statute": "ART.56.ZPO",
+   "source_decision": "bge_BGE_124_I_241",
    "relevant": [
     {
      "decision_id": "bge_BGE_124_I_241",
@@ -22433,6 +22088,7 @@
     "natural-language"
    ],
    "statute": "ART.81.ABS.1.SCHKG",
+   "source_decision": "bge_BGE_105_III_43",
    "relevant": [
     {
      "decision_id": "bge_BGE_136_III_624",
@@ -22444,7 +22100,7 @@
     },
     {
      "decision_id": "bge_BGE_105_III_43",
-     "grade": 2
+     "grade": 3
     },
     {
      "decision_id": "bge_BGE_135_III_315",
@@ -22513,6 +22169,7 @@
     "natural-language"
    ],
    "statute": "ART.138.ABS.3.ZPO",
+   "source_decision": "bge_BGE_138_III_225",
    "relevant": [
     {
      "decision_id": "bge_BGE_138_III_225",
@@ -23013,6 +22670,7 @@
     "natural-language"
    ],
    "statute": "ART.28.ZGB",
+   "source_decision": "bge_BGE_125_III_82",
    "relevant": [
     {
      "decision_id": "bge_BGE_134_I_140",
@@ -23052,7 +22710,7 @@
     },
     {
      "decision_id": "bge_BGE_125_III_82",
-     "grade": 1
+     "grade": 3
     }
    ]
   },
@@ -23173,6 +22831,7 @@
     "natural-language"
    ],
    "statute": "ART.132.ZPO",
+   "source_decision": "bger_5A_82_2013",
    "relevant": [
     {
      "decision_id": "bger_5A_82_2013",
@@ -23421,6 +23080,7 @@
     "natural-language"
    ],
    "statute": "ART.110.ZPO",
+   "source_decision": "bge_BGE_139_III_133",
    "relevant": [
     {
      "decision_id": "bge_BGE_139_III_133",
@@ -23461,6 +23121,7 @@
     "natural-language"
    ],
    "statute": "ART.110.ZPO",
+   "source_decision": "bger_5A_657_2015",
    "relevant": [
     {
      "decision_id": "bge_BGE_139_III_133",
@@ -23476,7 +23137,7 @@
     },
     {
      "decision_id": "bger_5A_657_2015",
-     "grade": 2
+     "grade": 3
     },
     {
      "decision_id": "zh_verwaltungsgericht__VB.2013.00545",
@@ -23729,6 +23390,7 @@
     "natural-language"
    ],
    "statute": "ART.122.ABS.2.ZPO",
+   "source_decision": "bge_BGE_140_III_167",
    "relevant": [
     {
      "decision_id": "bge_BGE_140_III_167",
@@ -24033,6 +23695,7 @@
     "natural-language"
    ],
    "statute": "ART.122.ZPO",
+   "source_decision": "bge_BGE_140_III_167",
    "relevant": [
     {
      "decision_id": "bge_BGE_140_III_167",
@@ -24337,6 +24000,7 @@
     "natural-language"
    ],
    "statute": "ART.85a.SCHKG",
+   "source_decision": "bge_BGE_128_III_334",
    "relevant": [
     {
      "decision_id": "bge_BGE_148_III_30",
@@ -24372,7 +24036,7 @@
     },
     {
      "decision_id": "bge_BGE_128_III_334",
-     "grade": 1
+     "grade": 3
     }
    ]
   },
@@ -24421,6 +24085,7 @@
     "natural-language"
    ],
    "statute": "ART.95.ABS.2.ZPO",
+   "source_decision": "bge_BGE_139_III_33",
    "relevant": [
     {
      "decision_id": "bge_BGE_139_III_33",
@@ -24489,6 +24154,7 @@
     "natural-language"
    ],
    "statute": "ART.261.ZPO",
+   "source_decision": "bge_BGE_137_III_417",
    "relevant": [
     {
      "decision_id": "bge_BGE_139_III_86",
@@ -24725,6 +24391,7 @@
     "natural-language"
    ],
    "statute": "ART.53.ZPO",
+   "source_decision": "bge_BGE_145_III_422",
    "relevant": [
     {
      "decision_id": "bge_BGE_143_III_297",
@@ -24752,7 +24419,7 @@
     },
     {
      "decision_id": "bge_BGE_145_III_422",
-     "grade": 1
+     "grade": 3
     }
    ]
   },
@@ -24909,6 +24576,7 @@
     "natural-language"
    ],
    "statute": "ART.19.SCHKG",
+   "source_decision": "bge_BGE_129_III_400",
    "relevant": [
     {
      "decision_id": "bge_BGE_135_I_187",
@@ -24924,7 +24592,7 @@
     },
     {
      "decision_id": "bge_BGE_129_III_400",
-     "grade": 2
+     "grade": 3
     },
     {
      "decision_id": "bge_BGE_120_III_107",
@@ -25085,6 +24753,7 @@
     "natural-language"
    ],
    "statute": "ART.277.ABS.2.ZGB",
+   "source_decision": "bge_BGE_117_II_127",
    "relevant": [
     {
      "decision_id": "bge_BGE_147_III_265",
@@ -25100,7 +24769,7 @@
     },
     {
      "decision_id": "bge_BGE_117_II_127",
-     "grade": 2
+     "grade": 3
     },
     {
      "decision_id": "bge_BGE_118_II_97",

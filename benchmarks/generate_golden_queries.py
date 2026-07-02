@@ -239,12 +239,22 @@ def run_scale(graph_conn, fts_conn, per_branch: int, out_path: Path):
                     continue
                 seen_langs.add(lang)
                 hint = extract_query_terms(d["regeste"])
-                if len(hint) >= 15:
+                if len(hint) >= 15 and len(hint.split()) >= 2:
+                    # The decision whose regeste PRODUCED the query is
+                    # relevant by construction — grade 3 regardless of its
+                    # citation rank (spot-check finding: article-level
+                    # labels alone under-grade the query's source).
+                    rel_q = [dict(r) for r in relevant]
+                    for r in rel_q:
+                        if r["decision_id"] == d["decision_id"]:
+                            r["grade"] = 3
                     queries.append({"id": _qid(hint), "query": hint,
                                     "split": _split(_qid(hint)),
                                     "tags": [branch, law_code, lang, era,
                                              "statute-keyed", "natural-language"],
-                                    "statute": statute_id, "relevant": relevant})
+                                    "statute": statute_id,
+                                    "source_decision": d["decision_id"],
+                                    "relevant": rel_q})
                     strata[lang] = strata.get(lang, 0) + 1
                 if len(seen_langs) >= 3:
                     break
