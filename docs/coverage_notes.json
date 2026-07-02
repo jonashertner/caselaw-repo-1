@@ -1,0 +1,17 @@
+{
+ "be_verwaltungsgericht": "Two denominators: the DIRECT scrape captures ~9.3k of the portal's 11,440 (structural discovery gap, not re-run-recoverable, proven 2026-07-02), but the corpus already holds ~11.4k via the archived entscheidsuche feed — the corpus-level residual is only ~10 decisions.",
+ "vs_gerichte": "Direct-scrape gap of ~390 vs the portal count (re-run recovers 0; structural discovery class). Check the corpus total against portal_total before treating this as missing data — the archived feed covers part of it.",
+ "bs_appellationsgericht": "~350 decisions listed by the Omnis portal but not enumerated by the current session-based discovery; investigation queued.",
+ "bl_gerichte": "The Kantonsgericht published ~4,997 decisions on a portal that went offline; 903 recovered via the Internet Archive (2026-04). Outreach to the court pending since 2026-04-17; remainder is a known upstream-availability gap, not a scrape failure.",
+ "bger": "Complete for published decisions from 2000 (verified against citation-gap oracles). Pre-2000 ordinary judgments were never put online by the court. Pre-2007 EVG social-insurance decisions (~15,215) are recoverable and queued.",
+ "bge": "Official collection complete (verified 0 missing vs external benchmark). Volume citations before 1954 partially carry publication-year dating semantics.",
+ "ow_gerichte": "Portal offline since Dec 2022; corpus frozen at that date. A successor portal appeared in 2026 and is re-probed weekly; intake resumes if it yields decisions.",
+ "ge_gerichte": "7,051 decisions (ATAS/ACJC 2006-2013) had unreadable CID-font PDF text; recovered via OCR on 2026-07-01 and fully searchable since 2026-07-02. Docket field carries bare cause numbers for some older rows.",
+ "ch_vb": "Frozen archive (source ceased publishing in 2021); preserved via the entscheidsuche archive, no new intake by design.",
+ "be_steuerrekurs": "Portal's backing database returns zero rows for all queries since Feb 2026 (verified against the live GWT protocol); 343 historical decisions preserved. Re-probed weekly.",
+ "mkg": "Complete archival corpus of the Militärkassationsgericht, volumes 1-16 (1915-2025); the court publishes no new volumes.",
+ "sg_publikationen": "Publication practice example: St. Gallen published 5 of 272 employment rulings 2002-2017. Low counts here reflect court publication policy, not capture failure.",
+ "ti_gerichte": "~549 rows carry no machine-readable date (PDFs truncated upstream). Text completeness restored 2026-06-29 (control-character stripping).",
+ "fr_anwaltsaufsicht": "Registered source; the authority has published zero decisions to date (0 by design, not a failure).",
+ "vd_findinfo": "Frozen entscheidsuche-sourced archive of the pre-2015 FindInfo portal; new VD decisions arrive via the direct vd_gerichte scraper."
+}

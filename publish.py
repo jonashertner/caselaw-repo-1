@@ -1088,6 +1088,23 @@ def _run_parallel_post_build(deferred: list, args, manual_step_mode: bool) -> di
     return results
 
 
+def step_5g_generate_coverage(dry_run: bool = False) -> bool:
+    """Step 5g: Generate docs/coverage.json — the per-court denominators
+    table (corpus counts by year + portal totals from scraper_health +
+    curated gap notes; backlog P3.1). The script itself never exits
+    non-zero: a coverage hiccup must not fail a publish."""
+    logger.info("Step 5g: Generate coverage.json")
+    script = REPO_DIR / "scripts" / "generate_coverage.py"
+    if not script.exists():
+        logger.warning("  generate_coverage.py not found, skipping")
+        return True
+    return run_cmd(
+        [sys.executable, str(script), "--db", str(DB_PATH)],
+        "Generate coverage.json",
+        dry_run,
+    )
+
+
 def step_5c_quality_gate(dry_run: bool = False) -> bool:
     """Step 5c: Pre-push QC gate.
 
@@ -1326,6 +1343,7 @@ STEPS = [
     # ── Fast publish: site shows today's date immediately ──
     ("5a", "Generate Stats (early)", step_5_generate_stats),
     ("5b", "Generate RSS Feeds", step_5b_generate_feeds),
+    ("5g", "Coverage Table", step_5g_generate_coverage),
     ("5c", "Quality-Control Gate", step_5c_quality_gate),
     # 5d after gate so the manifest captures the gate's verdict + counts.
     # Non-fatal if it fails — git push (Step 6a/6) still runs; the audit
