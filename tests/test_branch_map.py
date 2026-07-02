@@ -161,3 +161,12 @@ def test_fill_chamber_pass_never_overwrites(tmp_path):
     assert n == 2
     got = dict(conn.execute("SELECT decision_id, chamber FROM decisions"))
     assert got == {"d1": "WBE", "d2": "5A", "d3": "Chambre civile", "d4": None}
+
+
+def test_be_zivilstraf_extended_registers():
+    # LegalStats feedback 2026-07-02: their chamber dictionary was richer
+    # (403 vs 603 zivil rows) — ABS/KES/HG/CIV are zivil registers.
+    for dk, want in [("ABS 2021 12", "zivil"), ("KES 2023 5", "zivil"),
+                     ("HG 2020 1", "zivil"), ("CIV 2019 44", "zivil"),
+                     ("SK 2022 9", "straf")]:
+        assert derive_branch("be_zivilstraf", None, dk) == want, dk

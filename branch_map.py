@@ -151,8 +151,13 @@ def _zh_og_rule(docket: str):
 
 
 def _be_zivilstraf_rule(docket: str):
-    if docket.startswith("ZK"):
-        return ZIVIL
+    # zivil registers per the LegalStats 2026-07-02 feedback diff (their
+    # chamber dictionary found 603 zivil rows vs our ZK-only 403): ABS =
+    # Aufsichtsbehörde SchKG, KES = Kindes-/Erwachsenenschutz, HG =
+    # Handelsgericht, CIV = French-form civil register.
+    for prefix in ("ZK", "ABS", "KES", "HG", "CIV"):
+        if docket.startswith(prefix):
+            return ZIVIL
     if docket.startswith("SK"):
         return STRAF
     return None
