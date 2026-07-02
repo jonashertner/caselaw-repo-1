@@ -186,6 +186,54 @@ def _chamber_rule(chamber: str):
     return None
 
 
+# ── chamber code from the docket (backlog P1.2) ────────────────────────
+# Where the portal supplied no chamber, the docket's register/series code IS
+# the chamber signal (wishlist P1.7: "copy the parsed docket code into it").
+# Only structurally unambiguous shapes; document-type words are never codes.
+_DOC_TYPE_TOKENS = {"ARRET", "ARRÊT", "JUG", "URTEIL", "ENTSCHEID", "BGE",
+                    "DEC", "DECISION", "SENTENZA", "VPB"}
+_REGISTER_SHAPE_RE = re.compile(
+    r"^([A-Za-z]{1,8}\d{0,2})[ ._/-](?:18|19|20)\d\d[ ._/-]\d")  # WBE.2020.195 / SR2 2025 84
+_SERIES_SLASH_RE = re.compile(r"^([A-Z]{2,6})/\d")               # ATAS/1001/2007
+_BGER_CODE_RE = re.compile(r"^(\d[A-Z])[._ ]\d+/\d{4}$")         # 5A_1008/2025 -> 5A
+_VD_LOOSE_RES = (
+    re.compile(r"^([A-Z]{1,6}) / (?:18|19|20)\d\d"),             # HC / 2010 / 123
+    re.compile(r"^([A-Z]{1,6}) \d+/\d{2}\b"),                    # AI 123/09
+    re.compile(r"^([A-Z]{2,6}) [A-Z]{2}\."),                     # CDAP GE.2021.0001
+)
+_VD_COURTS = {"vd_gerichte", "vd_findinfo", "vd_omni"}
+
+
+def docket_chamber_code(court, docket_number):
+    """Register/series code from the docket, or None. Used to fill an empty
+    chamber field (P1.2); never overwrites portal-supplied chambers."""
+    if not docket_number:
+        return None
+    dk = docket_number.strip()
+    if court == "bger":
+        m = _BGER_CODE_RE.match(dk)
+        if m:
+            return m.group(1)
+        if _EVG_RE.match(dk):
+            return dk[0]
+        return None
+    if court == "bge":
+        m = _BGE_RE.match(dk)
+        return m.group(1) if m else None
+    m = _REGISTER_SHAPE_RE.match(dk) or _SERIES_SLASH_RE.match(dk)
+    if not m and court in _VD_COURTS:
+        for rx in _VD_LOOSE_RES:
+            m = rx.match(dk)
+            if m:
+                break
+    if not m:
+        return None
+    code = m.group(1)
+    if code.upper() in _DOC_TYPE_TOKENS:
+        return None
+    return code
+
+
 def derive_branch(court, chamber=None, docket_number=None):
     """Coarse branch for one decision, or None. NULL over guess."""
     if not court:

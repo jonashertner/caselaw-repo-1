@@ -1023,6 +1023,35 @@ def _normalize_dates(conn: sqlite3.Connection) -> tuple[int, int, int]:
     return n_zero, n_future, n_pre1700
 
 
+def _fill_chamber_from_docket(conn: sqlite3.Connection) -> int:
+    """P1.2: where the portal supplied no chamber, copy the docket's
+    register/series code into it (branch_map.docket_chamber_code). Runs
+    BEFORE _derive_branch_column so filled codes feed the series rules.
+    Never overwrites a portal-supplied chamber."""
+    from branch_map import docket_chamber_code
+
+    updates = []
+    n = 0
+    for did, court, docket in conn.execute(
+        "SELECT decision_id, court, docket_number FROM decisions "
+        "WHERE (chamber IS NULL OR chamber = '') AND docket_number IS NOT NULL"
+    ):
+        code = docket_chamber_code(court, docket)
+        if code:
+            updates.append((code, did))
+            if len(updates) >= 5000:
+                conn.executemany(
+                    "UPDATE decisions SET chamber=? WHERE decision_id=?", updates)
+                n += len(updates)
+                updates = []
+    if updates:
+        conn.executemany(
+            "UPDATE decisions SET chamber=? WHERE decision_id=?", updates)
+        n += len(updates)
+    conn.commit()
+    return n
+
+
 def _derive_branch_column(conn: sqlite3.Connection) -> int:
     """P1.1: populate the coarse ``branch`` column (zivil | straf |
     oeffentlich | sozialversicherung) from branch_map.derive_branch —
@@ -1988,6 +2017,8 @@ def build_database(
             n_gr_implausible = _null_implausible_gr_dates(conn)
             if n_gr_implausible:
                 logger.info(f"  Cleared {n_gr_implausible} gr_gerichte dates >3y before docket year (Praxis-digest junk recovery, L2) → NULL")
+            n_chamber = _fill_chamber_from_docket(conn)
+            logger.info(f"  Filled chamber from docket register code for {n_chamber} decisions (P1.2)")
             n_branch = _derive_branch_column(conn)
             logger.info(f"  Derived branch for {n_branch} decisions (zivil/straf/oeffentlich/sozialversicherung, P1.1)")
             recovered = _recover_decision_dates(conn)

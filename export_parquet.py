@@ -134,10 +134,14 @@ def normalize_row(row: dict) -> dict:
     full_text = row.get("full_text") or ""
     row["has_full_text"] = bool(full_text.strip())
     row["text_length"] = len(full_text)
-    # Coarse branch (P1.1) — derive when the source row doesn't carry it
-    # (JSONL shards never do; decisions.db does from 2026-07-03 builds).
+    # Chamber fill (P1.2) then coarse branch (P1.1) — derived when the source
+    # row doesn't carry them (JSONL shards never do; decisions.db does from
+    # 2026-07-03 builds). Order matters: the filled code feeds branch rules.
+    from branch_map import derive_branch, docket_chamber_code
+    if not row.get("chamber"):
+        row["chamber"] = docket_chamber_code(row.get("court"),
+                                             row.get("docket_number"))
     if not row.get("branch"):
-        from branch_map import derive_branch
         row["branch"] = derive_branch(row.get("court"), row.get("chamber"),
                                       row.get("docket_number"))
     # marked_for_publication is stored as SQLite 0/1/NULL but the schema is bool.

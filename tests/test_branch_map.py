@@ -116,3 +116,48 @@ def test_separator_variants_from_corpus():
     assert derive_branch("gr_gerichte", None, "VR2 2025 66") == "oeffentlich"
     assert derive_branch("gr_gerichte", None, "ZR1 2025 80") == "zivil"
     assert derive_branch("gr_gerichte", None, "PKG 2022 6") is None  # mixed volume
+
+
+def test_docket_chamber_code_shapes():
+    from branch_map import docket_chamber_code as f
+    # register shape CODE.YYYY.N / CODE YYYY N
+    assert f("ag_verwaltungsgericht", "WBE.2020.195") == "WBE"
+    assert f("gr_gerichte", "SR2 2025 84") == "SR2"
+    assert f("sz_gerichte", "VSKLA.2024.5") == "VSKLA"
+    # series slash
+    assert f("ge_gerichte", "ATAS/1001/2007") == "ATAS"
+    assert f("ge_gerichte", "JTAPI/12/2020") == "JTAPI"
+    # bger divisions + EVG
+    assert f("bger", "5A_1008/2025") == "5A"
+    assert f("bger", "1C 146/2025") == "1C"
+    assert f("bger", "I_350/1999") == "I"
+    # bge volume roman
+    assert f("bge", "150 II 1") == "II"
+    # vd loose forms are vd-scoped
+    assert f("vd_findinfo", "HC / 2010 / 123") == "HC"
+    assert f("vd_findinfo", "AI 123/09 - 456") == "AI"
+    assert f("vd_gerichte", "CDAP GE.2021.0001") == "CDAP"
+    assert f("zh_gerichte", "HC / 2010 / 123") is None  # loose rule NOT global
+    # document-type words are never chamber codes
+    assert f("vd_findinfo", "Jug / 2014 / 33") is None
+    assert f("vd_findinfo", "Arrêt / 2014 / 7") is None
+    assert f("ti_gerichte", "34.2025.27") is None  # numeric register: no code
+    assert f("bger", None) is None
+
+
+def test_fill_chamber_pass_never_overwrites(tmp_path):
+    import sqlite3, build_fts5 as b
+    conn = sqlite3.connect(":memory:")
+    conn.execute("CREATE TABLE decisions (decision_id TEXT PRIMARY KEY, "
+                 "court TEXT, chamber TEXT, docket_number TEXT)")
+    conn.executemany("INSERT INTO decisions VALUES (?,?,?,?)", [
+        ("d1", "ag_verwaltungsgericht", None, "WBE.2020.195"),   # filled
+        ("d2", "bger", "", "5A_1/2024"),                          # filled
+        ("d3", "ge_gerichte", "Chambre civile", "ACJC/1/2020"),   # portal value kept
+        ("d4", "ti_gerichte", None, "34.2025.27"),                # no code -> stays NULL
+    ])
+    conn.commit()
+    n = b._fill_chamber_from_docket(conn)
+    assert n == 2
+    got = dict(conn.execute("SELECT decision_id, chamber FROM decisions"))
+    assert got == {"d1": "WBE", "d2": "5A", "d3": "Chambre civile", "d4": None}
