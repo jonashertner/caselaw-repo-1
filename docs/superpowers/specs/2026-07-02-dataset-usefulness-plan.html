@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OpenCaseLaw — The Useful Dataset Plan · 2026-07-02</title>
+<style>
+  :root{
+    --red:#DA291C; --ink:#111; --paper:#fcfcfa; --grey:#6b6b6b; --rule:#111;
+    --soft:#ececea; --mono:"SF Mono","Menlo","Consolas",monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper); color:var(--ink);
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size:15px; line-height:1.55;
+    padding:0 0 6rem;
+  }
+  .page{max-width:1060px; margin:0 auto; padding:0 2.2rem;}
+
+  /* ── masthead: Swiss international style ── */
+  header{border-top:14px solid var(--red); padding-top:2.6rem; margin-bottom:3.2rem;}
+  .kicker{font-size:.78rem; letter-spacing:.22em; text-transform:uppercase; color:var(--grey); margin-bottom:1.2rem;}
+  h1{font-size:clamp(2.6rem,6vw,4.6rem); font-weight:800; letter-spacing:-.03em; line-height:.98; text-transform:uppercase;}
+  h1 .thin{font-weight:300;}
+  h1 .red{color:var(--red);}
+  .thesis{
+    margin-top:1.8rem; max-width:46rem; font-size:1.22rem; line-height:1.5; font-weight:300;
+  }
+  .thesis b{font-weight:700;}
+  .meta{margin-top:1.4rem; font-family:var(--mono); font-size:.74rem; color:var(--grey);}
+
+  /* ── section scaffolding ── */
+  section{margin:4.2rem 0;}
+  .secnum{
+    font-family:var(--mono); color:var(--red); font-size:.8rem; letter-spacing:.15em;
+  }
+  h2{
+    font-size:1.9rem; font-weight:800; text-transform:uppercase; letter-spacing:-.01em;
+    border-bottom:3px solid var(--rule); padding-bottom:.5rem; margin:.3rem 0 1.6rem;
+  }
+  h3{font-size:1.05rem; font-weight:700; margin:1.6rem 0 .5rem;}
+  p{max-width:46rem; margin-bottom:.9rem;}
+  p.wide{max-width:none;}
+  em{font-style:italic;}
+  code{font-family:var(--mono); font-size:.82em; background:var(--soft); padding:.1em .35em;}
+
+  /* ── audience matrix ── */
+  table{border-collapse:collapse; width:100%; font-size:.86rem;}
+  th,td{border:1px solid #ccc; padding:.55rem .7rem; vertical-align:top; text-align:left;}
+  th{background:var(--ink); color:#fff; font-weight:700; font-size:.78rem; letter-spacing:.06em; text-transform:uppercase;}
+  td.aud{font-weight:800; text-transform:uppercase; font-size:.78rem; letter-spacing:.05em; width:8.5rem; background:var(--soft);}
+  tr:hover td{background:#f6f6f2;}
+  tr:hover td.aud{background:#e8e8e2;}
+
+  /* ── the ladder ── */
+  .ladder{display:grid; grid-template-columns:repeat(4,1fr); gap:2px; background:var(--ink); border:2px solid var(--ink); margin:1.4rem 0;}
+  .rung{background:var(--paper); padding:1.1rem 1rem 1.2rem; position:relative;}
+  .rung .n{font-family:var(--mono); color:var(--red); font-size:.72rem;}
+  .rung h4{font-size:1.02rem; font-weight:800; text-transform:uppercase; margin:.25rem 0 .45rem;}
+  .rung p{font-size:.82rem; color:#333; margin:0;}
+  @media(max-width:760px){.ladder{grid-template-columns:1fr 1fr;}}
+
+  /* ── phases ── */
+  .phase{border-left:6px solid var(--red); padding:0 0 .4rem 1.6rem; margin:2.6rem 0;}
+  .phase.grey{border-left-color:#bbb;}
+  .phead{display:flex; align-items:baseline; gap:1rem; flex-wrap:wrap;}
+  .phead h3{font-size:1.35rem; text-transform:uppercase; margin:0;}
+  .badge{font-family:var(--mono); font-size:.68rem; padding:.2em .6em; border:1.5px solid var(--ink); white-space:nowrap;}
+  .badge.now{background:var(--ink); color:#fff;}
+  .badge.red{border-color:var(--red); color:var(--red);}
+  .items{margin:.9rem 0 0; list-style:none;}
+  .items li{
+    display:grid; grid-template-columns:1fr auto; gap:1rem; align-items:baseline;
+    padding:.55rem 0; border-bottom:1px dotted #bbb; font-size:.9rem; max-width:52rem;
+  }
+  .items li:last-child{border-bottom:none;}
+  .items b{font-weight:700;}
+  .tag{font-family:var(--mono); font-size:.68rem; color:var(--grey); white-space:nowrap;}
+  .tag .e{color:var(--ink); font-weight:700;}
+  .why{display:block; color:#444; font-size:.82rem; margin-top:.15rem;}
+
+  /* ── principles ── */
+  .principles{counter-reset:pr; max-width:52rem;}
+  .pr{display:grid; grid-template-columns:3.2rem 1fr; gap:.8rem; padding:.8rem 0; border-bottom:1px solid #ddd;}
+  .pr::before{
+    counter-increment:pr; content:counter(pr,decimal-leading-zero);
+    font-family:var(--mono); font-size:1.4rem; color:var(--red); font-weight:400;
+  }
+  .pr b{display:block;}
+  .pr span{font-size:.88rem; color:#333;}
+
+  /* ── timeline ── */
+  .timeline{display:grid; grid-template-columns:repeat(6,1fr); gap:2px; margin:1.2rem 0; font-size:.72rem; font-family:var(--mono);}
+  .tl-h{background:var(--ink); color:#fff; padding:.4rem .5rem; text-transform:uppercase; letter-spacing:.08em;}
+  .tl-c{background:var(--soft); padding:.5rem; min-height:5.2rem; line-height:1.5;}
+  .tl-c .on{color:var(--red); font-weight:700;}
+
+  /* ── metrics ── */
+  .metrics{display:grid; grid-template-columns:repeat(auto-fit,minmax(215px,1fr)); gap:1.4rem; margin-top:1.2rem;}
+  .metric{border-top:3px solid var(--ink); padding-top:.6rem;}
+  .metric .v{font-size:1.7rem; font-weight:800; letter-spacing:-.02em;}
+  .metric .v small{font-size:.85rem; font-weight:400; color:var(--grey);}
+  .metric .l{font-size:.78rem; color:#333; margin-top:.2rem;}
+
+  .note{border:1.5px solid var(--ink); padding:1rem 1.2rem; max-width:52rem; font-size:.88rem; margin:1.4rem 0;}
+  .note b{text-transform:uppercase; font-size:.76rem; letter-spacing:.08em;}
+  footer{margin-top:5rem; border-top:3px solid var(--ink); padding-top:1rem; font-family:var(--mono); font-size:.72rem; color:var(--grey);}
+  @media print{ body{font-size:11px;} .page{max-width:none;} }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <div class="kicker">OpenCaseLaw · opencaselaw.ch · plan of record · 2026-07-02</div>
+  <h1>The <span class="red">Useful</span><br>Dataset<span class="thin"> Plan</span></h1>
+  <p class="thesis">A decision corpus becomes legal infrastructure when every row is
+  <b>complete</b>, <b>knows what it is</b>, <b>knows where it stands</b>, and
+  <b>declares how much of the whole it represents</b>. Everything below serves those four properties,
+  for four audiences: lawyers, courts, researchers, and builders.</p>
+  <div class="meta">basis: 995,262 decisions · 118 courts · 8.65M resolved citation edges · 21,108 laws ·
+  ~2,000+ weekly assistant users · inputs: LegalStats upstream wishlist (verified 07-02) + deep-review backlog (07-01) + Tier-1 roadmap</div>
+</header>
+
+<!-- ─────────────────────────── 1 ─────────────────────────── -->
+<section id="ladder">
+  <div class="secnum">01 / THE MODEL</div>
+  <h2>Four properties, stacked</h2>
+  <p>Each layer is only as useful as the one beneath it. Statistics on wrong dates mislead;
+  an appeal graph over unstable IDs rots; honest coverage numbers are the licence to publish any statistic at all.
+  The plan works bottom-up.</p>
+  <div class="ladder">
+    <div class="rung"><span class="n">I</span><h4>Trust</h4><p>Fresh daily, text-true, typed dates, stable IDs, alerting that pages a human. The row is correct.</p></div>
+    <div class="rung"><span class="n">II</span><h4>Structure</h4><p>Proceeding type, branch, chamber, legal area, document form, section offsets. The row knows what it is.</p></div>
+    <div class="rung"><span class="n">III</span><h4>Relation</h4><p>Appeal chains, treatment graph, BGE linkage, resolved citations everywhere. The row knows where it stands.</p></div>
+    <div class="rung"><span class="n">IV</span><h4>Honesty</h4><p>Per-court coverage vs. portal totals, publication-practice notes, methodology. The row declares its denominator.</p></div>
+  </div>
+</section>
+
+<!-- ─────────────────────────── 2 ─────────────────────────── -->
+<section id="audiences">
+  <div class="secnum">02 / WHO GETS WHAT</div>
+  <h2>Audience &times; layer</h2>
+  <table>
+    <tr><th></th><th>Trust</th><th>Structure</th><th>Relation</th><th>Honesty</th></tr>
+    <tr>
+      <td class="aud">Lawyers</td>
+      <td>Cite without fear: verbatim quotes, R1–R3 contract, same-day BGer.</td>
+      <td>Filter by proceeding type ("summarische Rechtsöffnung, ZH, 2023–25"), not keyword luck.</td>
+      <td><b>"Is this still good law?"</b> — treatment graph; appeal odds for the client memo.</td>
+      <td>Know when silence means "not published", not "no case".</td>
+    </tr>
+    <tr>
+      <td class="aud">Courts</td>
+      <td>A reliable mirror of their own published output, correctly dated.</td>
+      <td>Their chambers &amp; procedures mapped to statutory anchors, comparable across cantons.</td>
+      <td>Reversal &amp; confirmation patterns of their instances, grounded not anecdotal.</td>
+      <td>Their publication practice made visible — the Art. 401a conversation starter.</td>
+    </tr>
+    <tr>
+      <td class="aud">Researchers</td>
+      <td>Typed dates, stable IDs, reproducible snapshots (Merkle root, HF mirror).</td>
+      <td>A shared proceeding taxonomy = comparable units of analysis at last.</td>
+      <td>8.65M resolved edges + appeal funnel in Parquet — network science ready.</td>
+      <td><b>The selection-bias answer</b> every peer reviewer demands (DataJust died here).</td>
+    </tr>
+    <tr>
+      <td class="aud">Builders</td>
+      <td>Schema-stable deltas, no re-keying, <code>has_full_text</code> everywhere.</td>
+      <td>Enums with fixed semantics; NULL over guess; machine-readable <code>quotable</code> flags.</td>
+      <td>Relations as data, not as scraping homework (LegalStats: "worth more than any text mining").</td>
+      <td>Coverage table = their methodology page, for free.</td>
+    </tr>
+  </table>
+</section>
+
+<!-- ─────────────────────────── 3 ─────────────────────────── -->
+<section id="principles">
+  <div class="secnum">03 / RULES OF CONSTRUCTION</div>
+  <h2>Principles</h2>
+  <div class="principles">
+    <div class="pr"><div><b>Raw text is sacred.</b><span>R2 verbatim quotation depends on byte-true text. Cleaning (dehyphenation, normalization) ships as <em>additional</em> fields, never in place.</span></div></div>
+    <div class="pr"><div><b>Build-side beats scraper-side.</b><span>Docket codes, rubrums and citations are already in every row. Dictionaries and parsers at build time apply retroactively to 995k rows with zero scraper blast radius. Scraper changes only for data that exists solely at the portal (legal_area, filing_date, Streitwert).</span></div></div>
+    <div class="pr"><div><b>NULL over guess.</b><span>Every derived field carries its method; unknown stays NULL. Half-populated columns with drifting semantics (today's <code>outcome</code>, <code>decision_type</code>) are traps — fix the semantics or drop the column.</span></div></div>
+    <div class="pr"><div><b>Denominators or it didn't happen.</b><span>Every statistic the dataset enables must be pairable with "out of how many". Coverage metadata is a first-class product surface, not an internal health check.</span></div></div>
+    <div class="pr"><div><b>One corpus, three doors.</b><span>MCP (assistants), REST (apps), Parquet (bulk) expose the same fields with the same semantics. A field that exists in one door exists in all three.</span></div></div>
+    <div class="pr"><div><b>Completeness remains paramount.</b><span>Enrichment never trades away coverage; dedup never drops a legitimate decision. (Standing mission directive.)</span></div></div>
+  </div>
+</section>
+
+<!-- ─────────────────────────── 4 ─────────────────────────── -->
+<section id="phases">
+  <div class="secnum">04 / THE WORK</div>
+  <h2>Phases</h2>
+
+  <div class="phase">
+    <div class="phead"><h3>Phase 0 — Trust</h3><span class="badge now">IN FLIGHT NOW</span><span class="badge">July</span></div>
+    <ul class="items">
+      <li><div><b>Incremental cutover</b><span class="why">14h nightly → ~25min; retires the incident class behind serving degradation; drift gate counting from tonight (ge OCR verified live 07-02).</span></div><span class="tag"><span class="e">M</span> · gated · 7 green nights</span></li>
+      <li><div><b>Text integrity as a guarantee</b><span class="why">ge OCR class done (7,051 recovered); NUL-strip deployed; add the gate-level control-char regression check; ne/ti/so structure tail.</span></div><span class="tag"><span class="e">S–M</span> · QC gate</span></li>
+      <li><div><b>Typed, validated <code>decision_date</code></b><span class="why">DATE not VARCHAR; rule: date ∈ [docket_year−1, +3] as QUARANTINE; fixes confirmed GR SR2/SBK impossible dates (2025 dockets dated 2012).</span></div><span class="tag"><span class="e">S</span> · build+QC</span></li>
+      <li><div><b>Stable IDs + schema-stable deltas</b><span class="why">cli:ch canonical identity (in flight); delta parquet = base schema + <code>has_full_text</code>; no re-keying between runs.</span></div><span class="tag"><span class="e">S</span> · export</span></li>
+      <li><div><b>Alerting → a human</b><span class="why">Done 07-01: dispatcher live, QC failed-WARNINGs visible. Remaining: second channel, authenticated topics.</span></div><span class="tag"><span class="e">S</span> · mostly done</span></li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <div class="phead"><h3>Phase 1 — Structure</h3><span class="badge red">HIGHEST NEW VALUE / EFFORT</span><span class="badge">Aug</span></div>
+    <ul class="items">
+      <li><div><b><code>proceeding_type</code> + <code>procedural_code</code> dictionary</b><span class="why">Versioned <code>data/proceeding_codes.yaml</code> mapping court × docket-code → statutory slug (ZPO/SchKG/BGG/StPO/VwVG taxonomy from the wishlist §0). BGG first: pure prefix lookup covers 191k BGer rows in a day. Then ZH, VD, AG, SO, BE… Target ≥85% of post-2000 rows; NULL elsewhere.</span></div><span class="tag"><span class="e">M</span> · build-side</span></li>
+      <li><div><b><code>branch</code> for every row</b><span class="why">zivil | straf | oeffentlich | sozialversicherung, derived from court/chamber — near-total coverage, unlocks coarse filtering everywhere, solves composite files (be_zivilstraf, lu).</span></div><span class="tag"><span class="e">S</span> · build-side</span></li>
+      <li><div><b><code>chamber</code> fill + <code>decision_type</code> semantics</b><span class="why">Copy parsed docket code where portal gave none (37.8% → ~90%); decision_type = document form only, text-head derived, one meaning.</span></div><span class="tag"><span class="e">S</span> · build-side</span></li>
+      <li><div><b>Section offsets in the export</b><span class="why">The structure sidecar already parses cantonal Rubrum/Sachverhalt/Erwägungen/Dispositiv — expose the offsets in Parquet. Export-only gap.</span></div><span class="tag"><span class="e">S</span> · export</span></li>
+      <li><div><b><code>legal_area</code> at the portals + <code>full_text_clean</code></b><span class="why">Capture verbatim categories where portals expose them (fold into per-court maintenance); dehyphenated variant as an additional column.</span></div><span class="tag"><span class="e">ongoing</span> · scraper, gated</span></li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <div class="phead"><h3>Phase 2 — Relation</h3><span class="badge red">THE DIFFERENTIATORS</span><span class="badge">Sep–Oct</span></div>
+    <ul class="items">
+      <li><div><b><code>appealed_docket / _date / _court</code></b><span class="why">Parsed at build from the rubrum ("gegen das Urteil des Obergerichts … vom …") + existing citation graph. Unlocks appeal rates, reversal rates, instance-chain durations — the most-marketed analytic in comparable markets, and better appeal chains in our own tools. BGer first (191k rows, high extractability), cantonal appellate next.</span></div><span class="tag"><span class="e">M</span> · build-side</span></li>
+      <li><div><b>Repair BGE ↔ BGer linkage 2025+</b><span class="why">Confirmed collapse (149/175 in 2023 → 8/183 in 2025, 0/10 in 2026) — an entscheidsuche-retirement casualty. Restore the back-link in the direct BGE scraper or derive at build. Precedence signals depend on it.</span></div><span class="tag"><span class="e">M</span> · defect</span></li>
+      <li><div><b>Treatment graph (Swiss KeyCite)</b><span class="why">overrules / confirms / distinguishes over 8.65M edges; deterministic markers ("in Änderung der Rechtsprechung", "précisé la jurisprudence") prototyped on a 1,000-edge sample before any LLM pass. No Swiss equivalent exists. Answers the lawyer's first question: is this still good law?</span></div><span class="tag"><span class="e">L</span> · spec first</span></li>
+      <li><div><b>Resolved citation edges in Parquet</b><span class="why">The 8.65M resolved edges leave the MCP silo; <code>cited_decisions</code> stops being raw strings.</span></div><span class="tag"><span class="e">S</span> · export</span></li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <div class="phead"><h3>Phase 3 — Honesty</h3><span class="badge red">THE CREDIBILITY MOAT</span><span class="badge">Sep, then continuous</span></div>
+    <ul class="items">
+      <li><div><b><code>coverage(court, year, scraped, portal_total, note)</code></b><span class="why">The internal portal-count checks become a published companion table + a methodology page. Selection bias is the #1 attack on decision statistics; this is the defense — and today's backfill result (be_vg gap NOT re-run-recoverable) shows why the note column matters: gaps must be explained, not just counted.</span></div><span class="tag"><span class="e">M</span> · export+docs</span></li>
+      <li><div><b>Publication-practice notes per court</b><span class="why">"SG 2002–2017 published 5 of 272 employment rulings" — the context that turns a misleading number into an honest one. Seeded from the per-court audits already done.</span></div><span class="tag"><span class="e">ongoing</span></span></li>
+      <li><div><b>Per-court gap investigations</b><span class="why">be_vg 2,159 / vs 393 / bs 351: structural discovery gaps, per-court diagnosis (gated). Coverage table marks them OPEN until closed.</span></div><span class="tag"><span class="e">M each</span> · gated</span></li>
+    </ul>
+  </div>
+
+  <div class="phase grey">
+    <div class="phead"><h3>Phase 4 — Depth</h3><span class="badge">Q4+</span></div>
+    <ul class="items">
+      <li><div><b>Pre-2000 Botschaften (OR/ZGB/StGB)</b><span class="why">The most-cited articles predate 2000; OCR track over the scanned Bundesblatt (tesseract pipeline proven on ge). Historical teleological interpretation.</span></div><span class="tag"><span class="e">L</span></span></li>
+      <li><div><b>Search bench 100 → 500–1000 + rerank gate</b><span class="why">Statistical power for all search-quality work; then the always-firing LLM-rerank gate fix (latency −2–3s and −$85/mo, MRR-gated).</span></div><span class="tag"><span class="e">M</span></span></li>
+      <li><div><b>Pre-2007 EVG recovery (~15,215)</b><span class="why">Last known systematic federal gap; 100-docket probe first.</span></div><span class="tag"><span class="e">L</span></span></li>
+      <li><div><b><code>filing_date</code> / <code>streitwert</code> where portals expose them</b><span class="why">Rare but gold: full proceeding durations instead of instance spans.</span></div><span class="tag"><span class="e">opportunistic</span></span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ─────────────────────────── 5 ─────────────────────────── -->
+<section id="timeline">
+  <div class="secnum">05 / SEQUENCE</div>
+  <h2>Timeline</h2>
+  <div class="timeline">
+    <div class="tl-h">Jul W1–2</div><div class="tl-h">Jul W3–4</div><div class="tl-h">Aug</div><div class="tl-h">Sep</div><div class="tl-h">Oct</div><div class="tl-h">Q4+</div>
+    <div class="tl-c"><span class="on">cutover drift nights</span><br>quick-wins batch: dates, deltas, branch, chamber, edges-parquet, coverage export</div>
+    <div class="tl-c"><span class="on">cutover flip</span><br>GR dates fix<br>QC control-char gate<br>sections export</div>
+    <div class="tl-c"><span class="on">proceeding_type</span><br>BGG → ZH/VD/AG/SO<br>legal_area capture starts</div>
+    <div class="tl-c"><span class="on">appealed_*</span> (BGer)<br>BGE-linkage repair<br>coverage methodology page</div>
+    <div class="tl-c"><span class="on">treatment graph</span> spec + marker prototype<br>appealed_* cantonal</div>
+    <div class="tl-c">pre-2000 Botschaften<br>EVG recovery<br>bench + rerank gate<br>treatment graph v1</div>
+  </div>
+  <div class="note"><b>Gating</b> — Every schema/export/build change ships as a reviewed diff through the pipeline gate; scraper-side items ride per-court maintenance. The quick-wins batch (already user-approved) starts the moment tonight's drift number is in. Nothing in this plan trades completeness for enrichment.</div>
+</section>
+
+<!-- ─────────────────────────── 6 ─────────────────────────── -->
+<section id="metrics">
+  <div class="secnum">06 / DONE MEANS</div>
+  <h2>Success metrics</h2>
+  <div class="metrics">
+    <div class="metric"><div class="v">≥85%<small> of post-2000 rows</small></div><div class="l"><code>proceeding_type</code> populated from the dictionary; 100% carry <code>branch</code>.</div></div>
+    <div class="metric"><div class="v">≥95%<small> of BGer</small></div><div class="l"><code>appealed_*</code> extracted where a lower decision exists; appeal-funnel query works end-to-end.</div></div>
+    <div class="metric"><div class="v">≥85%<small> for 2025+</small></div><div class="l">BGE ↔ BGer linkage restored to the 2015–2024 level.</div></div>
+    <div class="metric"><div class="v">100%<small> of courts</small></div><div class="l">Row in the coverage table; every known gap carries an explanation note.</div></div>
+    <div class="metric"><div class="v">0<small> impossible dates</small></div><div class="l">Typed dates; QUARANTINE rule live; GR class fixed.</div></div>
+    <div class="metric"><div class="v">~25<small> min nightly</small></div><div class="l">Cutover complete; full rebuild demoted to Sunday; no build-hour serving degradation.</div></div>
+    <div class="metric"><div class="v">3<small> doors, 1 schema</small></div><div class="l">MCP, REST, Parquet expose identical field semantics; deltas never diverge.</div></div>
+    <div class="metric"><div class="v">v1<small> treatment graph</small></div><div class="l">Marker-based overrules/confirms/distinguishes served on the citation graph.</div></div>
+  </div>
+</section>
+
+<!-- ─────────────────────────── 7 ─────────────────────────── -->
+<section id="risks">
+  <div class="secnum">07 / KNOWN RISKS</div>
+  <h2>Risks &amp; their answers</h2>
+  <ul class="items" style="max-width:52rem">
+    <li><div><b>Taxonomy overreach</b><span class="why">Forcing 26 cantonal procedural vocabularies into one enum invites wrong labels. Answer: NULL over guess; per-court dictionary entries reviewed against samples; version the dictionary.</span></div><span class="tag">structure</span></li>
+    <li><div><b>Derived-field drift</b><span class="why">Build-side derivations can silently rot as courts change code schemes. Answer: QC checks per derived field (coverage % per court, week-over-week drift).</span></div><span class="tag">trust</span></li>
+    <li><div><b>Coverage table misread as quality score</b><span class="why">Low publication rates are court practice, not scraper failure. Answer: the note column + methodology page distinguish "not published" from "not captured".</span></div><span class="tag">honesty</span></li>
+    <li><div><b>Single maintainer</b><span class="why">The plan is sequenced so every phase leaves the dataset strictly better even if the next never ships. No big-bang migrations; every field additive.</span></div><span class="tag">meta</span></li>
+  </ul>
+</section>
+
+<footer>
+  opencaselaw.ch · CC0 data / MIT code · plan of record 2026-07-02 · sources: LegalStats wishlist (claims verified against served DB 07-02) ·
+  deep-review backlog 07-01 (32 items) · Tier-1 roadmap · drafted for review, not yet executed beyond Phase 0 in-flight items
+</footer>
+
+</div>
+</body>
+</html>

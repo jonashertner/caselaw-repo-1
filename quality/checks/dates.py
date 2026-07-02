@@ -10,6 +10,7 @@ Catches:
 """
 from __future__ import annotations
 
+import re
 import sqlite3
 from datetime import date, timedelta
 
@@ -234,6 +235,89 @@ def check_publication_before_decision(conn: sqlite3.Connection, **_) -> CheckRes
                    "suspect publication_date + add a build_fts5 forward "
                    "guard. Growth here = a scraper labeling the dates "
                    "backwards.",
+    )
+
+
+# ── Docket-year plausibility (LegalStats wishlist P0.3 / backlog L2) ──
+#
+# A decision cannot predate its docket's registration year by more than a
+# year-boundary edge case. Measured 2026-07-02 on the served DB: 9,761 rows
+# violate this under STRICT extraction (627,265 rows have an unambiguous
+# registration year in the docket), led by ge_gerichte 3,829 /
+# zh_verwaltungsgericht 1,188 / ne_gerichte 885 — a pre-existing stock
+# tracked as backlog L2/P0.3b cleanup. This check BASELINES the stock and
+# alerts on GROWTH (a scraper date regression), mirroring the
+# publication_before_decision pattern. Strictness matters: a naive
+# "any year in the docket" extractor inflates the count to ~15k with
+# cause-year / cited-docket noise (GE), so only two unambiguous
+# registration-year positions are trusted.
+DOCKET_YEAR_IMPOSSIBLE_BASELINE = 10_800  # 9,761 measured + headroom
+
+_YEAR = r"(18[7-9]\d|19\d\d|20[0-3]\d)"
+_TRAILING_YEAR = re.compile(r"[/_.]" + _YEAR + r"\s*$")
+_MIDDLE_YEAR = re.compile(
+    r"^[A-Za-z][A-Za-z0-9]{0,14}[ ./-]" + _YEAR + r"[ ./-]\d")
+
+
+def docket_registration_year(docket: str) -> int | None:
+    """Registration year from a docket string, STRICT positions only.
+
+    Trusted: trailing separator-year ("5A_1008/2025", "HC/2024.15") and
+    code-year-number ("VSKLA.2024.5", "SR2 2025 84"). Anything else
+    (cause years, cited foreign dockets, bare numbers) returns None —
+    NULL over guess."""
+    m = _TRAILING_YEAR.search(docket)
+    if m:
+        return int(m.group(1))
+    m = _MIDDLE_YEAR.match(docket)
+    if m:
+        return int(m.group(1))
+    return None
+
+
+def check_docket_year_plausibility(conn: sqlite3.Connection, **_) -> CheckResult:
+    """decision_date more than 1 year BEFORE the docket registration year
+    is impossible (courts do not rule before a case exists). Counts the
+    corpus-wide stock and alerts on growth over the recorded baseline."""
+    from collections import Counter
+
+    n = 0
+    by_court: Counter = Counter()
+    sample = []
+    for docket, d, court, did in conn.execute(
+        "SELECT docket_number, decision_date, court, decision_id "
+        "FROM decisions WHERE docket_number IS NOT NULL "
+        "AND decision_date IS NOT NULL AND decision_date != '' "
+        "AND length(decision_date) = 10"
+    ):
+        year = docket_registration_year(docket or "")
+        if year is None:
+            continue
+        try:
+            delta = int(d[:4]) - year
+        except ValueError:
+            continue
+        if delta < -1:
+            n += 1
+            by_court[court] += 1
+            if len(sample) < 5 and delta <= -3:
+                sample.append({"decision_id": did, "docket_number": docket,
+                               "decision_date": d})
+    return CheckResult(
+        name="dates.docket_year_plausibility",
+        severity=Severity.WARNING,  # pre-existing stock; alerts on growth, never blocks
+        passed=(n <= DOCKET_YEAR_IMPOSSIBLE_BASELINE),
+        metric_value=n,
+        threshold=DOCKET_YEAR_IMPOSSIBLE_BASELINE,
+        message=(
+            f"{n} rows dated >1y before their docket registration year "
+            f"(baseline {DOCKET_YEAR_IMPOSSIBLE_BASELINE})"
+        ),
+        sample_rows=sample,
+        extra={"by_court": dict(by_court.most_common(10))},
+        fix_advice="growth = a scraper date-parsing regression (check the top "
+                   "court in by_court); the pre-existing stock is backlog "
+                   "L2/P0.3b (ge, zh_vwg, ne, sg, bs, gr cleanup)",
     )
 
 
