@@ -1023,6 +1023,34 @@ def _normalize_dates(conn: sqlite3.Connection) -> tuple[int, int, int]:
     return n_zero, n_future, n_pre1700
 
 
+def _derive_branch_column(conn: sqlite3.Connection) -> int:
+    """P1.1: populate the coarse ``branch`` column (zivil | straf |
+    oeffentlich | sozialversicherung) from branch_map.derive_branch —
+    court map, per-court docket rules, official chamber names. NULL over
+    guess; the same module drives the parquet export so all doors agree."""
+    from branch_map import derive_branch
+
+    updates = []
+    n = 0
+    for did, court, chamber, docket in conn.execute(
+        "SELECT decision_id, court, chamber, docket_number FROM decisions"
+    ):
+        b = derive_branch(court, chamber, docket)
+        if b:
+            updates.append((b, did))
+            if len(updates) >= 5000:
+                conn.executemany(
+                    "UPDATE decisions SET branch=? WHERE decision_id=?", updates)
+                n += len(updates)
+                updates = []
+    if updates:
+        conn.executemany(
+            "UPDATE decisions SET branch=? WHERE decision_id=?", updates)
+        n += len(updates)
+    conn.commit()
+    return n
+
+
 def _null_implausible_gr_dates(conn: sqlite3.Connection) -> int:
     """Backlog L2 (2026-07-02): NULL gr_gerichte dates that are >3y before
     the docket's registration/volume year.
@@ -1960,6 +1988,8 @@ def build_database(
             n_gr_implausible = _null_implausible_gr_dates(conn)
             if n_gr_implausible:
                 logger.info(f"  Cleared {n_gr_implausible} gr_gerichte dates >3y before docket year (Praxis-digest junk recovery, L2) → NULL")
+            n_branch = _derive_branch_column(conn)
+            logger.info(f"  Derived branch for {n_branch} decisions (zivil/straf/oeffentlich/sozialversicherung, P1.1)")
             recovered = _recover_decision_dates(conn)
             if recovered:
                 logger.info(f"  Recovered {recovered} decision_date values from full_text (zh_verwaltungsgericht/gr_gerichte/bl_gerichte)")

@@ -12,6 +12,7 @@ SCHEMA_SQL = """
         court TEXT NOT NULL,
         canton TEXT NOT NULL,
         chamber TEXT,
+        branch TEXT,
         docket_number TEXT NOT NULL,
         docket_number_2 TEXT,
         decision_date TEXT,
@@ -45,6 +46,7 @@ SCHEMA_SQL = """
     CREATE INDEX IF NOT EXISTS idx_decisions_language ON decisions(language);
     CREATE INDEX IF NOT EXISTS idx_decisions_docket ON decisions(docket_number);
     CREATE INDEX IF NOT EXISTS idx_decisions_chamber ON decisions(chamber);
+    CREATE INDEX IF NOT EXISTS idx_decisions_branch ON decisions(branch);
     CREATE INDEX IF NOT EXISTS idx_decisions_type ON decisions(decision_type);
     CREATE INDEX IF NOT EXISTS idx_decisions_canonical ON decisions(canonical_key);
 
