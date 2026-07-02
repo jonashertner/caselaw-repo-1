@@ -51,6 +51,33 @@ NEUHEITEN_URL = (
 
 DOCKET_RE = re.compile(r"\b\d[A-Z]_\d+/\d{4}\b")
 
+# The aza:// document ids on the Neuheiten page are the authoritative list of
+# decisions actually PUBLISHED that day (one id per linked document):
+# aza://DD-MM-YYYY-<docket-stem>-<year>, e.g. aza://02-07-2026-1C_146-2025.
+AZA_ID_RE = re.compile(r"aza://\d{2}-\d{2}-\d{4}-([0-9A-Za-z_]+)-(\d{4})")
+
+
+def _extract_feed_dockets(text: str) -> set[str]:
+    """Dockets of the decisions actually LINKED on the Neuheiten page.
+
+    Extracts from the aza:// document ids, NOT from a docket regex over the
+    whole page: Revisions-/Erläuterungsgesuch entries carry the ATTACKED
+    judgment's docket in their title ("Revisionsgesuch gegen das Urteil ...
+    5A_402/2026 vom 15. Mai 2026"), and the broad regex swept those up as
+    phantom "new decisions" that can never be fetched (2026-07-01: x7
+    doc-service-failure alarms for 5A_402/2026; 2026-07-02: 3 more phantoms
+    from one Erläuterungsgesuch title — feed had 42 real aza ids but 45
+    regex-extracted dockets). Falls back to the broad regex only if the page
+    has dockets but no aza ids at all (markup-change safety net: over-
+    extraction beats silent blindness)."""
+    dockets = {f"{stem}/{year}" for stem, year in AZA_ID_RE.findall(text)}
+    if not dockets and DOCKET_RE.search(text):
+        logger.warning(
+            "Neuheiten page has docket strings but no aza:// ids — markup "
+            "change? Falling back to broad docket extraction")
+        return set(DOCKET_RE.findall(text))
+    return dockets
+
 _UA = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
@@ -121,7 +148,7 @@ def _fetch_neuheiten_via_proxy(url: str, proxy: str) -> set[str]:
     session.proxies = {"http": proxy, "https": proxy}
     r = session.get(url, timeout=45)
     r.raise_for_status()
-    return set(DOCKET_RE.findall(r.text))
+    return _extract_feed_dockets(r.text)
 
 
 def _fetch_neuheiten_direct(url: str) -> set[str]:
@@ -151,7 +178,7 @@ def _fetch_neuheiten_direct(url: str) -> set[str]:
                 "Incapsula still blocking after cookie refresh — manual "
                 "intervention needed (browser automation not bypassing)"
             )
-    return set(DOCKET_RE.findall(r.text))
+    return _extract_feed_dockets(r.text)
 
 
 def _is_workday(d=None) -> bool:
