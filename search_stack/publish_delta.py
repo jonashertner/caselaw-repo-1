@@ -194,13 +194,25 @@ _SELECT_COLS = (
     "decision_id, court, canton, chamber, docket_number, docket_number_2, "
     "decision_date, publication_date, language, title, regeste, "
     "full_text, source_url, pdf_url, scraped_at, source, source_id, "
-    "source_spider, content_hash"
+    "source_spider, content_hash, "
+    # base-parquet parity fields (P0.4): everything DECISION_SCHEMA needs
+    # that decisions.db carries. judges/clerks/collection/appeal_info/
+    # bge_reference/external_id exist only in the JSONL shards, so they are
+    # schema-present but NULL in deltas.
+    "abstract_de, abstract_fr, abstract_it, legal_area, outcome, "
+    "decision_type, cited_decisions, marked_for_publication"
 )
 
 
-def iter_decisions_by_ids(db_path: _Path, ids: Iterable[str], chunk: int = 500) -> Iterator[Dict[str, Any]]:
+def iter_decisions_by_ids(db_path: _Path, ids: Iterable[str], chunk: int = 500,
+                          raw: bool = False) -> Iterator[Dict[str, Any]]:
     """Stream full decision rows for the given decision_ids. Chunks the IN
     clause to keep SQLite parameter count sane.
+
+    ``raw=False`` (default) yields delta-vocabulary dicts via
+    _row_to_decision (the delta-sqlite consumer). ``raw=True`` yields the
+    unmapped decisions.db row dicts — used by the base-schema parquet
+    writer, which must see the base vocabulary (P0.4).
 
     Defensive against single-row page corruption (2026-05-16 incident):
     if a batch read raises ``DatabaseError`` mid-cursor (typically caused
@@ -230,7 +242,7 @@ def iter_decisions_by_ids(db_path: _Path, ids: Iterable[str], chunk: int = 500) 
                 )
                 for row in cur:
                     yielded.add(row["decision_id"])
-                    yield _row_to_decision(dict(row))
+                    yield dict(row) if raw else _row_to_decision(dict(row))
             except _sqlite3.DatabaseError as e:
                 # Batched cursor died mid-iteration (almost always means
                 # one specific row's overflow chain is corrupt). Retry the
@@ -249,7 +261,7 @@ def iter_decisions_by_ids(db_path: _Path, ids: Iterable[str], chunk: int = 500) 
                             [did],
                         ).fetchone()
                         if row:
-                            yield _row_to_decision(dict(row))
+                            yield dict(row) if raw else _row_to_decision(dict(row))
                     except _sqlite3.DatabaseError as e2:
                         log.error(
                             "iter_decisions_by_ids: SKIPPING %s — "
@@ -355,6 +367,47 @@ def _bulk_insert(delta_db: _Path, decisions: Iterable[Dict[str, Any]], batch: in
 
 
 # ── Parquet export ──────────────────────────────────────────────────────
+
+def _export_parquet_base_schema(db_path: _Path, ids, out_path: _Path) -> int:
+    """Write delta-{date}.parquet with the SAME schema as the full corpus
+    export (export_parquet.DECISION_SCHEMA incl. has_full_text/text_length
+    and real types), so consumers can append deltas to the base without
+    remapping (LegalStats wishlist P0.5; pre-fix this artifact was an
+    all-string parquet in the delta-sqlite vocabulary, no has_full_text).
+
+    Reads straight from decisions.db (base vocabulary) and reuses
+    export_parquet.normalize_row so computed fields match the full export
+    exactly. Fields that exist only in the JSONL shards (judges/clerks/
+    collection/appeal_info/bge_reference/external_id) are schema-present
+    but NULL in deltas.
+    """
+    import sys as _sys
+    _repo_root = str(_Path(__file__).resolve().parents[1])
+    if _repo_root not in _sys.path:
+        _sys.path.insert(0, _repo_root)
+    import pyarrow as pa
+    import pyarrow.parquet as pq
+    from export_parquet import DECISION_SCHEMA, normalize_row
+
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    writer = pq.ParquetWriter(str(out_path), schema=DECISION_SCHEMA,
+                              compression="zstd", use_dictionary=True)
+    total = 0
+    batch: List[Dict[str, Any]] = []
+    try:
+        for row in iter_decisions_by_ids(db_path, ids, raw=True):
+            batch.append(normalize_row(dict(row)))
+            if len(batch) >= 2000:
+                writer.write_table(pa.Table.from_pylist(batch, schema=DECISION_SCHEMA))
+                total += len(batch)
+                batch = []
+        if batch:
+            writer.write_table(pa.Table.from_pylist(batch, schema=DECISION_SCHEMA))
+            total += len(batch)
+    finally:
+        writer.close()
+    return total
+
 
 def _export_parquet(delta_db: _Path, out_path: _Path, columns: List[str] | None = None) -> int:
     import pyarrow as pa
@@ -798,7 +851,7 @@ def build_delta(
     _compress_zst(delta_sqlite, delta_zst, level=zstd_level)
 
     delta_parquet = work / f"delta-{date}.parquet"
-    _export_parquet(delta_sqlite, delta_parquet)
+    _export_parquet_base_schema(db_path, new_ids, delta_parquet)
 
     data_parquet = work / f"delta-{date}-data.parquet"
     _export_parquet(delta_sqlite, data_parquet, columns=BASE_COLS)
