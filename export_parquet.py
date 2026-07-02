@@ -418,6 +418,85 @@ def export_from_db(db_path: Path, output_dir: Path) -> dict[str, int]:
     return results
 
 
+# ── Citation-graph exports (backlog P2.4) ───────────────────────────────
+# The 8.65M resolved decision-to-decision edges and 11.86M statute
+# references existed only inside reference_graph.db (MCP-only). Exported as
+# self-contained parquet tables so researchers get the graph without
+# re-mining citations from text. Written to <output>/graph/ — deliberately
+# NOT into the load_dataset data/ directory (a different-schema parquet
+# there breaks the HF dataset config); publish Step 4 uploads graph/
+# to its own repo path.
+
+CITATION_EDGE_SCHEMA = pa.schema([
+    pa.field("source_decision_id", pa.string(), nullable=False),
+    pa.field("target_decision_id", pa.string(), nullable=False),
+    pa.field("target_ref", pa.string(), nullable=True),      # raw citation string
+    pa.field("match_type", pa.string(), nullable=True),
+    pa.field("confidence_score", pa.float32(), nullable=True),
+])
+
+STATUTE_REF_SCHEMA = pa.schema([
+    pa.field("decision_id", pa.string(), nullable=False),
+    pa.field("law_code", pa.string(), nullable=True),
+    pa.field("article", pa.string(), nullable=True),
+    pa.field("paragraph", pa.string(), nullable=True),
+    pa.field("mention_count", pa.int32(), nullable=True),
+])
+
+
+def _stream_query_to_parquet(conn, sql: str, schema, out_path: Path,
+                             batch_size: int = 50_000) -> int:
+    """Stream a query into a parquet file (atomic .tmp + replace)."""
+    tmp = out_path.with_suffix(out_path.suffix + ".tmp")
+    writer = pq.ParquetWriter(str(tmp), schema, compression="zstd",
+                              use_dictionary=True)
+    names = [f.name for f in schema]
+    total = 0
+    try:
+        cur = conn.execute(sql)
+        while True:
+            rows = cur.fetchmany(batch_size)
+            if not rows:
+                break
+            batch = {n: [r[i] for r in rows] for i, n in enumerate(names)}
+            writer.write_table(pa.Table.from_pydict(batch, schema=schema))
+            total += len(rows)
+    finally:
+        writer.close()
+    os.replace(tmp, out_path)
+    return total
+
+
+def export_citation_graph(graph_db: Path, output_dir: Path) -> dict[str, int]:
+    """Export resolved citation edges + statute references from
+    reference_graph.db. Returns row counts; empty dict if the DB is absent
+    (dev machines / tests) — the caller treats that as a clean skip."""
+    if not graph_db.exists():
+        logger.info(f"reference_graph.db not found at {graph_db} — skipping graph export")
+        return {}
+    out = output_dir / "graph"
+    out.mkdir(parents=True, exist_ok=True)
+    conn = sqlite3.connect(f"file:{graph_db}?mode=ro&immutable=1", uri=True)
+    try:
+        n_edges = _stream_query_to_parquet(
+            conn,
+            "SELECT source_decision_id, target_decision_id, target_ref, "
+            "match_type, CAST(confidence_score AS REAL) "
+            "FROM citation_targets WHERE target_decision_id IS NOT NULL",
+            CITATION_EDGE_SCHEMA, out / "citations.parquet")
+        logger.info(f"  graph/citations.parquet: {n_edges} resolved edges")
+        n_refs = _stream_query_to_parquet(
+            conn,
+            "SELECT ds.decision_id, s.law_code, s.article, s.paragraph, "
+            "CAST(ds.mention_count AS INTEGER) "
+            "FROM decision_statutes ds JOIN statutes s USING (statute_id)",
+            STATUTE_REF_SCHEMA, out / "statute_references.parquet")
+        logger.info(f"  graph/statute_references.parquet: {n_refs} references")
+    finally:
+        conn.close()
+    return {"citations": n_edges, "statute_references": n_refs}
+
+
 def main():
     parser = argparse.ArgumentParser(description="Export decisions to Parquet")
     parser.add_argument(
@@ -436,6 +515,11 @@ def main():
         "--output", type=str, default="output/dataset",
         help="Output directory for Parquet files (default: output/dataset)",
     )
+    parser.add_argument(
+        "--graph-db", type=str, default="output/reference_graph.db",
+        help="reference_graph.db for the citation-graph export "
+             "(skipped cleanly if absent)",
+    )
     parser.add_argument("-v", "--verbose", action="store_true")
     args = parser.parse_args()
 
@@ -452,9 +536,13 @@ def main():
         if not args.jsonl:
             logger.warning(f"No database at {db_path}, falling back to JSONL")
         results = export_parquet(Path(args.input), Path(args.output))
+    graph_counts = export_citation_graph(Path(args.graph_db), Path(args.output))
     if results:
         total = sum(results.values())
         print(f"\nExported {total} decisions to {len(results)} Parquet files")
+        if graph_counts:
+            print(f"Graph: {graph_counts.get('citations', 0)} citation edges, "
+                  f"{graph_counts.get('statute_references', 0)} statute references")
     else:
         print("No decisions exported", file=sys.stderr)
         sys.exit(1)
