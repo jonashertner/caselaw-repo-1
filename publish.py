@@ -617,13 +617,15 @@ def step_3_export_parquet(dry_run: bool = False) -> bool:
         logger.error("  export_parquet.py not found")
         return False
 
-    return run_cmd(
-        [sys.executable, str(script),
-         "--input", str(OUTPUT_DIR / "decisions"),
-         "--output", str(DATASET_DIR)],
-        "Export Parquet",
-        dry_run,
-    )
+    cmd = [sys.executable, str(script),
+           "--input", str(OUTPUT_DIR / "decisions"),
+           "--output", str(DATASET_DIR)]
+    # The erwaegungen-paragraphs artifact is 4.8 GB (P1.4) — weekly cadence
+    # only (Sunday, aligned with the full-snapshot rhythm); the lean
+    # structure.parquet + graph exports ride every run.
+    if datetime.now(timezone.utc).weekday() == 6:
+        cmd.append("--structure-paragraphs")
+    return run_cmd(cmd, "Export Parquet", dry_run)
 
 
 def step_4_upload_hf(dry_run: bool = False) -> bool:
@@ -674,30 +676,33 @@ def step_4_upload_hf(dry_run: bool = False) -> bool:
             repo_id=HF_REPO_ID,
             repo_type="dataset",
             allow_patterns="*.parquet",
-            ignore_patterns=["graph/*"],
+            ignore_patterns=["graph/*", "structure/*"],
             delete_patterns="*.parquet",  # prune remote parquet not in local folder
         )
 
         logger.info(f"  Uploaded {len(parquet_files)} files to {HF_REPO_ID}")
 
-        # Citation-graph exports (P2.4): 8.65M resolved edges + 11.86M statute
-        # references, written by export_parquet.py to <dataset>/graph/.
-        # Own try/except: a graph-artifact hiccup must not fail the main
+        # Aux exports, each to its OWN repo path (a foreign-schema parquet
+        # under data/ would break the load_dataset config): graph/ = 8.65M
+        # resolved citation edges + 11.86M statute refs (P2.4); structure/ =
+        # section metadata + erwaegungen paragraph segmentation (P1.4).
+        # Own try/except per dir: an aux hiccup must not fail the main
         # dataset upload that already succeeded.
-        graph_dir = DATASET_DIR / "graph"
-        if graph_dir.exists() and list(graph_dir.glob("*.parquet")):
-            try:
-                api.upload_folder(
-                    folder_path=str(graph_dir),
-                    path_in_repo="graph",
-                    repo_id=HF_REPO_ID,
-                    repo_type="dataset",
-                    allow_patterns="*.parquet",
-                    delete_patterns="*.parquet",
-                )
-                logger.info("  Uploaded citation-graph parquet to graph/")
-            except Exception as e:
-                logger.error(f"  graph/ upload failed (main dataset upload unaffected): {e}")
+        for aux in ("graph", "structure"):
+            aux_dir = DATASET_DIR / aux
+            if aux_dir.exists() and list(aux_dir.glob("*.parquet")):
+                try:
+                    api.upload_folder(
+                        folder_path=str(aux_dir),
+                        path_in_repo=aux,
+                        repo_id=HF_REPO_ID,
+                        repo_type="dataset",
+                        allow_patterns="*.parquet",
+                        delete_patterns="*.parquet",
+                    )
+                    logger.info(f"  Uploaded aux parquet to {aux}/")
+                except Exception as e:
+                    logger.error(f"  {aux}/ upload failed (main dataset upload unaffected): {e}")
 
         return True
 

@@ -451,6 +451,9 @@ def _stream_query_to_parquet(conn, sql: str, schema, out_path: Path,
     writer = pq.ParquetWriter(str(tmp), schema, compression="zstd",
                               use_dictionary=True)
     names = [f.name for f in schema]
+    # SQLite has no boolean type; Arrow refuses int->bool, so coerce 0/1
+    # (and NULL) for bool-typed schema fields here.
+    bool_idx = {i for i, f in enumerate(schema) if pa.types.is_boolean(f.type)}
     total = 0
     try:
         cur = conn.execute(sql)
@@ -458,7 +461,11 @@ def _stream_query_to_parquet(conn, sql: str, schema, out_path: Path,
             rows = cur.fetchmany(batch_size)
             if not rows:
                 break
-            batch = {n: [r[i] for r in rows] for i, n in enumerate(names)}
+            batch = {
+                n: [(None if r[i] is None else bool(r[i])) for r in rows]
+                if i in bool_idx else [r[i] for r in rows]
+                for i, n in enumerate(names)
+            }
             writer.write_table(pa.Table.from_pydict(batch, schema=schema))
             total += len(rows)
     finally:
@@ -497,6 +504,76 @@ def export_citation_graph(graph_db: Path, output_dir: Path) -> dict[str, int]:
     return {"citations": n_edges, "statute_references": n_refs}
 
 
+# ── Decision-structure exports (backlog P1.4) ───────────────────────────
+# The structure sidecar (Rubrum/Sachverhalt/Erwägungen/Dispositiv extraction
+# + per-paragraph segmentation with E-numbers) was MCP-only. Exported so
+# researchers can do dispositiv-anchored extraction without re-parsing:
+# structure.parquet = lean per-decision metadata; erwaegungen_paragraphs
+# .parquet = the segmentation WITH verbatim text (the anchoring substrate).
+
+STRUCTURE_META_SCHEMA = pa.schema([
+    pa.field("decision_id", pa.string(), nullable=False),
+    pa.field("court", pa.string(), nullable=True),
+    pa.field("language", pa.string(), nullable=True),
+    pa.field("has_sachverhalt", pa.bool_(), nullable=False),
+    pa.field("has_erwaegungen", pa.bool_(), nullable=False),
+    pa.field("has_dispositiv", pa.bool_(), nullable=False),
+    pa.field("sachverhalt_method", pa.string(), nullable=True),
+    pa.field("erwaegungen_method", pa.string(), nullable=True),
+    pa.field("dispositiv_method", pa.string(), nullable=True),
+    pa.field("erwaegungen_paragraph_count", pa.int32(), nullable=True),
+])
+
+PARAGRAPH_SCHEMA = pa.schema([
+    pa.field("decision_id", pa.string(), nullable=False),
+    pa.field("e_number", pa.string(), nullable=True),
+    pa.field("depth", pa.int32(), nullable=True),
+    pa.field("parent", pa.string(), nullable=True),
+    pa.field("text", pa.string(), nullable=False),
+])
+
+
+def export_decision_structure(structure_db: Path, output_dir: Path,
+                              include_paragraphs: bool = False) -> dict[str, int]:
+    """Export the structure sidecar. Clean skip if the DB is absent.
+
+    structure.parquet (per-decision metadata, ~7 MB) is cheap enough for
+    every run. erwaegungen_paragraphs.parquet measured 4.8 GB on the full
+    corpus (9.07M paragraphs WITH text, 10 min) — re-uploading that nightly
+    for slowly-changing data is waste, so it is opt-in
+    (``include_paragraphs``; the publish pipeline passes it on Sundays,
+    aligned with the weekly full-snapshot cadence)."""
+    if not structure_db.exists():
+        logger.info(f"decision_structure.db not found at {structure_db} — skipping structure export")
+        return {}
+    out = output_dir / "structure"
+    out.mkdir(parents=True, exist_ok=True)
+    conn = sqlite3.connect(f"file:{structure_db}?mode=ro&immutable=1", uri=True)
+    try:
+        n_meta = _stream_query_to_parquet(
+            conn,
+            "SELECT decision_id, court, language, "
+            "CAST(sachverhalt IS NOT NULL AND sachverhalt != '' AS INTEGER), "
+            "CAST(erwaegungen IS NOT NULL AND erwaegungen != '' AS INTEGER), "
+            "CAST(dispositiv IS NOT NULL AND dispositiv != '' AS INTEGER), "
+            "sachverhalt_method, erwaegungen_method, dispositiv_method, "
+            "CAST(erwaegungen_paragraph_count AS INTEGER) FROM structure",
+            STRUCTURE_META_SCHEMA, out / "structure.parquet")
+        logger.info(f"  structure/structure.parquet: {n_meta} decisions")
+        counts = {"structure": n_meta}
+        if include_paragraphs:
+            n_para = _stream_query_to_parquet(
+                conn,
+                "SELECT decision_id, e_number, CAST(depth AS INTEGER), parent, text "
+                "FROM erwaegungen_paragraph WHERE text IS NOT NULL AND text != ''",
+                PARAGRAPH_SCHEMA, out / "erwaegungen_paragraphs.parquet")
+            logger.info(f"  structure/erwaegungen_paragraphs.parquet: {n_para} paragraphs")
+            counts["erwaegungen_paragraphs"] = n_para
+    finally:
+        conn.close()
+    return counts
+
+
 def main():
     parser = argparse.ArgumentParser(description="Export decisions to Parquet")
     parser.add_argument(
@@ -520,6 +597,16 @@ def main():
         help="reference_graph.db for the citation-graph export "
              "(skipped cleanly if absent)",
     )
+    parser.add_argument(
+        "--structure-db", type=str, default="output/decision_structure.db",
+        help="decision_structure.db for the sections export "
+             "(skipped cleanly if absent)",
+    )
+    parser.add_argument(
+        "--structure-paragraphs", action="store_true",
+        help="also export erwaegungen_paragraphs.parquet (4.8 GB, ~10 min; "
+             "weekly cadence — publish passes this on Sundays)",
+    )
     parser.add_argument("-v", "--verbose", action="store_true")
     args = parser.parse_args()
 
@@ -537,6 +624,12 @@ def main():
             logger.warning(f"No database at {db_path}, falling back to JSONL")
         results = export_parquet(Path(args.input), Path(args.output))
     graph_counts = export_citation_graph(Path(args.graph_db), Path(args.output))
+    structure_counts = export_decision_structure(
+        Path(args.structure_db), Path(args.output),
+        include_paragraphs=args.structure_paragraphs)
+    if structure_counts:
+        print(f"Structure: {structure_counts.get('structure', 0)} decisions, "
+              f"{structure_counts.get('erwaegungen_paragraphs', 0)} paragraphs")
     if results:
         total = sum(results.values())
         print(f"\nExported {total} decisions to {len(results)} Parquet files")
