@@ -5,9 +5,17 @@
     <link>https://opencaselaw.ch/feeds/it.xml</link>
     <description>Latest published Swiss court decisions in Italiano.</description>
     <language>de-CH</language>
-    <lastBuildDate>Wed, 01 Jul 2026 10:28:09 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 02 Jul 2026 10:07:55 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/it.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Bundesverwaltungsgericht D-3951/2025 vom 2026-06-23</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-3951_2025</link>
+      <description>Asilo ed allontanamento</description>
+      <pubDate>Tue, 23 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-3951.2025</guid>
+      <category>bvger</category>
+    </item>
     <item>
       <title>Bundesverwaltungsgericht F-4218/2026 vom 2026-06-19</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-4218_2026</link>
@@ -947,22 +955,6 @@ A.____…</description>
       <pubDate>Thu, 21 May 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-604.2026</guid>
       <category>bvger</category>
-    </item>
-    <item>
-      <title>gr_gerichte SV1 2025 41 vom 2026-05-21</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_SV1%202025%2041</link>
-      <description>Obergericht des Kantons Graubünden
-Dretgira superiura dal chantun Grischun
-Tribunale d'appello del Cantone dei Grigioni
-Sentenza del 27 maggio 2026
-comunicata il 29 maggio 2026
-N. d'incarto
-SV1 25 41
-Istanza
-Prima Camera di diritto delle assicurazion…</description>
-      <pubDate>Thu, 21 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">gr_gerichte_SV1 2025 41</guid>
-      <category>gr_gerichte</category>
     </item>
   </channel>
 </rss>

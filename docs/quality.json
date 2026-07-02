@@ -1,13 +1,13 @@
 {
-  "run_at": "2026-07-01T11:09:41+00:00",
+  "run_at": "2026-07-02T11:03:38+00:00",
   "db_path": "/opt/caselaw/repo/output/decisions.db",
-  "duration_seconds": 2491.84,
+  "duration_seconds": 3343.11,
   "summary": {
-    "total": 52,
+    "total": 60,
     "passed": 52,
     "critical_failures": 0,
     "quarantine_failures": 0,
-    "warning_failures": 0,
+    "warning_failures": 8,
     "publish_safe": true
   },
   "results": [
@@ -94,17 +94,17 @@
       "fix_advice": "check INSERT OR IGNORE / INSERT OR REPLACE in scrapers and build_fts5.merge_shards",
       "court": null,
       "extra": {
-        "total": 995076,
-        "distinct": 995076
+        "total": 995302,
+        "distinct": 995302
       }
     },
     {
       "name": "schema.corpus_total_count",
       "severity": "critical",
       "passed": true,
-      "metric_value": 995076,
+      "metric_value": 995302,
       "threshold": 950000,
-      "message": "corpus total: 995,076",
+      "message": "corpus total: 995,302",
       "sample_rows": [],
       "fix_advice": "check publish.py Step 2 build_fts5 logs; verify .tmp swap completed atomically",
       "court": null,
@@ -114,9 +114,9 @@
       "name": "mcp_tools.search_fts_returns_hits",
       "severity": "critical",
       "passed": true,
-      "metric_value": 380017,
+      "metric_value": 380208,
       "threshold": 100,
-      "message": "FTS5 'Beschwerde' query: 380,017 hits",
+      "message": "FTS5 'Beschwerde' query: 380,208 hits",
       "sample_rows": [],
       "fix_advice": "if 0, FTS5 build never indexed; rerun build_fts5",
       "court": null,
@@ -170,9 +170,9 @@
       "court": null,
       "extra": {
         "distribution": {
-          "de": 464307,
-          "fr": 448933,
-          "it": 81836
+          "de": 464470,
+          "fr": 448977,
+          "it": 81855
         }
       }
     },
@@ -180,16 +180,16 @@
       "name": "languages.distribution_plausible",
       "severity": "critical",
       "passed": true,
-      "metric_value": 46.66045608576631,
+      "metric_value": 46.666237986058505,
       "threshold": 30.0,
       "message": "DE 46.7% / FR 45.1% / IT 8.2% / RM 0.00%",
       "sample_rows": [],
       "fix_advice": "DE and FR each need ≥30%, IT ≥3%; under-floor means a language-block of scrapers crashed in publish.py Step 1",
       "court": null,
       "extra": {
-        "de": 464307,
-        "fr": 448933,
-        "it": 81836
+        "de": 464470,
+        "fr": 448977,
+        "it": 81855
       }
     },
     {
@@ -520,9 +520,9 @@
       "name": "courts.federal_present.bvger",
       "severity": "critical",
       "passed": true,
-      "metric_value": 92960,
+      "metric_value": 92993,
       "threshold": 1,
-      "message": "bvger: 92,960 decisions",
+      "message": "bvger: 92,993 decisions",
       "sample_rows": [],
       "fix_advice": null,
       "court": "bvger",
@@ -532,9 +532,9 @@
       "name": "courts.federal_present.bstger",
       "severity": "critical",
       "passed": true,
-      "metric_value": 11532,
+      "metric_value": 11533,
       "threshold": 1,
-      "message": "bstger: 11,532 decisions",
+      "message": "bstger: 11,533 decisions",
       "sample_rows": [],
       "fix_advice": null,
       "court": "bstger",
@@ -556,9 +556,9 @@
       "name": "courts.federal_present.bger",
       "severity": "critical",
       "passed": true,
-      "metric_value": 191466,
+      "metric_value": 191446,
       "threshold": 1,
-      "message": "bger: 191,466 decisions",
+      "message": "bger: 191,446 decisions",
       "sample_rows": [],
       "fix_advice": null,
       "court": "bger",
@@ -653,6 +653,184 @@
       "message": "no far-future dates",
       "sample_rows": [],
       "fix_advice": "build_fts5._normalize_dates() auto-NULLs these; check scraper date-parsing for German/French month confusion",
+      "court": null,
+      "extra": {}
+    },
+    {
+      "name": "urls.http_count",
+      "severity": "warning",
+      "passed": false,
+      "metric_value": 210946,
+      "threshold": 50,
+      "message": "210,946 rows still use http:// (http 210,946 / https 784,356)",
+      "sample_rows": [],
+      "fix_advice": "upgrade scraper to write https://, then run a REPLACE(source_url, 'http://', 'https://') backfill",
+      "court": null,
+      "extra": {
+        "http": 210946,
+        "https": 784356
+      }
+    },
+    {
+      "name": "structure.federal_have_erwaegungen",
+      "severity": "warning",
+      "passed": false,
+      "metric_value": 87.0,
+      "threshold": 95.0,
+      "message": "BGer (>5y old): 870/1000 sample have sidecar paragraphs (87.0%)",
+      "sample_rows": [],
+      "fix_advice": null,
+      "court": null,
+      "extra": {}
+    },
+    {
+      "name": "scholarship.statute_citations_floor",
+      "severity": "warning",
+      "passed": false,
+      "metric_value": 37221,
+      "threshold": 65000,
+      "message": "37,221 pub→statute citations (expect ~90k)",
+      "sample_rows": [],
+      "fix_advice": "check statute regex + law-abbreviation map. statutes.db schema may have changed.",
+      "court": null,
+      "extra": {}
+    },
+    {
+      "name": "scholarship.decision_citations_floor",
+      "severity": "warning",
+      "passed": false,
+      "metric_value": 12776,
+      "threshold": 25000,
+      "message": "12,776 pub→decision citations (expect ~34k)",
+      "sample_rows": [],
+      "fix_advice": "check search_stack/scholarship_citation_extractor.py and the case-citation regex in reference_extraction.py",
+      "court": null,
+      "extra": {}
+    },
+    {
+      "name": "dockets.excessively_long",
+      "severity": "warning",
+      "passed": false,
+      "metric_value": 14,
+      "threshold": 0,
+      "message": "14 rows with docket_number > 150 chars",
+      "sample_rows": [
+        {
+          "decision_id": "ecthr_chamber_20416_92_20417_92_20418_92_20419_92_20420_92_20421_92_20422_92_20423_92_20424_92_20425_92_20426_92_20427_92_20428_92_20429_92_20430_92_20431_92_20432_92_20665_92_20666_92_20667_92_20668_92_20669_92_20670_92_20671_92_20672_92_20673_92_20674_92_20675_92_20718_92_20719_92_20720_92_20721_92_20722_92_20723_92_20724_92_20725_92_20726_92_20727_92_20738_92_21270_93_21716_93_21718_93_21719_93_21721_93_21722_93_21723_93_21724_93_21725_93_21726_93_21727_93_21728_93_21729_93_21730_93_21731_93_21732_93_21734_93_21735_93_21736_93_21737_93_21738_93_21740_93_21742_93_21744_93_21745_93_21746_93_21747_93_21748_93_21749_93_21750_93_21991_93_21992_93_21998_93_21999_93_22000_93_22213_93_22214_93_22215_93_22216_93_22217_93_22218_93_22219_93_22220_93_22221_93_22222_93_22223_93_22224_93_22225_93_22226_93_22227_93_22854_93_22855_93_22856_93_22857_93",
+          "court": "ecthr_chamber",
+          "docket_preview": "20416/92_20417/92_20418/92_20419/92_20420/92_20421/92_20422/92_20423/92_20424/92...",
+          "len": 836
+        },
+        {
+          "decision_id": "ecthr_chamber_9988_13_14338_14_45973_14_48431_14_59787_14_4798_15_7098_15_13474_15_14070_15_24773_15_25934_15_27654_15_32412_15_32423_15_37043_15_42351_15_44403_15_47695_15_49258_15_52257_15_55272_15_55280_15_57310_15_57931_15_60098_15_60400_15_1786_16_3085_16_5941_16_10028_16_14980_16_15098_16_19719_16_26169_16_26303_16_33734_16_35816_16_37256_16_48049_16_53429_16_59985_16_61699_16_61732_16_61989_16_69826_16_76854_16_9076_17_14823_17_16094_17_29482_17_34499_17_53490_17_60569_17_61111_17_62848_17_64181_17_69157_17_81560_17_81751_17_130_18_15813_18",
+          "court": "ecthr_chamber",
+          "docket_preview": "9988/13_14338/14_45973/14_48431/14_59787/14_4798/15_7098/15_13474/15_14070/15_24...",
+          "len": 539
+        },
+        {
+          "decision_id": "ecthr_committee_4180_08_4219_08_8725_09_8727_09_8728_09_8733_09_8735_09_8737_09_8738_09_8739_09_8743_09_8746_09_8747_09_8750_09_8751_09_8756_09_8758_09_8759_09_8760_09_8764_09_8771_09_8773_09_8775_09_8776_09_8777_09_8778_09_8779_09_8780_09_8781_09_8783_09_8784_09_8787_09_28922_09_38777_09_38786_09_38792_09_38814_09_38816_09_38825_09_38829_09_38841_09_38844_09_45047_09_45057_09_62387_09_62409_09_62874_09_2248_10_2257_10_49829_10",
+          "court": "ecthr_committee",
+          "docket_preview": "4180/08_4219/08_8725/09_8727/09_8728/09_8733/09_8735/09_8737/09_8738/09_8739/09_...",
+          "len": 415
+        },
+        {
+          "decision_id": "ecthr_committee_8726_09_8731_09_8732_09_8734_09_8736_09_8741_09_8742_09_8745_09_8749_09_8752_09_8754_09_8755_09_8762_09_8765_09_8767_09_8768_09_8769_09_8770_09_8774_09_8782_09_11254_09_11271_09_38800_09_45049_09_45053_09_45054_09_45064_09_45083_09_45089_09_45095_09_45099_09_45102_09_45105_09_45106_09_45107_09_45108_09_45109_09_45111_09_2252_10",
+          "court": "ecthr_committee",
+          "docket_preview": "8726/09_8731/09_8732/09_8734/09_8736/09_8741/09_8742/09_8745/09_8749/09_8752/09_...",
+          "len": 329
+        },
+        {
+          "decision_id": "ecthr_committee_37105_21_52836_21_22785_22_22788_22_22790_22_22793_22_22796_22_22803_22_22805_22_22807_22_22811_22_22818_22_22822_22_22975_22_22977_22_22978_22_22979_22_22981_22_22982_22_22983_22_22986_22_22988_22_22989_22_22990_22_22991_22_22992_22_22993_22_22997_22_22998_22_22999_22_23001_22_23003_22",
+          "court": "ecthr_committee",
+          "docket_preview": "37105/21_52836/21_22785/22_22788/22_22790/22_22793/22_22796/22_22803/22_22805/22...",
+          "len": 287
+        }
+      ],
+      "fix_advice": null,
+      "court": null,
+      "extra": {}
+    },
+    {
+      "name": "dates.publication_before_decision",
+      "severity": "warning",
+      "passed": false,
+      "metric_value": 38618,
+      "threshold": 28000,
+      "message": "38618 rows with publication_date < decision_date (12969 gross >1mo) — baseline 28000",
+      "sample_rows": [
+        {
+          "decision_id": "bge_151 IV 330",
+          "court": "bge",
+          "decision_date": "2025-05-28",
+          "publication_date": "2025-01-01"
+        },
+        {
+          "decision_id": "bge_151 II 873",
+          "court": "bge",
+          "decision_date": "2025-05-02",
+          "publication_date": "2025-01-01"
+        },
+        {
+          "decision_id": "bge_151 II 884",
+          "court": "bge",
+          "decision_date": "2025-03-26",
+          "publication_date": "2025-01-01"
+        },
+        {
+          "decision_id": "bge_151 II 918",
+          "court": "bge",
+          "decision_date": "2025-03-05",
+          "publication_date": "2025-01-01"
+        },
+        {
+          "decision_id": "bge_151 II 934",
+          "court": "bge",
+          "decision_date": "2025-03-14",
+          "publication_date": "2025-01-01"
+        }
+      ],
+      "fix_advice": "decision_date (header ruling date) is trusted; run scripts/fix_date_inversions.py to swap-or-NULL the suspect publication_date + add a build_fts5 forward guard. Growth here = a scraper labeling the dates backwards.",
+      "court": null,
+      "extra": {
+        "gross_over_1mo": 12969,
+        "by_court": {
+          "bge": 14426,
+          "zh_sozialversicherungsgericht": 13308,
+          "ge_gerichte": 7872,
+          "gr_gerichte": 979,
+          "vd_findinfo": 263,
+          "bs_appellationsgericht": 250,
+          "bvger": 201,
+          "elcom": 162,
+          "ch_vb": 158,
+          "fr_gerichte": 153
+        }
+      }
+    },
+    {
+      "name": "cross_db.reference_graph_sanity",
+      "severity": "warning",
+      "passed": false,
+      "metric_value": 8662212,
+      "threshold": 5000000,
+      "message": "citation_targets: 8,662,212, statute_references: 0",
+      "sample_rows": [],
+      "fix_advice": "if citation count dropped, search_stack/build_reference_graph.py may have failed in publish.py Step 2c",
+      "court": null,
+      "extra": {
+        "citation_targets": 8662212,
+        "statute_references": 0
+      }
+    },
+    {
+      "name": "cross_db.no_orphan_structure_rows",
+      "severity": "warning",
+      "passed": false,
+      "metric_value": 13.94,
+      "threshold": 1.0,
+      "message": "697/5000 (13.94%) sidecar rows orphan",
+      "sample_rows": [],
+      "fix_advice": "rerun extract_decision_structure.py against current decisions.db so IDs realign",
       "court": null,
       "extra": {}
     }

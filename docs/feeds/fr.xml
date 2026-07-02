@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/fr.xml</link>
     <description>Latest published Swiss court decisions in Français.</description>
     <language>de-CH</language>
-    <lastBuildDate>Wed, 01 Jul 2026 10:28:09 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 02 Jul 2026 10:07:55 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/fr.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -264,6 +264,22 @@ Présidente :
       <category>fr_gerichte</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht E-2343/2026 vom 2026-06-24</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-2343_2026</link>
+      <description>Asile et renvoi (art. 40 en relation avec art. 6a al. 2 LAsi)</description>
+      <pubDate>Wed, 24 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-2343.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht B-3636/2025 vom 2026-06-23</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_B-3636_2025</link>
+      <description>Reconnaissance de certificat/formation</description>
+      <pubDate>Tue, 23 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:B-3636.2025</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>ecthr_chamber 13250/23 vom 2026-06-23</title>
       <link>https://mcp.opencaselaw.ch/entscheid/ecthr_chamber_13250_23</link>
       <description>Violation de l'article 8 - Droit au respect de la vie privée et familiale (Article 8-1 - Respect de la vie familiale);Violation de l'article 13+8-1 - Droit à un recours effectif (Article 13 - Recours effectif) (Article 8-1 - Respect de la vie familiale;Article 8 - Droit au respect de la vie privée et familiale);Préjudice moral - réparation (Article 41 - Préjudice moral;Satisfaction équitable); Violation: 8;8-1;13;13+8-1</description>
@@ -389,6 +405,14 @@ Pa…</description>
       <category>bvger</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht E-5810/2022 vom 2026-06-22</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-5810_2022</link>
+      <description>Asile et renvoi (demande multiple)</description>
+      <pubDate>Mon, 22 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-5810.2022</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>fr_gerichte 501 2025 119 vom 2026-06-22</title>
       <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_501%202025%20119</link>
       <description>Tribunal cantonal TC
@@ -466,6 +490,14 @@ Participants…</description>
       <pubDate>Fri, 19 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_395.2025</guid>
       <category>bger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht D-4576/2024 vom 2026-06-19</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-4576_2024</link>
+      <description>Asile et renvoi</description>
+      <pubDate>Fri, 19 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-4576.2024</guid>
+      <category>bvger</category>
     </item>
     <item>
       <title>Bundesverwaltungsgericht E-2131/2025 vom 2026-06-19</title>
@@ -572,6 +604,14 @@ A.________,…</description>
       <description>Asile et renvoi (procédure accélérée)</description>
       <pubDate>Thu, 18 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-4192.2022</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht D-7235/2025 vom 2026-06-18</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-7235_2025</link>
+      <description>Refus de la protection provisoire</description>
+      <pubDate>Thu, 18 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-7235.2025</guid>
       <category>bvger</category>
     </item>
     <item>
@@ -895,47 +935,6 @@ Participants à …</description>
       <pubDate>Tue, 16 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BGer:2026:9C_195.2026</guid>
       <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht D-3003/2026 vom 2026-06-16</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-3003_2026</link>
-      <description>Refus de la protection provisoire</description>
-      <pubDate>Tue, 16 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-3003.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht E-165/2026 vom 2026-06-16</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-165_2026</link>
-      <description>Asile (sans excécution du renvoi) (procédure accélérée)</description>
-      <pubDate>Tue, 16 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-165.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht E-2449/2022 vom 2026-06-16</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-2449_2022</link>
-      <description>Asile et renvoi</description>
-      <pubDate>Tue, 16 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-2449.2022</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht F-3943/2026 vom 2026-06-16</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-3943_2026</link>
-      <description>Renvoi Dublin (droit des étrangers)</description>
-      <pubDate>Tue, 16 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-3943.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>ecthr_chamber 79795/17 vom 2026-06-16</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ecthr_chamber_79795_17</link>
-      <description>Violation de l'article 5 - Droit à la liberté et à la sûreté (Article 5-1 - Arrestation ou détention régulières;Article 5-1-c - Raisons plausibles de soupçonner);Violation de l'article 5 - Droit à la liberté et à la sûreté (Article 5-3 - Caractère raisonnable de la détention provisoire);Violation de l'article 10 - Liberté d'expression - {général} (Article 10-1 - Liberté d'expression); Violation: 5;5-1;5-1-c;5-3;10;10-1</description>
-      <pubDate>Tue, 16 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ecthr_chamber_79795_17</guid>
-      <category>ecthr_chamber</category>
-      <category>CEDH / Droits humains</category>
     </item>
   </channel>
 </rss>
