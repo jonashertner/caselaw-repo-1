@@ -26,7 +26,11 @@ KNOWN_NULL_DATE_FLOORS = {
     "hudoc_ch": 246,       # ECHR metadata-only docs
     "sav_kantone": 36,     # Aufsichtsbehörden — no PDF, only metadata
     "fr_gerichte": 80,     # post-recovery residual
-    "gr_gerichte": 80,     # post-recovery residual
+    # post-recovery residual (80) + up to ~188 Praxis-digest rows whose
+    # text-recovered dates were junk and are NULLed by
+    # build_fts5._null_implausible_gr_dates since 2026-07-02 (backlog L2);
+    # the guarded recovery may refill some from deeper true-date anchors.
+    "gr_gerichte": 270,
 }
 
 

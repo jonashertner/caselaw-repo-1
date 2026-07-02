@@ -924,7 +924,7 @@ def _recover_decision_dates(conn: sqlite3.Connection) -> int:
         cands.sort(key=lambda x: x[0])
         return cands[0][1]
 
-    def _recover(full_text):
+    def _recover(full_text, docket=None):
         if not full_text:
             return None
         head = full_text[:8000]
@@ -936,10 +936,16 @@ def _recover_decision_dates(conn: sqlite3.Connection) -> int:
                     break
                 window = head[i:i + 200]
                 d = _extract_first(window)
-                if d:
+                # Docket-year plausibility (backlog L2): skip junk candidates
+                # (statute dates, lower-court dates in Praxis digests) and
+                # keep searching — a later anchor may hold the true date.
+                if d and _recovered_date_plausible(d.isoformat(), docket):
                     return d
                 idx = i + len(anchor)
-        return _extract_first(full_text[:5000])
+        d = _extract_first(full_text[:5000])
+        if d and _recovered_date_plausible(d.isoformat(), docket):
+            return d
+        return None
 
     SAFE_COURTS = (
         "zh_verwaltungsgericht", "gr_gerichte", "bl_gerichte",
@@ -947,7 +953,7 @@ def _recover_decision_dates(conn: sqlite3.Connection) -> int:
     )
     placeholders = ",".join("?" * len(SAFE_COURTS))
     rows = conn.execute(
-        f"SELECT decision_id, full_text FROM decisions "
+        f"SELECT decision_id, full_text, docket_number FROM decisions "
         f"WHERE court IN ({placeholders}) "
         f"AND (decision_date IS NULL OR decision_date='') "
         f"AND full_text IS NOT NULL AND LENGTH(full_text) > 50",
@@ -955,8 +961,8 @@ def _recover_decision_dates(conn: sqlite3.Connection) -> int:
     ).fetchall()
 
     updates = []
-    for did, ft in rows:
-        d = _recover(ft)
+    for did, ft, docket in rows:
+        d = _recover(ft, docket)
         if d:
             updates.append((d.isoformat(), did))
 
@@ -1015,6 +1021,38 @@ def _normalize_dates(conn: sqlite3.Connection) -> tuple[int, int, int]:
     if n_zero or n_future or n_pre1700:
         conn.commit()
     return n_zero, n_future, n_pre1700
+
+
+def _null_implausible_gr_dates(conn: sqlite3.Connection) -> int:
+    """Backlog L2 (2026-07-02): NULL gr_gerichte dates that are >3y before
+    the docket's registration/volume year.
+
+    The GR Tribuna register carried only upload dates, so a past text-recovery
+    pass (scripts/repair_decision_dates.py) wrote body-text dates INTO the
+    shard — grabbing statute-validity dates, LOWER-court ruling dates and
+    referendum cutoffs in the PKG/PVG Praxis digests (e.g. 'PVG 2021 1' dated
+    2018-01-01 = the IVV Art. 27bis validity date visible in the digest head).
+    188 impossible rows measured 2026-07-02. Runs BEFORE
+    _recover_decision_dates, whose (now plausibility-guarded) anchor search
+    may then legitimately refill a NULLed row from a deeper true-date anchor.
+    NULL over guess: a missing date beats a wrong one. gr-scoped — other
+    courts' stocks (ge, zh_vwg, ne …) need their own provenance checks first.
+    """
+    n = 0
+    for did, docket, d in conn.execute(
+        "SELECT decision_id, docket_number, decision_date FROM decisions "
+        "WHERE court='gr_gerichte' AND docket_number IS NOT NULL "
+        "AND decision_date GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]'"
+    ).fetchall():
+        if not _recovered_date_plausible(d, docket):
+            conn.execute(
+                "UPDATE decisions SET decision_date=NULL WHERE decision_id=?",
+                (did,),
+            )
+            n += 1
+    if n:
+        conn.commit()
+    return n
 
 
 def _dedup_egmr_in_bge(conn: sqlite3.Connection) -> int:
@@ -1307,12 +1345,53 @@ def _date_extract_first(text):
     return cands[0][1]
 
 
-def _date_recover_inline(court, full_text):
+# ── Docket-year plausibility for recovered dates (backlog L2, 2026-07-02) ──
+# Text-recovered dates grabbed statute-validity dates, LOWER-court ruling
+# dates and referendum cutoffs in GR's PKG/PVG Praxis digests (188 rows dated
+# years before their docket/volume year; proven via the shard's
+# date_extraction provenance: 'bare_header' + mismatched 'header_de'). A
+# recovered date >3 years BEFORE the docket's registration/volume year is
+# junk — courts do not rule before a case exists, and Praxis volumes do not
+# publish decisions older than a few years. Strict year positions only
+# (mirrors quality/checks/dates.docket_registration_year): NULL over guess.
+_DOCKET_YEAR_TRAILING_RE = re.compile(r"[/_.]((?:18[7-9]|19\d|20[0-3])\d)\s*$")
+_DOCKET_YEAR_SERIES_RE = re.compile(
+    r"^[A-Za-z][A-Za-z0-9]{0,14}[ ./-]((?:18[7-9]|19\d|20[0-3])\d)[ ./-]\d")
+
+
+def _docket_registration_year(docket):
+    if not docket:
+        return None
+    m = _DOCKET_YEAR_TRAILING_RE.search(docket)
+    if m:
+        return int(m.group(1))
+    m = _DOCKET_YEAR_SERIES_RE.match(docket)
+    if m:
+        return int(m.group(1))
+    return None
+
+
+def _recovered_date_plausible(iso_date, docket):
+    """False iff the date is >3y before the docket's registration year.
+    None-safe: no strict docket year, or unparseable date → True (no veto)."""
+    year = _docket_registration_year(docket or "")
+    if year is None or not iso_date or len(str(iso_date)) < 4:
+        return True
+    try:
+        return int(str(iso_date)[:4]) >= year - 3
+    except ValueError:
+        return True
+
+
+def _date_recover_inline(court, full_text, docket=None):
     """König P4: recover decision_date from full_text (5 safe courts only).
 
     Returns ISO date string ('YYYY-MM-DD') or None. Mirrors the logic of
     the post-import _recover_decision_dates() pass — both share the same
     anchor phrases and month-name regexes via the module-level helpers.
+    Candidates failing docket-year plausibility are skipped (the anchor
+    search continues — a later anchor may carry the true ruling date);
+    an implausible bare-fallback candidate returns None.
     """
     if court not in _DATE_SAFE_COURTS:
         return None
@@ -1329,11 +1408,13 @@ def _date_recover_inline(court, full_text):
                 break
             window = head[i:i + 200]
             d = _date_extract_first(window)
-            if d:
+            if d and _recovered_date_plausible(d.isoformat(), docket):
                 return d.isoformat()
             idx = i + len(anchor)
     d = _date_extract_first(full_text[:5000])
-    return d.isoformat() if d else None
+    if d and _recovered_date_plausible(d.isoformat(), docket):
+        return d.isoformat()
+    return None
 
 
 # Court code remapping: merge historical variants into canonical codes
@@ -1406,7 +1487,8 @@ def insert_decision(conn: sqlite3.Connection, row: dict) -> bool:
 
         # date recovery from full_text where the scraper missed
         if not row.get("decision_date"):
-            recovered = _date_recover_inline(court, row.get("full_text"))
+            recovered = _date_recover_inline(court, row.get("full_text"),
+                                             row.get("docket_number"))
             if recovered:
                 row["decision_date"] = recovered
 
@@ -1875,6 +1957,9 @@ def build_database(
             n_zero, n_future, n_pre1700 = _normalize_dates(conn)
             if n_zero or n_future or n_pre1700:
                 logger.info(f"  Cleared {n_zero} year-0000 + {n_future} far-future (>today+365d) + {n_pre1700} pre-1700 dates → NULL")
+            n_gr_implausible = _null_implausible_gr_dates(conn)
+            if n_gr_implausible:
+                logger.info(f"  Cleared {n_gr_implausible} gr_gerichte dates >3y before docket year (Praxis-digest junk recovery, L2) → NULL")
             recovered = _recover_decision_dates(conn)
             if recovered:
                 logger.info(f"  Recovered {recovered} decision_date values from full_text (zh_verwaltungsgericht/gr_gerichte/bl_gerichte)")
