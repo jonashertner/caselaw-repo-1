@@ -43,6 +43,21 @@ Surface green (995,076 decisions, QC 52/52, publish OK, materialien bridge wired
 | 31 | Treatment graph spec + deterministic marker prototype (Tier 1 #2) | IMPR | plan-mode | L |
 | 32 | Pre-2000 Botschaften OCR track for OR/ZGB/StGB (materialien Tier 2) | IMPR | plan-mode | L |
 
+## LegalStats wishlist adoption (2026-07-02)
+
+Source: /Users/jonashertner/legalstats/docs/OPENCASELAW-WISHLIST.md (downstream consumer, empirically grounded; claims verified against the served DB 2026-07-02: chamber 37.8%, decision_type 13.6%, BGE linkage 2025=8/183 2026=0/10, GR impossible dates confirmed). Sequenced AFTER the incremental cutover.
+
+| # | Item | Autonomy | Effort |
+|---|------|----------|--------|
+| L1 | DEFECT: BGE<->BGer docket_number_2 linkage collapsed for 2025+ (8/183, 0/10; ES-retirement casualty: direct BGE scraper lacks the back-link). Degrades find_leading_cases/precedence, not just exports | plan-mode | M |
+| L2 | DEFECT: gr_gerichte SR2/SBK impossible dates (2025 dockets dated 2012-2019); add QC QUARANTINE rule date in [docket_year-1, docket_year+3] | plan-mode | S |
+| L3 | Quick-wins batch (build-side, no scraper edits): branch (zivil/straf/oeffentlich/sozialversicherung) derived from court+chamber; chamber <- parsed docket code where empty; delta-parquet schema parity + has_full_text; typed/validated decision_date; resolved citation edges into parquet (8.65M exist); coverage(court,year,scraped,portal_total) table export from scraper-health data | plan-mode | S each |
+| L4 | proceeding_type + procedural_code via versioned build-side dictionary (data/proceeding_codes.yaml), NOT scraper-side: docket codes are already in every row; BGG prefix map first (covers 191k BGer), then ZH/VD/AG/SO vocabularies | plan-mode | M |
+| L5 | appealed_docket/date/court derived at build from BGer rubrum parse ("gegen das Urteil des X vom D") + existing citation graph/find_appeal_chain; note appeal_info is an always-null export artifact today (not even a decisions.db column) | plan-mode | M |
+| L6 | Section offsets into parquet FROM THE EXISTING decision_structure sidecar (cantonal sections already served since 04-29; export-only gap) | plan-mode | S |
+| L7 | Scraper-side opportunistic capture where portals expose it (legal_area verbatim, filing_date, streitwert): fold into regular per-court maintenance, no campaign | plan-mode | ongoing |
+| L8 | Export hygiene: outcome column = fixed enum or drop; optional full_text_clean (dehyphenated) as an ADDITIONAL field (raw stays canonical, R2 verbatim depends on it); GE docket-series/foreign-docket noise cleanup | plan-mode | S-M |
+
 ## Session addenda (this session's own investigations, same day)
 
 - Search latency root cause (traces, n=5,724): parse+expansion ~2.1s concurrent; REST ~5s dominated by an always-firing Haiku LLM-rerank (confidence gate at 2x-dominance is a de-facto no-op on RRF scores; fired 2,577x vs 2,239 parses today) + CPU cross-encoder tail (max 293s under build load). Rerank is simultaneously the #1 LLM spend ($30.30/wk of $72.52 total). Fix is MRR-gated (item 23).

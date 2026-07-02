@@ -2,7 +2,11 @@
 Description=Daily late-scrapers retry for tunnel-dependent courts (BGer/BGE/JU/NE)
 
 [Timer]
-OnCalendar=*-*-* 10:00:00 UTC
+# 10:20, not 10:00: the hourly bger-poller fires at :00 and triggers its
+# own bger fetch when a new batch appears (BGer posts ~10:00 UTC), so a
+# :00 retry made two bger streams share the tunnel and slowed both
+# (observed 2026-07-02: poller scrape hit its 600s cap mid-batch).
+OnCalendar=*-*-* 10:20:00 UTC
 Persistent=true
 
 [Install]
