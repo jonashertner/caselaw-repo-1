@@ -74,6 +74,9 @@ DISPOSITIV_PATTERNS = {
         (r"Per\s+questi\s+motivi,?\s+(?:il\s+)?(?:Presidente|Giudice\s+istruttore|la\s+Corte(?:\s+dei\s+reclami\s+penali)?)[^:\n]*pronuncia\s*:?", "ranked_it_court"),
         (r"Per\s+questi\s+motivi,?\s+il\s+Tribunale\s+federale\b", "fallback_it_TF_loose"),
         (r"Per\s+questi\s+motivi\s*:?\s*$", "fallback_it_bare"),
+        # TI Pretura penale short-form decisions close with a bare
+        # "decreta:" as the operative marker.
+        (r"\bdecreta\s*:", "ranked_it_decreta"),
     ],
 }
 
@@ -86,12 +89,23 @@ ERWAEGUNGEN_PATTERNS = {
         # MKG uses "hat erwogen" (seen in older Bände) as a less-common opener.
         (r"Das\s+Militärkassationsgericht\s+hat\s+erwogen\s*:?", "ranked_de_MKG_erwogen"),
         (r"in\s+Erwägung,?\s+dass\b", "ranked_de_in_erwaegung"),
+        # SO Obergericht direct texts glue the heading ("zieht die
+        # Beschwerdekammer des Obergerichts inErwägung:") — PDF-extraction
+        # artifact, so the space in "in Erwägung" must be optional.
+        (r"zieht\s+(?:der|die|das)\s+[^:\n]{0,100}?in\s*Erwägung\s*:?",
+         "ranked_de_zieht_cantonal"),
+        (r"in\s*Erwägung\s*:", "ranked_de_inerwaegung_colon"),
         (r"^\s*Erwägungen\s*:?\s*$", "ranked_de_header"),
         (r"^\s*Erwägung\s*:?\s*$", "ranked_de_singular"),
     ],
     "fr": [
         # BGE-FR canonical opener — covers 99% of BGE-FR decisions
         (r"Extrait\s+des\s+considérants\s*:?", "ranked_fr_BGE_extrait"),
+        # NE direct texts letter-space the heading ("C O N S I D E R A N T
+        # en droit"). Require real spaces between letters so ordinary
+        # "considérant" prose can never match.
+        (r"C\s+O\s+N\s+S\s+I\s+D\s+E\s+R\s+A\s+N\s+T(?:\s+en\s+droit)?",
+         "ranked_fr_ne_spaced"),
         # Court-specific "considère"
         (r"Le\s+Tribunal\s+(?:fédéral|administratif\s+fédéral|pénal\s+fédéral)\s+considère\s+en\s+(?:droit|fait)\s*:?", "ranked_fr_considere_TF"),
         (r"(?:La\s+Cour|le\s+Tribunal|la\s+Chambre)[^.\n]*considère\s+en\s+(?:droit|fait)\s*:?", "ranked_fr_considere_court"),
@@ -114,6 +128,11 @@ ERWAEGUNGEN_PATTERNS = {
         (r"(?:La\s+Corte(?:\s+dei\s+reclami\s+penali)?|Il\s+Tribunale|Il\s+Giudice)[^.\n]*considera\s+in\s+(?:diritto|fatto)\s*:?", "ranked_it_considera_court"),
         # Looser "considera in (fatto e[d] in) diritto/fatto"
         (r"considera\s+in\s+(?:fatto\s+ed?\s+in\s+)?(?:diritto|fatto)\s*:?", "ranked_it_considera_loose"),
+        # TI direct texts (Omnis PDF extraction) glue words: "consideratoin
+        # diritto:" — the spaces must be optional. Also the participle form
+        # "ritenuto in fatto ... considerato in diritto".
+        (r"considerato\s*,?\s*in\s*diritto\s*:?", "ranked_it_considerato_glued"),
+        (r"ritenuto\s*,?\s*in\s*fatto\b", "ranked_it_ritenuto_fatto"),
         # Generic "Considerando in diritto/fatto/che"
         (r"\bConsiderando\s+(?:in\s+(?:diritto|fatto)|che)\b", "ranked_it_considerando"),
         # Headers
