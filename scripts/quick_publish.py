@@ -41,7 +41,7 @@ REPO_DIR = Path(__file__).resolve().parents[1]
 if str(REPO_DIR) not in sys.path:
     sys.path.insert(0, str(REPO_DIR))
 
-from build_fts5 import insert_decision
+from build_fts5 import insert_decision  # noqa: F401 (ensure_derived_columns imported at use site)
 
 logger = logging.getLogger("quick_publish")
 
@@ -198,6 +198,13 @@ def quick_publish(courts: list[str] | None = None, dry_run: bool = False) -> int
         # Step 3: Ensure WAL mode is off (for immutable=1 compat after swap)
         conn.execute("PRAGMA journal_mode=DELETE")
         conn.execute("PRAGMA busy_timeout=5000")
+
+        # Step 3b: the working copy may predate the derived-classification
+        # columns insert_decision now writes (metadata-only ALTERs).
+        from build_fts5 import ensure_derived_columns
+        added = ensure_derived_columns(conn)
+        if added:
+            logger.info("  Added %d derived-classification columns to the copy", added)
 
         # Step 4: Insert new rows
         inserted = 0

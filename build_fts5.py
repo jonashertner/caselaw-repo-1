@@ -1030,12 +1030,16 @@ def _fill_chamber_from_docket(conn: sqlite3.Connection) -> int:
     Never overwrites a portal-supplied chamber."""
     from branch_map import docket_chamber_code
 
-    updates = []
-    n = 0
-    for did, court, docket in conn.execute(
+    # Drain candidates before updating (no UPDATEs under an open cursor —
+    # the 2026-07-03 WAL-pinning lesson); near-no-op on fresh builds
+    # because insert_decision fills the code inline.
+    candidates = conn.execute(
         "SELECT decision_id, court, docket_number FROM decisions "
         "WHERE (chamber IS NULL OR chamber = '') AND docket_number IS NOT NULL"
-    ):
+    ).fetchall()
+    updates = []
+    n = 0
+    for did, court, docket in candidates:
         code = docket_chamber_code(court, docket)
         if code:
             updates.append((code, did))
@@ -1059,11 +1063,17 @@ def _derive_branch_column(conn: sqlite3.Connection) -> int:
     guess; the same module drives the parquet export so all doors agree."""
     from branch_map import derive_branch
 
+    # Only rows still lacking a branch (inline derivation at insert fills
+    # fresh builds, so this is a near-no-op there). Candidates are fully
+    # drained BEFORE updating: interleaving UPDATEs under the open read
+    # cursor pinned the WAL to 34GB on 2026-07-03 (a ~3h I/O tax).
+    candidates = conn.execute(
+        "SELECT decision_id, court, chamber, docket_number FROM decisions "
+        "WHERE branch IS NULL OR branch = ''"
+    ).fetchall()
     updates = []
     n = 0
-    for did, court, chamber, docket in conn.execute(
-        "SELECT decision_id, court, chamber, docket_number FROM decisions"
-    ):
+    for did, court, chamber, docket in candidates:
         b = derive_branch(court, chamber, docket)
         if b:
             updates.append((b, did))
@@ -1484,6 +1494,54 @@ ID_PREFIX_REMAP = {
 }
 
 
+# Derived-classification columns added 2026-07-03. ensure_derived_columns
+# lets insert_decision write into DBs built before the columns existed
+# (quick_publish works on a copy of the SERVED db; the salvaged 07-03 db
+# lacks the last five). ALTER ADD COLUMN is metadata-only in SQLite.
+DERIVED_COLUMNS = (
+    ("branch", "TEXT"), ("proceeding_type", "TEXT"),
+    ("procedural_code", "TEXT"), ("appealed_court_raw", "TEXT"),
+    ("appealed_date", "TEXT"), ("appealed_docket", "TEXT"),
+)
+
+
+def ensure_derived_columns(conn: sqlite3.Connection) -> int:
+    have = {r[1] for r in conn.execute("PRAGMA table_info(decisions)")}
+    added = 0
+    for name, typ in DERIVED_COLUMNS:
+        if name not in have:
+            conn.execute(f"ALTER TABLE decisions ADD COLUMN {name} {typ}")
+            added += 1
+    return added
+
+
+_BGE_D2_RE = re.compile(r"\b(\d[A-Z])[._ ](\d+)/(\d{4})\b")
+
+
+def _derive_bge_docket2_inline(full_text, decision_date):
+    """L1 fix: the underlying BGer docket from the BGE text head.
+
+    The es-era metadata carried this link (docket_number_2); the direct
+    bge scraper does not, collapsing the BGE<->BGer join for 2025+
+    volumes (8/183). The header states it ("... i.S. A. gegen B.
+    (Beschwerde in Zivilsachen) 4A_576/2024 vom ..."): first separator-
+    tolerant BGG-form docket in the head whose year is plausible for the
+    volume (measured 164/185 = 89% recoverable; Regeste-only stubs stay
+    NULL over guess)."""
+    if not full_text:
+        return None
+    head = full_text[:4000]
+    vol_year = None
+    if decision_date and str(decision_date)[:4].isdigit():
+        vol_year = int(str(decision_date)[:4])
+    for m in _BGE_D2_RE.finditer(head):
+        year = int(m.group(3))
+        if vol_year and not (vol_year - 3 <= year <= vol_year + 1):
+            continue
+        return f"{m.group(1)}_{m.group(2)}/{m.group(3)}"
+    return None
+
+
 def insert_decision(conn: sqlite3.Connection, row: dict) -> bool:
     """Insert a single decision. Returns True if inserted, False if
     skipped (duplicate or stub).
@@ -1590,6 +1648,39 @@ def insert_decision(conn: sqlite3.Connection, row: dict) -> bool:
         row["content_hash"] = _compute_row_content_hash_inline(
             row.get("regeste"), row.get("full_text"),
         )
+
+        # ── Derived classification (inline, 2026-07-03) ────────────────
+        # Computed at INSERT so no post-pass UPDATE loop runs over the
+        # full table: the 07-03 build paid a ~3h I/O tax when 640k branch
+        # UPDATEs ran under a pinned read cursor (34GB WAL). Post-passes
+        # remain as guards for rows that predate these columns.
+        from branch_map import derive_branch, docket_chamber_code
+        from proceeding_map import derive_proceeding
+
+        if not (row.get("chamber") or "").strip():
+            code = docket_chamber_code(court, row.get("docket_number") or "")
+            if code:
+                row["chamber"] = code
+        if not row.get("branch"):
+            row["branch"] = derive_branch(
+                court, row.get("chamber"), row.get("docket_number"))
+        if not row.get("proceeding_type"):
+            slug, pcode = derive_proceeding(
+                court, row.get("chamber"), row.get("docket_number"))
+            row["proceeding_type"] = slug
+            row["procedural_code"] = row.get("procedural_code") or pcode
+        if court == "bger" and not row.get("appealed_date"):
+            from appeal_extract import extract_appealed
+            ap = extract_appealed(row.get("full_text") or "")
+            if ap:
+                row["appealed_court_raw"] = ap["appealed_court_raw"]
+                row["appealed_date"] = ap["appealed_date"]
+                row["appealed_docket"] = ap["appealed_docket"]
+        if court == "bge" and not (row.get("docket_number_2") or "").strip():
+            d2 = _derive_bge_docket2_inline(
+                row.get("full_text"), row.get("decision_date"))
+            if d2:
+                row["docket_number_2"] = d2
 
         # Handle cited_decisions — could be list or JSON string
         cited = row.get("cited_decisions", [])

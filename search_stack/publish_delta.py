@@ -200,7 +200,11 @@ _SELECT_COLS = (
     # bge_reference/external_id exist only in the JSONL shards, so they are
     # schema-present but NULL in deltas.
     "abstract_de, abstract_fr, abstract_it, legal_area, outcome, "
-    "decision_type, cited_decisions, marked_for_publication"
+    "decision_type, cited_decisions, marked_for_publication, "
+    # derived classification columns (inline at insert from 2026-07-04
+    # builds; normalize_row re-derives when NULL so older DBs still export)
+    "branch, proceeding_type, procedural_code, "
+    "appealed_court_raw, appealed_date, appealed_docket"
 )
 
 

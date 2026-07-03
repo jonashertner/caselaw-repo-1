@@ -37,6 +37,16 @@ DECISION_SCHEMA = pa.schema([
     # Coarse legal branch (zivil|straf|oeffentlich|sozialversicherung),
     # derived by branch_map.derive_branch — NULL where unknown (P1.1).
     pa.field("branch", pa.string(), nullable=True),
+    # Fine proceeding classification (P1.3): wishlist taxonomy slug +
+    # code family, from proceeding_map — register codes and uniform
+    # courts only, NULL over guess.
+    pa.field("proceeding_type", pa.string(), nullable=True),
+    pa.field("procedural_code", pa.string(), nullable=True),
+    # The decision under review, from the rubrum (P0.2, appeal_extract):
+    # BGer only in v1, 86% of 2007+ rows.
+    pa.field("appealed_court_raw", pa.string(), nullable=True),
+    pa.field("appealed_date", pa.string(), nullable=True),
+    pa.field("appealed_docket", pa.string(), nullable=True),
     # Case identification
     pa.field("docket_number", pa.string(), nullable=False),
     pa.field("docket_number_2", pa.string(), nullable=True),
@@ -144,6 +154,21 @@ def normalize_row(row: dict) -> dict:
     if not row.get("branch"):
         row["branch"] = derive_branch(row.get("court"), row.get("chamber"),
                                       row.get("docket_number"))
+    # Fine proceeding layer (P1.3) — same derive-when-missing pattern.
+    if not row.get("proceeding_type"):
+        from proceeding_map import derive_proceeding
+        slug, pcode = derive_proceeding(row.get("court"), row.get("chamber"),
+                                        row.get("docket_number"))
+        row["proceeding_type"] = slug
+        row["procedural_code"] = row.get("procedural_code") or pcode
+    # Appealed decision (P0.2) — BGer rubrum extraction when missing.
+    if row.get("court") == "bger" and not row.get("appealed_date"):
+        from appeal_extract import extract_appealed
+        ap = extract_appealed(full_text)
+        if ap:
+            row["appealed_court_raw"] = ap["appealed_court_raw"]
+            row["appealed_date"] = ap["appealed_date"]
+            row["appealed_docket"] = ap["appealed_docket"]
     # marked_for_publication is stored as SQLite 0/1/NULL but the schema is bool.
     row["marked_for_publication"] = _coerce_bool(row.get("marked_for_publication"))
 

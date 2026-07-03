@@ -13,6 +13,11 @@ SCHEMA_SQL = """
         canton TEXT NOT NULL,
         chamber TEXT,
         branch TEXT,
+        proceeding_type TEXT,
+        procedural_code TEXT,
+        appealed_court_raw TEXT,
+        appealed_date TEXT,
+        appealed_docket TEXT,
         docket_number TEXT NOT NULL,
         docket_number_2 TEXT,
         decision_date TEXT,
@@ -47,6 +52,7 @@ SCHEMA_SQL = """
     CREATE INDEX IF NOT EXISTS idx_decisions_docket ON decisions(docket_number);
     CREATE INDEX IF NOT EXISTS idx_decisions_chamber ON decisions(chamber);
     CREATE INDEX IF NOT EXISTS idx_decisions_branch ON decisions(branch);
+    CREATE INDEX IF NOT EXISTS idx_decisions_proceeding ON decisions(proceeding_type);
     CREATE INDEX IF NOT EXISTS idx_decisions_type ON decisions(decision_type);
     CREATE INDEX IF NOT EXISTS idx_decisions_canonical ON decisions(canonical_key);
 
@@ -196,7 +202,10 @@ COVERAGE_SCHEMA_SQL = """
 
 # Column order for INSERT statements (must match SCHEMA_SQL table definition)
 INSERT_COLUMNS = (
-    "decision_id", "court", "canton", "chamber", "docket_number",
+    "decision_id", "court", "canton", "chamber",
+    "branch", "proceeding_type", "procedural_code",
+    "appealed_court_raw", "appealed_date", "appealed_docket",
+    "docket_number",
     "docket_number_2", "decision_date", "publication_date", "marked_for_publication",
     "language", "title",
     "legal_area", "regeste", "abstract_de", "abstract_fr", "abstract_it",
