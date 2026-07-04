@@ -48,7 +48,15 @@ from search_stack.extract_decision_structure import (  # noqa: E402
 )
 
 
-EXTRACTOR_VERSION = 1
+# v2 (2026-07-03): ne/ti/so direct-format Erwaegungen markers added to
+# extract_decision_structure (commit 5cb5434) — letter-spaced NE
+# "C O N S I D E R A N T", glued TI "consideratoin diritto:"/"decreta:",
+# glued SO "inErwaegung:". A patterns-only change leaves each decision's
+# extractor_hash unchanged, so WITHOUT this bump the checkpoint logic skips
+# the 6,029 already-seen decisions and the fix never reaches the sidecar
+# (proven: 2026-07-03 shadow drift stayed at 0.797%). Bumping forces one
+# full re-extract on the next run, healing the frozen backlog.
+EXTRACTOR_VERSION = 2
 
 # Schema additions on top of the existing decision_structure schema. The
 # triggers keep FTS5 lockstep so the post-build "rebuild" silent phase
