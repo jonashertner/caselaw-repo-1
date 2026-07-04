@@ -2500,7 +2500,19 @@ def _search_fts5_inner(
                 elif words:
                     doctrine_fts = words[0]
                 sp_parts.append(doctrine_fts)
-            for syn in (structured_parse.get("synonyms") or [])[:6]:
+            syns = list(structured_parse.get("synonyms") or [])[:6]
+            # Deterministic trilingual bridge (user report 2026-07-04: IT
+            # decisions under-surfaced because Haiku drops Italian synonyms
+            # inconsistently). Add the DE/FR/IT equivalents of any known
+            # Swiss legal concept in the query or synonyms — additive OR
+            # terms, so IT (and FR/DE) forms are always searched. Capped so
+            # a broad query can't explode the FTS strategy.
+            try:
+                from search_stack.legal_glossary import trilingual_equivalents
+                gloss = trilingual_equivalents([query, doctrine] + syns)[:8]
+            except Exception:
+                gloss = []
+            for syn in syns + gloss:
                 words = syn.strip().split()
                 if len(words) >= 2:
                     sp_parts.append(f'"{" ".join(words)}"')
