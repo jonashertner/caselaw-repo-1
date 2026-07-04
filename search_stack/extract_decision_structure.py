@@ -132,7 +132,6 @@ ERWAEGUNGEN_PATTERNS = {
         # diritto:" — the spaces must be optional. Also the participle form
         # "ritenuto in fatto ... considerato in diritto".
         (r"considerato\s*,?\s*in\s*diritto\s*:?", "ranked_it_considerato_glued"),
-        (r"ritenuto\s*,?\s*in\s*fatto\b", "ranked_it_ritenuto_fatto"),
         # Generic "Considerando in diritto/fatto/che"
         (r"\bConsiderando\s+(?:in\s+(?:diritto|fatto)|che)\b", "ranked_it_considerando"),
         # Headers

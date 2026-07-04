@@ -46,3 +46,18 @@ def test_so_glued_in_erwaegung():
     assert s.erwaegungen_method in ("ranked_de_zieht_cantonal",
                                     "ranked_de_inerwaegung_colon")
     assert s.erwaegungen_paragraphs
+
+
+def test_it_ritenuto_in_fatto_is_NOT_erwaegungen():
+    # 'ritenuto in fatto' = the FACTS section (in fatto), must NOT be
+    # matched as Erwägungen (in diritto). Regression 2026-07-04: it stole
+    # the Erwägungen anchor for 29% of TI decisions (7 paragraphs -> 1).
+    t = ("Incarto 15.2024.124.\nritenuto in fatto:\n"
+         "A. Il capitale azionario della PI 4 e diviso.\n"
+         "B. Il ricorrente contesta.\nconsiderato in diritto:\n"
+         "1. Il ricorso e ricevibile.\n2. Nel merito la censura e infondata.\n"
+         "3. Le spese seguono la soccombenza.\n" + "x " * 200)
+    s = extract(t, "it", "ti_reg")
+    # must anchor on a reasoning ("in diritto") marker, NOT the facts
+    assert s.erwaegungen_method and "fatto" not in s.erwaegungen_method
+    assert len(s.erwaegungen_paragraphs) >= 3
