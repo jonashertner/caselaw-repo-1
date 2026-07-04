@@ -1,6 +1,6 @@
 {
  "version": 3,
- "generated_at": "2026-07-02T19:32:09+00:00",
+ "generated_at": "2026-07-04T11:53:12+00:00",
  "description": "Stratified statute-keyed candidates (graph-derived labels); dev/test split hash-frozen at generation.",
  "strata": {
   "oeffentlich": 102,
@@ -11,10 +11,10 @@
   "fr": 20,
   "sozialversicherung": 117,
   "straf": 118,
-  "it": 3,
+  "it": 48,
   "zivil": 105
  },
- "total": 547,
+ "total": 592,
  "queries": [
   {
    "id": "s2f7b30d4",
@@ -24890,6 +24890,1175 @@
     {
      "decision_id": "bger_5A_995_2017",
      "grade": 2
+    }
+   ]
+  },
+  {
+   "id": "ita8f6453e",
+   "query": "Piano di utilizzazione cantonale dei paesaggi con edifici e impianti protetti (PUC-PEIP) |",
+   "split": "test",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "bger_1C_14_2022",
+   "relevant": [
+    {
+     "decision_id": "bger_1C_14_2022",
+     "grade": 3
+    },
+    {
+     "decision_id": "bger_1C_61_2024",
+     "grade": 2
+    },
+    {
+     "decision_id": "vd_omni_AC.2022.0334",
+     "grade": 2
+    },
+    {
+     "decision_id": "vd_omni_AC.2023.0345",
+     "grade": 2
+    }
+   ]
+  },
+  {
+   "id": "it1c340056",
+   "query": "ordine di cessare l'utilizzazione non autorizzata di un fondo (tardività del ricorso) | Pi",
+   "split": "dev",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "bger_1C_248_2015",
+   "relevant": [
+    {
+     "decision_id": "bger_1C_248_2015",
+     "grade": 3
+    },
+    {
+     "decision_id": "bvger_A-5745_2016",
+     "grade": 2
+    },
+    {
+     "decision_id": "ti_gerichte_52.2015.26",
+     "grade": 2
+    },
+    {
+     "decision_id": "ti_gerichte_52.2018.435",
+     "grade": 2
+    },
+    {
+     "decision_id": "ti_gerichte_52.2019.235",
+     "grade": 2
+    }
+   ]
+  },
+  {
+   "id": "it3eecace0",
+   "query": "revoca della licenza di condurre veicoli a motore per la durata di 4 mesi | Costruzioni st",
+   "split": "dev",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "bger_1C_357_2011",
+   "relevant": [
+    {
+     "decision_id": "bger_1C_357_2011",
+     "grade": 3
+    }
+   ]
+  },
+  {
+   "id": "itd7c11b8f",
+   "query": "approvazione di modifiche della convenzione per la pianificazione intercomunale del compar",
+   "split": "dev",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "bger_1C_579_2013",
+   "relevant": [
+    {
+     "decision_id": "bger_1C_579_2013",
+     "grade": 3
+    }
+   ]
+  },
+  {
+   "id": "ita1798973",
+   "query": "atti preparatori della votazione di ballottaggio del 17 novembre 2019 per l'elezione di du",
+   "split": "dev",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "bger_1C_670_2019",
+   "relevant": [
+    {
+     "decision_id": "bger_1C_670_2019",
+     "grade": 3
+    },
+    {
+     "decision_id": "bge_BGE_149_II_66",
+     "grade": 2
+    },
+    {
+     "decision_id": "bger_1C_227_2020",
+     "grade": 2
+    },
+    {
+     "decision_id": "bger_1C_661_2021",
+     "grade": 2
+    }
+   ]
+  },
+  {
+   "id": "it70600489",
+   "query": "approvazione della lista indicativa degli eventi con possibile utilizzo di impianti elettr",
+   "split": "dev",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "bger_1C_707_2013",
+   "relevant": [
+    {
+     "decision_id": "bger_1C_707_2013",
+     "grade": 3
+    },
+    {
+     "decision_id": "bger_2C_1037_2013",
+     "grade": 2
+    },
+    {
+     "decision_id": "bger_2C_436_2017",
+     "grade": 2
+    },
+    {
+     "decision_id": "bger_2C_709_2015",
+     "grade": 2
+    }
+   ]
+  },
+  {
+   "id": "it44ed78d5",
+   "query": "Domanda di revisione della sentenza del Tribunale federale svizzero 1F_9/2020 del 17 giugn",
+   "split": "test",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "bger_1F_18_2020",
+   "relevant": [
+    {
+     "decision_id": "bger_1F_18_2020",
+     "grade": 3
+    },
+    {
+     "decision_id": "bger_1B_5_2021",
+     "grade": 2
+    },
+    {
+     "decision_id": "bger_1C_37_2021",
+     "grade": 2
+    },
+    {
+     "decision_id": "bger_1C_581_2020",
+     "grade": 2
+    },
+    {
+     "decision_id": "bger_1C_598_2020",
+     "grade": 2
+    }
+   ]
+  },
+  {
+   "id": "it87a9882e",
+   "query": "rimborso delle spese sostenute per l'esecuzione d'ufficio dell'ordine di allontanare dei c",
+   "split": "test",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "bger_2A.591_2004",
+   "relevant": [
+    {
+     "decision_id": "bger_2A.591_2004",
+     "grade": 3
+    },
+    {
+     "decision_id": "bger_2A.439_2006",
+     "grade": 2
+    },
+    {
+     "decision_id": "bger_2A.67_2006",
+     "grade": 2
+    },
+    {
+     "decision_id": "ti_gerichte_11.2004.7",
+     "grade": 2
+    }
+   ]
+  },
+  {
+   "id": "it7425bccb",
+   "query": "Lavori di sottostruttura per la manutenzione delle strade cantonali durante il periodo 200",
+   "split": "dev",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "bger_2C_279_2007",
+   "relevant": [
+    {
+     "decision_id": "bger_2C_279_2007",
+     "grade": 3
+    },
+    {
+     "decision_id": "bger_2D_5_2026",
+     "grade": 2
+    },
+    {
+     "decision_id": "bger_8C_625_2007",
+     "grade": 2
+    },
+    {
+     "decision_id": "bger_8C_774_2009",
+     "grade": 2
+    }
+   ]
+  },
+  {
+   "id": "itc72cb9f6",
+   "query": "Promozione della costruzione di abitazione e dell'accesso alla proprietà, rimborso anticip",
+   "split": "dev",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "bger_2C_512_2011",
+   "relevant": [
+    {
+     "decision_id": "bger_2C_512_2011",
+     "grade": 3
+    },
+    {
+     "decision_id": "bger_2C_747_2020",
+     "grade": 2
+    },
+    {
+     "decision_id": "vd_findinfo_53_2015_DTA",
+     "grade": 2
+    },
+    {
+     "decision_id": "vd_findinfo_Jug___2012___175",
+     "grade": 2
+    },
+    {
+     "decision_id": "vd_findinfo_Jug___2016___54",
+     "grade": 2
+    }
+   ]
+  },
+  {
+   "id": "itd9b49bfa",
+   "query": "Modifica del 3 maggio 2021 della legge sull'apertura dei negozi del 23 marzo 2015 del Cant",
+   "split": "test",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "bger_2C_689_2021",
+   "relevant": [
+    {
+     "decision_id": "bger_2C_689_2021",
+     "grade": 3
+    },
+    {
+     "decision_id": "bge_BGE_150_I_120",
+     "grade": 2
+    },
+    {
+     "decision_id": "bger_2C_79_2023",
+     "grade": 2
+    },
+    {
+     "decision_id": "bger_2C_886_2021",
+     "grade": 2
+    },
+    {
+     "decision_id": "bvger_A-1414_2022",
+     "grade": 2
+    }
+   ]
+  },
+  {
+   "id": "it921dd040",
+   "query": "Appalti pubblici, ritiro e smaltimento degli scarti vegetali degli ecocentri per gli anni",
+   "split": "dev",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "bger_2D_47_2020",
+   "relevant": [
+    {
+     "decision_id": "bger_2D_47_2020",
+     "grade": 3
+    },
+    {
+     "decision_id": "bger_2C_447_2021",
+     "grade": 2
+    },
+    {
+     "decision_id": "ge_gerichte_A_4362_2020",
+     "grade": 2
+    },
+    {
+     "decision_id": "ge_gerichte_JTAPI_1164_2020",
+     "grade": 2
+    }
+   ]
+  },
+  {
+   "id": "it24c8b2ad",
+   "query": "Domanda di revisione della sentenza del Tribunale federale svizzero 2C_204/2017 del 12 giu",
+   "split": "dev",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "bger_2F_13_2018",
+   "relevant": [
+    {
+     "decision_id": "bger_2F_13_2018",
+     "grade": 3
+    },
+    {
+     "decision_id": "bger_2C_121_2019",
+     "grade": 2
+    },
+    {
+     "decision_id": "bger_2C_871_2020",
+     "grade": 2
+    },
+    {
+     "decision_id": "bger_2C_916_2022",
+     "grade": 2
+    },
+    {
+     "decision_id": "bger_2D_17_2023",
+     "grade": 2
+    }
+   ]
+  },
+  {
+   "id": "it8685a382",
+   "query": "trasferimento di un minore all'estero, modifica della custodia, delle relazioni personali",
+   "split": "dev",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "bger_5A_533_2019",
+   "relevant": [
+    {
+     "decision_id": "bger_5A_533_2019",
+     "grade": 3
+    },
+    {
+     "decision_id": "bger_5A_300_2020",
+     "grade": 2
+    },
+    {
+     "decision_id": "bger_5A_678_2020",
+     "grade": 2
+    },
+    {
+     "decision_id": "bger_5A_845_2021",
+     "grade": 2
+    },
+    {
+     "decision_id": "ti_gerichte_11.2020.103_d20190523",
+     "grade": 2
+    }
+   ]
+  },
+  {
+   "id": "it4e44e7be",
+   "query": "domanda di revisione della sentenza 5D_120/2020 del Tribunale federale del 29 luglio 2020",
+   "split": "dev",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "bger_5F_28_2020",
+   "relevant": [
+    {
+     "decision_id": "bger_5F_28_2020",
+     "grade": 3
+    }
+   ]
+  },
+  {
+   "id": "itaef1772f",
+   "query": "domanda di revisione della sentenza del Tribunale federale svizzero 5A_771/2019 del 11 nov",
+   "split": "dev",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "bger_5F_5_2020",
+   "relevant": [
+    {
+     "decision_id": "bger_5F_5_2020",
+     "grade": 3
+    },
+    {
+     "decision_id": "bger_1C_598_2020",
+     "grade": 2
+    },
+    {
+     "decision_id": "bger_1C_599_2020",
+     "grade": 2
+    },
+    {
+     "decision_id": "bger_1C_601_2020",
+     "grade": 2
+    },
+    {
+     "decision_id": "bger_1C_602_2020",
+     "grade": 2
+    }
+   ]
+  },
+  {
+   "id": "itc8d89c88",
+   "query": "Frode fiscale, falsa testimonianza, infrazione alla LADI, infrazione grave alle norme dell",
+   "split": "test",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "bger_6B_409_2022",
+   "relevant": [
+    {
+     "decision_id": "bger_6B_409_2022",
+     "grade": 3
+    },
+    {
+     "decision_id": "bger_1C_59_2025",
+     "grade": 2
+    },
+    {
+     "decision_id": "ti_gerichte_17.2021.22",
+     "grade": 2
+    },
+    {
+     "decision_id": "ti_gerichte_52.2024.383",
+     "grade": 2
+    },
+    {
+     "decision_id": "vd_gerichte_PE24.009120",
+     "grade": 2
+    }
+   ]
+  },
+  {
+   "id": "itf6b34420",
+   "query": "Infrazione alla legge ticinese del 3 ottobre 1995 sull'Università della Svizzera italiana,",
+   "split": "test",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "bger_6B_620_2017",
+   "relevant": [
+    {
+     "decision_id": "bger_6B_620_2017",
+     "grade": 3
+    },
+    {
+     "decision_id": "bger_6F_25_2018",
+     "grade": 2
+    }
+   ]
+  },
+  {
+   "id": "itdb3abc3e",
+   "query": "Domanda di revisione della sentenza del Tribunale federale svizzero 6B_394/2010 dell'8 giu",
+   "split": "test",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "bger_6F_11_2010",
+   "relevant": [
+    {
+     "decision_id": "bger_6F_11_2010",
+     "grade": 3
+    },
+    {
+     "decision_id": "bvger_B-1463_2011",
+     "grade": 2
+    }
+   ]
+  },
+  {
+   "id": "it210cb24e",
+   "query": "Assicurazione contro gli infortuni (rendita di invalidità e indennità per menomazione dell",
+   "split": "dev",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "bger_8C_85_2017",
+   "relevant": [
+    {
+     "decision_id": "bger_8C_85_2017",
+     "grade": 3
+    },
+    {
+     "decision_id": "bger_8C_14_2018",
+     "grade": 2
+    },
+    {
+     "decision_id": "bger_8C_561_2019",
+     "grade": 2
+    },
+    {
+     "decision_id": "ti_gerichte_32.2018.94",
+     "grade": 2
+    },
+    {
+     "decision_id": "ti_gerichte_35.2018.119",
+     "grade": 2
+    }
+   ]
+  },
+  {
+   "id": "it2486d1f2",
+   "query": "omettere di versare gli alimenti alla figlia per un importo di fr",
+   "split": "test",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "ti_gerichte_10.2006.450_d20020201",
+   "relevant": [
+    {
+     "decision_id": "ti_gerichte_10.2006.450_d20020201",
+     "grade": 3
+    }
+   ]
+  },
+  {
+   "id": "itb8f54a2e",
+   "query": "Stralcio di causa per proprietà intellettuale dopo fallimento della convenuta e rinuncia d",
+   "split": "test",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "ti_gerichte_10.2007.3",
+   "relevant": [
+    {
+     "decision_id": "ti_gerichte_10.2007.3",
+     "grade": 3
+    }
+   ]
+  },
+  {
+   "id": "itc81f006a",
+   "query": "reddito della sostanza e obbligo di intaccarla per finanziare il sostentamento - Assicuraz",
+   "split": "test",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "ti_gerichte_11.2003.116",
+   "relevant": [
+    {
+     "decision_id": "ti_gerichte_11.2003.116",
+     "grade": 3
+    }
+   ]
+  },
+  {
+   "id": "it7fbfe002",
+   "query": "ritiro dell'appello e stralcio della causa - Pattuizione delle parti circa la ripartizione",
+   "split": "test",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "ti_gerichte_11.2003.48",
+   "relevant": [
+    {
+     "decision_id": "ti_gerichte_11.2003.48",
+     "grade": 3
+    }
+   ]
+  },
+  {
+   "id": "it966e956c",
+   "query": "Modifica di sentenza di divorzio - contributo di mantenimento per il figlio minorenne - le",
+   "split": "dev",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "ti_gerichte_11.2004.10_d20051117",
+   "relevant": [
+    {
+     "decision_id": "ti_gerichte_11.2004.10_d20051117",
+     "grade": 3
+    }
+   ]
+  },
+  {
+   "id": "it9185f04c",
+   "query": "assistenza giudiziaria per consulenza extraprocessuale? Diritto di visita del padre biolog",
+   "split": "test",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "ti_gerichte_11.2005.34_d20050203",
+   "relevant": [
+    {
+     "decision_id": "ti_gerichte_11.2005.34_d20050203",
+     "grade": 3
+    }
+   ]
+  },
+  {
+   "id": "it1b6a11de",
+   "query": "Responsabilità del proprietario nel caso in cui una frana si stacchi dal suo fondo per cau",
+   "split": "dev",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "ti_gerichte_11.2008.123",
+   "relevant": [
+    {
+     "decision_id": "ti_gerichte_11.2008.123",
+     "grade": 3
+    }
+   ]
+  },
+  {
+   "id": "itd1b45737",
+   "query": "Divorzio: metodo di calcolo per accertare la disponibilità economica di un coniuge che, ri",
+   "split": "dev",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "ti_gerichte_11.2009.65_d19990929",
+   "relevant": [
+    {
+     "decision_id": "ti_gerichte_11.2009.65_d19990929",
+     "grade": 3
+    }
+   ]
+  },
+  {
+   "id": "it64591f9a",
+   "query": "Modifica di un contributo alimentare per il figlio stabilito in una sentenza di divorzio q",
+   "split": "test",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "ti_gerichte_11.2009.6_d20030409",
+   "relevant": [
+    {
+     "decision_id": "ti_gerichte_11.2009.6_d20030409",
+     "grade": 3
+    }
+   ]
+  },
+  {
+   "id": "it6c9ab4b8",
+   "query": "Iscrizione definitiva di ipoteca legale degli artigiani e imprenditori: qualità per appell",
+   "split": "dev",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "ti_gerichte_11.2012.44",
+   "relevant": [
+    {
+     "decision_id": "ti_gerichte_11.2012.44",
+     "grade": 3
+    }
+   ]
+  },
+  {
+   "id": "ita4d95ada",
+   "query": "Stralcio della causa per parziale desistenza e parziale acquiescenza",
+   "split": "dev",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "ti_gerichte_11.2013.103_d20131106",
+   "relevant": [
+    {
+     "decision_id": "ti_gerichte_11.2013.103_d20131106",
+     "grade": 3
+    }
+   ]
+  },
+  {
+   "id": "itcdc70fba",
+   "query": "Modifica di sentenza di divorzio: reddito del genitore divenuto insufficiente per garantir",
+   "split": "dev",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "ti_gerichte_11.2013.57_d20010525",
+   "relevant": [
+    {
+     "decision_id": "ti_gerichte_11.2013.57_d20010525",
+     "grade": 3
+    }
+   ]
+  },
+  {
+   "id": "it3810f19d",
+   "query": "Proprietà per piani: contestazione di delibera assembleare (ripartizione delle spese relat",
+   "split": "dev",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "ti_gerichte_11.2014.15",
+   "relevant": [
+    {
+     "decision_id": "ti_gerichte_11.2014.15",
+     "grade": 3
+    }
+   ]
+  },
+  {
+   "id": "it02e0ab48",
+   "query": "Modifica di sentenza di divorzio: contributo di mantenimento per l'ex moglie",
+   "split": "test",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "ti_gerichte_11.2017.55_d20081126",
+   "relevant": [
+    {
+     "decision_id": "ti_gerichte_11.2017.55_d20081126",
+     "grade": 3
+    }
+   ]
+  },
+  {
+   "id": "it8ed98573",
+   "query": "Diffida ai debitori per l'incasso di contributi alimentari in favore della moglie e dei fi",
+   "split": "dev",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "ti_gerichte_11.2020.65",
+   "relevant": [
+    {
+     "decision_id": "ti_gerichte_11.2020.65",
+     "grade": 3
+    }
+   ]
+  },
+  {
+   "id": "it54dd715a",
+   "query": "Divorzio: liquidazione dei rapporti patrimoniali: scioglimento della comproprietà e liquid",
+   "split": "dev",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "ti_gerichte_11.2021.122",
+   "relevant": [
+    {
+     "decision_id": "ti_gerichte_11.2021.122",
+     "grade": 3
+    }
+   ]
+  },
+  {
+   "id": "it074f5c5c",
+   "query": "ricorso per nullità, lodo arbitrale Commissione speciale di ricorso ROCA, accertamenti di",
+   "split": "dev",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "ti_gerichte_12.2003.122_d20040915",
+   "relevant": [
+    {
+     "decision_id": "ti_gerichte_12.2003.122_d20040915",
+     "grade": 3
+    }
+   ]
+  },
+  {
+   "id": "it9b67649e",
+   "query": "contratto di locazione - carattere familiare dell'abitazione coniugale - diritto di essere",
+   "split": "dev",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "ti_gerichte_12.2004.109",
+   "relevant": [
+    {
+     "decision_id": "ti_gerichte_12.2004.109",
+     "grade": 3
+    }
+   ]
+  },
+  {
+   "id": "itd13df7cf",
+   "query": "contratto di locazione per locali commerciali, abuso di diritto nell'invocare la mancanza",
+   "split": "dev",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "ti_gerichte_12.2004.120",
+   "relevant": [
+    {
+     "decision_id": "ti_gerichte_12.2004.120",
+     "grade": 3
+    }
+   ]
+  },
+  {
+   "id": "ita2793f8b",
+   "query": "mandato - diritto di informazione degli eredi, in parte beneficiari economici, verso la ba",
+   "split": "dev",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "ti_gerichte_12.2004.210",
+   "relevant": [
+    {
+     "decision_id": "ti_gerichte_12.2004.210",
+     "grade": 3
+    }
+   ]
+  },
+  {
+   "id": "itcf3da58a",
+   "query": "riduzione della pigione - canone in uso nella località - onere della prova - legittimazion",
+   "split": "test",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "ti_gerichte_12.2004.48",
+   "relevant": [
+    {
+     "decision_id": "ti_gerichte_12.2004.48",
+     "grade": 3
+    }
+   ]
+  },
+  {
+   "id": "itfef70ecf",
+   "query": "architetto - responsabilità per carenze nella direzione lavori - esigibilità della mercede",
+   "split": "test",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "ti_gerichte_12.2004.91",
+   "relevant": [
+    {
+     "decision_id": "ti_gerichte_12.2004.91",
+     "grade": 3
+    }
+   ]
+  },
+  {
+   "id": "it7b489f48",
+   "query": "Responsabilità della banca per gestore esterno, operazioni su conto corrente bancario e de",
+   "split": "test",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "ti_gerichte_12.2005.154",
+   "relevant": [
+    {
+     "decision_id": "ti_gerichte_12.2005.154",
+     "grade": 3
+    }
+   ]
+  },
+  {
+   "id": "it9c7f99e3",
+   "query": "pagamento delle ore straordinarie eseguite con il consenso tacito del datore di lavoro, en",
+   "split": "test",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "ti_gerichte_12.2005.176",
+   "relevant": [
+    {
+     "decision_id": "ti_gerichte_12.2005.176",
+     "grade": 3
+    }
+   ]
+  },
+  {
+   "id": "it262159d7",
+   "query": "Contratto di appalto, garanzia per difetti e tempestività della notifica in caso di lavori",
+   "split": "dev",
+   "tags": [
+    "",
+    "",
+    "it",
+    "",
+    "self-labeled",
+    "natural-language",
+    "it-boost"
+   ],
+   "source_decision": "ti_gerichte_12.2005.46",
+   "relevant": [
+    {
+     "decision_id": "ti_gerichte_12.2005.46",
+     "grade": 3
     }
    ]
   }

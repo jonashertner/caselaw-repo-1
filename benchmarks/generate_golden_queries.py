@@ -89,6 +89,35 @@ def find_top_decisions_by_statute(
     return results
 
 
+def find_top_it_decisions_by_statute(graph_conn, fts_conn, statute_id, limit=10):
+    """Top-cited ITALIAN decisions for an article — the IT stratum was
+    starved (3/547) because IT decisions rarely rank in the overall top-N;
+    this filters to language='it' so the bench can measure Italian recall
+    and ranking (user report 2026-07-04)."""
+    rows = graph_conn.execute(
+        """SELECT ds.decision_id,
+                  COALESCE((SELECT COUNT(DISTINCT ct.source_decision_id)
+                            FROM citation_targets ct
+                            WHERE ct.target_decision_id = ds.decision_id),0) AS cit
+           FROM decision_statutes ds
+           WHERE ds.statute_id = ?
+           GROUP BY ds.decision_id ORDER BY cit DESC LIMIT 60""",
+        (statute_id,),
+    ).fetchall()
+    out = []
+    for did, cit in rows:
+        r = fts_conn.execute(
+            "SELECT regeste, language, docket_number, court FROM decisions "
+            "WHERE decision_id = ? AND language='it'", (did,)).fetchone()
+        if r and r[0] and len(r[0]) >= 50:
+            out.append({"decision_id": did, "docket_number": r[2] or "",
+                        "court": r[3] or "", "citations": cit,
+                        "language": "it", "regeste": r[0][:400]})
+        if len(out) >= limit:
+            break
+    return out
+
+
 def extract_query_terms(regeste: str) -> str:
     """Extract key legal terms from regeste for query generation."""
     # Remove "Regeste\n" prefix and "Regesto" / "Regeste" headers
@@ -258,6 +287,29 @@ def run_scale(graph_conn, fts_conn, per_branch: int, out_path: Path):
                     strata[lang] = strata.get(lang, 0) + 1
                 if len(seen_langs) >= 3:
                     break
+
+            # IT-guaranteed query: Italian decisions rarely rank in the
+            # overall top-N, so explicitly pull top IT decisions for this
+            # article and emit an Italian NL query graded against them
+            # (user report 2026-07-04: IT under-surfaced).
+            it_decs = find_top_it_decisions_by_statute(graph_conn, fts_conn,
+                                                       statute_id, limit=8)
+            if len(it_decs) >= 3:
+                it_rel = [{"decision_id": d["decision_id"],
+                           "grade": 3 if i < 2 else (2 if i < 5 else 1)}
+                          for i, d in enumerate(it_decs)]
+                it_hint = extract_query_terms(it_decs[0]["regeste"])
+                if len(it_hint) >= 15 and len(it_hint.split()) >= 2:
+                    qid = _qid(it_hint + "|it")
+                    queries.append({"id": qid, "query": it_hint,
+                                    "split": _split(qid),
+                                    "tags": [branch, law_code, "it", era,
+                                             "statute-keyed", "natural-language",
+                                             "it-boost"],
+                                    "statute": statute_id,
+                                    "source_decision": it_decs[0]["decision_id"],
+                                    "relevant": it_rel})
+                    strata["it"] = strata.get("it", 0) + 1
 
     payload = {
         "version": 3,
