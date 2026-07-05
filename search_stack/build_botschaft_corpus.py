@@ -844,8 +844,14 @@ def main() -> int:
         help="Seconds to sleep between fetches in --ingest-all (default 0.3).",
     )
     parser.add_argument(
-        "--min-year", type=int, default=2003,
-        help="Lowest BBl year to consider in --ingest-all (Fedlex coverage starts ~2003).",
+        "--min-year", type=int, default=1849,
+        help=(
+            "Lowest BBl year to consider in --ingest-all. Default 1849 "
+            "(= everything): the old assumption that Fedlex coverage starts "
+            "~2003 is outdated — its SPARQL serves pre-2003 Botschaften too "
+            "(267 of 2,045 DE FGA docs as of 2026-07), and they resolve and "
+            "parse like the rest."
+        ),
     )
     parser.add_argument(
         "--dry-run", action="store_true",
