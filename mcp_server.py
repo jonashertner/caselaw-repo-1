@@ -10614,13 +10614,15 @@ def _handle_search_botschaft(
             sql += " AND bd.language = ? "
             params.append(language)
         # Temporal scoping for legislative-history research ("on X from the 1990s").
-        # publication_date is an ISO date string; compare on its 4-digit year. Rows
-        # with a NULL/empty date fall out of a year-bounded search (expected).
+        # Filter on bbl_year (the BBl volume year, NOT NULL by schema) — the
+        # previous filter parsed publication_date, which the SPARQL ingest never
+        # populates (verified 2026-07-06: 0 of 6,141 docs have it), so EVERY
+        # year-bounded query silently returned zero results.
         if year_min is not None:
-            sql += " AND CAST(substr(bd.publication_date, 1, 4) AS INTEGER) >= ? "
+            sql += " AND bd.bbl_year >= ? "
             params.append(int(year_min))
         if year_max is not None:
-            sql += " AND CAST(substr(bd.publication_date, 1, 4) AS INTEGER) <= ? "
+            sql += " AND bd.bbl_year <= ? "
             params.append(int(year_max))
         sql += " ORDER BY rank LIMIT ? "
         params.append(limit)
