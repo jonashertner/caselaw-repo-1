@@ -1989,7 +1989,6 @@
     "2026": 14158
   },
   "recent_daily": {
-    "2026-06-04": 62,
     "2026-06-05": 68,
     "2026-06-08": 73,
     "2026-06-09": 59,
@@ -2339,7 +2338,7 @@
     }
   },
   "by_month": {
-    "2023-07": 3197,
+    "2023-07": 2962,
     "2023-08": 3770,
     "2023-09": 3869,
     "2023-10": 3936,
@@ -2377,7 +2376,7 @@
     "2026-06": 1036,
     "2026-07": 15
   },
-  "generated_at": "2026-07-04T13:58:02.775153+00:00",
+  "generated_at": "2026-07-05T00:33:50.305938+00:00",
   "scraper_health": {
     "run_at": "2026-07-04T03:11:28.248677+00:00",
     "run_duration_s": 7827.5,
@@ -2822,7 +2821,7 @@
         "note": null,
         "state_count": 97395,
         "jsonl_size_mb": 1468.8,
-        "jsonl_mtime": "2026-07-04T10:34:35.923959+00:00"
+        "jsonl_mtime": "2026-07-04T20:55:43.705730+00:00"
       },
       "bge": {
         "success": true,
@@ -3502,7 +3501,7 @@
         "note": "1987 listed on portal but content not downloadable (empty page or missing PDF)",
         "state_count": 1521,
         "jsonl_size_mb": 92.2,
-        "jsonl_mtime": "2026-07-04T02:38:38.087100+00:00"
+        "jsonl_mtime": "2026-07-04T14:45:34.973929+00:00"
       },
       "sg_publikationen": {
         "success": true,
@@ -4359,56 +4358,10 @@
     }
   ],
   "delta": {
-    "total": 269,
-    "by_court": {
-      "ge_gerichte": 61,
-      "bvger": 48,
-      "ti_gerichte": 6,
-      "vd_gerichte": 33,
-      "zh_sozialversicherungsgericht": 9,
-      "bl_gerichte": 6,
-      "gr_gerichte": 2,
-      "fr_gerichte": 24,
-      "be_verwaltungsgericht": 10,
-      "so_gerichte": 15,
-      "bs_appellationsgericht": 4,
-      "ne_gerichte": 6,
-      "vs_gerichte": 40,
-      "be_zivilstraf": 2,
-      "lu_gerichte": 2,
-      "sz_gerichte": 2,
-      "bs_sozialversicherungsgericht": 1,
-      "ag_strafgericht": 2,
-      "ag_versicherungsgericht": 4,
-      "ag_zivilgericht": 3,
-      "zg_verwaltungsgericht": 4,
-      "zg_obergericht": 2,
-      "zh_steuerrekursgericht": 1,
-      "hudoc_ch": 1,
-      "bge_egmr": 1
-    },
-    "by_canton": {
-      "GE": 61,
-      "VD": 33,
-      "ZH": 10,
-      "TI": 6,
-      "BE": 12,
-      "BL": 6,
-      "GR": 2,
-      "FR": 24,
-      "AG": 9,
-      "BS": 5,
-      "NE": 6,
-      "SO": 15,
-      "VS": 40,
-      "SZ": 2,
-      "LU": 2,
-      "ZG": 6
-    },
-    "corpus": {
-      "citation_edges": 4566,
-      "statute_edges": 4903
-    },
-    "previous_generated_at": "2026-07-03T15:51:26.826912+00:00"
+    "total": 0,
+    "by_court": {},
+    "by_canton": {},
+    "corpus": {},
+    "previous_generated_at": "2026-07-04T13:58:02.775153+00:00"
   }
 }
