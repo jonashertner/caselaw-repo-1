@@ -2376,7 +2376,7 @@
     "2026-06": 1049,
     "2026-07": 16
   },
-  "generated_at": "2026-07-05T09:22:10.117677+00:00",
+  "generated_at": "2026-07-05T15:43:08.547495+00:00",
   "scraper_health": {
     "run_at": "2026-07-05T02:11:42.481368+00:00",
     "run_duration_s": 4241.8,
@@ -2515,7 +2515,7 @@
         "note": null,
         "state_count": 21299,
         "jsonl_size_mb": 487.4,
-        "jsonl_mtime": "2026-07-04T10:38:23.804805+00:00"
+        "jsonl_mtime": "2026-07-05T10:38:22.310219+00:00"
       },
       "bazg": {
         "success": true,
@@ -2804,7 +2804,7 @@
         "note": "tunnel down (:1080) — skipped this run; 60 unreachable is expected, not a portal failure",
         "state_count": 97395,
         "jsonl_size_mb": 1468.8,
-        "jsonl_mtime": "2026-07-05T01:13:22.209052+00:00"
+        "jsonl_mtime": "2026-07-05T10:34:40.224282+00:00"
       },
       "be_zivilstraf": {
         "success": true,
@@ -2838,7 +2838,7 @@
         "note": "tunnel down (:1080) — skipped this run; 11 unreachable is expected, not a portal failure",
         "state_count": 1111,
         "jsonl_size_mb": 38.8,
-        "jsonl_mtime": "2026-07-05T01:15:34.806866+00:00"
+        "jsonl_mtime": "2026-07-05T10:25:00.018131+00:00"
       },
       "mkg": {
         "success": true,
@@ -2872,7 +2872,7 @@
         "note": null,
         "state_count": 7621,
         "jsonl_size_mb": 189.2,
-        "jsonl_mtime": "2026-07-05T01:16:20.531802+00:00"
+        "jsonl_mtime": "2026-07-05T10:52:39.348753+00:00"
       },
       "ne_jurisprudence_adm": {
         "success": true,
@@ -2889,7 +2889,7 @@
         "note": null,
         "state_count": 1611,
         "jsonl_size_mb": 32.6,
-        "jsonl_mtime": "2026-07-05T01:16:45.151768+00:00"
+        "jsonl_mtime": "2026-07-05T10:24:40.507112+00:00"
       },
       "nw_gerichte": {
         "success": true,
@@ -3518,7 +3518,7 @@
         "note": "1663 listed on portal but content not downloadable (empty page or missing PDF)",
         "state_count": 1521,
         "jsonl_size_mb": 92.2,
-        "jsonl_mtime": "2026-07-05T02:11:42.415466+00:00"
+        "jsonl_mtime": "2026-07-05T14:55:39.781950+00:00"
       }
     },
     "run_at_daily": "2026-07-05T02:11:42.481368+00:00",
@@ -3574,26 +3574,26 @@
       "ZH": 135
     },
     "commentaries": 1146,
-    "scholarship_publications": 25385,
+    "scholarship_publications": 24517,
     "scholarship_by_source": {
       "boris_law": 7319,
-      "unige_law": 3499,
+      "e_periodica_polsci": 3088,
       "e_periodica_law": 3041,
       "zhaw_digitalcollection": 3040,
-      "e_periodica_polsci": 2952,
+      "unige_law": 2350,
       "eth_research_collection": 1760,
       "e_periodica_pubadmin": 855,
       "fhnw_irf": 496,
-      "onlinekommentar": 377,
+      "onlinekommentar": 382,
       "edoc_unibas_law": 324,
       "sui_generis": 293,
-      "medialex": 271,
-      "eizpublishing": 263,
+      "medialex": 275,
+      "eizpublishing": 266,
+      "libra_unine": 212,
       "leges": 204,
       "ex_ante": 176,
       "thegoodboard": 140,
       "anci_ch": 100,
-      "libra_unine": 79,
       "cognitio": 58,
       "cfs": 50,
       "leoh": 44,
@@ -3601,29 +3601,29 @@
       "alexandria_law": 13
     },
     "scholarship_by_type": {
-      "article": 19016,
-      "book": 4573,
-      "dissertation": 679,
-      "report": 424,
-      "commentary": 407,
+      "article": 18704,
+      "book": 4044,
+      "dissertation": 652,
+      "report": 419,
+      "commentary": 412,
       "working_paper": 173,
       "guidance": 70,
       "reference_article": 40,
       "bachelor_thesis": 3
     },
-    "citation_edges": 9285400,
-    "statute_edges": 11907907
+    "citation_edges": 9285620,
+    "statute_edges": 11908178
   },
   "interesting_stats": {
     "most_cited_decision": {
       "docket": "BGE 125 V 351",
-      "citation_count": 97869,
+      "citation_count": 97872,
       "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
     },
     "most_cited_statute": {
       "law_code": "LTF",
       "article": "100",
-      "ref_count": 182528
+      "ref_count": 182539
     },
     "oldest_decision": {
       "docket": "1_I_26",
@@ -3635,17 +3635,17 @@
       "de_pct": 46.7,
       "fr_pct": 45.1,
       "it_pct": 8.2,
-      "total": 995605
+      "total": 995621
     },
     "regeste_coverage": {
       "pct": 38.0,
       "with_regeste": 377915,
-      "total": 995605
+      "total": 995621
     },
     "graph_size": {
-      "decision_edges": 8701340,
-      "statute_edges": 11907907,
-      "total": 20609247
+      "decision_edges": 8701554,
+      "statute_edges": 11908178,
+      "total": 20609732
     },
     "echr_switzerland": {
       "total": 2845,
@@ -3661,7 +3661,7 @@
     "top_5_decisions": [
       {
         "docket": "BGE 125 V 351",
-        "citation_count": 97869,
+        "citation_count": 97872,
         "regeste_excerpt": "Regeste\n Art. 4 BV; Art. 108 Abs. 1 lit. b UVG; Art. 40 BZP in Verbindung mit Art. 19 VwVG; Art. 95 Abs. 2 in Verbindung mit Art. 113 und 132 OG: Beweiswürdigun",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
       },
@@ -3673,13 +3673,13 @@
       },
       {
         "docket": "BGE 134 V 231",
-        "citation_count": 37382,
+        "citation_count": 37385,
         "regeste_excerpt": "Regeste\n Art. 6 Abs. 1 UVG; Beweiswert diagnostischer Methoden; funktionelle Magnetresonanztomographie; Schleudertrauma. Eine medizinisch-diagnostische Methode ",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_134_V_231"
       },
       {
         "docket": "BGE 126 V 75",
-        "citation_count": 34238,
+        "citation_count": 34240,
         "regeste_excerpt": "Regeste\n Art. 28 Abs. 2 IVG: Kürzung von Tabellenlöhnen. - Für die Bestimmung des Invalideneinkommens ist primär von der beruflich-erwerblichen Situation auszug",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_126_V_75"
       },
@@ -3694,12 +3694,12 @@
       {
         "law_code": "LTF",
         "article": "100",
-        "ref_count": 190215
+        "ref_count": 190226
       },
       {
         "law_code": "LTF",
         "article": "113",
-        "ref_count": 112076
+        "ref_count": 112083
       },
       {
         "law_code": "LTF",
@@ -3709,7 +3709,7 @@
       {
         "law_code": "BGG",
         "article": "42",
-        "ref_count": 93571
+        "ref_count": 93572
       },
       {
         "law_code": "BGG",
@@ -4370,7 +4370,10 @@
       "ZH": 1,
       "BS": 1
     },
-    "corpus": {},
+    "corpus": {
+      "citation_edges": 220,
+      "statute_edges": 271
+    },
     "previous_generated_at": "2026-07-04T13:58:02.775153+00:00"
   }
 }
