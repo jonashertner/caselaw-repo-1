@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/de.xml</link>
     <description>Latest published Swiss court decisions in Deutsch.</description>
     <language>de-CH</language>
-    <lastBuildDate>Sat, 04 Jul 2026 09:25:04 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 05 Jul 2026 09:31:06 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/de.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -94,6 +94,35 @@ Bern, 5. …</description>
       <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">be_zivilstraf_SK 2025 90</guid>
       <category>be_zivilstraf</category>
+    </item>
+    <item>
+      <title>bs_appellationsgericht AUS.2026.52 vom 2026-07-01</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bs_appellationsgericht_AUS.2026.52</link>
+      <description>Appellationsgericht
+
+des Kantons Basel-Stadt
+
+als Verwaltungsgericht
+
+Einzelrichterfür Zwangsmassnahmen imAusländerrecht
+
+AUS.2026.52
+
+URTEIL
+
+vom1.
+Juli 2026
+
+Beteiligte
+
+Migrationsamt des Kantons
+Basel-Stadt,
+
+Spiegelgasse 12, Postfach, 4001
+Bas…</description>
+      <pubDate>Wed, 01 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">bs_appellationsgericht_AUS.2026.52</guid>
+      <category>bs_appellationsgericht</category>
     </item>
     <item>
       <title>bs_appellationsgericht AUS.2026.53 vom 2026-07-01</title>
@@ -441,6 +470,14 @@ Bes…</description>
       <category>bger</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht E-1182/2026 vom 2026-06-24</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-1182_2026</link>
+      <description>Asyl und Wegweisung</description>
+      <pubDate>Wed, 24 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-1182.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>Bundesverwaltungsgericht E-3839/2024 vom 2026-06-24</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-3839_2024</link>
       <description>Asyl und Wegweisung</description>
@@ -769,22 +806,6 @@ Verfahrensbeteiligte
       <description>Asyl und Wegweisung</description>
       <pubDate>Mon, 22 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-458.2024</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht E-5731/2024 vom 2026-06-22</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-5731_2024</link>
-      <description>Asyl und Wegweisung</description>
-      <pubDate>Mon, 22 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-5731.2024</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht E-8175/2025 vom 2026-06-22</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-8175_2025</link>
-      <description>Verweigerung vorübergehender Schutz</description>
-      <pubDate>Mon, 22 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-8175.2025</guid>
       <category>bvger</category>
     </item>
   </channel>

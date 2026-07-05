@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/bvger.xml</link>
     <description>Latest published Bundesverwaltungsgericht decisions.</description>
     <language>de-CH</language>
-    <lastBuildDate>Sat, 04 Jul 2026 09:25:03 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 05 Jul 2026 09:31:05 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/bvger.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -62,6 +62,14 @@
       <description>Droit à la rente</description>
       <pubDate>Wed, 24 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-448.2023</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht E-1182/2026 vom 2026-06-24</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-1182_2026</link>
+      <description>Asyl und Wegweisung</description>
+      <pubDate>Wed, 24 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-1182.2026</guid>
       <category>bvger</category>
     </item>
     <item>
@@ -398,14 +406,6 @@
       <description>Asyl und Wegweisung</description>
       <pubDate>Fri, 19 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-1720.2025</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht E-2131/2025 vom 2026-06-19</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-2131_2025</link>
-      <description>Asile et renvoi</description>
-      <pubDate>Fri, 19 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-2131.2025</guid>
       <category>bvger</category>
     </item>
   </channel>

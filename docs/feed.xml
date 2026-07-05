@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feed.xml</link>
     <description>Latest published decisions across all Swiss courts indexed by OpenCaseLaw.</description>
     <language>de-CH</language>
-    <lastBuildDate>Sat, 04 Jul 2026 09:22:23 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 05 Jul 2026 09:28:07 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feed.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -417,6 +417,35 @@ Co…</description>
       <guid isPermaLink="false">hudoc_ch_54708_20</guid>
       <category>hudoc_ch</category>
       <category>EMRK / Menschenrechte</category>
+    </item>
+    <item>
+      <title>bs_appellationsgericht AUS.2026.52 vom 2026-07-01</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bs_appellationsgericht_AUS.2026.52</link>
+      <description>Appellationsgericht
+
+des Kantons Basel-Stadt
+
+als Verwaltungsgericht
+
+Einzelrichterfür Zwangsmassnahmen imAusländerrecht
+
+AUS.2026.52
+
+URTEIL
+
+vom1.
+Juli 2026
+
+Beteiligte
+
+Migrationsamt des Kantons
+Basel-Stadt,
+
+Spiegelgasse 12, Postfach, 4001
+Bas…</description>
+      <pubDate>Wed, 01 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">bs_appellationsgericht_AUS.2026.52</guid>
+      <category>bs_appellationsgericht</category>
     </item>
     <item>
       <title>bs_appellationsgericht AUS.2026.53 vom 2026-07-01</title>
@@ -868,20 +897,6 @@ Bundes…</description>
       <pubDate>Thu, 25 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">gr_gerichte_SBK 2026 47</guid>
       <category>gr_gerichte</category>
-    </item>
-    <item>
-      <title>ai_gerichte V 17-2025 vom 2026-06-24</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ai_gerichte_V%2017-2025</link>
-      <description>1 - 7 
- 
-Beschwerde gegen Widerruf Aufenthaltsbewilligung 
- 
-Das Erfordernis der dreijährigen Ehegemeinschaft gemäss Art. 50 AIG für die Verlängerung 
-einer Aufenthaltsbewilligung ist nicht als erfüllt zu betrachten, wenn der Ehemann kurz vor 
-Erreic…</description>
-      <pubDate>Wed, 24 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ai_gerichte_V 17-2025</guid>
-      <category>ai_gerichte</category>
     </item>
   </channel>
 </rss>
