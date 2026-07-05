@@ -33,14 +33,20 @@ from .base import PracticeScraper
 
 logger = logging.getLogger(__name__)
 
-_BASE = "https://www.tax-admin.ch"
+# Validated 2026-07-05: the SSK lives at ssk-csi.ch (steuerkonferenz.ch 301s
+# there; the tax-admin.ch guesses were dead). TYPO3 news plugin: the index is
+# paginated (4 pages) via tx_news_pi1[currentPage] links WITH cHash — the
+# pagination URLs must be harvested from the page, never constructed.
+_BASE = "https://www.ssk-csi.ch"
 INDEX_CANDIDATES = (
-    f"{_BASE}/de/dokumentationen/kreisschreiben.html",
-    f"{_BASE}/de/grundlagen-themen/dokumentationen/kreisschreiben.html",
+    f"{_BASE}/de/themen/kreisschreiben",
 )
 
-_KS_NUM = re.compile(r"KS\s*(?:Nr\.?\s*)?(\d{1,3}[a-z]?)", re.IGNORECASE)
+# Matches "KS 35", "KS_35_d.pdf" and "Kreisschreiben 31a" alike.
+_KS_NUM = re.compile(r"(?:KS|Kreisschreiben)[_\s]*(?:Nr\.?\s*)?(\d{1,3}[a-z]?)",
+                     re.IGNORECASE)
 _DATE = re.compile(r"(\d{1,2})\.(\d{1,2})\.(\d{4})")
+_PAGINATION = re.compile(r"tx_news_pi1(?:%5B|\[)currentPage")
 
 
 class SskKreisschreibenScraper(PracticeScraper):
@@ -54,15 +60,33 @@ class SskKreisschreibenScraper(PracticeScraper):
             logger.warning("SSK: no live index found — needs URL update")
             return
 
-        try:
-            r = self.get(index_url)
-            r.raise_for_status()
-        except Exception as e:
-            logger.warning("SSK index fetch failed: %s", e)
-            return
-
-        soup = BeautifulSoup(r.text, "html.parser")
+        # Walk the paginated index: start at page 1, follow every
+        # tx_news_pi1[currentPage] link found in fetched pages (cHash-protected,
+        # so harvested — not constructed). Order is stable enough for a scrape.
+        to_visit = [index_url]
+        visited: set[str] = set()
         seen: set[str] = set()
+        while to_visit:
+            page_url = to_visit.pop(0)
+            if page_url in visited:
+                continue
+            visited.add(page_url)
+            try:
+                r = self.get(page_url)
+                r.raise_for_status()
+            except Exception as e:
+                logger.warning("SSK index fetch failed: %s — %s", page_url, e)
+                continue
+            soup = BeautifulSoup(r.text, "html.parser")
+            for a in soup.find_all("a", href=True):
+                href = a["href"]
+                if _PAGINATION.search(href):
+                    nxt = urljoin(page_url, href.replace("&amp;", "&"))
+                    if nxt not in visited:
+                        to_visit.append(nxt)
+            yield from self._extract_pdfs(soup, page_url, seen)
+
+    def _extract_pdfs(self, soup, index_url: str, seen: set) -> Iterator[dict]:
         for a in soup.find_all("a", href=True):
             href = a["href"]
             if not href.lower().endswith(".pdf"):
