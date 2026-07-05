@@ -170,7 +170,8 @@ class PracticeScraper(ABC):
     def fetch_pdf_text(self, pdf_url: str) -> str:
         """Download a PDF + return extracted text. Caches in /tmp keyed by
         URL hash so re-runs don't re-download unchanged PDFs."""
-        cache_dir = Path("/tmp/ocl_practice_cache")
+        import tempfile
+        cache_dir = Path(tempfile.gettempdir()) / "ocl_practice_cache"
         cache_dir.mkdir(exist_ok=True)
         url_hash = sha256_hex(pdf_url)[:16]
         cache_path = cache_dir / f"{url_hash}.pdf"
