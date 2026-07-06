@@ -9,6 +9,17 @@ WorkingDirectory=/opt/caselaw/repo
 ExecStartPre=/bin/bash -c "for i in $(seq 1 240); do systemctl is-active --quiet opencaselaw-scrape.service || exit 0; echo \"Waiting for scrape to finish ($i/240)...\"; sleep 30; done; echo \"WARNING: scrape still running after 2h, proceeding anyway\""
 ExecStart=/usr/bin/python3 publish.py --full-rebuild
 EnvironmentFile=/opt/caselaw/repo/.env.publish
+# Resource fence (2026-07-06): keep the nightly build from starving the 8
+# serving workers when a long build overlaps daytime traffic (root cause of
+# the 2026-07-04 WAL thrashing + 07-06 export slowdown / watchdog-killed aux
+# steps). On the 16-core box: cap the whole build cgroup (publish.py + all
+# child steps) to 8 cores so serving always keeps 8; soft weights make the
+# build yield further under contention while still using idle capacity at
+# night. Applies at the NEXT build start (daemon-reload does not disturb a
+# running build). Reversible.
+CPUQuota=800%
+CPUWeight=60
+IOWeight=50
 TimeoutStartSec=28800
 StandardOutput=append:/opt/caselaw/repo/logs/publish.log
 StandardError=append:/opt/caselaw/repo/logs/publish.log
