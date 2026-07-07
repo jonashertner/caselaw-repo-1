@@ -54,11 +54,12 @@ The largest open collection of Swiss court decisions: 991,000+ decisions from 10
 - **Current decision languages**: German (463,012; 46.7%), French (446,869; 45.1%), Italian (81,796; 8.2%); the export schema also reserves `rm`
 - **Temporal range**: 1875–present (BGE historical vol. 1 from 1875)
 - **9.2 million extracted case-citation references** (8.6 million resolved, with confidence scores)
-- **11.8 million statute-decision links** (e.g., which decisions cite Art. 41 OR)
-- **5,519 federal laws indexed** with 132,586 articles in 3 languages (from Fedlex SPARQL)
-- **15,589 cantonal laws** with 353,464 articles (direct-scraped from 19 cantonal portals; LexFind fallback for the rest)
-- **Legislative history (Materialien)** for 2,500 federal laws: Botschaft references for 33,000 statute articles, structured Botschaft digests for BV and BGFA, parliamentary debate transcripts (Amtliches Bulletin) for the BV
+- **11.8 million statute-decision links** in `graph/statute_references.parquet` (e.g., which decisions cite Art. 41 OR)
 - **34 structured fields** per decision in Parquet; 27 in the FTS5 search index
+
+**What this Parquet dataset contains:** the decisions corpus (`data/`), the citation and statute-reference graph (`graph/`), and structured decision sections (`structure/`).
+
+**Not included as bulk Parquet — served live via the [MCP API](https://mcp.opencaselaw.ch) and [dashboard](https://opencaselaw.ch):** the full **law texts** and **legislative materials**. These are queried in real time (`get_law`, `search_laws`, `get_legislation`, `get_materialien`) and sourced from Fedlex SPARQL (5,519 federal laws / 132,586 articles in DE/FR/IT), direct cantonal-portal scraping with LexFind fallback (15,589 cantonal laws / 353,464 articles), and a verbatim Botschaft/Materialien corpus (references for ~33,000 statute articles, digests for BV and BGFA, and Amtliches-Bulletin debate transcripts for the BV). The statute-decision *links* above are included in the download; the article *texts* are not.
 
 ## Quick Start
 
@@ -174,6 +175,8 @@ This snapshot is intended for local MCP/server bootstrap tools that want to avoi
 | Legislation texts searchable | 33,000+ (federal + cantonal + intercantonal) |
 | Scholarly commentaries | 1,100+ (OnlineKommentar.ch + OpenLegalCommentary.ch) |
 | MCP tools | 40 total (38 remote in public mode + 2 local-only) |
+
+> Rows from *Federal laws indexed* downward (laws, Botschaft/Materialien, legislation texts, commentaries) are **platform figures served live via the MCP API**, not contents of this Parquet download. The Parquet dataset comprises `data/` (decisions), `graph/` (citations + statute-decision links), and `structure/`.
 
 **Language distribution:**
 
