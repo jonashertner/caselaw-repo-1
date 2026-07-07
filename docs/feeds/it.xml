@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/it.xml</link>
     <description>Latest published Swiss court decisions in Italiano.</description>
     <language>de-CH</language>
-    <lastBuildDate>Sun, 05 Jul 2026 09:31:08 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 07 Jul 2026 19:58:14 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/it.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -15,6 +15,42 @@
       <pubDate>Tue, 23 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-3951.2025</guid>
       <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht D-2986/2025 vom 2026-06-22</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-2986_2025</link>
+      <description>Asilo ed allontanamento</description>
+      <pubDate>Mon, 22 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-2986.2025</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesgericht 4A_285/2026 vom 2026-06-19</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_4A_285_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+4A_285/2026
+
+Sentenza del 19 giugno 2026
+
+I Corte di diritto civile
+
+Composizione
+
+Giudice federale Kiss, Giudice presidente,
+
+Cancelliere G. Piatti.
+
+Partecipanti al procedimento…</description>
+      <pubDate>Fri, 19 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:4A_285.2026</guid>
+      <category>bger</category>
     </item>
     <item>
       <title>Bundesverwaltungsgericht F-4218/2026 vom 2026-06-19</title>
@@ -497,6 +533,23 @@ Cancelliera Cometta Rizzi.…</description>
       <category>bger</category>
     </item>
     <item>
+      <title>Bundesstrafgericht RR.2026.26 vom 2026-06-03</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bstger_RR.2026.26</link>
+      <description>Assistenza giudiziaria internazionale in materia penale alla Città del Vaticano; consegna di mezzi di prova (art. 74 AIMP); 
+durata del sequestro (art. 33a OAIMP)</description>
+      <pubDate>Wed, 03 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BStGer:2026:RR.2026.26</guid>
+      <category>bstger</category>
+    </item>
+    <item>
+      <title>Bundesstrafgericht RR.2026.39 vom 2026-06-03</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bstger_RR.2026.39</link>
+      <description>Assistenza giudiziaria internazionale in materia penale alla Città del Vaticano; consegna di mezzi di prova (art. 74 AIMP)</description>
+      <pubDate>Wed, 03 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BStGer:2026:RR.2026.39</guid>
+      <category>bstger</category>
+    </item>
+    <item>
       <title>Bundesverwaltungsgericht C-3450/2026 vom 2026-06-03</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-3450_2026</link>
       <description>Assicurazione per l'invalidità (altro)</description>
@@ -835,120 +888,6 @@ Cancelliera Ieronimo Perroud.
 Partecipanti al p…</description>
       <pubDate>Fri, 22 May 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BGer:2026:2D_12.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 9C_302/2026 vom 2026-05-22</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_9C_302_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-9C_302/2026
-
-Sentenza del 22 maggio 2026
-
-III Corte di diritto pubblico
-
-Composizione
-
-Giudice federale Moser-Szeless, Presidente,
-
-Cancelliere Savoldelli.
-
-Partecipanti al proced…</description>
-      <pubDate>Fri, 22 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:9C_302.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 9C_303/2026 vom 2026-05-22</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_9C_303_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-9C_303/2026
-
-Sentenza del 22 maggio 2026
-
-III Corte di diritto pubblico
-
-Composizione
-
-Giudice federale Moser-Szeless, Presidente,
-
-Cancelliere Savoldelli.
-
-Partecipanti al proced…</description>
-      <pubDate>Fri, 22 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:9C_303.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 1C_194/2026 vom 2026-05-21</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_1C_194_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-1C_194/2026
-
-Decreto del 21 maggio 2026
-
-I Corte di diritto pubblico
-
-Composizione
-
-Giudice federale Kneubühler, Giudice Presidente,
-
-Cancelliere M. Piatti.
-
-Partecipanti al proce…</description>
-      <pubDate>Thu, 21 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:1C_194.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 4D_49/2026 vom 2026-05-21</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_4D_49_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-4D_49/2026
-
-Sentenza del 21 maggio 2026
-
-I Corte di diritto civile
-
-Composizione
-
-Giudice federale Hurni, Presidente,
-
-Cancelliere G. Piatti.
-
-Partecipanti al procedimento
-
-A.____…</description>
-      <pubDate>Thu, 21 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:4D_49.2026</guid>
       <category>bger</category>
     </item>
   </channel>

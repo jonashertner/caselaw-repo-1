@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feed.xml</link>
     <description>Latest published decisions across all Swiss courts indexed by OpenCaseLaw.</description>
     <language>de-CH</language>
-    <lastBuildDate>Tue, 07 Jul 2026 10:13:42 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 07 Jul 2026 19:55:38 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feed.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -233,6 +233,33 @@ Présidente…</description>
       <pubDate>Wed, 08 Jul 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">fr_gerichte_603 2025 179</guid>
       <category>fr_gerichte</category>
+    </item>
+    <item>
+      <title>ecthr_chamber 54549/22 vom 2026-07-07</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ecthr_chamber_54549_22</link>
+      <description>Exception préliminaire rejetée (Art. 35) Conditions de recevabilité;(Art. 35-1) Épuisement des voies de recours internes;Violation de l'article 3 - Interdiction de la torture (Article 3 - Enquête effective) (Volet procédural);Violation de l'article 3 - Interdiction de la torture (Article 3 - Traitement inhumain);Préjudice moral - réparation (Article 41 - Préjudice moral;Satisfaction équitable); Violation: 3</description>
+      <pubDate>Tue, 07 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ecthr_chamber_54549_22</guid>
+      <category>ecthr_chamber</category>
+      <category>CEDH / Droits humains</category>
+    </item>
+    <item>
+      <title>ecthr_committee 58246/18 vom 2026-07-07</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ecthr_committee_58246_18</link>
+      <description>Violation de l'article 6 - Droit à un procès équitable (Article 6 - Procédure pénale;Article 6-1 - Accès à un tribunal); Violation: 6;6-1</description>
+      <pubDate>Tue, 07 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ecthr_committee_58246_18</guid>
+      <category>ecthr_committee</category>
+      <category>CEDH / Droits humains</category>
+    </item>
+    <item>
+      <title>ecthr_grand_chamber 29550/17 vom 2026-07-07</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ecthr_grand_chamber_29550_17</link>
+      <description>Violation de l'article 8 - Droit au respect de la vie privée et familiale (Article 8-1 - Respect du domicile);Préjudice moral - réparation (Article 41 - Préjudice moral;Satisfaction équitable); Violation: 8;8-1</description>
+      <pubDate>Tue, 07 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ecthr_grand_chamber_29550_17</guid>
+      <category>ecthr_grand_chamber</category>
+      <category>CEDH / Droits humains</category>
     </item>
     <item>
       <title>be_zivilstraf BK 2026 254 vom 2026-07-06</title>
@@ -835,65 +862,6 @@ Brun, …</description>
       <pubDate>Fri, 26 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">gr_gerichte_VR3 2023 55</guid>
       <category>gr_gerichte</category>
-    </item>
-    <item>
-      <title>gr_gerichte ZR1 2024 196 vom 2026-06-26</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_ZR1%202024%20196</link>
-      <description>Obergericht des Kantons Graubünden
-Dretgira superiura dal chantun Grischun
-Tribunale d'appello del Cantone dei Grigioni
-Urteil vom 25. April 2026
-mitgeteilt am 5. Mai 2026
-Referenz
-ZR1 24 196
-Instanz
-Erste zivilrechtliche Kammer
-Besetzung
-Michael Dür…</description>
-      <pubDate>Fri, 26 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">gr_gerichte_ZR1 2024 196</guid>
-      <category>gr_gerichte</category>
-    </item>
-    <item>
-      <title>so_gerichte ZKBER.2026.21 vom 2026-06-26</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/so_gerichte_ZKBER.2026.21</link>
-      <description>Urteilvom26. Juni 2026
-
-Es wirken mit:
-
-Präsidentin Kofmel
-
-Oberrichter Schibli
-
-Oberrichter Hagmann
-
-Gerichtsschreiber Schaller
-
-In Sachen
-
-A.___ GmbH,
-
-Berufungsklägerin
-
-gegen
-
-1.B.___AG,
-
-vertreten durch Rechtsanwalt Christian
-Ruf,
-
-2.C.___GmbH,…</description>
-      <pubDate>Fri, 26 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">so_gerichte_ZKBER.2026.21</guid>
-      <category>so_gerichte</category>
-    </item>
-    <item>
-      <title>zh_baurekursgericht BRGE I Nr. 0092/2026 vom 2026-06-26</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/zh_baurekursgericht_BRGE%20I%20Nr.%200092_2026</link>
-      <description>Angefochten war die Verfügung der Baudirektion Kanton Zürich vom 11. Juli 2025 betreffend Unterschutzstellung des Zürcher Rathauses. Der Zürcher Heimatschutz und der Schweizer Heimatschutz rügten, der festgelegte Schutzumfang sei mit den in den Gutachten der kantonalen Denkmalpflegekommission (KDK) und der Eidgenössischen Kommission für Denkmalpflege (EKD) definierten Schutzzielen nicht vereinbar, da er die für das geplante Umbauszenario 2 notwendigen Eingriffe – namentlich den Rückbau des 1833 geschaffenen historischen Ratssaals sowie Eingriffe in den barocken Dachstuhl – zulasse. Das Baurekursgericht erwog, dass beide Fachgutachten schlüssig und unbestritten seien und der Ratssaal von 1833 als bedeutendstes bauliches Zeugnis der liberalen Revolution von 1830 und damit als Kernelement des Schutzobjekts zu gelten habe. Das von der Baudirektion angeführte Interesse an der Nutzungskontinuität vermöge derart schwerwiegende Eingriffe nicht zu rechtfertigen, zumal gemäss Machbarkeitsstudie auch das schonendere Szenario 1 einen Weiterbetrieb als Rathaus ermögliche. Der festgelegte Schutzumfang erwies sich damit als mit den Schutzzielen nicht vereinbar. Das Baurekursgericht hiess den Rekurs teilweise gut, hob die angefochtene Verfügung auf und wies die Sache im Sinne der Erwägungen zur Fortsetzung des Schutzabklärungsverfahrens an die Baudirektion zurück, unter Kostenfolge zu deren Lasten.</description>
-      <pubDate>Fri, 26 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">zh_baurekursgericht_BRGE I Nr. 0092_2026</guid>
-      <category>zh_baurekursgericht</category>
     </item>
   </channel>
 </rss>

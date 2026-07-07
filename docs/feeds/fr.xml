@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/fr.xml</link>
     <description>Latest published Swiss court decisions in Français.</description>
     <language>de-CH</language>
-    <lastBuildDate>Sun, 05 Jul 2026 09:31:08 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 07 Jul 2026 19:58:06 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/fr.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -235,6 +235,55 @@ Présidente…</description>
       <category>fr_gerichte</category>
     </item>
     <item>
+      <title>ecthr_chamber 54549/22 vom 2026-07-07</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ecthr_chamber_54549_22</link>
+      <description>Exception préliminaire rejetée (Art. 35) Conditions de recevabilité;(Art. 35-1) Épuisement des voies de recours internes;Violation de l'article 3 - Interdiction de la torture (Article 3 - Enquête effective) (Volet procédural);Violation de l'article 3 - Interdiction de la torture (Article 3 - Traitement inhumain);Préjudice moral - réparation (Article 41 - Préjudice moral;Satisfaction équitable); Violation: 3</description>
+      <pubDate>Tue, 07 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ecthr_chamber_54549_22</guid>
+      <category>ecthr_chamber</category>
+      <category>CEDH / Droits humains</category>
+    </item>
+    <item>
+      <title>ecthr_committee 58246/18 vom 2026-07-07</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ecthr_committee_58246_18</link>
+      <description>Violation de l'article 6 - Droit à un procès équitable (Article 6 - Procédure pénale;Article 6-1 - Accès à un tribunal); Violation: 6;6-1</description>
+      <pubDate>Tue, 07 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ecthr_committee_58246_18</guid>
+      <category>ecthr_committee</category>
+      <category>CEDH / Droits humains</category>
+    </item>
+    <item>
+      <title>ecthr_grand_chamber 29550/17 vom 2026-07-07</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ecthr_grand_chamber_29550_17</link>
+      <description>Violation de l'article 8 - Droit au respect de la vie privée et familiale (Article 8-1 - Respect du domicile);Préjudice moral - réparation (Article 41 - Préjudice moral;Satisfaction équitable); Violation: 8;8-1</description>
+      <pubDate>Tue, 07 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ecthr_grand_chamber_29550_17</guid>
+      <category>ecthr_grand_chamber</category>
+      <category>CEDH / Droits humains</category>
+    </item>
+    <item>
+      <title>be_zivilstraf BK 2026 254 vom 2026-07-06</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/be_zivilstraf_BK%202026%20254</link>
+      <description>Cour suprême
+du canton de Berne
+Chambre de recours pénale
+Obergericht
+des Kantons Bern
+Beschwerdekammer in
+Strafsachen
+Décision
+BK 26 254
+Hochschulstrasse 17
+Case postale
+3001 Berne
+Téléphone +41 31 635 48 13
+coursupreme-penal.berne@justice.be.ch
+www…</description>
+      <pubDate>Mon, 06 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">be_zivilstraf_BK 2026 254</guid>
+      <category>be_zivilstraf</category>
+    </item>
+    <item>
       <title>fr_gerichte 101 2026 78 vom 2026-07-03</title>
       <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_101%202026%2078</link>
       <description>Tribunal cantonal TC
@@ -400,6 +449,14 @@ A.___…</description>
       <category>CEDH / Droits humains</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht C-4003/2026 vom 2026-06-29</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-4003_2026</link>
+      <description>Droit à la rente</description>
+      <pubDate>Mon, 29 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-4003.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>fr_gerichte 603 2026 49 vom 2026-06-29</title>
       <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_603%202026%2049</link>
       <description>Tribunal cantonal TC
@@ -418,6 +475,22 @@ Présidente :…</description>
       <pubDate>Mon, 29 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">fr_gerichte_603 2026 49</guid>
       <category>fr_gerichte</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht C-5964/2025 vom 2026-06-26</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-5964_2025</link>
+      <description>Rentes</description>
+      <pubDate>Fri, 26 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-5964.2025</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht E-2816/2025 vom 2026-06-26</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-2816_2025</link>
+      <description>Asile et renvoi</description>
+      <pubDate>Fri, 26 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-2816.2025</guid>
+      <category>bvger</category>
     </item>
     <item>
       <title>Bundesverwaltungsgericht E-7835/2025 vom 2026-06-26</title>
@@ -637,139 +710,6 @@ courait jusquau 28 février 2025, A.________ a trouvé un emploi pour le 1erju
       <pubDate>Tue, 23 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ne_gerichte_CDP.2025.257</guid>
       <category>ne_gerichte</category>
-    </item>
-    <item>
-      <title>Bundesgericht 4A_189/2026 vom 2026-06-22</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_4A_189_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-4A_189/2026
-
-Ordonnance du 22 juin 2026
-
-Ire Cour de droit civil
-
-Composition
-
-M. le Juge fédéral Hurni, Président.
-
-Greffier : M. Leemann.
-
-Participants à la procédure
-
-A._______…</description>
-      <pubDate>Mon, 22 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:4A_189.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 5A_557/2026 vom 2026-06-22</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_557_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-5A_557/2026
-
-Arrêt du 22 juin 2026
-
-IIe Cour de droit civil
-
-Composition
-
-M. le Juge fédéral Bovey, Président.
-
-Greffière : Mme Hildbrand.
-
-Participants à la procédure
-
-A.________…</description>
-      <pubDate>Mon, 22 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_557.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 5A_911/2025 vom 2026-06-22</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_911_2025</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-5A_911/2025
-
-Arrêt du 22 juin 2026
-
-IIe Cour de droit civil
-
-Composition
-
-MM. et Mme les Juges fédéraux Bovey, Président, Hartmann et De Rossa.
-
-Greffière : Mme Dolivo-Bonvin.
-
-Pa…</description>
-      <pubDate>Mon, 22 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_911.2025</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht E-2135/2024 vom 2026-06-22</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-2135_2024</link>
-      <description>Asile et renvoi</description>
-      <pubDate>Mon, 22 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-2135.2024</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht E-5810/2022 vom 2026-06-22</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-5810_2022</link>
-      <description>Asile et renvoi (demande multiple)</description>
-      <pubDate>Mon, 22 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-5810.2022</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht F-8758/2025 vom 2026-06-22</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-8758_2025</link>
-      <description>Déni de justice/retard injustifié</description>
-      <pubDate>Mon, 22 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-8758.2025</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>fr_gerichte 501 2025 119 vom 2026-06-22</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_501%202025%20119</link>
-      <description>Tribunal cantonal TC
-Kantonsgericht KG
-Rue des Augustins 3, case postale 630, 1701 Fribourg
-T +41 26 304 15 00
-www.fr.ch/tc
-—
-Pouvoir Judiciaire PJ
-Gerichtsbehörden GB
-501 2025 119
-Arrêt du 5 mai 2026
-Cour d'appel pénal
-Composition
-Président :
-Michel…</description>
-      <pubDate>Mon, 22 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">fr_gerichte_501 2025 119</guid>
-      <category>fr_gerichte</category>
     </item>
   </channel>
 </rss>

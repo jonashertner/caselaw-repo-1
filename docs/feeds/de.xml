@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/de.xml</link>
     <description>Latest published Swiss court decisions in Deutsch.</description>
     <language>de-CH</language>
-    <lastBuildDate>Sun, 05 Jul 2026 09:31:06 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 07 Jul 2026 19:58:05 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/de.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -27,6 +27,24 @@ Präside…</description>
       <pubDate>Mon, 06 Jul 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">fr_gerichte_605 2025 115</guid>
       <category>fr_gerichte</category>
+    </item>
+    <item>
+      <title>gr_gerichte ZR2 2025 38 vom 2026-07-06</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_ZR2%202025%2038</link>
+      <description>Obergericht des Kantons Graubünden
+Dretgira superiura dal chantun Grischun
+Tribunale d'appello del Cantone dei Grigioni
+Urteil vom 24. Juni 2026
+mitgeteilt am 25. Juni 2026
+Referenz
+ZR2 25 38
+Instanz
+Zweite zivilrechtliche Kammer
+Besetzung
+Richter-Ba…</description>
+      <pubDate>Mon, 06 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">gr_gerichte_ZR2 2025 38</guid>
+      <category>gr_gerichte</category>
     </item>
     <item>
       <title>be_verwaltungsgericht 100 2025 206 vom 2026-07-03</title>
@@ -218,6 +236,18 @@ B…</description>
       <category>gr_gerichte</category>
     </item>
     <item>
+      <title>zh_bezirksgericht_zuerich MJ210045-L vom 2026-06-30</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/zh_bezirksgericht_zuerich_MJ210045-L</link>
+      <description>ZMP 2026 Nr. 7
+Art. 259a OR; Art. 259b lit. b OR; Art. 259d OR; Art. 259e OR; Art. 259g OR;
+Art. 87 Abs. 3 OR; Art. 85 ZPO. Mängelrechte. Modernisierung der Sache.
+Zusicherungen. Beseitigungsanspruch. Unzumutbarkeit. Ersatzvornahme.
+Minderung. Beziff…</description>
+      <pubDate>Tue, 30 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">zh_bezirksgericht_zuerich_MJ210045-L</guid>
+      <category>zh_bezirksgericht_zuerich</category>
+    </item>
+    <item>
       <title>gr_gerichte SR1 2025 47 vom 2026-06-29</title>
       <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_SR1%202025%2047</link>
       <description>Obergericht des Kantons Graubünden
@@ -233,6 +263,24 @@ Besetzung
 Moses, Vors…</description>
       <pubDate>Mon, 29 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">gr_gerichte_SR1 2025 47</guid>
+      <category>gr_gerichte</category>
+    </item>
+    <item>
+      <title>gr_gerichte SR2 2025 8 vom 2026-06-28</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_SR2%202025%208</link>
+      <description>Obergericht des Kantons Graubünden
+Dretgira superiura dal chantun Grischun
+Tribunale d'appello del Cantone dei Grigioni
+Beschluss vom 28. Mai 2026
+mitgeteilt am 1. Juni 2026
+Referenz
+SR2 25 8
+Instanz
+Zweite strafrechtliche Kammer
+Besetzung
+Hubert, Vo…</description>
+      <pubDate>Sun, 28 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">gr_gerichte_SR2 2025 8</guid>
       <category>gr_gerichte</category>
     </item>
     <item>
@@ -380,6 +428,30 @@ Verf…</description>
       <category>bvger</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht D-4291/2024 vom 2026-06-25</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-4291_2024</link>
+      <description>Asyl und Wegweisung</description>
+      <pubDate>Thu, 25 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-4291.2024</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht D-488/2026 vom 2026-06-25</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-488_2026</link>
+      <description>Verwaltungs- und Verwaltungsgerichtsverfahren des Bundes (Übriges)</description>
+      <pubDate>Thu, 25 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-488.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht D-7317/2024 vom 2026-06-25</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-7317_2024</link>
+      <description>Asyl und Wegweisung</description>
+      <pubDate>Thu, 25 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-7317.2024</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>Bundesverwaltungsgericht E-2734/2026 vom 2026-06-25</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-2734_2026</link>
       <description>Asyl und Wegweisung</description>
@@ -470,6 +542,38 @@ Bes…</description>
       <category>bger</category>
     </item>
     <item>
+      <title>Bundesstrafgericht SK.2026.24 vom 2026-06-24</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bstger_SK.2026.24</link>
+      <description>Gültigkeit der Einsprache (Art. 356 Abs. 2 StPO)</description>
+      <pubDate>Wed, 24 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BStGer:2026:SK.2026.24</guid>
+      <category>bstger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht D-1622/2026 vom 2026-06-24</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-1622_2026</link>
+      <description>Asyl und Wegweisung</description>
+      <pubDate>Wed, 24 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-1622.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht D-3792/2026 vom 2026-06-24</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-3792_2026</link>
+      <description>Widerruf vorübergehender Schutz (Asyl)</description>
+      <pubDate>Wed, 24 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-3792.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht D-4941/2024 vom 2026-06-24</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-4941_2024</link>
+      <description>Asyl und Wegweisung</description>
+      <pubDate>Wed, 24 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-4941.2024</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>Bundesverwaltungsgericht E-1182/2026 vom 2026-06-24</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-1182_2026</link>
       <description>Asyl und Wegweisung</description>
@@ -537,6 +641,52 @@ und deren Kirchgemeinden,vertreten durch Finanzverwaltung A.___,
       <category>sz_verwaltungsgericht</category>
     </item>
     <item>
+      <title>ag_verwaltungsgericht WBE.2026.124 vom 2026-06-23</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ag_verwaltungsgericht_WBE.2026.124</link>
+      <description>Verwaltungsgericht
+1. Kammer
+WBE.2026.124 / JL / jb
+(DVIRD.26.12)
+Art. 115
+Urteil vom 23. Juni 2026
+Besetzung Verwaltungsrichterin Schircks, Vorsitz
+Verwaltungsrichterin Bärtschi
+Verwaltungsrichter Clavadetscher
+Gerichtsschreiberin Lang
+Beschwerde- A…</description>
+      <pubDate>Tue, 23 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ag_verwaltungsgericht_WBE.2026.124</guid>
+      <category>ag_verwaltungsgericht</category>
+    </item>
+    <item>
+      <title>Bundesgericht 2C_337/2026 vom 2026-06-23</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_2C_337_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+2C_337/2026
+
+Urteil vom 23. Juni 2026
+
+II. öffentlich-rechtliche Abteilung
+
+Besetzung
+
+Bundesrichter Donzallaz, präsidierendes Mitglied,
+
+Gerichtsschreiberin Ivanov.
+
+Verfahrensbe…</description>
+      <pubDate>Tue, 23 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:2C_337.2026</guid>
+      <category>bger</category>
+    </item>
+    <item>
       <title>Bundesgericht 5A_585/2026 vom 2026-06-23</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_585_2026</link>
       <description>Bundesgericht
@@ -569,6 +719,14 @@ Besc…</description>
       <category>bger</category>
     </item>
     <item>
+      <title>Bundesstrafgericht CA.2026.9 vom 2026-06-23</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bstger_CA.2026.9</link>
+      <description>Gesuch um Kostenerlass; Nachträgliche Entscheide</description>
+      <pubDate>Tue, 23 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BStGer:2026:CA.2026.9</guid>
+      <category>bstger</category>
+    </item>
+    <item>
       <title>Bundesverwaltungsgericht A-4941/2025 vom 2026-06-23</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_A-4941_2025</link>
       <description>Amtshilfe</description>
@@ -582,6 +740,22 @@ Besc…</description>
       <description>Widerspruchssachen</description>
       <pubDate>Tue, 23 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:B-1094.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht C-3875/2026 vom 2026-06-23</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-3875_2026</link>
+      <description>Heilmittel (Übriges)</description>
+      <pubDate>Tue, 23 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-3875.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht D-3482/2026 vom 2026-06-23</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-3482_2026</link>
+      <description>Familienzusammenführung (Asyl)</description>
+      <pubDate>Tue, 23 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-3482.2026</guid>
       <category>bvger</category>
     </item>
     <item>
@@ -606,206 +780,6 @@ Besc…</description>
       <description>Asyl und Wegweisung (beschleunigtes Verfahren)</description>
       <pubDate>Tue, 23 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-2745.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht F-4226/2026 vom 2026-06-23</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-4226_2026</link>
-      <description>Nichteintreten auf Asylgesuch und Wegweisung (sicherer Drittstaat - Art. 31a Abs. 1 Bst. a AsylG)</description>
-      <pubDate>Tue, 23 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-4226.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>gr_gerichte SR2 2025 66 vom 2026-06-23</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_SR2%202025%2066</link>
-      <description>Obergericht des Kantons Graubünden
-Dretgira superiura dal chantun Grischun
-Tribunale d'appello del Cantone dei Grigioni
-Beschluss vom 28. April 2026
-mitgeteilt am 1. Mai 2026
-[Gegen diesen Entscheid wurde Beschwerde erhoben. Der Fall ist am
-Bundesger…</description>
-      <pubDate>Tue, 23 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">gr_gerichte_SR2 2025 66</guid>
-      <category>gr_gerichte</category>
-    </item>
-    <item>
-      <title>gr_gerichte ZR1 2026 77 vom 2026-06-23</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_ZR1%202026%2077</link>
-      <description>Obergericht des Kantons Graubünden
-Dretgira superiura dal chantun Grischun
-Tribunale d'appello del Cantone dei Grigioni
-Verfügung vom 11. Juni 2026
-mitgeteilt am 12. Juni 2026
-Referenz
-ZR1 26 77
-Instanz
-Erste zivilrechtliche Kammer
-Besetzung
-Cavegn, …</description>
-      <pubDate>Tue, 23 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">gr_gerichte_ZR1 2026 77</guid>
-      <category>gr_gerichte</category>
-    </item>
-    <item>
-      <title>Bundesgericht 1C_221/2024 vom 2026-06-22</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_1C_221_2024</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-1C_221/2024
-
-Urteil vom 22. Juni 2026
-
-I. öffentlich-rechtliche Abteilung
-
-Besetzung
-
-Bundesrichter Haag, Präsident,
-
-Bundesrichter Kneubühler,
-
-nebenamtlicher Bundesrichter Mecca…</description>
-      <pubDate>Mon, 22 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:1C_221.2024</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 5A_525/2026 vom 2026-06-22</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_525_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-5A_525/2026
-
-Urteil vom 22. Juni 2026
-
-II. zivilrechtliche Abteilung
-
-Besetzung
-
-Bundesrichter Bovey, Präsident,
-
-Gerichtsschreiber Zingg.
-
-Verfahrensbeteiligte
-
-A.________ AG in …</description>
-      <pubDate>Mon, 22 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_525.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 8C_397/2026 vom 2026-06-22</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_8C_397_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-8C_397/2026
-
-Urteil vom 22. Juni 2026
-
-IV. öffentlich-rechtliche Abteilung
-
-Besetzung
-
-Bundesrichterin Viscione, Präsidentin,
-
-Gerichtsschreiber Grünvogel.
-
-Verfahrensbeteiligte
-
-…</description>
-      <pubDate>Mon, 22 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:8C_397.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht D-3678/2026 vom 2026-06-22</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-3678_2026</link>
-      <description>Asyl und Wegweisung</description>
-      <pubDate>Mon, 22 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-3678.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht D-3940/2026 vom 2026-06-22</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-3940_2026</link>
-      <description>Verwaltungs- und Verwaltungsgerichtsverfahren des Bundes (Übriges)</description>
-      <pubDate>Mon, 22 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-3940.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht D-4177/2026 vom 2026-06-22</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-4177_2026</link>
-      <description>Verfahrenskosten</description>
-      <pubDate>Mon, 22 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-4177.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht D-5031/2025 vom 2026-06-22</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-5031_2025</link>
-      <description>Asyl und Wegweisung</description>
-      <pubDate>Mon, 22 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-5031.2025</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht D-5361/2025 vom 2026-06-22</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-5361_2025</link>
-      <description>Asyl und Wegweisung</description>
-      <pubDate>Mon, 22 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-5361.2025</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht E-1387/2025 vom 2026-06-22</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-1387_2025</link>
-      <description>Verweigerung vorübergehender Schutz</description>
-      <pubDate>Mon, 22 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-1387.2025</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht E-2327/2020 vom 2026-06-22</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-2327_2020</link>
-      <description>Asyl und Wegweisung</description>
-      <pubDate>Mon, 22 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-2327.2020</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht E-2549/2025 vom 2026-06-22</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-2549_2025</link>
-      <description>Vollzug der Wegweisung</description>
-      <pubDate>Mon, 22 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-2549.2025</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht E-458/2024 vom 2026-06-22</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-458_2024</link>
-      <description>Asyl und Wegweisung</description>
-      <pubDate>Mon, 22 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-458.2024</guid>
       <category>bvger</category>
     </item>
   </channel>
