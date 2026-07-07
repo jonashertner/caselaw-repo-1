@@ -48,3 +48,43 @@ def test_cleared_alert_sends_all_clear_once_and_forgets():
 def test_alert_without_key_is_ignored():
     to_send, clears, state = dha.decide([{"level": "warning"}], {}, NOW)
     assert to_send == [] and clears == [] and state == {}
+
+
+# ── cert-expiry monitoring (added 2026-07-07) ──────────────────────────
+import datetime as _dt
+from scripts.dispatch_health_alerts import _cert_days_left, check_cert_expiry
+
+
+def test_cert_days_left_parses_openssl_enddate():
+    now = _dt.datetime(2026, 7, 7, 12, 0, 0)
+    assert _cert_days_left("notAfter=Oct  5 07:05:00 2026 GMT", now) == 89
+    assert _cert_days_left("Sep 20 20:36:52 2026 GMT", now) == 75
+    # already expired -> negative
+    assert _cert_days_left("Jun 26 09:50:31 2026 GMT", now) < 0
+
+
+def test_cert_days_left_unparseable_returns_none():
+    assert _cert_days_left("") is None
+    assert _cert_days_left("garbage") is None
+
+
+def test_check_cert_expiry_fires_warning_and_critical(tmp_path, monkeypatch):
+    # fabricate two "certs" via a fake openssl by monkeypatching subprocess.run
+    import scripts.dispatch_health_alerts as d
+    (tmp_path / "word.opencaselaw.ch").mkdir()
+    (tmp_path / "mcp.opencaselaw.ch").mkdir()
+    wp = tmp_path / "word.opencaselaw.ch" / "fullchain.pem"; wp.write_text("x")
+    mp = tmp_path / "mcp.opencaselaw.ch" / "fullchain.pem"; mp.write_text("x")
+    soon = (_dt.datetime.utcnow() + _dt.timedelta(days=3)).strftime("notAfter=%b %d %H:%M:%S %Y GMT")
+    far = (_dt.datetime.utcnow() + _dt.timedelta(days=75)).strftime("notAfter=%b %d %H:%M:%S %Y GMT")
+
+    class _R:
+        def __init__(self, out): self.stdout = out
+    def fake_run(cmd, **kw):
+        return _R(soon if "word" in cmd[-1] else far)
+    monkeypatch.setattr(d.subprocess, "run", fake_run)
+
+    alerts = check_cert_expiry(str(tmp_path / "*" / "fullchain.pem"))
+    keys = {a["key"]: a["level"] for a in alerts}
+    assert keys.get("cert_expiry:word.opencaselaw.ch") == "critical"  # 3d < 5
+    assert "cert_expiry:mcp.opencaselaw.ch" not in keys                # 75d, fine
