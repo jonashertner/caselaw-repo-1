@@ -160,8 +160,13 @@ def make_feed(title: str, description: str, channel_link: str, items: list[dict]
 
 def query_decisions(conn, where: str, params: tuple, limit: int = ITEMS_PER_FEED) -> list[dict]:
     sql = (
+        # full_text is a large blob in scattered overflow pages; make_item only
+        # ever uses its first 250 chars (regeste fallback). Reading the whole
+        # column pulled ~2.2 MB/feed of random IO that starved under the nightly
+        # aux-builder contention and blew the Step 5b 300s cap (2026-07-07).
+        # substr keeps the identical fallback for ~146x less IO.
         "SELECT decision_id, court, docket_number, decision_date, language, "
-        "regeste, full_text, legal_area "
+        "regeste, substr(full_text, 1, 300) AS full_text, legal_area "
         "FROM decisions "
         f"WHERE {where} AND decision_date IS NOT NULL AND decision_date != '' "
         "ORDER BY decision_date DESC, decision_id "
