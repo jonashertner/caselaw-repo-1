@@ -174,7 +174,7 @@ This snapshot is intended for local MCP/server bootstrap tools that want to avoi
 | Verbatim Botschaft corpus | 5,900+ documents / ~410K FTS5-indexed paragraphs (Phase 2, scaling) |
 | Legislation texts searchable | 33,000+ (federal + cantonal + intercantonal) |
 | Scholarly commentaries | 1,100+ (OnlineKommentar.ch + OpenLegalCommentary.ch) |
-| MCP tools | 40 total (38 remote in public mode + 2 local-only) |
+| MCP tools | 43 total (41 remote in public mode + 2 local-only) |
 
 > Rows from *Federal laws indexed* downward (laws, Botschaft/Materialien, legislation texts, commentaries) are **platform figures served live via the MCP API**, not contents of this Parquet download. The Parquet dataset comprises `data/` (decisions), `graph/` (citations + statute-decision links), and `structure/`.
 
