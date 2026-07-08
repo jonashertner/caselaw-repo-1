@@ -1,13 +1,13 @@
 {
-  "total": 995928,
+  "total": 995977,
   "by_court": [
     {
       "court": "bger",
       "canton": "CH",
-      "count": 191525,
+      "count": 191574,
       "earliest": "1986-10-06",
-      "latest": "2026-06-25",
-      "last_scraped": "2026-07-07T10:22:03.831117+00:00",
+      "latest": "2026-06-29",
+      "last_scraped": "2026-07-08T10:01:13.564001+00:00",
       "languages": [
         "de",
         "fr",
@@ -1830,9 +1830,9 @@
     }
   ],
   "by_language": {
-    "de": 464747,
-    "fr": 449304,
-    "it": 81877
+    "de": 464782,
+    "fr": 449312,
+    "it": 81883
   },
   "by_year": {
     "1875": 179,
@@ -1967,8 +1967,8 @@
     "2004": 19023,
     "2005": 21452,
     "2006": 22606,
-    "2007": 28481,
-    "2008": 27712,
+    "2007": 28485,
+    "2008": 27713,
     "2009": 32095,
     "2010": 34229,
     "2011": 35247,
@@ -1981,31 +1981,31 @@
     "2018": 47912,
     "2019": 48369,
     "2020": 49173,
-    "2021": 50766,
+    "2021": 50767,
     "2022": 47252,
     "2023": 47135,
-    "2024": 46808,
-    "2025": 43808,
-    "2026": 14448
+    "2024": 46812,
+    "2025": 43818,
+    "2026": 14477
   },
   "recent_daily": {
     "2026-06-08": 76,
     "2026-06-09": 67,
-    "2026-06-10": 57,
+    "2026-06-10": 58,
     "2026-06-11": 92,
-    "2026-06-12": 42,
-    "2026-06-15": 74,
-    "2026-06-16": 56,
-    "2026-06-17": 49,
-    "2026-06-18": 51,
-    "2026-06-19": 52,
-    "2026-06-22": 35,
-    "2026-06-23": 28,
-    "2026-06-24": 20,
-    "2026-06-25": 15,
+    "2026-06-12": 43,
+    "2026-06-15": 75,
+    "2026-06-16": 57,
+    "2026-06-17": 52,
+    "2026-06-18": 52,
+    "2026-06-19": 57,
+    "2026-06-22": 37,
+    "2026-06-23": 30,
+    "2026-06-24": 22,
+    "2026-06-25": 17,
     "2026-06-26": 14,
     "2026-06-28": 1,
-    "2026-06-29": 7,
+    "2026-06-29": 8,
     "2026-06-30": 5,
     "2026-07-01": 5,
     "2026-07-02": 6,
@@ -2023,7 +2023,7 @@
     {
       "court": "bger",
       "canton": "CH",
-      "count": 191525
+      "count": 191574
     },
     {
       "court": "ge_gerichte",
@@ -2225,7 +2225,7 @@
     "2026": -67.0
   },
   "federal_vs_cantonal": {
-    "federal": 364595,
+    "federal": 364644,
     "cantonal": 631333
   },
   "language_by_year": {
@@ -2240,12 +2240,12 @@
       "it": 3364
     },
     "2007": {
-      "de": 16077,
-      "fr": 8916,
+      "de": 16080,
+      "fr": 8917,
       "it": 3488
     },
     "2008": {
-      "de": 13977,
+      "de": 13978,
       "fr": 10559,
       "it": 3176
     },
@@ -2312,7 +2312,7 @@
     "2021": {
       "de": 22178,
       "fr": 26047,
-      "it": 2541
+      "it": 2542
     },
     "2022": {
       "de": 20536,
@@ -2325,19 +2325,19 @@
       "it": 2106
     },
     "2024": {
-      "de": 19892,
+      "de": 19895,
       "fr": 25054,
-      "it": 1862
+      "it": 1863
     },
     "2025": {
-      "de": 19710,
-      "fr": 22865,
-      "it": 1233
+      "de": 19715,
+      "fr": 22867,
+      "it": 1236
     },
     "2026": {
-      "de": 7687,
-      "fr": 6272,
-      "it": 489
+      "de": 7710,
+      "fr": 6277,
+      "it": 490
     }
   },
   "by_month": {
@@ -2353,21 +2353,21 @@
     "2024-04": 3828,
     "2024-05": 4039,
     "2024-06": 4394,
-    "2024-07": 3586,
-    "2024-08": 3577,
-    "2024-09": 3718,
-    "2024-10": 3982,
+    "2024-07": 3587,
+    "2024-08": 3578,
+    "2024-09": 3719,
+    "2024-10": 3983,
     "2024-11": 4046,
     "2024-12": 3955,
     "2025-01": 3832,
     "2025-02": 3703,
-    "2025-03": 3836,
+    "2025-03": 3838,
     "2025-04": 3589,
-    "2025-05": 3816,
+    "2025-05": 3818,
     "2025-06": 4188,
-    "2025-07": 3342,
-    "2025-08": 3349,
-    "2025-09": 3788,
+    "2025-07": 3343,
+    "2025-08": 3353,
+    "2025-09": 3789,
     "2025-10": 3761,
     "2025-11": 3455,
     "2025-12": 3149,
@@ -2375,11 +2375,11 @@
     "2026-02": 3094,
     "2026-03": 2993,
     "2026-04": 2528,
-    "2026-05": 2052,
-    "2026-06": 1175,
+    "2026-05": 2053,
+    "2026-06": 1203,
     "2026-07": 27
   },
-  "generated_at": "2026-07-08T10:30:44.827582+00:00",
+  "generated_at": "2026-07-08T16:17:10.541076+00:00",
   "scraper_health": {
     "run_at": "2026-07-08T02:35:20.042106+00:00",
     "run_duration_s": 5651.3,
@@ -2484,7 +2484,7 @@
         "note": null,
         "state_count": 21299,
         "jsonl_size_mb": 487.4,
-        "jsonl_mtime": "2026-07-07T10:39:20.852461+00:00"
+        "jsonl_mtime": "2026-07-08T10:38:24.334258+00:00"
       },
       "bazg": {
         "success": true,
@@ -2756,7 +2756,7 @@
         "note": "tunnel down (:1080) — skipped this run; 60 unreachable is expected, not a portal failure",
         "state_count": 97452,
         "jsonl_size_mb": 1469.4,
-        "jsonl_mtime": "2026-07-08T10:01:55.882349+00:00"
+        "jsonl_mtime": "2026-07-08T16:03:08.958066+00:00"
       },
       "finma_versicherungsrecht": {
         "success": true,
@@ -2875,7 +2875,7 @@
         "note": null,
         "state_count": 7632,
         "jsonl_size_mb": 189.7,
-        "jsonl_mtime": "2026-07-08T10:26:39.679628+00:00"
+        "jsonl_mtime": "2026-07-08T11:06:25.964647+00:00"
       },
       "ne_jurisprudence_adm": {
         "success": true,
@@ -3521,7 +3521,7 @@
         "note": "1637 listed on portal but content not downloadable (empty page or missing PDF)",
         "state_count": 1524,
         "jsonl_size_mb": 92.5,
-        "jsonl_mtime": "2026-07-08T02:35:19.976499+00:00"
+        "jsonl_mtime": "2026-07-08T14:48:14.099213+00:00"
       }
     },
     "run_at_daily": "2026-07-08T02:35:20.042106+00:00",
@@ -3614,19 +3614,19 @@
       "reference_article": 40,
       "bachelor_thesis": 3
     },
-    "citation_edges": 9287283,
-    "statute_edges": 11910021
+    "citation_edges": 9289436,
+    "statute_edges": 11912878
   },
   "interesting_stats": {
     "most_cited_decision": {
       "docket": "BGE 125 V 351",
-      "citation_count": 97876,
+      "citation_count": 97889,
       "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
     },
     "most_cited_statute": {
       "law_code": "LTF",
       "article": "100",
-      "ref_count": 182545
+      "ref_count": 182573
     },
     "oldest_decision": {
       "docket": "1_I_26",
@@ -3638,17 +3638,17 @@
       "de_pct": 46.7,
       "fr_pct": 45.1,
       "it_pct": 8.2,
-      "total": 995769
+      "total": 995977
     },
     "regeste_coverage": {
-      "pct": 38.0,
-      "with_regeste": 377943,
-      "total": 995769
+      "pct": 37.9,
+      "with_regeste": 377953,
+      "total": 995977
     },
     "graph_size": {
-      "decision_edges": 8703290,
-      "statute_edges": 11910021,
-      "total": 20613311
+      "decision_edges": 8705143,
+      "statute_edges": 11912878,
+      "total": 20618021
     },
     "echr_switzerland": {
       "total": 2848,
@@ -3664,19 +3664,19 @@
     "top_5_decisions": [
       {
         "docket": "BGE 125 V 351",
-        "citation_count": 97876,
+        "citation_count": 97889,
         "regeste_excerpt": "Regeste\n Art. 4 BV; Art. 108 Abs. 1 lit. b UVG; Art. 40 BZP in Verbindung mit Art. 19 VwVG; Art. 95 Abs. 2 in Verbindung mit Art. 113 und 132 OG: Beweiswürdigun",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
       },
       {
         "docket": "BGE 122 V 157",
-        "citation_count": 54567,
+        "citation_count": 54574,
         "regeste_excerpt": "Regeste\n Art. 4 BV, Art. 6 Ziff. 1 EMRK. - Art. 4 BV und Art. 6 Ziff. 1 EMRK umfassen keinen formellen Anspruch auf Beizug versicherungsexterner medizinischer G",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_122_V_157"
       },
       {
         "docket": "BGE 134 V 231",
-        "citation_count": 37388,
+        "citation_count": 37397,
         "regeste_excerpt": "Regeste\n Art. 6 Abs. 1 UVG; Beweiswert diagnostischer Methoden; funktionelle Magnetresonanztomographie; Schleudertrauma. Eine medizinisch-diagnostische Methode ",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_134_V_231"
       },
@@ -3697,37 +3697,37 @@
       {
         "law_code": "LTF",
         "article": "100",
-        "ref_count": 190232
+        "ref_count": 190266
       },
       {
         "law_code": "LTF",
         "article": "113",
-        "ref_count": 112085
+        "ref_count": 112096
       },
       {
         "law_code": "LTF",
         "article": "42",
-        "ref_count": 106694
+        "ref_count": 106745
       },
       {
         "law_code": "BGG",
         "article": "42",
-        "ref_count": 93598
+        "ref_count": 93631
       },
       {
         "law_code": "BGG",
         "article": "66",
-        "ref_count": 59879
+        "ref_count": 59871
       }
     ],
     "materialien_coverage": {
-      "total_documents": 6139,
-      "paragraphs": 417852,
+      "total_documents": 6142,
+      "paragraphs": 418372,
       "article_links": 19809,
       "by_language": {
-        "de": 2046,
-        "fr": 2047,
-        "it": 2046
+        "de": 2047,
+        "fr": 2048,
+        "it": 2047
       },
       "year_range": {
         "from": 1999,
@@ -3775,7 +3775,7 @@
         "earliest": "1908-11-08",
         "latest": "2026-06-23",
         "span_years": 118,
-        "decision_count": 168703
+        "decision_count": 168771
       }
     ]
   },
@@ -4071,12 +4071,52 @@
   "recent": {
     "bge": [
       {
+        "decision_id": "bger_5A_561_2026",
+        "docket": "5A_561/2026",
+        "date": "2026-06-29",
+        "court": "bger",
+        "language": "de",
+        "summary": "Unentgeltliche Rechtspflege (Kindesbelange),"
+      },
+      {
+        "decision_id": "bger_9C_532_2025",
+        "docket": "9C_532/2025",
+        "date": "2026-06-25",
+        "court": "bger",
+        "language": "de",
+        "summary": "Alters- und Hinterlassenenversicherung,"
+      },
+      {
         "decision_id": "bger_1G_1_2026",
         "docket": "1G_1/2026",
         "date": "2026-06-25",
         "court": "bger",
         "language": "de",
         "summary": "Erläuterungsgesuch betreffend das Urteil des Schweizerischen Bundesgerichts vom 17. Juni 2026 (1C_733/2025, 1C_734/2025, 1C_61/2026)."
+      },
+      {
+        "decision_id": "bger_1C_356_2026",
+        "docket": "1C_356/2026",
+        "date": "2026-06-25",
+        "court": "bger",
+        "language": "de",
+        "summary": "Auslieferung an Italien,"
+      },
+      {
+        "decision_id": "bger_5A_882_2025",
+        "docket": "5A_882/2025",
+        "date": "2026-06-24",
+        "court": "bger",
+        "language": "de",
+        "summary": "Eheschutz (Kindesunterhalt),"
+      },
+      {
+        "decision_id": "bger_5A_440_2026",
+        "docket": "5A_440/2026",
+        "date": "2026-06-24",
+        "court": "bger",
+        "language": "fr",
+        "summary": "retrait de la garde et du droit de déterminer le lieu de résidence de l'enfant, placement; suspension des relations personnelles (mesures provisionnelles),"
       },
       {
         "decision_id": "bger_4A_205_2026",
@@ -4095,60 +4135,20 @@
         "summary": ""
       },
       {
-        "decision_id": "bger_2C_337_2026",
-        "docket": "2C_337/2026",
+        "decision_id": "bger_5A_129_2026",
+        "docket": "5A_129/2026",
         "date": "2026-06-23",
         "court": "bger",
-        "language": "de",
-        "summary": "Modulprüfung Öffentliches Recht I,"
+        "language": "fr",
+        "summary": "bonification pour tâches éducatives,"
       },
       {
-        "decision_id": "bger_8C_397_2026",
-        "docket": "8C_397/2026",
-        "date": "2026-06-22",
-        "court": "bger",
-        "language": "de",
-        "summary": "Sozialhilfe (Prozessvoraussetzung),"
-      },
-      {
-        "decision_id": "bger_5A_911_2025",
-        "docket": "5A_911/2025",
-        "date": "2026-06-22",
+        "decision_id": "bger_5A_121_2026",
+        "docket": "5A_121/2026",
+        "date": "2026-06-23",
         "court": "bger",
         "language": "fr",
-        "summary": "mesures provisionnelles (droit aux relations personnelles),"
-      },
-      {
-        "decision_id": "bger_5A_557_2026",
-        "docket": "5A_557/2026",
-        "date": "2026-06-22",
-        "court": "bger",
-        "language": "fr",
-        "summary": "curatelle de représentation (art. 394 al. 1 et 2 CC) et mesures ambulatoires (art. 473 al. 2 CC),"
-      },
-      {
-        "decision_id": "bger_5A_525_2026",
-        "docket": "5A_525/2026",
-        "date": "2026-06-22",
-        "court": "bger",
-        "language": "de",
-        "summary": "Konkurseröffnung,"
-      },
-      {
-        "decision_id": "bger_4A_189_2026",
-        "docket": "4A_189/2026",
-        "date": "2026-06-22",
-        "court": "bger",
-        "language": "fr",
-        "summary": "contrat de travail; retrait du"
-      },
-      {
-        "decision_id": "bger_1C_221_2024",
-        "docket": "1C_221/2024",
-        "date": "2026-06-22",
-        "court": "bger",
-        "language": "de",
-        "summary": "Baugesuch und Wiederherstellung des gesetzmässigen Zustands,"
+        "summary": "récusation (protection de l'adulte),"
       }
     ],
     "cantonal": [
@@ -4326,6 +4326,22 @@
       "url": "https://www.fedlex.admin.ch/eli/cc/2018/288"
     },
     {
+      "sr_number": "817.022.41",
+      "in_force_date": "2026-08-01",
+      "title_de": "Verordnung des EDI vom 16. Dezember 2016 über Aromen und Lebensmittelzutaten mit Aromaeigenschaften in und auf Lebensmitteln (Aromenverordnung)",
+      "title_fr": "Ordonnance du DFI du 16 décembre 2016 sur les arômes et les additifs alimentaires ayant des propriétés aromatisantes utilisés dans ou sur les denrées alimentaires (Ordonnance sur les arômes)",
+      "title_it": "Ordinanza del DFI del 16 dicembre 2016 sugli aromi e gli ingredienti alimentari con proprietà aromatizzanti nelle e sulle derrate alimentari (Ordinanza sugli aromi)",
+      "url": "https://www.fedlex.admin.ch/eli/cc/2017/182"
+    },
+    {
+      "sr_number": "817.023.21",
+      "in_force_date": "2026-08-01",
+      "title_de": "Verordnung des EDI vom 16. Dezember 2016 über Materialien und Gegenstände, die dazu bestimmt sind, mit Lebensmitteln in Berührung zu kommen (Bedarfsgegenständeverordnung) ",
+      "title_fr": "Ordonnance du DFI du 16 décembre 2016 sur les matériaux et objets destinés à entrer en contact avec les denrées alimentaires (Ordonnance sur les matériaux et objets) ",
+      "title_it": "Ordinanza del DFI del 16 dicembre 2016 sui materiali e gli oggetti destinati a entrare in contatto con le derrate alimentari (Ordinanza sui materiali e gli oggetti) ",
+      "url": "https://www.fedlex.admin.ch/eli/cc/2017/164"
+    },
+    {
       "sr_number": "414.205.1",
       "in_force_date": "2026-08-01",
       "title_de": "Verordnung des Hochschulrates vom 29. November 2019 über die Koordination der Lehre an den Schweizer Hochschulen",
@@ -4334,41 +4350,26 @@
       "url": "https://www.fedlex.admin.ch/eli/cc/2019/722"
     },
     {
-      "sr_number": "142.513",
+      "sr_number": "817.022.51",
       "in_force_date": "2026-08-01",
-      "title_de": "Verordnung vom 12. April 2006 über das Zentrale Migrationsinformationssystem (ZEMIS-Verordnung)",
-      "title_fr": "Ordonnance du 12 avril 2006 sur le système d'information central sur la migration (Ordonnance SYMIC)",
-      "title_it": "Ordinanza del 12 aprile 2006 concernente il sistema d'informazione centrale sulla migrazione (Ordinanza SIMIC)",
-      "url": "https://www.fedlex.admin.ch/eli/cc/2006/303"
+      "title_de": "Verordnung des EDI vom 27. Mai 2020 über gentechnisch veränderte Lebensmittel (VGVL)",
+      "title_fr": "Ordonnance du DFI du 27 mai 2020 sur les denrées alimentaires génétiquement modifiées (ODAlGM)",
+      "title_it": "Ordinanza del DFI del 27 maggio 2020 concernente le derrate alimentari geneticamente modificate (ODerrGM)",
+      "url": "https://www.fedlex.admin.ch/eli/cc/2020/456"
     },
     {
-      "sr_number": "814.600",
+      "sr_number": "817.022.11",
       "in_force_date": "2026-08-01",
-      "title_de": "Verordnung vom 4. Dezember 2015 über die Vermeidung und die Entsorgung von Abfällen (Abfallverordnung, VVEA)",
-      "title_fr": "Ordonnance du 4 décembre 2015 sur la limitation et l'élimination des déchets (Ordonnance sur les déchets, OLED)",
-      "title_it": "Ordinanza del 4 dicembre 2015 sulla prevenzione e lo smaltimento dei rifiuti (Ordinanza sui rifiuti, OPSR)",
-      "url": "https://www.fedlex.admin.ch/eli/cc/2015/891"
-    },
-    {
-      "sr_number": "814.01",
-      "in_force_date": "2026-08-01",
-      "title_de": "Bundesgesetz vom 7. Oktober 1983 über den Umweltschutz (Umweltschutzgesetz, USG)",
-      "title_fr": "Loi fédérale du 7 octobre 1983 sur la protection de l'environnement (Loi sur la protection de l'environnement, LPE)",
-      "title_it": "Legge federale del 7 ottobre 1983 sulla protezione dell'ambiente (Legge sulla protezione dell'ambiente, LPAmb)",
-      "url": "https://www.fedlex.admin.ch/eli/cc/1984/1122_1122_1122"
-    },
-    {
-      "sr_number": "831.441.1",
-      "in_force_date": "2026-08-01",
-      "title_de": "Verordnung vom 18. April 1984 über die berufliche Alters-, Hinterlassenen- und Invalidenvorsorge (BVV 2)",
-      "title_fr": "Ordonnance du 18 avril 1984 sur la prévoyance professionnelle vieillesse, survivants et invalidité (OPP 2)",
-      "title_it": "Ordinanza del 18 aprile 1984 sulla previdenza professionale per la vecchiaia, i superstiti e l'invalidità (OPP 2)",
-      "url": "https://www.fedlex.admin.ch/eli/cc/1984/543_543_543"
+      "title_de": "Verordnung des EDI vom 16. Dezember 2016 über Trinkwasser sowie Wasser in öffentlich zugänglichen Bädern und Duschanlagen (TBDV)",
+      "title_fr": "Ordonnance du DFI du 16 décembre 2016 sur l'eau potable et l'eau des installations de baignade et de douche accessibles au public (OPBD)",
+      "title_it": "Ordinanza del DFI del 16 dicembre 2016 sull'acqua potabile e sull'acqua per piscine e docce accessibili al pubblico (OPPD)",
+      "url": "https://www.fedlex.admin.ch/eli/cc/2017/153"
     }
   ],
   "delta": {
-    "total": 159,
+    "total": 208,
     "by_court": {
+      "bger": 30,
       "ge_gerichte": 68,
       "bvger": 27,
       "ti_gerichte": 7,
@@ -4399,7 +4400,10 @@
       "ZG": 16,
       "JU": 2
     },
-    "corpus": {},
+    "corpus": {
+      "citation_edges": 2153,
+      "statute_edges": 2857
+    },
     "previous_generated_at": "2026-07-07T16:28:35.100189+00:00"
   }
 }
