@@ -624,8 +624,38 @@ function render() {
     // result is selected; it's part of the search-view experience.
     if (view === 'search') html += renderMultiBar();
 
+    // Preserve in-progress typing across a re-render. A live search-as-you-type
+    // fires doSearch() -> render() (loading state) while the user may still be
+    // typing; that rebuilds #search-input from state.query (the value as of when
+    // the debounce fired) and would drop any characters typed since — the root
+    // cause of "text disappears before fully typed". Capture the live value +
+    // caret when the search box is the active element, and restore them onto the
+    // fresh input after bindEvents() (which re-focuses it). Scoped to an actively
+    // focused search box, so legitimate state.query changes (suggestion clicks,
+    // clear) are untouched.
+    var _liveTyping = null;
+    var _activeEl = document.activeElement;
+    if (_activeEl && _activeEl.id === 'search-input') {
+      _liveTyping = {
+        value: _activeEl.value,
+        start: _activeEl.selectionStart,
+        end: _activeEl.selectionEnd
+      };
+    }
+
     app.innerHTML = html; // eslint-disable-line no-unsanitized/property -- all values pre-escaped via escHtml()
     bindEvents();
+
+    if (_liveTyping) {
+      var _freshInput = document.getElementById('search-input');
+      if (_freshInput && _freshInput.value !== _liveTyping.value) {
+        _freshInput.value = _liveTyping.value;
+        try {
+          _freshInput.setSelectionRange(_liveTyping.start, _liveTyping.end);
+        } catch (e) { /* setSelectionRange unsupported — value is still restored */ }
+      }
+    }
+
     if (state.lawResult) resolveAmendmentRefs();
     // Announce dynamic state changes to assistive tech. Counts, errors,
     // and loading transitions all flow through render(), so a single
@@ -1784,7 +1814,10 @@ function bindEvents() {
       var trimmed = (value || '').trim();
       if (trimmed.length < 3) return;
       if (_isReferencePattern(trimmed)) return;
-      _liveSearchTimer = setTimeout(function () { doSearch(value); }, 350);
+      // 500ms (was 350ms): a legal query is typed deliberately with natural
+      // pauses between words, and 350ms fired mid-thought ("search starts too
+      // quickly"). 500ms still feels live but waits out a normal typing pause.
+      _liveSearchTimer = setTimeout(function () { doSearch(value); }, 500);
     });
     searchInput.focus();
   }
