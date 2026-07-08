@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feed.xml</link>
     <description>Latest published decisions across all Swiss courts indexed by OpenCaseLaw.</description>
     <language>de-CH</language>
-    <lastBuildDate>Tue, 07 Jul 2026 19:55:38 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 08 Jul 2026 10:36:58 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feed.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -235,6 +235,38 @@ Présidente…</description>
       <category>fr_gerichte</category>
     </item>
     <item>
+      <title>be_verwaltungsgericht 100 2024 354 vom 2026-07-07</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/be_verwaltungsgericht_100%202024%20354</link>
+      <description>100.2024.354U
+STE/BIM/SRE
+Verwaltungsgericht des Kantons Bern
+Verwaltungsrechtliche Abteilung
+Urteil vom 28. Mai 2026
+Verwaltungsrichter Daum, Abteilungspräsident
+Verwaltungsrichter Nyffenegger, Verwaltungsrichterin Steinmann
+Gerichtsschreiberin Bick…</description>
+      <pubDate>Tue, 07 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">be_verwaltungsgericht_100 2024 354</guid>
+      <category>be_verwaltungsgericht</category>
+    </item>
+    <item>
+      <title>be_verwaltungsgericht 100 2025 36 vom 2026-07-07</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/be_verwaltungsgericht_100%202025%2036</link>
+      <description>100.2025.36U
+HER/AEN/SRE
+Verwaltungsgericht des Kantons Bern
+Verwaltungsrechtliche Abteilung
+Urteil vom 7. Mai 2026
+Verwaltungsrichterin Herzog, präsidierendes Mitglied
+Verwaltungsrichter Nyffenegger
+Gerichtsschreiberin Aellen
+A.________
+vertreten du…</description>
+      <pubDate>Tue, 07 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">be_verwaltungsgericht_100 2025 36</guid>
+      <category>be_verwaltungsgericht</category>
+    </item>
+    <item>
       <title>ecthr_chamber 54549/22 vom 2026-07-07</title>
       <link>https://mcp.opencaselaw.ch/entscheid/ecthr_chamber_54549_22</link>
       <description>Exception préliminaire rejetée (Art. 35) Conditions de recevabilité;(Art. 35-1) Épuisement des voies de recours internes;Violation de l'article 3 - Interdiction de la torture (Article 3 - Enquête effective) (Volet procédural);Violation de l'article 3 - Interdiction de la torture (Article 3 - Traitement inhumain);Préjudice moral - réparation (Article 41 - Préjudice moral;Satisfaction équitable); Violation: 3</description>
@@ -260,6 +292,42 @@ Présidente…</description>
       <guid isPermaLink="false">ecthr_grand_chamber_29550_17</guid>
       <category>ecthr_grand_chamber</category>
       <category>CEDH / Droits humains</category>
+    </item>
+    <item>
+      <title>gr_gerichte ZR1 2026 31 vom 2026-07-07</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_ZR1%202026%2031</link>
+      <description>Obergericht des Kantons Graubünden
+Dretgira superiura dal chantun Grischun
+Tribunale d'appello del Cantone dei Grigioni
+Urteil vom 1. Juli 2026
+mitgeteilt am 7. Juli 2026
+Referenz
+ZR1 26 31
+Instanz
+Erste zivilrechtliche Kammer
+Besetzung
+Aebli, Vorsit…</description>
+      <pubDate>Tue, 07 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">gr_gerichte_ZR1 2026 31</guid>
+      <category>gr_gerichte</category>
+    </item>
+    <item>
+      <title>zg_obergericht BZ 2025 212 vom 2026-07-07</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/zg_obergericht_BZ%202025%20212</link>
+      <description>II. Beschwerdeabteilung
+BZ 2025 212
+Oberrichter St. Scherer, Abteilungspräsident
+Oberrichter P. Huber
+Oberrichter M. Siegwart
+Gerichtsschreiber J. Lötscher
+Urteil vom 23. Februar 2026 [rechtskräftig]
+in Sachen
+A.________ AG,
+Beschwerdeführerin,
+gegen…</description>
+      <pubDate>Tue, 07 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">zg_obergericht_BZ 2025 212</guid>
+      <category>zg_obergericht</category>
     </item>
     <item>
       <title>be_zivilstraf BK 2026 254 vom 2026-07-06</title>
@@ -688,11 +756,43 @@ Minderung. Beziff…</description>
       <category>zh_bezirksgericht_zuerich</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht C-3254/2026 vom 2026-06-29</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-3254_2026</link>
+      <description>Rentenrevision</description>
+      <pubDate>Mon, 29 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-3254.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>Bundesverwaltungsgericht C-4003/2026 vom 2026-06-29</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-4003_2026</link>
       <description>Droit à la rente</description>
       <pubDate>Mon, 29 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-4003.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht E-3778/2026 vom 2026-06-29</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-3778_2026</link>
+      <description>Asyl und Wegweisung (Wiedererwägung)</description>
+      <pubDate>Mon, 29 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-3778.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht E-5251/2021 vom 2026-06-29</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-5251_2021</link>
+      <description>Asile et renvoi</description>
+      <pubDate>Mon, 29 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-5251.2021</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht E-8092/2024 vom 2026-06-29</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-8092_2024</link>
+      <description>Verweigerung vorübergehender Schutz</description>
+      <pubDate>Mon, 29 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-8092.2024</guid>
       <category>bvger</category>
     </item>
     <item>
@@ -749,118 +849,6 @@ Besetzung
 Hubert, Vo…</description>
       <pubDate>Sun, 28 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">gr_gerichte_SR2 2025 8</guid>
-      <category>gr_gerichte</category>
-    </item>
-    <item>
-      <title>ai_gerichte k-2-2024 vom 2026-06-26</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ai_gerichte_k-2-2024</link>
-      <description>1 - 25 
- 
-Strafbare Handlungen gegen Leib und Leben sowie gegen die Freiheit 
- 
-Der Berufungskläger wurde wegen mehrfacher Tätlichkeiten im Sinne von Art. 126 Abs. 1 und 
-Abs. 2 lit. c StGB, mehrfacher qualifizierter einfacher Körperverletzung (gefäh…</description>
-      <pubDate>Fri, 26 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ai_gerichte_k-2-2024</guid>
-      <category>ai_gerichte</category>
-    </item>
-    <item>
-      <title>be_verwaltungsgericht 200 2026 207 vom 2026-06-26</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/be_verwaltungsgericht_200%202026%20207</link>
-      <description>UV 200 2026 207
-MAK/BRO/SSM
-Verwaltungsgericht des Kantons Bern
-Sozialversicherungsrechtliche Abteilung
-Urteil der Einzelrichterin vom 2. Juni 2026
-Verwaltungsrichterin Mauerhofer
-Gerichtsschreiberin Brunner
-A.________
-vertreten durch Rechtsanwalt B.…</description>
-      <pubDate>Fri, 26 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">be_verwaltungsgericht_200 2026 207</guid>
-      <category>be_verwaltungsgericht</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht C-5964/2025 vom 2026-06-26</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-5964_2025</link>
-      <description>Rentes</description>
-      <pubDate>Fri, 26 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-5964.2025</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht E-2816/2025 vom 2026-06-26</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-2816_2025</link>
-      <description>Asile et renvoi</description>
-      <pubDate>Fri, 26 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-2816.2025</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht E-7835/2025 vom 2026-06-26</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-7835_2025</link>
-      <description>Asile et renvoi</description>
-      <pubDate>Fri, 26 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-7835.2025</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>fr_gerichte 102 2026 104 vom 2026-06-26</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_102%202026%20104</link>
-      <description>Tribunal cantonal TC
-Kantonsgericht KG
-Rue des Augustins 3, case postale 630, 1701 Fribourg
-T +41 26 304 15 00
-www.fr.ch/tc
-—
-Pouvoir Judiciaire PJ
-Gerichtsbehörden GB
-102 2026 104
-Arrêt du 5 mai 2026
-IIe Cour d’appel civil
-Composition
-Vice-Président…</description>
-      <pubDate>Fri, 26 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">fr_gerichte_102 2026 104</guid>
-      <category>fr_gerichte</category>
-    </item>
-    <item>
-      <title>fr_gerichte 502 2026 31 vom 2026-06-26</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_502%202026%2031</link>
-      <description>Tribunal cantonal TC
-Kantonsgericht KG
-Rue des Augustins 3, case postale 630, 1701 Fribourg
-T +41 26 304 15 00
-www.fr.ch/tc
-—
-Pouvoir Judiciaire PJ
-Gerichtsbehörden GB
-502 2026 31
-Arrêt du 19 mai 2026
-Chambre pénale
-Composition
-Président :
-Laurent Sc…</description>
-      <pubDate>Fri, 26 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">fr_gerichte_502 2026 31</guid>
-      <category>fr_gerichte</category>
-    </item>
-    <item>
-      <title>gr_gerichte VR3 2023 55 vom 2026-06-26</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_VR3%202023%2055</link>
-      <description>Obergericht des Kantons Graubünden
-Dretgira superiura dal chantun Grischun
-Tribunale d'appello del Cantone dei Grigioni
-Urteil vom 28. Mai 2026
-mitgeteilt am 3. Juni 2026
-Referenz
-VR3 23 55
-Instanz
-Dritte verwaltungsrechtliche Kammer
-Besetzung
-Brun, …</description>
-      <pubDate>Fri, 26 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">gr_gerichte_VR3 2023 55</guid>
       <category>gr_gerichte</category>
     </item>
   </channel>
