@@ -365,6 +365,77 @@ def _preflight_disk_check() -> bool:
     return True
 
 
+def _parse_worker_ports(systemctl_list_units_output: str) -> list:
+    """Extract worker ports from `systemctl list-units mcp-server@*.service`
+    (--plain --no-legend) output. Pure + unit-tested."""
+    ports = []
+    for line in systemctl_list_units_output.splitlines():
+        parts = line.split()
+        if parts and parts[0].startswith("mcp-server@") and parts[0].endswith(".service"):
+            ports.append(parts[0][len("mcp-server@"):-len(".service")])
+    return sorted(set(ports))
+
+
+def _recycle_mcp_workers(dry_run: bool = False) -> None:
+    """Roll-restart the mcp-server@ SSE workers to release handles to the
+    just-swapped (now-deleted) decisions.db inode.
+
+    After the Step 2 atomic swap, each serving worker keeps pooled SQLite
+    connections open on the OLD decisions.db inode, pinning that ~70 GB file
+    (unlinked, not yet freed) until the process recycles. With the data volume
+    near capacity this starved the post-build aux tier: on 2026-07-08,
+    reference_graph + decision_structure both hit 'database or disk is full'
+    because ~130 GB of orphaned inodes were pinned by 106 worker handles. A
+    rolling restart (one worker at a time, gated on /health) releases them with
+    zero serving downtime.
+
+    Non-fatal: logs and continues on any error so a recycle hiccup never fails
+    the build. No-op under dry-run or when the units are absent (dev box).
+    """
+    if dry_run:
+        logger.info("  [dry-run] would roll-restart mcp-server@ workers post-swap")
+        return
+    try:
+        out = subprocess.run(
+            ["systemctl", "list-units", "mcp-server@*.service",
+             "--state=active", "--no-legend", "--plain", "--no-pager"],
+            capture_output=True, text=True, timeout=30,
+        )
+    except (FileNotFoundError, subprocess.SubprocessError):
+        return  # no systemctl (dev box) — nothing to recycle
+    ports = _parse_worker_ports(out.stdout)
+    if not ports:
+        logger.info("  post-swap recycle: no active mcp-server@ workers; skipping")
+        return
+    logger.info(
+        f"  post-swap recycle: rolling restart of {len(ports)} workers "
+        f"({', '.join(ports)}) to free the old decisions.db inode"
+    )
+    for port in ports:
+        try:
+            subprocess.run(
+                ["systemctl", "restart", f"mcp-server@{port}.service"],
+                check=False, timeout=60,
+            )
+        except subprocess.SubprocessError as e:
+            logger.warning(f"    worker {port}: restart error {e}; continuing")
+            continue
+        healthy = False
+        for _ in range(15):
+            try:
+                with urllib.request.urlopen(
+                    f"http://127.0.0.1:{port}/health", timeout=3,
+                ) as r:
+                    if r.status == 200:
+                        healthy = True
+                        break
+            except Exception:  # noqa: BLE001 - keep polling until the deadline
+                pass
+            time.sleep(1)
+        logger.info(f"    worker {port}: {'ok' if healthy else 'TIMEOUT (continuing)'}")
+        time.sleep(2)
+
+
 def step_2_build_fts5(
     dry_run: bool = False,
     full_rebuild: bool = False,
@@ -1820,6 +1891,15 @@ def main():
                         )
                     except (OSError, ValueError):
                         pass
+                # Free handles to the old (now-deleted) decisions.db inode
+                # before the disk-hungry aux tier runs (2026-07-08 ENOSPC:
+                # reference_graph + decision_structure hit 'disk is full' while
+                # the workers still pinned the orphaned ~130 GB old DB). Rolling
+                # + /health-gated, so serving never drops a worker. Runs before
+                # the deferred parallel batch flushes, so the inode is freed
+                # before 2c/2g write their .tmp files.
+                if ok and not args.dry_run and args.full_rebuild:
+                    _recycle_mcp_workers(dry_run=args.dry_run)
             elif num in ("2b", "2c", "2d", "2e", "2f", "2g"):
                 ok = func(
                     dry_run=args.dry_run,
