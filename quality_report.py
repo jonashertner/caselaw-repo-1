@@ -19,22 +19,57 @@ import json
 import logging
 import sqlite3
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
 logger = logging.getLogger("quality_report")
 
 
+def _install_heartbeat(conn: sqlite3.Connection, interval_s: float = 60.0) -> None:
+    """Emit a log line at most once per interval_s while any query runs.
+
+    The full_text scans below are O(corpus) cold random reads on the network
+    data volume and can run for many minutes as a single SQL statement. The
+    publish stall-watchdog kills a step after 5400s with no output, so a single
+    long query with no interior progress can be false-killed (root cause of the
+    2026-07-06/08 Step 2b watchdog kills). A SQLite progress handler fires every
+    N virtual-machine opcodes; returning 0 never aborts the query. This
+    guarantees the subprocess emits output during long scans, so the watchdog
+    sees liveness. Cheap: the clock is only read every N opcodes.
+    """
+    state = {"last": time.monotonic()}
+
+    def _beat() -> int:
+        now = time.monotonic()
+        if now - state["last"] >= interval_s:
+            logger.info("quality_report: ...still scanning")
+            state["last"] = now
+        return 0
+
+    conn.set_progress_handler(_beat, 2_000_000)
+
+
 def generate_quality_report(db_path: Path) -> dict:
     """Analyze the FTS5 database and return quality metrics."""
-    conn = sqlite3.connect(str(db_path))
+    # Read-only immutable open (invariant #1): no write lock, no rollback
+    # journal, and no contention with the parallel aux builders that stream the
+    # same decisions.db. The old read-write open forced lock/journal overhead
+    # that, combined with the full-blob scans below, ballooned this step past
+    # the 5400s publish watchdog when co-scheduled with 2c/2g (2026-07-06/08).
+    conn = sqlite3.connect(f"file:{db_path}?mode=ro&immutable=1", uri=True)
     conn.row_factory = sqlite3.Row
+    _install_heartbeat(conn)
 
     report: dict = {}
     report["db_path"] = str(db_path)
     report["generated_at"] = datetime.now(timezone.utc).isoformat()
 
-    # Total
+    # Heartbeats between blocks: each is O(corpus) I/O, so a slow-but-progressing
+    # run must emit output or the publish stall-watchdog (kills on 5400s of
+    # silence) treats it as a hang. logger.info reaches the captured subprocess
+    # stream that the watchdog reads.
+    logger.info("quality_report: counting decisions...")
     total = conn.execute("SELECT COUNT(*) FROM decisions").fetchone()[0]
     report["total_decisions"] = total
 
@@ -78,20 +113,16 @@ def generate_quality_report(db_path: Path) -> dict:
     }
 
     # --- Full text quality ---
-    text_empty = conn.execute(
-        "SELECT COUNT(*) FROM decisions WHERE full_text IS NULL OR full_text = '' OR length(full_text) < 50"
-    ).fetchone()[0]
-
-    text_placeholder = conn.execute(
-        "SELECT COUNT(*) FROM decisions WHERE full_text LIKE '%[Text extraction failed%' OR full_text LIKE '%(metadata only)%'"
-    ).fetchone()[0]
-
-    report["full_text"] = {
-        "empty_or_short": text_empty,
-        "placeholder": text_placeholder,
-        "total_missing": text_empty + text_placeholder,
-        "missing_pct": round((text_empty + text_placeholder) / total * 100, 3),
-    }
+    # The global empty/placeholder counts are derived from the per-court
+    # aggregation below (one scan) rather than their own scans. The dominant
+    # cost of this step is touching the full_text blob of every row, and on the
+    # network-backed data volume each row is a cold random page read; three
+    # separate full scans (empty, placeholder, per-court) pushed the step past
+    # the 5400s publish watchdog (2026-07-06/08). Collapsing them into the single
+    # GROUP BY below cuts that ~3x. text_empty == SUM(per-court text_missing) and
+    # text_placeholder == SUM(per-court placeholder) exactly, since every row
+    # belongs to exactly one (court, canton) group. report["full_text"] is filled
+    # in right after that scan.
 
     # --- Language distribution (check for unexpected values) ---
     lang_dist = conn.execute(
@@ -104,14 +135,24 @@ def generate_quality_report(db_path: Path) -> dict:
         "unexpected": unexpected_langs,
     }
 
-    # --- Per-court quality ---
+    # --- Per-court quality (also yields the global full-text counts) ---
+    # This is the one scan that touches the full_text blob. length(substr(...,1,50))
+    # < 50 is provably identical to length(full_text) < 50 (>=50 chars: both
+    # false; <50: both count the same k chars) but reads only the first ~50 chars
+    # instead of the whole blob. The placeholder markers are always written by the
+    # scrapers as the ENTIRE full_text value (e.g. "[Text extraction failed for
+    # {docket}]" / "(metadata only ...)"), so they are standalone strings <60 chars
+    # at position 1; substr(1,200) covers them with margin without a full
+    # leading-wildcard scan. Same class of fix as the 2026-07-08 RSS feed timeout.
+    logger.info("quality_report: per-court + full-text aggregation (single scan)...")
     court_quality = conn.execute("""
         SELECT
             court,
             canton,
             COUNT(*) as total,
             SUM(CASE WHEN decision_date IS NULL OR decision_date = '' OR decision_date = 'None' THEN 1 ELSE 0 END) as date_missing,
-            SUM(CASE WHEN full_text IS NULL OR full_text = '' OR length(full_text) < 50 THEN 1 ELSE 0 END) as text_missing,
+            SUM(CASE WHEN full_text IS NULL OR full_text = '' OR length(substr(full_text, 1, 50)) < 50 THEN 1 ELSE 0 END) as text_missing,
+            SUM(CASE WHEN substr(full_text, 1, 200) LIKE '%[Text extraction failed%' OR substr(full_text, 1, 200) LIKE '%(metadata only)%' THEN 1 ELSE 0 END) as text_placeholder,
             SUM(CASE WHEN decision_date > date('now', '+7 days') THEN 1 ELSE 0 END) as date_future,
             MIN(CASE WHEN decision_date IS NOT NULL AND decision_date != 'None' AND decision_date > '1800-01-01' THEN decision_date END) as earliest,
             MAX(CASE WHEN decision_date IS NOT NULL AND decision_date != 'None' AND decision_date < '2100-01-01' THEN decision_date END) as latest
@@ -139,7 +180,22 @@ def generate_quality_report(db_path: Path) -> dict:
 
     report["by_court"] = courts
 
+    # Global full-text counts derived from the single per-court scan above.
+    # Identical to the former standalone queries: every row is in exactly one
+    # (court, canton) group, so the global count is the sum of the per-group
+    # counts. total_missing intentionally adds the two (a short placeholder row
+    # is counted in both), preserving the original metric's behavior.
+    text_empty = sum(r["text_missing"] for r in court_quality)
+    text_placeholder = sum(r["text_placeholder"] for r in court_quality)
+    report["full_text"] = {
+        "empty_or_short": text_empty,
+        "placeholder": text_placeholder,
+        "total_missing": text_empty + text_placeholder,
+        "missing_pct": round((text_empty + text_placeholder) / total * 100, 3),
+    }
+
     # --- Duplicate detection (same docket+court, different decision_id) ---
+    logger.info("quality_report: duplicate detection...")
     dupe_count = conn.execute("""
         SELECT COUNT(*)
         FROM (
