@@ -2249,9 +2249,17 @@ def _exact_fts_total(conn, fts_query: str, where: str, params: list):
     cap1 = _FTS_TOTAL_CAP + 1  # LIMIT short-circuits the FTS scan → bounded latency
     try:
         if where:
+            # CROSS JOIN forces SQLite to drive the count from the FTS MATCH
+            # (bounded by LIMIT), not from the filter index. With a plain JOIN the
+            # planner drove off idx_decisions_language for the very common
+            # language filter — scanning ~600k 'de' rows and probing FTS for each,
+            # ~5s per count on the hot search path (py-spy showed _exact_fts_total
+            # at 98% of worker CPU, 2026-07-09). CROSS JOIN keeps the count EXACT
+            # (same semantics as before) but makes the common case ~5s -> ~0s; the
+            # only cost is a selective filter + very broad term (rare) at ~1s.
             row = conn.execute(
                 "SELECT count(*) FROM (SELECT 1 FROM decisions_fts "
-                "JOIN decisions d ON d.rowid = decisions_fts.rowid "
+                "CROSS JOIN decisions d ON d.rowid = decisions_fts.rowid "
                 f"WHERE decisions_fts MATCH ?{where} LIMIT ?)",
                 [fts_query] + list(params) + [cap1],
             ).fetchone()
