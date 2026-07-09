@@ -20347,6 +20347,82 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
 
 # ── Main ──────────────────────────────────────────────────────
 
+def _warm_page_cache():
+    """Best-effort OS page-cache warmup for the search path (remote mode).
+
+    After the nightly atomic swap the new decisions.db inode starts with a cold
+    page cache, and the first user searches pay full network-volume random-read
+    latency: on 2026-07-09 the six worst traces of the day (79-278s, the ones
+    that surface as client timeouts) all fell in the 15-minute post-swap window,
+    while steady-state max was 20s. Running a handful of representative FTS
+    queries here pulls the hot term-btree + doclist pages once; the OS page
+    cache is shared across all 8 workers (same immutable inode), so the first
+    worker to warm does the IO and the rest get it for free.
+
+    Read-only, best-effort, bounded (~90s soft cap), runs in a daemon thread so
+    serving starts immediately regardless.
+    """
+    t0 = time.monotonic()
+    try:
+        conn = sqlite3.connect(f"file:{DB_PATH}?mode=ro&immutable=1", uri=True)
+    except Exception:
+        return
+    # Broad terms across DE/FR/IT touch the largest doclists (the pages a cold
+    # cache misses hardest); the ranked form also warms the bm25/offsets
+    # structures the real search path uses.
+    warm_terms = [
+        "Verfahren", "Entscheid", "Recht", "Kündigung",
+        "décision", "recours", "contrat",
+        "sentenza", "ricorso",
+    ]
+    ranked_sql = (
+        "SELECT d.decision_id FROM decisions_fts "
+        "JOIN decisions d ON d.rowid = decisions_fts.rowid "
+        "WHERE decisions_fts MATCH ? ORDER BY bm25(decisions_fts) LIMIT 40"
+    )
+    count_sql = (
+        "SELECT count(*) FROM (SELECT 1 FROM decisions_fts "
+        "WHERE decisions_fts MATCH ? LIMIT 1001)"
+    )
+    warmed = 0
+    for term in warm_terms:
+        if time.monotonic() - t0 > 90:
+            break
+        for sql in (ranked_sql, count_sql):
+            try:
+                conn.execute(sql, [term]).fetchall()
+                warmed += 1
+            except Exception:
+                pass
+    try:
+        conn.close()
+    except Exception:
+        pass
+    logger.info(
+        "Page-cache warmup: %d queries in %.1fs", warmed, time.monotonic() - t0
+    )
+
+
+class _ClientDisconnectNoiseFilter(logging.Filter):
+    """Drop uvicorn's 'ASGI callable returned without completing response'.
+
+    Emitted whenever a client disconnects mid-response — long-lived MCP SSE
+    streams being dropped by connectors and crawlers abandoning /entscheid
+    pages. ~788 of these per day drowned out real errors in the worker
+    journals (2026-07-09 sweep; the adjacent request lines were GET / SSE and
+    crawler page fetches). Genuine handler failures still log their own
+    tracebacks and are unaffected by this filter.
+    """
+
+    _NOISE = "ASGI callable returned without completing response"
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        try:
+            return self._NOISE not in record.getMessage()
+        except Exception:
+            return True
+
+
 def _log_startup():
     """Log database status on startup."""
     _start_metrics_flusher()
@@ -20392,6 +20468,13 @@ def main_remote(host: str, port: int):
         logger.info("Bearer-token auth enabled")
     else:
         logger.warning("No SWISS_CASELAW_AUTH_TOKEN set — endpoint is unauthenticated")
+
+    # Warm the OS page cache for the search path in the background (post-swap /
+    # post-restart cold caches caused the day's worst search latencies).
+    threading.Thread(target=_warm_page_cache, daemon=True,
+                     name="page-cache-warmup").start()
+    # Silence client-disconnect noise so worker journals surface real errors.
+    logging.getLogger("uvicorn.error").addFilter(_ClientDisconnectNoiseFilter())
 
     # Size thread pool for concurrent DB queries (default is too small)
     import concurrent.futures
