@@ -2220,14 +2220,16 @@ _FTS_TOTAL_CACHE_MAX = 2048
 # anyway, and structural filters (court/canton/date) give exact totals + full
 # enumeration well past this — so the cap costs nothing real.
 #
-# Lowered 10000 -> 1000 (2026-07-09): py-spy profiling under peak load showed
-# _exact_fts_total dominating worker CPU (one worker at 827%, ~8 threadpool
-# threads all walking doclists concurrently). Every text search pays this walk,
-# and for a broad term the cap IS the scan bound, so 10x fewer rows walked = ~10x
-# less CPU on the hot path. UX cost is only header precision: a broad result set
-# reads "1,000+" instead of an exact five-figure count; pagination/enumeration
-# (offset/limit) is unaffected since it does not use this count.
-_FTS_TOTAL_CAP = 1000
+# Set to MAX_LIMIT (2026-07-09): the count is EXACT up to the most results a text
+# search can return, reported as "MAX_LIMIT+" beyond. Aligning the cap with
+# MAX_LIMIT means the displayed total never under-reports within the retrievable
+# range, so a client paginating a text+filter result set is never told to stop
+# early — no loss of the enumerate-all guarantee. The real CPU fix for the hot
+# _exact_fts_total path (py-spy: one worker at 827%) was the CROSS JOIN below
+# that forces FTS-driven counting; with that in place the cap value costs nothing
+# (a broad language-filtered count is ~0ms at 1000 or 2000). Was briefly 1000;
+# restored to full retrievable precision once CROSS JOIN removed the cost.
+_FTS_TOTAL_CAP = MAX_LIMIT
 
 
 def _exact_fts_total(conn, fts_query: str, where: str, params: list):
