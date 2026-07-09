@@ -2219,7 +2219,15 @@ _FTS_TOTAL_CACHE_MAX = 2048
 # floor) beyond it. The reranked text path only returns ~MAX_RERANK_CANDIDATES
 # anyway, and structural filters (court/canton/date) give exact totals + full
 # enumeration well past this — so the cap costs nothing real.
-_FTS_TOTAL_CAP = 10000
+#
+# Lowered 10000 -> 1000 (2026-07-09): py-spy profiling under peak load showed
+# _exact_fts_total dominating worker CPU (one worker at 827%, ~8 threadpool
+# threads all walking doclists concurrently). Every text search pays this walk,
+# and for a broad term the cap IS the scan bound, so 10x fewer rows walked = ~10x
+# less CPU on the hot path. UX cost is only header precision: a broad result set
+# reads "1,000+" instead of an exact five-figure count; pagination/enumeration
+# (offset/limit) is unaffected since it does not use this count.
+_FTS_TOTAL_CAP = 1000
 
 
 def _exact_fts_total(conn, fts_query: str, where: str, params: list):
@@ -2257,7 +2265,14 @@ def _exact_fts_total(conn, fts_query: str, where: str, params: list):
     except Exception:
         return None
     if len(_FTS_TOTAL_CACHE) >= _FTS_TOTAL_CACHE_MAX:
-        _FTS_TOTAL_CACHE.clear()
+        # Evict the oldest ~1/8 instead of clearing the whole cache. A full
+        # clear() (the previous behaviour) periodically dumped every entry, so
+        # on the hot _exact_fts_total path a burst of misses had to recompute
+        # doclist walks all at once — a recompute storm right when load is
+        # highest. dict preserves insertion order, so the leading keys are the
+        # oldest; popping a fraction keeps hot counts resident (2026-07-09).
+        for _old_key in list(_FTS_TOTAL_CACHE.keys())[:_FTS_TOTAL_CACHE_MAX // 8]:
+            _FTS_TOTAL_CACHE.pop(_old_key, None)
     _FTS_TOTAL_CACHE[key] = total
     return total
 
