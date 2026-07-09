@@ -624,35 +624,40 @@ function render() {
     // result is selected; it's part of the search-view experience.
     if (view === 'search') html += renderMultiBar();
 
-    // Preserve in-progress typing across a re-render. A live search-as-you-type
-    // fires doSearch() -> render() (loading state) while the user may still be
-    // typing; that rebuilds #search-input from state.query (the value as of when
-    // the debounce fired) and would drop any characters typed since — the root
-    // cause of "text disappears before fully typed". Capture the live value +
-    // caret when the search box is the active element, and restore them onto the
-    // fresh input after bindEvents() (which re-focuses it). Scoped to an actively
-    // focused search box, so legitimate state.query changes (suggestion clicks,
-    // clear) are untouched.
-    var _liveTyping = null;
-    var _activeEl = document.activeElement;
-    if (_activeEl && _activeEl.id === 'search-input') {
-      _liveTyping = {
-        value: _activeEl.value,
-        start: _activeEl.selectionStart,
-        end: _activeEl.selectionEnd
-      };
+    // Preserve the live search input NODE across the re-render. A live
+    // search-as-you-type fires doSearch() -> render(), which rebuilds
+    // #app.innerHTML — destroying and recreating the <input> the user is typing
+    // in. On Mac Word's WKWebView, replacing a focused input via innerHTML drops
+    // focus, caret, AND the in-progress text, so the field appears to clear after
+    // a typing pause (the reported bug). Instead of recreating it, we keep the
+    // ACTUAL node: detach it before the swap, then re-insert it in place of the
+    // freshly rendered placeholder and restore focus + caret. The node's own
+    // event listeners travel with it, so typing keeps working uninterrupted.
+    var _keptInput = document.getElementById('search-input');
+    var _keptFocused = !!_keptInput && (document.activeElement === _keptInput);
+    var _keptSel = null;
+    if (_keptInput) {
+      try { _keptSel = { s: _keptInput.selectionStart, e: _keptInput.selectionEnd }; } catch (e) {}
+      _keptInput.remove(); // detach so the innerHTML swap can't destroy it
     }
 
     app.innerHTML = html; // eslint-disable-line no-unsanitized/property -- all values pre-escaped via escHtml()
     bindEvents();
 
-    if (_liveTyping) {
-      var _freshInput = document.getElementById('search-input');
-      if (_freshInput && _freshInput.value !== _liveTyping.value) {
-        _freshInput.value = _liveTyping.value;
-        try {
-          _freshInput.setSelectionRange(_liveTyping.start, _liveTyping.end);
-        } catch (e) { /* setSelectionRange unsupported — value is still restored */ }
+    if (_keptInput) {
+      var _placeholder = document.getElementById('search-input');
+      if (_placeholder && _placeholder.parentNode) {
+        // If the user is NOT actively typing (e.g. a suggestion click or the
+        // clear button just set state.query), adopt the rendered value so those
+        // paths still update the field. If they ARE typing, keep their text.
+        if (!_keptFocused) _keptInput.value = _placeholder.value;
+        _placeholder.parentNode.replaceChild(_keptInput, _placeholder);
+        if (_keptFocused) {
+          _keptInput.focus();
+          if (_keptSel) {
+            try { _keptInput.setSelectionRange(_keptSel.s, _keptSel.e); } catch (e) {}
+          }
+        }
       }
     }
 
