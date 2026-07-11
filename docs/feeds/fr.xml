@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/fr.xml</link>
     <description>Latest published Swiss court decisions in Français.</description>
     <language>de-CH</language>
-    <lastBuildDate>Fri, 10 Jul 2026 10:37:36 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 11 Jul 2026 10:06:30 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/fr.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -315,6 +315,15 @@ Laurent Sc…</description>
       <description>Non-violation de l'article 4 du Protocole n° 7 - Droit à ne pas être jugé ou puni deux fois - {général} (Article 4 du Protocole n° 7 - Droit à ne pas être jugé ou puni deux fois); No violation: P7-4</description>
       <pubDate>Thu, 09 Jul 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ecthr_grand_chamber_48047_15</guid>
+      <category>ecthr_grand_chamber</category>
+      <category>CEDH / Droits humains</category>
+    </item>
+    <item>
+      <title>ecthr_grand_chamber 48047/15_2276/20 vom 2026-07-09</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ecthr_grand_chamber_48047_15_2276_20</link>
+      <description>Non-violation de l'article 4 du Protocole n° 7 - Droit à ne pas être jugé ou puni deux fois - {général} (Article 4 du Protocole n° 7 - Droit à ne pas être jugé ou puni deux fois); No violation: P7-4</description>
+      <pubDate>Thu, 09 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ecthr_grand_chamber_48047_15_2276_20</guid>
       <category>ecthr_grand_chamber</category>
       <category>CEDH / Droits humains</category>
     </item>
@@ -696,14 +705,6 @@ Présidente :…</description>
       <pubDate>Mon, 29 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">fr_gerichte_603 2026 49</guid>
       <category>fr_gerichte</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht C-5964/2025 vom 2026-06-26</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-5964_2025</link>
-      <description>Rentes</description>
-      <pubDate>Fri, 26 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-5964.2025</guid>
-      <category>bvger</category>
     </item>
   </channel>
 </rss>
