@@ -2378,7 +2378,7 @@
     "2026-06": 1436,
     "2026-07": 68
   },
-  "generated_at": "2026-07-11T14:40:51.757875+00:00",
+  "generated_at": "2026-07-11T22:07:46.234643+00:00",
   "scraper_health": {
     "run_at": "2026-07-11T03:01:36.807201+00:00",
     "run_duration_s": 7236.1,
@@ -2753,9 +2753,9 @@
         "duration_s": 732.9,
         "error": null,
         "note": "tunnel down (:1080) — skipped this run; 60 unreachable is expected, not a portal failure",
-        "state_count": 97476,
-        "jsonl_size_mb": 1469.9,
-        "jsonl_mtime": "2026-07-11T01:13:31.437955+00:00"
+        "state_count": 97523,
+        "jsonl_size_mb": 1470.9,
+        "jsonl_mtime": "2026-07-11T20:56:37.647906+00:00"
       },
       "ag_gerichte": {
         "success": true,
@@ -3486,7 +3486,7 @@
         "note": "1898 listed on portal but content not downloadable (empty page or missing PDF)",
         "state_count": 1532,
         "jsonl_size_mb": 93.3,
-        "jsonl_mtime": "2026-07-11T02:24:57.390602+00:00"
+        "jsonl_mtime": "2026-07-11T14:42:16.052244+00:00"
       },
       "emark": {
         "success": true,
