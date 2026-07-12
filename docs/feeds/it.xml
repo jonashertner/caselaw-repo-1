@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/it.xml</link>
     <description>Latest published Swiss court decisions in Italiano.</description>
     <language>de-CH</language>
-    <lastBuildDate>Sat, 11 Jul 2026 10:06:30 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 12 Jul 2026 10:34:41 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/it.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -145,6 +145,37 @@ A.___…</description>
       <category>bvger</category>
     </item>
     <item>
+      <title>Bundesgericht 7B_1214/2025 vom 2026-06-16</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_7B_1214_2025</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+7B_1214/2025
+
+Sentenza del 16 giugno 2026
+
+II Corte di diritto penale
+
+Composizione
+
+Giudici federali Abrecht, Presidente,
+
+Kölz, Hofmann,
+
+Cancelliere Caprara.
+
+Partecipanti al p…</description>
+      <pubDate>Tue, 16 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:7B_1214.2025</guid>
+      <category>bger</category>
+      <category>Procedura penale</category>
+    </item>
+    <item>
       <title>Bundesgericht 7B_560/2026 vom 2026-06-16</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bger_7B_560_2026</link>
       <description>Bundesgericht
@@ -173,6 +204,37 @@ A.__…</description>
       <pubDate>Tue, 16 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BGer:2026:7B_560.2026</guid>
       <category>bger</category>
+    </item>
+    <item>
+      <title>Bundesgericht 1C_204/2026 vom 2026-06-15</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_1C_204_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+1C_204/2026
+
+Sentenza del 15 giugno 2026
+
+I Corte di diritto pubblico
+
+Composizione
+
+Giudici federali Haag, Presidente,
+
+Kneubühler, Müller,
+
+Cancelliere M. Piatti.
+
+Partecipanti …</description>
+      <pubDate>Mon, 15 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:1C_204.2026</guid>
+      <category>bger</category>
+      <category>Cittadinanza e diritto degli stranieri</category>
     </item>
     <item>
       <title>Bundesgericht 5A_446/2026 vom 2026-06-15</title>
@@ -874,22 +936,6 @@ A._…</description>
       <pubDate>Wed, 27 May 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BGer:2026:7B_589.2025</guid>
       <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht C-2351/2026 vom 2026-05-27</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-2351_2026</link>
-      <description>Stupefacenti (altro)</description>
-      <pubDate>Wed, 27 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-2351.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht C-4834/2025 vom 2026-05-26</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-4834_2025</link>
-      <description>Assicurazione per l'invalidità (altro)</description>
-      <pubDate>Tue, 26 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-4834.2025</guid>
-      <category>bvger</category>
     </item>
   </channel>
 </rss>

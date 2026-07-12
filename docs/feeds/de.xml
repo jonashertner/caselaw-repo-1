@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/de.xml</link>
     <description>Latest published Swiss court decisions in Deutsch.</description>
     <language>de-CH</language>
-    <lastBuildDate>Sat, 11 Jul 2026 10:06:29 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 12 Jul 2026 10:34:40 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/de.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -283,6 +283,35 @@ vertreten du…</description>
       <pubDate>Tue, 07 Jul 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">be_verwaltungsgericht_100 2025 36</guid>
       <category>be_verwaltungsgericht</category>
+    </item>
+    <item>
+      <title>bs_appellationsgericht AUS.2026.55 vom 2026-07-07</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bs_appellationsgericht_AUS.2026.55</link>
+      <description>Appellationsgericht
+
+des Kantons Basel-Stadt
+
+als Verwaltungsgericht
+
+Einzelrichterfür Zwangsmassnahmen imAusländerrecht
+
+AUS.2026.55
+
+URTEIL
+
+vom7.
+Juli 2026
+
+Beteiligte
+
+Migrationsamt des Kantons
+Basel-Stadt,
+
+Spiegelgasse 12, Postfach, 4001
+Bas…</description>
+      <pubDate>Tue, 07 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">bs_appellationsgericht_AUS.2026.55</guid>
+      <category>bs_appellationsgericht</category>
     </item>
     <item>
       <title>gr_gerichte ZR1 2026 31 vom 2026-07-07</title>
@@ -843,38 +872,6 @@ Minderung. Beziff…</description>
       <pubDate>Tue, 30 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">zh_bezirksgericht_zuerich_MJ210045-L</guid>
       <category>zh_bezirksgericht_zuerich</category>
-    </item>
-    <item>
-      <title>Bundesgericht 5A_561/2026 vom 2026-06-29</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_561_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-5A_561/2026
-
-Urteil vom 29. Juni 2026
-
-II. zivilrechtliche Abteilung
-
-Besetzung
-
-Bundesrichter Bovey, Präsident,
-
-Gerichtsschreiber Möckli.
-
-Verfahrensbeteiligte
-
-A.________,
-
-Bes…</description>
-      <pubDate>Mon, 29 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_561.2026</guid>
-      <category>bger</category>
     </item>
   </channel>
 </rss>

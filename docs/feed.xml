@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feed.xml</link>
     <description>Latest published decisions across all Swiss courts indexed by OpenCaseLaw.</description>
     <language>de-CH</language>
-    <lastBuildDate>Sat, 11 Jul 2026 10:03:24 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 12 Jul 2026 10:33:26 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feed.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -669,6 +669,35 @@ vertreten du…</description>
       <category>be_verwaltungsgericht</category>
     </item>
     <item>
+      <title>bs_appellationsgericht AUS.2026.55 vom 2026-07-07</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bs_appellationsgericht_AUS.2026.55</link>
+      <description>Appellationsgericht
+
+des Kantons Basel-Stadt
+
+als Verwaltungsgericht
+
+Einzelrichterfür Zwangsmassnahmen imAusländerrecht
+
+AUS.2026.55
+
+URTEIL
+
+vom7.
+Juli 2026
+
+Beteiligte
+
+Migrationsamt des Kantons
+Basel-Stadt,
+
+Spiegelgasse 12, Postfach, 4001
+Bas…</description>
+      <pubDate>Tue, 07 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">bs_appellationsgericht_AUS.2026.55</guid>
+      <category>bs_appellationsgericht</category>
+    </item>
+    <item>
       <title>ecthr_chamber 54549/22 vom 2026-07-07</title>
       <link>https://mcp.opencaselaw.ch/entscheid/ecthr_chamber_54549_22</link>
       <description>Exception préliminaire rejetée (Art. 35) Conditions de recevabilité;(Art. 35-1) Épuisement des voies de recours internes;Violation de l'article 3 - Interdiction de la torture (Article 3 - Enquête effective) (Volet procédural);Violation de l'article 3 - Interdiction de la torture (Article 3 - Traitement inhumain);Préjudice moral - réparation (Article 41 - Préjudice moral;Satisfaction équitable); Violation: 3</description>
@@ -842,26 +871,6 @@ Président :
 Jér…</description>
       <pubDate>Fri, 03 Jul 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">fr_gerichte_101 2026 78</guid>
-      <category>fr_gerichte</category>
-    </item>
-    <item>
-      <title>fr_gerichte 608 2025 198 vom 2026-07-03</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_608%202025%20198</link>
-      <description>Tribunal cantonal TC
-Kantonsgericht KG
-Rue des Augustins 3, case postale 630, 1701 Fribourg
-T +41 26 304 15 00
-www.fr.ch/tc
-—
-Pouvoir Judiciaire PJ
-Gerichtsbehörden GB
-608 2025 198
-Arrêt du 8 mai 2026
-IIe Cour des assurances sociales
-Composition
-Prés…</description>
-      <pubDate>Fri, 03 Jul 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">fr_gerichte_608 2025 198</guid>
       <category>fr_gerichte</category>
     </item>
   </channel>
