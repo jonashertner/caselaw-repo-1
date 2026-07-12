@@ -2377,7 +2377,7 @@
     "2026-06": 1484,
     "2026-07": 69
   },
-  "generated_at": "2026-07-12T10:27:06.832312+00:00",
+  "generated_at": "2026-07-12T16:37:13.832456+00:00",
   "scraper_health": {
     "run_at": "2026-07-12T02:10:46.512343+00:00",
     "run_duration_s": 4186.1,
@@ -3468,7 +3468,7 @@
         "note": "2143 listed on portal but content not downloadable (empty page or missing PDF)",
         "state_count": 1532,
         "jsonl_size_mb": 93.3,
-        "jsonl_mtime": "2026-07-12T02:07:54.487294+00:00"
+        "jsonl_mtime": "2026-07-12T14:50:59.333514+00:00"
       },
       "vd_gerichte": {
         "success": true,
@@ -3575,22 +3575,20 @@
       "ZH": 135
     },
     "commentaries": 1146,
-    "scholarship_publications": 24517,
+    "scholarship_publications": 22081,
     "scholarship_by_source": {
       "boris_law": 7319,
-      "e_periodica_polsci": 3088,
-      "e_periodica_law": 3041,
+      "unige_law": 3709,
       "zhaw_digitalcollection": 3040,
-      "unige_law": 2350,
+      "libra_unine": 1992,
       "eth_research_collection": 1760,
-      "e_periodica_pubadmin": 855,
+      "e_periodica_law": 1400,
       "fhnw_irf": 496,
       "onlinekommentar": 382,
       "edoc_unibas_law": 324,
       "sui_generis": 293,
       "medialex": 275,
       "eizpublishing": 266,
-      "libra_unine": 212,
       "leges": 204,
       "ex_ante": 176,
       "thegoodboard": 140,
@@ -3599,32 +3597,33 @@
       "cfs": 50,
       "leoh": 44,
       "repositorium_ch": 31,
-      "alexandria_law": 13
+      "alexandria_law": 13,
+      "e_periodica_pubadmin": 9
     },
     "scholarship_by_type": {
-      "article": 18704,
-      "book": 4044,
-      "dissertation": 652,
-      "report": 419,
+      "article": 14811,
+      "book": 5430,
+      "dissertation": 695,
+      "report": 447,
       "commentary": 412,
       "working_paper": 173,
       "guidance": 70,
       "reference_article": 40,
       "bachelor_thesis": 3
     },
-    "citation_edges": 9297185,
-    "statute_edges": 11921129
+    "citation_edges": 9298524,
+    "statute_edges": 11922187
   },
   "interesting_stats": {
     "most_cited_decision": {
       "docket": "BGE 125 V 351",
-      "citation_count": 97929,
+      "citation_count": 97931,
       "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
     },
     "most_cited_statute": {
       "law_code": "LTF",
       "article": "100",
-      "ref_count": 182638
+      "ref_count": 182648
     },
     "oldest_decision": {
       "docket": "1_I_26",
@@ -3636,17 +3635,17 @@
       "de_pct": 46.7,
       "fr_pct": 45.1,
       "it_pct": 8.2,
-      "total": 996492
+      "total": 996569
     },
     "regeste_coverage": {
       "pct": 37.9,
-      "with_regeste": 378006,
-      "total": 996492
+      "with_regeste": 378008,
+      "total": 996569
     },
     "graph_size": {
-      "decision_edges": 8712473,
-      "statute_edges": 11921129,
-      "total": 20633602
+      "decision_edges": 8713710,
+      "statute_edges": 11922187,
+      "total": 20635897
     },
     "echr_switzerland": {
       "total": 2860,
@@ -3662,7 +3661,7 @@
     "top_5_decisions": [
       {
         "docket": "BGE 125 V 351",
-        "citation_count": 97929,
+        "citation_count": 97931,
         "regeste_excerpt": "Regeste\n Art. 4 BV; Art. 108 Abs. 1 lit. b UVG; Art. 40 BZP in Verbindung mit Art. 19 VwVG; Art. 95 Abs. 2 in Verbindung mit Art. 113 und 132 OG: Beweiswürdigun",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
       },
@@ -3674,7 +3673,7 @@
       },
       {
         "docket": "BGE 134 V 231",
-        "citation_count": 37423,
+        "citation_count": 37425,
         "regeste_excerpt": "Regeste\n Art. 6 Abs. 1 UVG; Beweiswert diagnostischer Methoden; funktionelle Magnetresonanztomographie; Schleudertrauma. Eine medizinisch-diagnostische Methode ",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_134_V_231"
       },
@@ -3695,27 +3694,27 @@
       {
         "law_code": "LTF",
         "article": "100",
-        "ref_count": 190332
+        "ref_count": 190342
       },
       {
         "law_code": "LTF",
         "article": "113",
-        "ref_count": 112130
+        "ref_count": 112136
       },
       {
         "law_code": "LTF",
         "article": "42",
-        "ref_count": 106838
+        "ref_count": 106843
       },
       {
         "law_code": "BGG",
         "article": "42",
-        "ref_count": 93710
+        "ref_count": 93739
       },
       {
         "law_code": "BGG",
         "article": "66",
-        "ref_count": 59900
+        "ref_count": 59924
       }
     ],
     "materialien_coverage": {
@@ -4376,7 +4375,10 @@
       "VD": 8,
       "BS": 21
     },
-    "corpus": {},
+    "corpus": {
+      "citation_edges": 1339,
+      "statute_edges": 1058
+    },
     "previous_generated_at": "2026-07-11T22:07:46.234643+00:00"
   }
 }
