@@ -56,6 +56,28 @@ SCHEMA_SQL = """
     CREATE INDEX IF NOT EXISTS idx_decisions_type ON decisions(decision_type);
     CREATE INDEX IF NOT EXISTS idx_decisions_canonical ON decisions(canonical_key);
 
+    -- Joined-docket aliases for consolidated federal proceedings (issue #41).
+    -- A "vereinigte Verfahren" / "causes jointes" decision is stored under only
+    -- its lead docket; this table maps every SECONDARY docket printed in the
+    -- caption to that lead decision_id so a lookup by any joined docket resolves.
+    -- Lookup-only, additive: populated by build_fts5._build_docket_aliases from
+    -- the caption. The build skips any alias that already exists as a primary
+    -- docket_number, so an alias can never override a real lead decision. A
+    -- single alias mapping to >1 canonical id is kept as multiple rows so the
+    -- serve side can report the ambiguity instead of guessing.
+    CREATE TABLE IF NOT EXISTS decision_docket_aliases (
+        court                 TEXT NOT NULL,
+        alias_docket          TEXT NOT NULL,
+        alias_docket_norm     TEXT NOT NULL,
+        canonical_decision_id TEXT NOT NULL,
+        extraction_method     TEXT NOT NULL,
+        PRIMARY KEY (alias_docket_norm, canonical_decision_id)
+    );
+    CREATE INDEX IF NOT EXISTS idx_docket_alias_lookup
+        ON decision_docket_aliases(alias_docket_norm);
+    CREATE INDEX IF NOT EXISTS idx_docket_alias_canonical
+        ON decision_docket_aliases(canonical_decision_id);
+
     CREATE VIRTUAL TABLE IF NOT EXISTS decisions_fts USING fts5(
         decision_id UNINDEXED,
         court,

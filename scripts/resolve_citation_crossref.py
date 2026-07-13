@@ -56,6 +56,19 @@ def build_key_index(decisions: sqlite3.Connection) -> dict[str, str]:
     ):
         for k in extract_underlying_dockets(ft):
             idx.setdefault(k, did)
+    # Joined-docket aliases (#41): a citation written under a consolidated
+    # decision's SECONDARY docket should resolve to the lead. Added AFTER primary
+    # dockets so setdefault (first-writer-wins) can never let an alias override a
+    # real lead decision. Guarded: pre-#41 databases lack the table.
+    try:
+        for alias_docket, did in decisions.execute(
+            "SELECT alias_docket, canonical_decision_id FROM decision_docket_aliases"
+        ):
+            k = normalize_ref(alias_docket)
+            if k:
+                idx.setdefault(k, did)
+    except sqlite3.OperationalError:
+        pass  # alias table absent (pre-rebuild DB)
     return idx
 
 

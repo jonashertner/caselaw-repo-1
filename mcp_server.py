@@ -210,6 +210,7 @@ class ReflectRequest(BaseModel):
 # Add repo root to path so db_schema can be imported when run from any directory
 sys.path.insert(0, str(Path(__file__).parent))
 from db_schema import SCHEMA_SQL, INSERT_OR_IGNORE_SQL, INSERT_COLUMNS  # noqa: E402
+import docket_aliases  # noqa: E402  (joined-docket resolution, issue #41)
 
 # Set to True when running with --remote (SSE transport).
 # Gates off update_database / check_update_status for remote clients.
@@ -4613,11 +4614,35 @@ def _docket_is_prefix_of_longer(inp: str, docket: str | None) -> bool:
     return bool(rest) and rest[0].isdigit()
 
 
+def _lookup_docket_alias(conn: sqlite3.Connection, reference: str | None) -> list[str]:
+    """Resolve a joined/secondary docket to canonical decision_id(s) (issue #41).
+
+    Consolidated federal proceedings ("vereinigte Verfahren") are stored under
+    only the lead docket; decision_docket_aliases maps every secondary docket to
+    that lead. Returns 0, 1, or (ambiguous) >1 canonical ids. Guarded: returns
+    [] when the table is absent (a server running against a pre-rebuild DB or a
+    minimal test fixture), so this can never raise.
+    """
+    key = docket_aliases.normalize_docket_key(reference)
+    if not key:
+        return []
+    try:
+        rows = conn.execute(
+            "SELECT DISTINCT canonical_decision_id FROM decision_docket_aliases "
+            "WHERE alias_docket_norm = ?",
+            (key,),
+        ).fetchall()
+    except sqlite3.OperationalError:
+        return []  # alias table not present yet
+    return [r[0] for r in rows]
+
+
 def _resolve_decision_id(decision_id: str) -> str:
     """Resolve a user-supplied decision_id to the actual stored decision_id.
 
-    Uses the FTS5 DB lookup (exact match → docket match → partial match),
-    same logic as get_decision_by_id. Returns the input unchanged if no match.
+    Uses the FTS5 DB lookup (exact match → docket match → joined-docket alias →
+    partial match), same logic as get_decision_by_id. Returns the input
+    unchanged if no match.
     """
     # Generate ID candidates for lookup
     candidates = [decision_id]
@@ -4649,6 +4674,11 @@ def _resolve_decision_id(decision_id: str) -> str:
         ).fetchone()
         if row:
             return row[0]
+        # Joined-docket alias (#41): a secondary docket of a consolidated
+        # decision. Only a UNIQUE alias resolves; an ambiguous one falls through.
+        alias_ids = _lookup_docket_alias(conn, decision_id)
+        if len(alias_ids) == 1:
+            return alias_ids[0]
         # Last resort: LIKE %x% — full table scan ~2 s on 1M rows.
         # Skip when input clearly looks like a canonical decision_id
         # (it would have hit step 1 if it existed).
@@ -6428,6 +6458,17 @@ def get_decision_by_id(decision_id: str) -> dict | None:
             (decision_id,),
         ).fetchone()
 
+    _via_alias = False
+    if not row:
+        # Joined-docket alias (#41): resolve a secondary docket of a
+        # consolidated decision to its lead. Unique aliases only.
+        _alias_ids = _lookup_docket_alias(conn, decision_id)
+        if len(_alias_ids) == 1:
+            row = conn.execute(
+                "SELECT * FROM decisions WHERE decision_id = ?", (_alias_ids[0],)
+            ).fetchone()
+            _via_alias = bool(row)
+
     if not row and not _CANONICAL_ID_PREFIX_RE.match(decision_id or ""):
         # Partial match — only for hand-typed dockets, and NEVER a longer docket
         # that merely contains the input as a numeric prefix (131 III 12 -> 121).
@@ -6448,6 +6489,14 @@ def get_decision_by_id(decision_id: str) -> dict | None:
     result = dict(row)
     # Remove json_data blob from response (redundant)
     result.pop("json_data", None)
+
+    # Joined-docket resolution (#41): the caller looked up a secondary docket of
+    # a consolidated proceeding; surface that the returned decision is the lead,
+    # so downstream consumers don't treat the docket mismatch as an error.
+    if _via_alias:
+        result["resolved_via"] = "joined_docket_alias"
+        result["queried_docket"] = decision_id
+        result["canonical_docket"] = result.get("docket_number")
 
     # Canonical-identity enrichment (C-2): a text-verified decision date overrides
     # a synthetic YYYY-01-01 placeholder; publication_date and ECLI are added; a
@@ -10986,6 +11035,47 @@ def _handle_get_regeste(*, decision_id: str) -> dict:
     }
 
 
+_DOCKET_KEY_RE = re.compile(r"(\d{1,2}[A-Z]{1,3})_(\d+)/(\d{4})")
+
+
+def _docket_close_matches(reference: str, limit: int = 5) -> list[dict] | None:
+    """Same-prefix + same-year docket candidates, ranked by serial distance.
+
+    Returns None when the reference is not docket-shaped (caller falls back to
+    generic FTS). Never surfaces a different-year docket — the exact failure
+    mode reported in #41 where cite('1B_243/2022') suggested '1B_243/2023'.
+    """
+    key = docket_aliases.normalize_docket_key(reference)
+    if not key:
+        return None
+    m = _DOCKET_KEY_RE.match(key)
+    if not m:
+        return None
+    prefix, serial, year = m.group(1), int(m.group(2)), m.group(3)
+    conn = get_db()
+    try:
+        # LIKE 'PREFIX%/YEAR' matches the stored space form ("1B 243/2022") and
+        # the slash form, and structurally excludes any other year.
+        cands = conn.execute(
+            "SELECT * FROM decisions WHERE docket_number LIKE ? "
+            "ORDER BY decision_date DESC LIMIT 200",
+            (f"{prefix}%/{year}",),
+        ).fetchall()
+    finally:
+        conn.close()
+    scored: list[tuple[int, dict]] = []
+    for r in cands:
+        k2 = docket_aliases.normalize_docket_key(r["docket_number"])
+        if not k2:
+            continue
+        m2 = _DOCKET_KEY_RE.match(k2)
+        if not m2 or m2.group(1) != prefix or m2.group(3) != year:
+            continue  # different prefix or year — never a close match
+        scored.append((abs(int(m2.group(2)) - serial), dict(r)))
+    scored.sort(key=lambda t: t[0])
+    return [r for _, r in scored[:limit]]
+
+
 def _handle_cite(
     *,
     reference: str,
@@ -11016,12 +11106,18 @@ def _handle_cite(
     decision = get_decision_by_id(resolved_id)
 
     if not decision:
-        # Reference doesn't resolve — suggest close matches via FTS5 docket
-        # or regeste search so the LLM can retry with the correct ID.
+        # Reference doesn't resolve — suggest close matches so the LLM can retry
+        # with the correct ID. For a docket-shaped reference, use a deterministic
+        # same-prefix + same-year docket search: the generic FTS path sanitises
+        # "1B_243/2022" to "1B_243 2022" and then ranks the serial token over the
+        # year, surfacing an unrelated different-year docket (#41). Fall back to
+        # FTS only for non-docket references.
         close_matches: list[dict] = []
         try:
-            rows, _ = search_fts5(query=ref, limit=5)
-            for r in rows[:5]:
+            cand_rows = _docket_close_matches(ref, limit=5)
+            if cand_rows is None:  # not docket-shaped → generic search
+                cand_rows, _ = search_fts5(query=ref, limit=5)
+            for r in cand_rows[:5]:
                 cand_citation = _build_citation_strings(r)
                 close_matches.append({
                     "decision_id": r.get("decision_id"),
@@ -11491,6 +11587,12 @@ def _resolve_decision_id_strict(decision_id: str) -> str | None:
         ).fetchone()
         if row:
             return row[0]
+        # Joined-docket alias (#41): unique alias only. Indexed lookup, so it
+        # keeps the strict resolver's no-LIKE performance contract — attest_response
+        # must accept a valid joined docket instead of flagging it as fabricated.
+        alias_ids = _lookup_docket_alias(conn, decision_id)
+        if len(alias_ids) == 1:
+            return alias_ids[0]
     finally:
         conn.close()
     return None

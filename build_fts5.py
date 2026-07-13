@@ -400,6 +400,52 @@ def _norm_for_dedup(full_text) -> str:
     return _DEDUP_NONALNUM_RE.sub("", t.lower())[:4000]
 
 
+def _build_docket_aliases(conn: sqlite3.Connection) -> int:
+    """Populate decision_docket_aliases from consolidated federal captions (#41).
+
+    For every court='bger' decision, extract the joined (secondary) dockets from
+    its caption and map each to the lead decision_id, so a lookup by any joined
+    docket resolves to the consolidated decision. Skips any alias that is already
+    a primary docket_number: such a docket resolves directly, and mapping it to
+    the consolidation would be ambiguous (covers revision references and
+    reciprocal consolidations). Fully rebuilt each run (a few thousand rows);
+    additive and non-fatal — never fails the build.
+    """
+    import docket_aliases
+
+    conn.execute("DELETE FROM decision_docket_aliases")
+    # Every primary docket key; an alias colliding with one is skipped so a real
+    # lead decision always wins.
+    primary: set[str] = set()
+    for (dn,) in conn.execute(
+        "SELECT docket_number FROM decisions "
+        "WHERE docket_number IS NOT NULL AND docket_number != ''"
+    ):
+        k = docket_aliases.normalize_docket_key(dn)
+        if k:
+            primary.add(k)
+
+    rows: list[tuple] = []
+    for did, dn, head in conn.execute(
+        "SELECT decision_id, docket_number, substr(full_text, 1, 2500) "
+        "FROM decisions WHERE court = 'bger'"
+    ):
+        for alias in docket_aliases.extract_joined_dockets(head, dn):
+            if alias in primary:
+                continue
+            rows.append(("bger", alias, alias, did, "bger_caption_v1"))
+
+    if rows:
+        conn.executemany(
+            "INSERT OR IGNORE INTO decision_docket_aliases "
+            "(court, alias_docket, alias_docket_norm, canonical_decision_id, "
+            " extraction_method) VALUES (?, ?, ?, ?, ?)",
+            rows,
+        )
+    conn.commit()
+    return len(rows)
+
+
 def _dedup_decisions(conn: sqlite3.Connection) -> int:
     """Remove duplicate decisions sharing the same canonical_key.
 
@@ -2199,6 +2245,20 @@ def build_database(
             filled = _fill_missing_regeste(conn)
             if filled:
                 logger.info(f"  Extracted regeste for {filled} decisions")
+
+        # Joined-docket aliases (#41): must run AFTER _normalize_dockets so the
+        # lead docket_number is clean. Non-fatal — a failure here must never
+        # abort the build (the alias table just stays empty for this run).
+        with _phase_timer("docket aliases (consolidated proceedings)"):
+            try:
+                n_alias = _build_docket_aliases(conn)
+                logger.info(f"  Mapped {n_alias} joined-docket aliases to lead decisions (#41)")
+            except Exception as _al_err:
+                try:
+                    conn.rollback()
+                except Exception:
+                    pass
+                logger.warning("docket-alias build skipped (non-fatal): %s", _al_err)
 
         # Per-decision content hash — must run AFTER all _normalize_* /
         # _migrate_* / _truncate_* / _fill_* passes so the hash reflects
