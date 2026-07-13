@@ -7443,9 +7443,26 @@ def _fedlex_candidate_urls(
     out: list[str] = []
     seen: set[str] = set()
 
+    # SSRF guard: fedlex_urls is a public, user-supplied field on the mock-
+    # decision request, and each candidate is fetched with requests.get() (which
+    # follows redirects). Without this check a caller could point it at
+    # http://127.0.0.1:8770 / RFC1918 / cloud-metadata and read internal
+    # responses back. Only https URLs on the Fedlex host are ever fetchable; the
+    # field is semantically Fedlex-only, so this does not restrict legitimate
+    # use. Applies to the internally-built base URLs too (they are fedlex hosts).
+    _ALLOWED_FEDLEX_HOSTS = {"www.fedlex.admin.ch", "fedlex.admin.ch"}
+
     def _add(url: str):
         u = (url or "").strip()
         if not u or u in seen:
+            return
+        try:
+            parsed = urllib.parse.urlparse(u)
+        except Exception:
+            return
+        if parsed.scheme != "https":
+            return
+        if (parsed.hostname or "").lower() not in _ALLOWED_FEDLEX_HOSTS:
             return
         seen.add(u)
         out.append(u)
