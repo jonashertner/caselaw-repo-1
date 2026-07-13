@@ -84,3 +84,9 @@ tools/mcp-publisher
 
 # Per-launch operational notes that don't belong in source-control
 tools/word-addin/partner-center-resubmission-*.txt
+
+# Canonical project docs kept OUT of this public repo on purpose: they hold
+# internal operational detail (VPS/proxy/tunnel/disk internals). Loaded locally
+# as agent context; gitignored so they can never be committed by accident.
+CLAUDE.md
+TECHNICAL_OVERVIEW.txt
