@@ -61,7 +61,7 @@ def check_publish_status() -> bool:
 
 def check_total_count() -> tuple[int, bool]:
     banner("[2] Total decision count")
-    c = sqlite3.connect(DB).cursor()
+    c = sqlite3.connect(f"file:{DB}?mode=ro&immutable=1", uri=True).cursor()
     n = c.execute("SELECT COUNT(*) FROM decisions").fetchone()[0]
     print(f"  decisions.db total: {n:,}")
     # Measured 2026-04-30: full rebuild with 51 archive shards yielded 971,112
@@ -80,7 +80,7 @@ def check_total_count() -> tuple[int, bool]:
 
 def check_sg_chambers() -> bool:
     banner("[3] SG chamber distribution (SG-bug fix verification)")
-    c = sqlite3.connect(DB).cursor()
+    c = sqlite3.connect(f"file:{DB}?mode=ro&immutable=1", uri=True).cursor()
     # Measured 2026-04-30 build (post-architectural-fix):
     #   sg_kantonsgericht 1074, sg_verwaltungsrekurskommission 1173,
     #   sg_handelsgericht 49, sg_versicherungsgericht 7524, sg_verwaltungsgericht 2744
@@ -111,7 +111,7 @@ def check_sg_chambers() -> bool:
 
 def check_archive_shards() -> bool:
     banner("[4] All 51 archive shards landed (or correctly dedupped against direct)")
-    c = sqlite3.connect(DB).cursor()
+    c = sqlite3.connect(f"file:{DB}?mode=ro&immutable=1", uri=True).cursor()
     shards = sorted(JSONL_DIR.glob("es_*.jsonl"))
     failed = []
     for shard in shards:
@@ -161,7 +161,7 @@ def check_archive_shards() -> bool:
 
 def check_egmr_clean() -> bool:
     banner("[5] EGMR (König audit) still clean")
-    c = sqlite3.connect(DB).cursor()
+    c = sqlite3.connect(f"file:{DB}?mode=ro&immutable=1", uri=True).cursor()
     n_bge_cedh = c.execute(
         "SELECT COUNT(*) FROM decisions WHERE court='bge' AND source_url LIKE '%cedh%'"
     ).fetchone()[0]
@@ -210,7 +210,7 @@ def check_date_plausibility() -> bool:
     banner("[7] Date-plausibility (no decision_date > today + 30 days)")
     from datetime import date, timedelta
     cutoff = (date.today() + timedelta(days=30)).isoformat()
-    c = sqlite3.connect(DB).cursor()
+    c = sqlite3.connect(f"file:{DB}?mode=ro&immutable=1", uri=True).cursor()
     n = c.execute(
         "SELECT COUNT(*) FROM decisions WHERE decision_date > ?", (cutoff,)
     ).fetchone()[0]
@@ -243,7 +243,7 @@ def check_data_quality_normalisations() -> bool:
     """
     banner("[8] Data-quality normalisations (König audit follow-up)")
     from datetime import date, timedelta
-    c = sqlite3.connect(DB).cursor()
+    c = sqlite3.connect(f"file:{DB}?mode=ro&immutable=1", uri=True).cursor()
 
     n_ws = c.execute(
         "SELECT COUNT(*) FROM decisions WHERE docket_number != trim(docket_number)"
@@ -267,7 +267,7 @@ def check_data_quality_normalisations() -> bool:
 
 def check_court_top10() -> bool:
     banner("[9] Top-10 courts by row count (sanity)")
-    c = sqlite3.connect(DB).cursor()
+    c = sqlite3.connect(f"file:{DB}?mode=ro&immutable=1", uri=True).cursor()
     print(f"  {'court':40s} {'count':>10s}")
     for court, n in c.execute(
         "SELECT court, COUNT(*) FROM decisions GROUP BY court "
