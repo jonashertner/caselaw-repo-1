@@ -1,13 +1,13 @@
 {
-  "total": 996569,
+  "total": 996615,
   "by_court": [
     {
       "court": "bger",
       "canton": "CH",
-      "count": 191624,
+      "count": 191670,
       "earliest": "1986-10-06",
-      "latest": "2026-07-01",
-      "last_scraped": "2026-07-11T20:56:31.344491+00:00",
+      "latest": "2026-07-02",
+      "last_scraped": "2026-07-13T10:01:21.571457+00:00",
       "languages": [
         "de",
         "fr",
@@ -1830,9 +1830,9 @@
     }
   ],
   "by_language": {
-    "de": 465098,
-    "fr": 449575,
-    "it": 81896
+    "de": 465124,
+    "fr": 449588,
+    "it": 81903
   },
   "by_year": {
     "1875": 179,
@@ -1967,8 +1967,8 @@
     "2004": 19023,
     "2005": 21452,
     "2006": 22607,
-    "2007": 28481,
-    "2008": 27712,
+    "2007": 28485,
+    "2008": 27713,
     "2009": 32095,
     "2010": 34229,
     "2011": 35247,
@@ -1981,29 +1981,29 @@
     "2018": 47912,
     "2019": 48369,
     "2020": 49174,
-    "2021": 50767,
+    "2021": 50768,
     "2022": 47253,
     "2023": 47135,
-    "2024": 46809,
-    "2025": 43848,
-    "2026": 15031
+    "2024": 46813,
+    "2025": 43858,
+    "2026": 15057
   },
   "recent_daily": {
-    "2026-06-15": 88,
+    "2026-06-15": 89,
     "2026-06-16": 75,
-    "2026-06-17": 69,
-    "2026-06-18": 74,
+    "2026-06-17": 71,
+    "2026-06-18": 75,
     "2026-06-19": 72,
-    "2026-06-22": 55,
-    "2026-06-23": 49,
-    "2026-06-24": 41,
+    "2026-06-22": 58,
+    "2026-06-23": 51,
+    "2026-06-24": 43,
     "2026-06-25": 30,
     "2026-06-26": 27,
     "2026-06-28": 1,
-    "2026-06-29": 22,
-    "2026-06-30": 12,
-    "2026-07-01": 14,
-    "2026-07-02": 14,
+    "2026-06-29": 26,
+    "2026-06-30": 14,
+    "2026-07-01": 16,
+    "2026-07-02": 16,
     "2026-07-03": 8,
     "2026-07-06": 3,
     "2026-07-07": 8,
@@ -2021,7 +2021,7 @@
     {
       "court": "bger",
       "canton": "CH",
-      "count": 191624
+      "count": 191670
     },
     {
       "court": "ge_gerichte",
@@ -2223,7 +2223,7 @@
     "2026": -65.7
   },
   "federal_vs_cantonal": {
-    "federal": 364770,
+    "federal": 364816,
     "cantonal": 631799
   },
   "language_by_year": {
@@ -2238,12 +2238,12 @@
       "it": 3364
     },
     "2007": {
-      "de": 16077,
-      "fr": 8916,
+      "de": 16080,
+      "fr": 8917,
       "it": 3488
     },
     "2008": {
-      "de": 13977,
+      "de": 13978,
       "fr": 10559,
       "it": 3176
     },
@@ -2310,7 +2310,7 @@
     "2021": {
       "de": 22179,
       "fr": 26047,
-      "it": 2541
+      "it": 2542
     },
     "2022": {
       "de": 20537,
@@ -2323,19 +2323,19 @@
       "it": 2106
     },
     "2024": {
-      "de": 19893,
+      "de": 19896,
       "fr": 25054,
-      "it": 1862
+      "it": 1863
     },
     "2025": {
-      "de": 19746,
-      "fr": 22869,
-      "it": 1233
+      "de": 19751,
+      "fr": 22871,
+      "it": 1236
     },
     "2026": {
-      "de": 7998,
-      "fr": 6535,
-      "it": 498
+      "de": 8012,
+      "fr": 6545,
+      "it": 500
     }
   },
   "by_month": {
@@ -2351,21 +2351,21 @@
     "2024-04": 3828,
     "2024-05": 4039,
     "2024-06": 4394,
-    "2024-07": 3586,
-    "2024-08": 3577,
-    "2024-09": 3719,
-    "2024-10": 3982,
+    "2024-07": 3587,
+    "2024-08": 3578,
+    "2024-09": 3720,
+    "2024-10": 3983,
     "2024-11": 4046,
     "2024-12": 3955,
     "2025-01": 3832,
     "2025-02": 3703,
-    "2025-03": 3836,
+    "2025-03": 3838,
     "2025-04": 3589,
-    "2025-05": 3817,
+    "2025-05": 3819,
     "2025-06": 4190,
-    "2025-07": 3342,
-    "2025-08": 3350,
-    "2025-09": 3789,
+    "2025-07": 3343,
+    "2025-08": 3354,
+    "2025-09": 3790,
     "2025-10": 3771,
     "2025-11": 3466,
     "2025-12": 3163,
@@ -2373,11 +2373,11 @@
     "2026-02": 3122,
     "2026-03": 3037,
     "2026-04": 2560,
-    "2026-05": 2167,
-    "2026-06": 1484,
-    "2026-07": 72
+    "2026-05": 2169,
+    "2026-06": 1504,
+    "2026-07": 76
   },
-  "generated_at": "2026-07-13T10:15:38.421594+00:00",
+  "generated_at": "2026-07-13T15:15:38.823640+00:00",
   "scraper_health": {
     "run_at": "2026-07-13T02:15:04.718320+00:00",
     "run_duration_s": 4444.3,
@@ -2516,7 +2516,7 @@
         "note": null,
         "state_count": 21307,
         "jsonl_size_mb": 487.8,
-        "jsonl_mtime": "2026-07-13T09:20:01.601218+00:00"
+        "jsonl_mtime": "2026-07-13T10:38:22.905539+00:00"
       },
       "bazg": {
         "success": true,
@@ -2805,7 +2805,7 @@
         "note": "tunnel down (:1080) — skipped this run; 60 unreachable is expected, not a portal failure",
         "state_count": 97549,
         "jsonl_size_mb": 1471.3,
-        "jsonl_mtime": "2026-07-13T10:01:49.790617+00:00"
+        "jsonl_mtime": "2026-07-13T10:34:25.695300+00:00"
       },
       "be_zivilstraf": {
         "success": true,
@@ -2837,9 +2837,9 @@
         "duration_s": 132.6,
         "error": null,
         "note": "tunnel down (:1080) — skipped this run; 11 unreachable is expected, not a portal failure",
-        "state_count": 1115,
-        "jsonl_size_mb": 39.0,
-        "jsonl_mtime": "2026-07-13T01:15:36.494843+00:00"
+        "state_count": 1124,
+        "jsonl_size_mb": 39.2,
+        "jsonl_mtime": "2026-07-13T10:25:41.718724+00:00"
       },
       "mkg": {
         "success": true,
@@ -2873,7 +2873,7 @@
         "note": null,
         "state_count": 7632,
         "jsonl_size_mb": 189.7,
-        "jsonl_mtime": "2026-07-13T01:16:21.953804+00:00"
+        "jsonl_mtime": "2026-07-13T10:52:19.487931+00:00"
       },
       "bvger": {
         "success": true,
@@ -2907,7 +2907,7 @@
         "note": null,
         "state_count": 1611,
         "jsonl_size_mb": 32.6,
-        "jsonl_mtime": "2026-07-13T01:16:46.580782+00:00"
+        "jsonl_mtime": "2026-07-13T10:26:18.353767+00:00"
       },
       "nw_gerichte": {
         "success": true,
@@ -3400,7 +3400,7 @@
         "note": "1854 listed on portal but content not downloadable (empty page or missing PDF)",
         "state_count": 1532,
         "jsonl_size_mb": 93.3,
-        "jsonl_mtime": "2026-07-13T01:53:40.112403+00:00"
+        "jsonl_mtime": "2026-07-13T14:51:27.282530+00:00"
       },
       "hudoc_ch": {
         "success": true,
@@ -3611,8 +3611,8 @@
       "reference_article": 40,
       "bachelor_thesis": 3
     },
-    "citation_edges": 9298524,
-    "statute_edges": 11922187
+    "citation_edges": 9299129,
+    "statute_edges": 11922677
   },
   "interesting_stats": {
     "most_cited_decision": {
@@ -3623,7 +3623,7 @@
     "most_cited_statute": {
       "law_code": "LTF",
       "article": "100",
-      "ref_count": 182648
+      "ref_count": 182651
     },
     "oldest_decision": {
       "docket": "1_I_26",
@@ -3635,17 +3635,17 @@
       "de_pct": 46.7,
       "fr_pct": 45.1,
       "it_pct": 8.2,
-      "total": 996569
+      "total": 996615
     },
     "regeste_coverage": {
       "pct": 37.9,
       "with_regeste": 378008,
-      "total": 996569
+      "total": 996615
     },
     "graph_size": {
-      "decision_edges": 8713710,
-      "statute_edges": 11922187,
-      "total": 20635897
+      "decision_edges": 8714473,
+      "statute_edges": 11922677,
+      "total": 20637150
     },
     "echr_switzerland": {
       "total": 2860,
@@ -3694,27 +3694,27 @@
       {
         "law_code": "LTF",
         "article": "100",
-        "ref_count": 190342
+        "ref_count": 190345
       },
       {
         "law_code": "LTF",
         "article": "113",
-        "ref_count": 112136
+        "ref_count": 112138
       },
       {
         "law_code": "LTF",
         "article": "42",
-        "ref_count": 106843
+        "ref_count": 106851
       },
       {
         "law_code": "BGG",
         "article": "42",
-        "ref_count": 93739
+        "ref_count": 93749
       },
       {
         "law_code": "BGG",
         "article": "66",
-        "ref_count": 59924
+        "ref_count": 59943
       }
     ],
     "materialien_coverage": {
@@ -4339,6 +4339,14 @@
       "url": "https://www.fedlex.admin.ch/eli/cc/2017/182"
     },
     {
+      "sr_number": "172.220.111.31",
+      "in_force_date": "2026-08-01",
+      "title_de": "Verordnung des EFD vom 6. Dezember 2001 zur Bundespersonalverordnung (VBPV)",
+      "title_fr": "Ordonnance du DFF du 6 décembre 2001 concernant l'ordonnance sur le personnel de la Confédération (O-OPers)",
+      "title_it": "Ordinanza del DFF del 6 dicembre 2001 concernente l'ordinanza sul personale federale (O-OPers)",
+      "url": "https://www.fedlex.admin.ch/eli/cc/2001/485"
+    },
+    {
       "sr_number": "817.023.21",
       "in_force_date": "2026-08-01",
       "title_de": "Verordnung des EDI vom 16. Dezember 2016 über Materialien und Gegenstände, die dazu bestimmt sind, mit Lebensmitteln in Berührung zu kommen (Bedarfsgegenständeverordnung) ",
@@ -4353,21 +4361,18 @@
       "title_fr": "Ordonnance du Conseil des hautes écoles du 29 novembre 2019 sur la coordination de l'enseignement dans les hautes écoles suisses",
       "title_it": "Ordinanza del Consiglio delle scuole universitarie del 29 novembre 2019 sul coordinamento dell'insegnamento nelle scuole universitarie svizzere",
       "url": "https://www.fedlex.admin.ch/eli/cc/2019/722"
-    },
-    {
-      "sr_number": "817.022.51",
-      "in_force_date": "2026-08-01",
-      "title_de": "Verordnung des EDI vom 27. Mai 2020 über gentechnisch veränderte Lebensmittel (VGVL)",
-      "title_fr": "Ordonnance du DFI du 27 mai 2020 sur les denrées alimentaires génétiquement modifiées (ODAlGM)",
-      "title_it": "Ordinanza del DFI del 27 maggio 2020 concernente le derrate alimentari geneticamente modificate (ODerrGM)",
-      "url": "https://www.fedlex.admin.ch/eli/cc/2020/456"
     }
   ],
   "delta": {
-    "total": 0,
-    "by_court": {},
+    "total": 46,
+    "by_court": {
+      "bger": 46
+    },
     "by_canton": {},
-    "corpus": {},
+    "corpus": {
+      "citation_edges": 605,
+      "statute_edges": 490
+    },
     "previous_generated_at": "2026-07-12T16:37:13.832456+00:00"
   }
 }
