@@ -817,7 +817,7 @@ function resolveAmendmentRefs() {
           safe = (parsed.protocol === 'https:' && parsed.hostname.length > 0);
         } catch (_e) { safe = false; }
         if (!safe) return;
-        var link = '<a href="' + escHtml(data.url) + '" target="_blank" rel="noopener noreferrer" class="law-ref-link">' + escHtml(ref) + '</a>';
+        var link = '<a href="' + escHtml(safeHref(data.url)) + '" target="_blank" rel="noopener noreferrer" class="law-ref-link">' + escHtml(ref) + '</a>';
         el.innerHTML = el.innerHTML.replace(escHtml(ref), link); // eslint-disable-line no-unsanitized/property
       }).catch(function () {});
     });
@@ -1010,7 +1010,7 @@ function pinpointChipHtml(pp, lang) {
   // the linked SEO page.
   var sentenceTrim = sentence.length > 180 ? sentence.slice(0, 177) + '\u2026' : sentence;
   var sourceClass = source === 'semantic' ? ' result-pinpoint--semantic' : '';
-  return '<a href="' + escHtml(url) + '" target="_blank" rel="noopener" ' +
+  return '<a href="' + escHtml(safeHref(url)) + '" target="_blank" rel="noopener" ' +
     'class="result-pinpoint' + sourceClass + '" ' +
     'title="\u00d6ffnet die Erw\u00e4gung in einem neuen Tab" ' +
     'onclick="event.stopPropagation();">' +
@@ -1131,7 +1131,7 @@ function renderDetail() {
   if (badges) html += '<div class="badges-row">' + badges + '</div>';
 
   if (d.source_url) {
-    html += '<a class="source-link" href="' + escHtml(d.source_url) + '" target="_blank">' + escHtml(t('source_link', lang)) + ' \u2192</a>';
+    html += '<a class="source-link" href="' + escHtml(safeHref(d.source_url)) + '" target="_blank">' + escHtml(t('source_link', lang)) + ' \u2192</a>';
   }
 
   // ── Regeste ──
@@ -3362,6 +3362,16 @@ function renderAuditIssueCard(iss, idx, lang) {
 // Utilities — HTML entity escaping for XSS prevention
 function escHtml(s) {
   return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// escHtml stops attribute breakout but NOT dangerous URL schemes: an href of
+// "javascript:..." or "data:..." (from a decision source_url / amendment-ref
+// URL) is a valid attribute value that executes on click. safeHref returns the
+// URL only when it is http(s), else '#', so dynamic hrefs can never carry an
+// executable scheme (Codex review P1.6).
+function safeHref(url) {
+  var u = String(url || '').trim();
+  return /^https?:\/\//i.test(u) ? u : '#';
 }
 
 function openExternal(url) {

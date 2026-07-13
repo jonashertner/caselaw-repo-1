@@ -6879,7 +6879,11 @@ def analyze_legal_trend(
                   AND CAST(SUBSTR(d.decision_date, 1, 4) AS INTEGER) > 1800
                   AND CAST(SUBSTR(d.decision_date, 1, 4) AS INTEGER) < 2100
             """
-            params2: list = [query]
+            # Invariant #3: user-facing FTS input must pass _sanitize_fts5 (a raw
+            # query here threw sqlite OperationalError on bare operators like
+            # trailing "Art." / unbalanced quotes, and let adversarial OR/NEAR
+            # expressions drive broad scans). Codex review P0.4.
+            params2: list = [_sanitize_fts5(query)]
             if court:
                 sql += " AND d.court = ?"
                 params2.append(court)
@@ -20459,12 +20463,29 @@ class _ClientDisconnectNoiseFilter(logging.Filter):
     """
 
     _NOISE = "ASGI callable returned without completing response"
+    _suppressed = 0
+    _SUMMARY_EVERY = 1000
 
     def filter(self, record: logging.LogRecord) -> bool:
         try:
-            return self._NOISE not in record.getMessage()
+            if self._NOISE not in record.getMessage():
+                return True
         except Exception:
             return True
+        # Count suppressed messages and let a rolled-up summary through every
+        # _SUMMARY_EVERY so a genuine spike (which could be a real ASGI
+        # response-protocol bug, not just a client disconnect) stays visible in
+        # the journal instead of being fully silenced (Codex review P2.1).
+        cls = type(self)
+        cls._suppressed += 1
+        if cls._suppressed % cls._SUMMARY_EVERY == 0:
+            record.msg = (f"[disconnect-noise-filter] suppressed "
+                          f"{cls._suppressed} 'ASGI returned without completing "
+                          f"response' messages so far (client disconnects; a "
+                          f"sharp rise may indicate a real response-protocol bug)")
+            record.args = ()
+            return True
+        return False
 
 
 def _log_startup():
