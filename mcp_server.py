@@ -693,10 +693,10 @@ def _parse_query_structured(query: str) -> dict:
                 "domain": str(parsed.get("domain") or ""),
             }
             _STRUCTURED_PARSE_CACHE[cache_key] = result
-            logger.debug("Structured parse for %r: %s", query, result)
+            logger.debug("Structured parse for query(len=%d): %s", len(query or ""), result)
             return result
     except Exception as e:
-        logger.debug("Structured parse failed for %r: %s", query, e)
+        logger.debug("Structured parse failed for query(len=%d): %s", len(query or ""), e)
         return {}
 
 
@@ -1480,10 +1480,10 @@ def _expand_query_with_llm(query: str) -> list[str]:
             terms = [t.strip() for t in text.strip().split("\n") if t.strip()]
             terms = terms[:6]
             _LLM_EXPANSION_CACHE[cache_key] = terms
-            logger.debug("LLM expansion for %r: %s", query, terms)
+            logger.debug("LLM expansion for query(len=%d): %s", len(query or ""), terms)
             return terms
     except Exception as e:
-        logger.debug("LLM expansion failed for %r: %s", query, e)
+        logger.debug("LLM expansion failed for query(len=%d): %s", len(query or ""), e)
         return []
 
 
@@ -2367,7 +2367,12 @@ def _search_fts5_inner(
     _trace_t0 = time.monotonic()
     _deadline = (_trace_t0 + SEARCH_DEADLINE_MS / 1000.0) if SEARCH_DEADLINE_MS > 0 else None
     _trace = {
-        "query": query[:200],
+        # Privacy contract (/datenschutz/): search query CONTENT is never
+        # persisted. Search traces are kept for latency/strategy analysis, so we
+        # store only the non-content length, never the query text itself. Codex
+        # review P0.2. (Legal-domain queries can carry client names, allegations,
+        # privileged strategy — these must not land in research_logs.)
+        "query_len": len(query or ""),
         "language_filter": language,
         "court_filter": court,
     }
