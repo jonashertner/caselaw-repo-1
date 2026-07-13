@@ -452,15 +452,27 @@ def build(
     # ran without the durable cache populated). A legitimate build never loses
     # >50% of its full-text; such a drop means a source/cache input went
     # missing, and serving the degraded DB is worse than keeping yesterday's.
-    new_ft = sqlite3.connect(
-        f"file:{tmp_path}?mode=ro", uri=True
-    ).execute("SELECT COUNT(*) FROM publications WHERE has_full_text=1").fetchone()[0]
+    # NOTE: connections must be CLOSED before the os.replace() below —
+    # Windows refuses to rename over/from files with open handles
+    # (PermissionError WinError 32); on Linux this silently worked.
+    _tmp_conn = sqlite3.connect(f"file:{tmp_path}?mode=ro", uri=True)
+    try:
+        new_ft = _tmp_conn.execute(
+            "SELECT COUNT(*) FROM publications WHERE has_full_text=1"
+        ).fetchone()[0]
+    finally:
+        _tmp_conn.close()
     summary["has_full_text"] = new_ft
     if db_path.exists():
         try:
-            old_ft = sqlite3.connect(
-                f"file:{db_path}?mode=ro&immutable=1", uri=True
-            ).execute("SELECT COUNT(*) FROM publications WHERE has_full_text=1").fetchone()[0]
+            _old_conn = sqlite3.connect(
+                f"file:{db_path}?mode=ro&immutable=1", uri=True)
+            try:
+                old_ft = _old_conn.execute(
+                    "SELECT COUNT(*) FROM publications WHERE has_full_text=1"
+                ).fetchone()[0]
+            finally:
+                _old_conn.close()
         except Exception:
             old_ft = 0
         if old_ft >= 1000 and new_ft < old_ft * 0.5:

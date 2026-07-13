@@ -24,7 +24,10 @@ dependencies = [
 
 [project.optional-dependencies]
 crypto = ["pycryptodome>=3.20"]
-pdf = ["pymupdf>=1.27.2.2"]
+# pdfplumber is a runtime dependency of search_stack/build_botschaft_corpus.py
+# (hard) and scrapers/practice/base.py (fallback); both import it lazily, so a
+# clean install without it fails only mid-run.
+pdf = ["pymupdf>=1.27.2.2", "pdfplumber>=0.11"]
 # `api` covers the MCP server + FastAPI gateway. mcp_server.py and
 # web_api/main.py import these at module load, so anyone running them
 # off the wheel needs them present.

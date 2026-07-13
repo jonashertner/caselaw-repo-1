@@ -1,7 +1,9 @@
 """C3b — search_botschaft year_min/year_max filter (temporal scoping of legislative history).
 
 The verbatim Botschaft search was topic-only; you couldn't scope "on X from the 1990s".
-This adds year_min/year_max on the source Botschaft's publication_date.
+Year filtering runs on bbl_year (the authoritative BBl-publication year, populated for
+the whole corpus), NOT publication_date (sparse, often NULL). These fixtures deliberately
+leave publication_date NULL to prove filtering keys off bbl_year.
 """
 from __future__ import annotations
 
@@ -22,7 +24,7 @@ def _make_db(path: str):
         """
         CREATE TABLE botschaft_documents (
             botschaft_id TEXT PRIMARY KEY, bbl_citation TEXT, eli_uri TEXT,
-            language TEXT, publication_date TEXT
+            language TEXT, publication_date TEXT, bbl_year INTEGER
         );
         CREATE TABLE botschaft_paragraphs (
             paragraph_id INTEGER PRIMARY KEY, botschaft_id TEXT, page_number INTEGER,
@@ -31,8 +33,9 @@ def _make_db(path: str):
         CREATE VIRTUAL TABLE botschaft_paragraphs_fts USING fts5(text);
         """
     )
-    c.execute("INSERT INTO botschaft_documents VALUES ('d1990','BBl 1990 I 1','eli1','de','1990-03-01')")
-    c.execute("INSERT INTO botschaft_documents VALUES ('d2020','BBl 2020 II 2','eli2','de','2020-06-01')")
+    # publication_date deliberately NULL: filtering must key off bbl_year.
+    c.execute("INSERT INTO botschaft_documents VALUES ('d1990','BBl 1990 I 1','eli1','de',NULL,1990)")
+    c.execute("INSERT INTO botschaft_documents VALUES ('d2020','BBl 2020 II 2','eli2','de',NULL,2020)")
     for pid, bid, txt in [
         (1, "d1990", "Text ueber Vaterschaftsurlaub aus 1990"),
         (2, "d2020", "Text ueber Vaterschaftsurlaub aus 2020"),
@@ -61,7 +64,7 @@ def test_year_min_excludes_older(monkeypatch, tmp_path):
     _setup(monkeypatch, tmp_path)
     res = mcp_server._handle_search_botschaft(query="Vaterschaftsurlaub", year_min=2000)
     assert res["total"] == 1, res
-    assert res["results"][0]["publication_date"].startswith("2020")
+    assert res["results"][0]["bbl_year"] == 2020
     assert res["year_filter"] == {"min": 2000, "max": None}
 
 
@@ -69,11 +72,11 @@ def test_year_max_excludes_newer(monkeypatch, tmp_path):
     _setup(monkeypatch, tmp_path)
     res = mcp_server._handle_search_botschaft(query="Vaterschaftsurlaub", year_max=2000)
     assert res["total"] == 1, res
-    assert res["results"][0]["publication_date"].startswith("1990")
+    assert res["results"][0]["bbl_year"] == 1990
 
 
 def test_year_range(monkeypatch, tmp_path):
     _setup(monkeypatch, tmp_path)
     res = mcp_server._handle_search_botschaft(query="Vaterschaftsurlaub", year_min=2000, year_max=2025)
     assert res["total"] == 1, res
-    assert res["results"][0]["publication_date"].startswith("2020")
+    assert res["results"][0]["bbl_year"] == 2020

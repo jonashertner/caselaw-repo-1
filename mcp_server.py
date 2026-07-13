@@ -10648,7 +10648,7 @@ def _handle_search_botschaft(
 
         sql = """
             SELECT bd.botschaft_id, bd.bbl_citation, bd.eli_uri,
-                   bd.language, bd.publication_date,
+                   bd.language, bd.publication_date, bd.bbl_year,
                    bp.paragraph_id, bp.page_number, bp.section_path,
                    bp.article_anchor,
                    snippet(botschaft_paragraphs_fts, 0,
@@ -10665,13 +10665,15 @@ def _handle_search_botschaft(
             sql += " AND bd.language = ? "
             params.append(language)
         # Temporal scoping for legislative-history research ("on X from the 1990s").
-        # publication_date is an ISO date string; compare on its 4-digit year. Rows
-        # with a NULL/empty date fall out of a year-bounded search (expected).
+        # bbl_year is the authoritative BBl-publication year (populated for the whole
+        # corpus); publication_date is sparse and often NULL, so filtering on it
+        # silently dropped in-range Botschaften. Compare on bbl_year directly. Rows
+        # with a NULL bbl_year fall out of a year-bounded search (expected).
         if year_min is not None:
-            sql += " AND CAST(substr(bd.publication_date, 1, 4) AS INTEGER) >= ? "
+            sql += " AND bd.bbl_year >= ? "
             params.append(int(year_min))
         if year_max is not None:
-            sql += " AND CAST(substr(bd.publication_date, 1, 4) AS INTEGER) <= ? "
+            sql += " AND bd.bbl_year <= ? "
             params.append(int(year_max))
         sql += " ORDER BY rank LIMIT ? "
         params.append(limit)
@@ -10702,6 +10704,7 @@ def _handle_search_botschaft(
             "eli_uri":          r["eli_uri"],
             "language":         r["language"],
             "publication_date": r["publication_date"],
+            "bbl_year":         r["bbl_year"],
             "page":             r["page_number"],
             "section":          r["section_path"],
             "article_anchor":   r["article_anchor"],

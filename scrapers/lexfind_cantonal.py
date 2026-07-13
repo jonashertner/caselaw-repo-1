@@ -63,6 +63,15 @@ ENTITY_IDS = {
     "NE": 13, "NW": 14, "OW": 15, "SG": 16, "SH": 17, "SO": 18,
     "SZ": 19, "TG": 20, "TI": 21, "UR": 22, "VD": 23, "VS": 24,
     "ZG": 25, "ZH": 26,
+    # Entity 28 is the INTERCANTONAL law collection (Konkordate /
+    # interkantonale Vereinbarungen, e.g. the HarmoS-Konkordat). Keyed
+    # "INTLEX" to match the serving identifier for entity 28 in
+    # mcp_server.py (CANTON_ENTITY map); a mismatched key would leave the
+    # scraped rows unreachable via the canton fallback.
+    # Without it cantonal_laws.db carries no intercantonal law at all.
+    # Entity 27 (CH/Bund) stays out deliberately: federal law comes from
+    # Fedlex directly (scrapers/fedlex.py), a better source.
+    "INTLEX": 28,
 }
 
 # Primary publication language per canton (for enumeration + text fetch).
@@ -74,11 +83,17 @@ CANTON_LANG = {
     "NE": "fr", "NW": "de", "OW": "de", "SG": "de", "SH": "de", "SO": "de",
     "SZ": "de", "TG": "de", "TI": "it", "UR": "de", "VD": "fr", "VS": "fr",
     "ZG": "de", "ZH": "de",
+    "INTLEX": "de",
 }
 
-# Secondary language for multilingual cantons (optional enumeration pass)
-SECONDARY_LANG: dict[str, str] = {
+# Secondary language(s) for multilingual entities (optional enumeration pass).
+# Values may be a single language or a list. INTLEX (intercantonal) needs BOTH
+# fr and it: concordats romands are published French-only and TI/GR
+# instruments Italian-only — a primary-language-only pass silently misses
+# them entirely.
+SECONDARY_LANG: dict[str, str | list[str]] = {
     "BE": "fr", "FR": "de", "VS": "de", "GR": "it",
+    "INTLEX": ["fr", "it"],
 }
 
 # Broad enumeration seeds — common stopwords that match nearly every law
@@ -353,7 +368,8 @@ def scrape_canton(
     primary = CANTON_LANG[canton]
     languages: list[str] = [primary]
     if include_secondary and canton in SECONDARY_LANG:
-        languages.append(SECONDARY_LANG[canton])
+        sec = SECONDARY_LANG[canton]
+        languages.extend([sec] if isinstance(sec, str) else sec)
 
     log.info("=== [%s] enumerating (languages=%s) ===", canton, ",".join(languages))
     all_laws: dict[tuple[int, str], Law] = {}
