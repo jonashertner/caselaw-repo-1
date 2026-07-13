@@ -17,36 +17,41 @@ from quality.types import CheckResult, Severity
 
 
 def check_court_docket_collisions(conn: sqlite3.Connection, **_) -> CheckResult:
-    """The (court, docket_number) pair is supposed to be ~unique. Some
-    courts genuinely re-use dockets across years (e.g. simple sequence
-    numbers) — those legitimate collisions are captured below as
-    ≤ 5,000 acceptable. Anything more means a regression in
-    build_fts5._dedup_decisions()."""
+    """A (court, docket) pair legitimately holds MULTIPLE distinct decisions
+    (Zwischenentscheid + Endentscheid, costs orders, remands), so raw
+    court+docket collisions are expected and NOT a defect — the 2026-07-13
+    content-aware dedup intentionally keeps them. A real dedup regression is a
+    SAME-CONTENT collision: >1 row sharing one (court, docket) AND the same
+    content_hash (a byte-identical duplicate the dedup should have merged).
+    Count those instead."""
     n_groups = conn.execute("""
         SELECT COUNT(*) FROM (
             SELECT 1 FROM decisions
             WHERE docket_number IS NOT NULL AND docket_number != ''
-            GROUP BY court, docket_number
+              AND content_hash IS NOT NULL AND content_hash != ''
+            GROUP BY court, docket_number, content_hash
             HAVING COUNT(*) > 1
         )
     """).fetchone()[0]
     sample = [
         dict(r) for r in conn.execute("""
-            SELECT court, docket_number, COUNT(*) AS n FROM decisions
+            SELECT court, docket_number, content_hash, COUNT(*) AS n FROM decisions
             WHERE docket_number IS NOT NULL AND docket_number != ''
-            GROUP BY court, docket_number HAVING n > 1
+              AND content_hash IS NOT NULL AND content_hash != ''
+            GROUP BY court, docket_number, content_hash HAVING n > 1
             ORDER BY n DESC LIMIT 5
         """).fetchall()
     ] if n_groups else []
     return CheckResult(
         name="duplicates.court_docket_collisions",
         severity=Severity.WARNING,
-        passed=(n_groups <= 5_000),
+        passed=(n_groups <= 500),
         metric_value=n_groups,
-        threshold=5_000,
-        message=f"{n_groups:,} (court, docket) pairs with >1 row",
+        threshold=500,
+        message=f"{n_groups:,} (court, docket, content_hash) same-content duplicate groups",
         sample_rows=sample,
-        fix_advice="if growing, check build_fts5._dedup_decisions() canonical_key",
+        fix_advice="byte-identical dups slipping through — check the content_hash "
+                   "dedup pass in build_fts5._dedup_decisions()",
     )
 
 

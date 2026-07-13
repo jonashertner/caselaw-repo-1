@@ -49,6 +49,7 @@ def temp_db(tmp_path: Path) -> Path:
             pdf_url TEXT,
             cited_decisions TEXT,
             scraped_at TEXT,
+            content_hash TEXT,
             json_data TEXT
         );
         CREATE VIRTUAL TABLE decisions_fts USING fts5(

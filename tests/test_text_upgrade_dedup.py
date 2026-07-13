@@ -98,6 +98,47 @@ def test_different_date_still_suffix_disambiguated(tmp_path):
     assert any(i.endswith("_d20020702") for i in ids)
 
 
+def _set_canonical_keys(c):
+    from models import make_canonical_key
+    for did, court, docket, date in c.execute(
+        "SELECT decision_id, court, docket_number, decision_date FROM decisions"
+    ).fetchall():
+        c.execute("UPDATE decisions SET canonical_key=? WHERE decision_id=?",
+                  (make_canonical_key(court, docket, date), did))
+
+
+def test_dedup_keeps_distinct_same_docket_different_date(tmp_path):
+    """P0.1 contract: same court+docket, different dates, GENUINELY DIFFERENT
+    content (Zwischenentscheid vs Endentscheid) must BOTH survive the full
+    _dedup_decisions run. The old date-agnostic Pass 2 deleted one — silent
+    completeness loss. This runs the destructive pass, unlike the import-only
+    test above."""
+    c = _conn(tmp_path)
+    assert build_fts5.insert_decision(
+        c, _row("Zwischenentscheid vom 8. Juni 2007. " + "A" * 3000, "C", date="2007-06-08")) is True
+    assert build_fts5.insert_decision(
+        c, _row("Endentscheid vom 21. Dezember 2007. " + "B" * 3000, "C", date="2007-12-21")) is True
+    _set_canonical_keys(c)
+    build_fts5._dedup_decisions(c)
+    ids = [r[0] for r in c.execute("SELECT decision_id FROM decisions")]
+    assert len(ids) == 2, f"distinct same-docket decisions must both survive dedup, got {ids}"
+
+
+def test_dedup_merges_same_decision_html_vs_plaintext(tmp_path):
+    """The legitimate half of Pass 2: one decision imported twice with different
+    date fields and different rendering (plaintext vs html of the SAME content)
+    must merge to a single row."""
+    c = _conn(tmp_path)
+    body = "Numero di ruolo B-743/2007. " + "X" * 3000
+    assert build_fts5.insert_decision(c, _row(body, "C", date="2007-05-18")) is True
+    assert build_fts5.insert_decision(
+        c, _row("<html><body><p>" + body + "</p></body></html>", "C", date="2011-12-16")) is True
+    _set_canonical_keys(c)
+    build_fts5._dedup_decisions(c)
+    n = c.execute("SELECT COUNT(*) FROM decisions").fetchone()[0]
+    assert n == 1, "html-vs-plaintext copies of the SAME decision must merge to one row"
+
+
 def test_regeste_filled_when_missing(tmp_path):
     # If the stored row lacks a regeste and the richer copy has one, take it.
     c = _conn(tmp_path)

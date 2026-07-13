@@ -382,6 +382,24 @@ def _extract_regeste_from_text(full_text: str) -> str | None:
 
 # ── Dedup + post-processing ──────────────────────────────────
 
+_DEDUP_HTML_RE = re.compile(r"<[^>]+>")
+_DEDUP_NONALNUM_RE = re.compile(r"[^a-z0-9]+")
+
+
+def _norm_for_dedup(full_text) -> str:
+    """Normalized content signature for the date-agnostic dedup pass.
+
+    Strips HTML tags, lowercases, drops all non-alphanumerics, caps length. Two
+    imports of the SAME decision (html vs plaintext rendering, es vs direct,
+    or a truncated copy) collapse to the same string or a prefix of it; two
+    GENUINELY DISTINCT decisions on the same docket (Zwischenentscheid vs
+    Endentscheid) diverge early. Used to decide whether a same-court+docket,
+    different-date row is a true duplicate (delete) or a distinct decision (keep).
+    """
+    t = _DEDUP_HTML_RE.sub(" ", (full_text or "")[:8000])
+    return _DEDUP_NONALNUM_RE.sub("", t.lower())[:4000]
+
+
 def _dedup_decisions(conn: sqlite3.Connection) -> int:
     """Remove duplicate decisions sharing the same canonical_key.
 
@@ -423,9 +441,8 @@ def _dedup_decisions(conn: sqlite3.Connection) -> int:
             HAVING cnt > 1
         """
         groups = conn.execute(dup_sql).fetchall()
-        if not groups:
-            return 0
-
+        # Do NOT early-return when there are no exact-key dups — the
+        # date-agnostic Pass 2 below must still run independently (P0.1, 2026-07-13).
         deleted = 0
         for (canonical_key, cnt) in groups:
             rows = conn.execute(
@@ -461,9 +478,8 @@ def _dedup_decisions(conn: sqlite3.Connection) -> int:
             HAVING cnt > 1
         """
         groups = conn.execute(dup_sql).fetchall()
-        if not groups:
-            return 0
-
+        # Do NOT early-return when there are no exact-key dups — the
+        # date-agnostic Pass 2 below must still run independently (P0.1, 2026-07-13).
         deleted = 0
         for court, docket, date, cnt in groups:
             rows = conn.execute(
@@ -489,30 +505,75 @@ def _dedup_decisions(conn: sqlite3.Connection) -> int:
                 conn.execute("DELETE FROM decisions WHERE decision_id = ?", (row[0],))
                 deleted += 1
 
-    # ── Pass 2: date-agnostic dedup ──
-    # Same court+docket but different dates (common with entscheidsuche vs
-    # direct scrape where publication vs decision date differs).
-    # Group by the court|docket portion of canonical_key, ignoring the date.
-    all_rows = conn.execute(
-        "SELECT decision_id, canonical_key, LENGTH(COALESCE(full_text, '')), "
-        "LENGTH(COALESCE(regeste, '')) FROM decisions "
-        "WHERE canonical_key IS NOT NULL AND canonical_key <> ''"
-    ).fetchall()
-    groups2 = defaultdict(list)
-    for did, ckey, tlen, rlen in all_rows:
-        parts = ckey.split("|")
-        if len(parts) == 3 and parts[1]:
-            groups2[f"{parts[0]}|{parts[1]}"].append((did, tlen, rlen))
-
+    # ── Pass 2: date-agnostic dedup — CONTENT-AWARE (2026-07-13, P0.1 fix) ──
+    # Same court+docket with different dates is EITHER (a) one decision imported
+    # twice with different date fields (es publication_date vs direct
+    # decision_date; html vs plaintext rendering) — a true duplicate — OR (b)
+    # GENUINELY DISTINCT decisions on the same docket decided on different dates
+    # (Zwischenentscheid + Endentscheid, costs orders, remands). The old pass
+    # grouped by court|docket ignoring the date and deleted all but the longest,
+    # silently destroying every (b) case — a mission-critical completeness loss
+    # (confirmed: e.g. bvger B-93/2007 kept the June interim and deleted the
+    # December final; ~56k deletions/build, a large fraction genuinely distinct).
+    # Now a member is deleted ONLY if its normalized, HTML-stripped content is
+    # identical to, or a truncated prefix of, the survivor's (provably the same
+    # decision). Distinct decisions on the same docket are kept.
+    #
+    # OCL_DATE_AGNOSTIC_DEDUP: "content_aware" (default) | "off" (skip the pass) |
+    # "legacy" (old destructive behaviour — emergency rollback only).
+    _da_mode = os.environ.get("OCL_DATE_AGNOSTIC_DEDUP", "content_aware").lower()
     deleted2 = 0
-    for entries in groups2.values():
-        if len(entries) < 2:
-            continue
-        # Keep version with the most total content (full_text + regeste)
-        entries.sort(key=lambda x: -(x[1] + x[2]))
-        for did, _, _ in entries[1:]:
-            conn.execute("DELETE FROM decisions WHERE decision_id = ?", (did,))
-            deleted2 += 1
+    if _da_mode != "off":
+        all_rows = conn.execute(
+            "SELECT decision_id, canonical_key, LENGTH(COALESCE(full_text, '')), "
+            "LENGTH(COALESCE(regeste, '')) FROM decisions "
+            "WHERE canonical_key IS NOT NULL AND canonical_key <> ''"
+        ).fetchall()
+        groups2 = defaultdict(list)
+        for did, ckey, tlen, rlen in all_rows:
+            parts = ckey.split("|")
+            if len(parts) == 3 and parts[1]:
+                groups2[f"{parts[0]}|{parts[1]}"].append((did, tlen, rlen))
+        multi = {k: v for k, v in groups2.items() if len(v) > 1}
+
+        if _da_mode == "legacy":
+            for entries in multi.values():
+                entries.sort(key=lambda x: -(x[1] + x[2]))
+                for did, _, _ in entries[1:]:
+                    conn.execute("DELETE FROM decisions WHERE decision_id = ?", (did,))
+                    deleted2 += 1
+        else:  # content_aware (default)
+            # Normalized content for members of multi-member groups only (fetch a
+            # bounded prefix, not full blobs, to keep IO/memory low).
+            member_ids = [did for v in multi.values() for (did, _, _) in v]
+            norm = {}
+            for i in range(0, len(member_ids), 800):
+                chunk = member_ids[i:i + 800]
+                ph = ",".join("?" * len(chunk))
+                for did, ft in conn.execute(
+                    f"SELECT decision_id, substr(full_text, 1, 8000) "
+                    f"FROM decisions WHERE decision_id IN ({ph})", chunk,
+                ):
+                    norm[did] = _norm_for_dedup(ft)
+            kept_distinct = 0
+            for entries in multi.values():
+                entries.sort(key=lambda x: -(x[1] + x[2]))
+                sn = norm.get(entries[0][0], "")
+                for did, _, _ in entries[1:]:
+                    mn = norm.get(did, "")
+                    short, longn = (mn, sn) if len(mn) <= len(sn) else (sn, mn)
+                    # true duplicate iff the shorter normalized content is a
+                    # substantive prefix of the longer (identical / truncated /
+                    # re-rendered); otherwise it is a distinct decision — KEEP it.
+                    if len(short) >= 200 and longn.startswith(short):
+                        conn.execute("DELETE FROM decisions WHERE decision_id = ?", (did,))
+                        deleted2 += 1
+                    else:
+                        kept_distinct += 1
+            logger.info(
+                f"  Pass 2 (content-aware): kept {kept_distinct} distinct "
+                f"same-docket decisions that the legacy pass would have deleted"
+            )
     if deleted2:
         logger.info(f"  Pass 2 (date-agnostic): removed {deleted2} duplicates")
     deleted += deleted2
