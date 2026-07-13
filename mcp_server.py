@@ -20365,17 +20365,17 @@ def _warm_page_cache():
     serving starts immediately regardless.
     """
     t0 = time.monotonic()
-    try:
-        conn = sqlite3.connect(f"file:{DB_PATH}?mode=ro&immutable=1", uri=True)
-    except Exception:
-        return
-    # Broad terms across DE/FR/IT touch the largest doclists (the pages a cold
-    # cache misses hardest); the ranked form also warms the bm25/offsets
-    # structures the real search path uses.
+    # PARALLEL warmup: cold reads on the network volume are latency-bound (each
+    # broad-term query was ~48s cold — the 2026-07-12 swap warmed only 1 term in
+    # the old serial 90s budget). Running terms concurrently keeps many reads in
+    # flight so the whole hot set lands in the shared page cache within the
+    # budget; the terms also share the FTS term dictionary, so the first few
+    # parallel reads warm the structure the rest then hit warm. Broad DE/FR/IT
+    # terms touch the largest doclists — the pages a cold cache misses hardest.
     warm_terms = [
-        "Verfahren", "Entscheid", "Recht", "Kündigung",
-        "décision", "recours", "contrat",
-        "sentenza", "ricorso",
+        "Verfahren", "Entscheid", "Recht", "Kündigung", "Urteil", "Beschwerde",
+        "décision", "recours", "contrat", "arrêt", "droit",
+        "sentenza", "ricorso", "diritto",
     ]
     ranked_sql = (
         "SELECT d.decision_id FROM decisions_fts "
@@ -20386,22 +20386,47 @@ def _warm_page_cache():
         "SELECT count(*) FROM (SELECT 1 FROM decisions_fts "
         "WHERE decisions_fts MATCH ? LIMIT 1001)"
     )
-    warmed = 0
-    for term in warm_terms:
-        if time.monotonic() - t0 > 90:
-            break
-        for sql in (ranked_sql, count_sql):
+    budget_s = 150.0  # daemon thread — never blocks serving
+
+    def _warm_one(term):
+        # Each thread needs its own connection (sqlite connections are not
+        # shareable across threads).
+        try:
+            wc = sqlite3.connect(f"file:{DB_PATH}?mode=ro&immutable=1", uri=True)
+        except Exception:
+            return 0
+        done = 0
+        try:
+            for sql in (ranked_sql, count_sql):
+                if time.monotonic() - t0 > budget_s:
+                    break
+                try:
+                    wc.execute(sql, [term]).fetchall()
+                    done += 1
+                except Exception:
+                    pass
+        finally:
             try:
-                conn.execute(sql, [term]).fetchall()
-                warmed += 1
+                wc.close()
             except Exception:
                 pass
+        return done
+
+    import concurrent.futures
+    warmed = 0
     try:
-        conn.close()
-    except Exception:
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=6, thread_name_prefix="warm"
+        ) as ex:
+            # Only one worker warms at a time (rolling recycle), so 6 concurrent
+            # cold reads is safe headroom on the volume, not a thundering herd.
+            for n in ex.map(_warm_one, warm_terms):
+                warmed += n
+    except Exception:  # noqa: BLE001 - warmup is best-effort, never fatal
         pass
     logger.info(
-        "Page-cache warmup: %d queries in %.1fs", warmed, time.monotonic() - t0
+        "Page-cache warmup: %d queries in %.1fs (parallel)",
+        warmed, time.monotonic() - t0,
     )
 
 
