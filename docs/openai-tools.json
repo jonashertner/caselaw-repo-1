@@ -98,6 +98,10 @@
               "type": "string",
               "description": "Filter by legal area/Rechtsgebiet (substring match). Examples: 'Strafrecht', 'Zivilrecht', 'Arbeitsrecht', 'Mietrecht', 'Familienrecht', 'Sozialversicherung', 'Schuldbetreibung', 'Ausländerrecht'"
             },
+            "marked_for_publication": {
+              "type": "boolean",
+              "description": "If true, return only Federal Supreme Court rulings flagged for the official BGE collection (the Neuheiten '*' marker, 'für die Publikation vorgesehen') — future leading cases, flagged before the BGE number is assigned. Populated for BGer decisions published from mid-2026 onward; older rows are unflagged."
+            },
             "limit": {
               "type": "integer",
               "description": "Max results to return (max 2000). Omit to use default of 50. Do not set low values like 5 or 10 unless the user explicitly asked for fewer results.",
@@ -581,6 +585,14 @@
               ],
               "description": "OPTIONAL — only set when the user explicitly limits the search to one language. Leave unset to search the corpus the caller has (currently de only). Setting this without the user asking will hide all non-matching Botschaft passages."
             },
+            "year_min": {
+              "type": "integer",
+              "description": "Earliest publication year of the source Botschaft (inclusive) — scope legislative history to an era."
+            },
+            "year_max": {
+              "type": "integer",
+              "description": "Latest publication year of the source Botschaft (inclusive)."
+            },
             "limit": {
               "type": "integer",
               "default": 20,
@@ -788,7 +800,11 @@
           "properties": {
             "sr_number": {
               "type": "string",
-              "description": "SR number (federal: '210'=ZGB, '220'=OR, '101'=BV; cantonal: as published by the canton, e.g. '554.5' for ZH Hundegesetz)."
+              "description": "Statute number. Federal: SR number ('210'=ZGB, '220'=OR, '101'=BV). Cantonal: the canton's systematic number — e.g. ZH 'LS' number '554.5' (Hundegesetz), '550.1' (Polizeigesetz). The `systematic_number` alias (as used by get_legislation) is also accepted."
+            },
+            "systematic_number": {
+              "type": "string",
+              "description": "Alias for sr_number — the cantonal-friendly name (LS / systematic number), matching get_legislation. Either field works."
             },
             "abbreviation": {
               "type": "string",
@@ -943,7 +959,7 @@
           "properties": {
             "query": {
               "type": "string",
-              "description": "Search query (FTS5 syntax: quotes for phrases, OR for alternatives)."
+              "description": "Topic query (FTS5 syntax: quotes for phrases, OR for alternatives). Optional — may be omitted when an `author` (or other) filter is given, which returns a bibliographic browse instead of a topical search."
             },
             "source": {
               "type": "string",
@@ -955,7 +971,7 @@
             },
             "language": {
               "type": "string",
-              "description": "Filter by language (de/fr/it/en). Omit to search across all."
+              "description": "OPTIONAL filter by language (de/fr/it/en). Omit to search across all languages (recommended — the corpus is trilingual)."
             },
             "year_min": {
               "type": "integer",
@@ -965,15 +981,26 @@
               "type": "integer",
               "description": "Latest publication year."
             },
+            "author": {
+              "type": "string",
+              "description": "Filter by author (substring match on the authors field). May be used WITHOUT a query for a pure bibliographic browse (all works by an author)."
+            },
+            "sort": {
+              "type": "string",
+              "enum": [
+                "relevance",
+                "year",
+                "year_asc"
+              ],
+              "description": "Order: 'relevance' (BM25, default for a topic query), 'year' (newest first), 'year_asc' (oldest first). With no query the default is newest-first."
+            },
             "limit": {
               "type": "integer",
               "description": "Maximum results (1-50, default 10).",
               "default": 10
             }
           },
-          "required": [
-            "query"
-          ]
+          "required": []
         }
       }
     },
