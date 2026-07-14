@@ -35,7 +35,7 @@ import re
 # stop mid-token matches (e.g. inside a longer number).
 _DOCKET_TXT = r"\d{1,2}[A-Za-z]{1,3}[._ ]\d{1,6}/\d{4}"
 _DOCKET_IN_TEXT_RE = re.compile(
-    r"(?<![A-Za-z0-9])(\d{1,2}[A-Za-z]{1,3})[._ ](\d{1,6})/(\d{4})(?!\d)"
+    r"(?<!\w)(\d{1,2}[A-Za-z]{1,3})[._ ](\d{1,6})/(\d{4})(?!\w)"
 )
 
 # A LIST SEPARATOR between joined dockets in a caption: comma, semicolon, or the
@@ -59,9 +59,11 @@ _COURT_PREFIX_RE = re.compile(
 )
 
 # Match a docket in any form (caption slash-year OR decision_id underscore-year)
-# for key normalisation.
+# for key normalisation. Word boundaries reject a trailing char ('6B 1518/2021x',
+# '..._foo') so a decorated garbage string can't normalise to a valid key and
+# misresolve via the alias path (issue #44, Codex 2nd review).
 _KEY_RE = re.compile(
-    r"(\d{1,2}[A-Za-z]{1,3})[._ ](\d{1,6})[/_](\d{4})"
+    r"(?<!\w)(\d{1,2}[A-Za-z]{1,3})[._ ](\d{1,6})[/_](\d{4})(?!\w)"
 )
 
 # Only the head of the document holds the caption; scanning further would start

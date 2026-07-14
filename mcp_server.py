@@ -2123,6 +2123,27 @@ def _get_metrics() -> dict:
 def _sanitize_fts5(query: str) -> str:
     """Sanitize a query for FTS5 — remove characters that cause syntax errors."""
     q = query.strip()
+    # Phrase preservation (issue #42): pull out balanced "double-quoted" phrases
+    # BEFORE the destructive transforms + operator handling below, so an
+    # intentional phrase search ("Treu und Glauben") isn't silently decomposed
+    # into an AND query (which for that phrase is ~92% false positives). Only
+    # engages when quotes are balanced (even count); unbalanced or empty quotes
+    # fall through to the legacy strip, which still prevents the "" empty-phrase
+    # FTS5 crash. Each phrase's interior is reduced to tokenizable text
+    # (punctuation -> space) so the phrase itself can't trigger an FTS5 syntax
+    # error, and operators inside it stay literal (as phrase semantics require).
+    _phrases: list[str] = []
+    if q.count('"') >= 2 and q.count('"') % 2 == 0:
+        _PH_STRIP = re.compile(r"[\"'\u2019.\-\u2013\u2014/\\(){}\[\]^~:]")
+
+        def _stash_phrase(m: "re.Match") -> str:
+            inner = re.sub(r"\s+", " ", _PH_STRIP.sub(" ", m.group(1))).strip()
+            if not inner:
+                return " "  # empty phrase -> dropped (FTS5 "" crash guard)
+            _phrases.append(inner)
+            return f" \ue000{len(_phrases) - 1}\ue000 "
+
+        q = re.sub(r'"([^"]*)"', _stash_phrase, q)
     # Replace apostrophes (French: l'obligation)
     q = q.replace("\u2019", " ").replace("'", " ")
     # Replace ALL dots with spaces — FTS5 query parser rejects bare
@@ -2131,7 +2152,6 @@ def _sanitize_fts5(query: str) -> str:
     # reported 2026-05-27). Since the unicode61 tokenizer treats dots as
     # token separators anyway, replacing them preserves semantic meaning:
     # "Art.172" indexes as ["art", "172"] either way.
-    import re
     q = q.replace('.', ' ')
     # Strip double quotes — LLM-generated queries use them sporadically and
     # "" (empty phrase) triggers FTS5 "syntax error near \"\"". Rare legit
@@ -2201,7 +2221,13 @@ def _sanitize_fts5(query: str) -> str:
             # else: drop bare operator
         else:
             out_tokens.append(t)
-    return " ".join(out_tokens)
+    result = " ".join(out_tokens)
+    # Re-insert the preserved phrases as FTS5 quoted phrases (issue #42). Done
+    # after the operator loop so a phrase's interior can't be mistaken for a
+    # boolean operator (e.g. a literal "OR" inside the phrase stays literal).
+    for _i, _ph in enumerate(_phrases):
+        result = result.replace(f"\ue000{_i}\ue000", f'"{_ph}"')
+    return result
 
 
 # Exact match-count for the `total` field on text searches. The reranked path
@@ -2348,6 +2374,50 @@ def search_fts5(
         conn.close()
 
 
+def _parse_date_param(val: str | None) -> str | None:
+    """Normalize a date filter to ISO 8601 (YYYY-MM-DD), or None if unparseable.
+
+    date_from/date_to are compared lexicographically by SQLite against ISO
+    decision_date strings, so a non-ISO value silently corrupts the filter:
+    Swiss 'DD.MM.YYYY' is always < 'YYYY-MM-DD' (filter no-ops -> unfiltered),
+    US 'MM/DD/YYYY' can be always-false (0 results). Rather than compare
+    garbage, accept ISO pass-through + Swiss DD.MM.YYYY (the standard CH format,
+    with calendar validation) and return None for anything else so the caller
+    drops the filter instead of silently mis-filtering (issue #45).
+    """
+    if not val or not isinstance(val, str) or not val.strip():
+        return None
+    s = val.strip()
+    if re.fullmatch(r"\d{4}-\d{2}-\d{2}", s):
+        try:
+            datetime.strptime(s, "%Y-%m-%d")  # reject '2024-99-99' / '2023-02-29'
+        except ValueError:
+            return None
+        return s
+    m = re.fullmatch(r"(\d{1,2})\.(\d{1,2})\.(\d{4})", s)
+    if m:
+        d, mo, y = (int(x) for x in m.groups())
+        try:
+            datetime(y, mo, d)  # reject impossible dates (32.13.2024)
+        except ValueError:
+            return None
+        return f"{y:04d}-{mo:02d}-{d:02d}"
+    return None
+
+
+def _date_arg_error(date_from: str | None, date_to: str | None) -> str | None:
+    """Return an error message if a NON-EMPTY date filter can't be parsed, else
+    None. Used to reject an unrecognized date explicitly instead of silently
+    dropping the filter and returning broader results (issue #45, Codex review)."""
+    bad = [f"{lbl}={v!r}" for lbl, v in (("date_from", date_from), ("date_to", date_to))
+           if v and v.strip() and _parse_date_param(v) is None]
+    if bad:
+        return ("Unrecognized date filter (" + ", ".join(bad) +
+                "). Use ISO YYYY-MM-DD or Swiss DD.MM.YYYY. The filter was NOT "
+                "applied — re-issue with a valid date rather than trusting these results.")
+    return None
+
+
 def _search_fts5_inner(
     conn: sqlite3.Connection,
     query: str,
@@ -2381,6 +2451,11 @@ def _search_fts5_inner(
     effective_max = FILTER_MAX_LIMIT if is_filter_only else MAX_LIMIT
     limit = max(1, min(limit, effective_max))
     offset = max(0, offset)
+
+    # Normalize date filters to ISO so the lexicographic SQLite comparison is
+    # correct (issue #45); Swiss DD.MM.YYYY now works, unparseable -> dropped.
+    date_from = _parse_date_param(date_from)
+    date_to = _parse_date_param(date_to)
 
     fts_query = _sanitize_fts5(query)
     if not fts_query.strip():
@@ -4591,14 +4666,25 @@ def _search_statute_graph(
 
 
 def _bge_ref_candidates(ref: str) -> list[str]:
-    """Canonical decision_id candidates for a BGE reference, by EXACT (vol, part,
-    page) tuple — so '131 III 12' resolves to bge_BGE_131_III_12 and never
-    prefix-matches the different ruling '131 III 121' (bug C-1). The trailing
-    anchor keeps the page exact."""
-    m = re.match(r"(?:BGE\s+|ATF\s+|DTF\s+)?(\d+)\s+([IVX]+)\s+(\d+)\s*$", (ref or "").strip())
+    """Canonical decision_id candidates for a BGE/ATF/DTF reference, by EXACT
+    (vol, part, page) tuple — so '131 III 12' resolves to bge_BGE_131_III_12 and
+    never prefix-matches the different ruling '131 III 121' (bug C-1). The
+    trailing anchor keeps the page exact. Case-insensitive (issue #43) and
+    tolerant of a trailing pinpoint suffix (', E. 2.3', ' consid. 2') so the
+    tool's own citation round-trips — resolution is decision-level; the pinpoint
+    is ignored here (get_erwaegung consumes it)."""
+    r = (ref or "").strip()
+    # Drop a trailing pinpoint suffix before the exact-tuple match.
+    r = re.sub(r"\s*,?\s+(?:E|Erw|consid|cons)\.?\s+\S.*$", "", r, flags=re.IGNORECASE)
+    # Division = roman numeral + optional 'a'/'b' suffix (BGE 116 Ia 28). Roman
+    # part upper-cased, suffix lower-cased, to match the stored 'Ia'/'III' form.
+    m = re.match(r"(?:(?:BGE|ATF|DTF)\s+)?(\d+)\s+([IVX]+)([ab]?)\s+(\d+)\s*$",
+                 r, flags=re.IGNORECASE)
     if not m:
         return []
-    vol, div, page = m.groups()
+    vol = m.group(1)
+    div = m.group(2).upper() + m.group(3).lower()
+    page = m.group(4)
     return [f"bge_BGE_{vol}_{div}_{page}", f"bge_{vol}_{div}_{page}", f"bge_{vol} {div} {page}"]
 
 
@@ -4612,6 +4698,50 @@ def _docket_is_prefix_of_longer(inp: str, docket: str | None) -> bool:
         return False
     rest = d[len(inp):]
     return bool(rest) and rest[0].isdigit()
+
+
+def _extract_single_docket(text: str) -> str | None:
+    """If `text` contains exactly ONE distinct BGer-style docket, return it in
+    the stored space form ('6B 1518/2021'); otherwise None.
+
+    Lets get_decision resolve a DECORATED form of its own printed citation —
+    "BGer 6B 1518/2021 vom 31. Januar 2022", or stray leading/trailing space —
+    by pulling out the docket and retrying the exact lookup (issue #44). The
+    match is boundary-anchored (docket_aliases._DOCKET_IN_TEXT_RE), so a trailing
+    digit ('6B 1518/20210') yields no match, and a second docket makes it
+    ambiguous -> None: it never silently resolves to the wrong decision.
+    """
+    if not text:
+        return None
+    seen: dict[str, str] = {}
+    for m in docket_aliases._DOCKET_IN_TEXT_RE.finditer(text):
+        key = f"{m.group(1).upper()}_{m.group(2)}/{m.group(3)}"
+        seen[key] = f"{m.group(1).upper()} {m.group(2)}/{m.group(3)}"  # stored space form
+    if len(seen) != 1:
+        return None
+    return next(iter(seen.values()))
+
+
+def _input_is_docket_like(s: str) -> bool:
+    """Gate for the LIKE '%s%' docket scan: only fire when `s` plausibly holds a
+    docket fragment — a digit-letter-or-slash run, not bare words/symbols/wildcards.
+    Blocks bare words, single chars, symbols, and LIKE-wildcard-shaped garbage
+    ('1 %', '6B %/2021') from false-matching decision IDs/titles — e.g.
+    get_decision('INVALID') must NOT return a decision about 'Invalidenrente'
+    (issue #44)."""
+    s = (s or "").strip()
+    if not s or "%" in s:
+        return False
+    # Require a docket-shaped fragment: 1-2 digits, optional letters, a
+    # separator, then a digit (e.g. '6B 1518', '18/2021'). Bare words, single
+    # chars, symbols, '1 %', '123' don't match.
+    return bool(re.search(r"\d{1,2}[A-Za-z]{0,3}[.\s/_]\d", s))
+
+
+def _like_escape(s: str) -> str:
+    """Escape LIKE wildcards so user input can't inject '%'/'_' semantics into
+    a `LIKE '%s%' ESCAPE '\\'` scan (issue #44). Backslash escaped first."""
+    return s.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
 
 
 def _lookup_docket_alias(conn: sqlite3.Connection, reference: str | None) -> list[str]:
@@ -4644,18 +4774,13 @@ def _resolve_decision_id(decision_id: str) -> str:
     partial match), same logic as get_decision_by_id. Returns the input
     unchanged if no match.
     """
-    # Generate ID candidates for lookup
+    decision_id = (decision_id or "").strip()  # trim so a padded id/docket resolves (#44)
+    # Generate ID candidates for lookup. Delegate BGE-reference expansion to
+    # _bge_ref_candidates so ATF (FR) and DTF (IT) forms resolve too — not just
+    # BGE (issue #43). It is also anchored (\s*$), so '131 III 12' can't
+    # prefix-match '131 III 121'.
     candidates = [decision_id]
-    # If it looks like a BGE reference ("BGE 54 II 100" or "54 II 100"),
-    # construct the canonical decision_id format
-    bge_m = re.match(r"(?:BGE\s+)?(\d+)\s+([IVX]+)\s+(\d+)", decision_id)
-    if bge_m:
-        vol, div, page = bge_m.group(1), bge_m.group(2), bge_m.group(3)
-        candidates.extend([
-            f"bge_BGE_{vol}_{div}_{page}",
-            f"bge_{vol}_{div}_{page}",
-            f"bge_{vol} {div} {page}",
-        ])
+    candidates.extend(_bge_ref_candidates(decision_id))
 
     conn = get_db()
     try:
@@ -4674,6 +4799,17 @@ def _resolve_decision_id(decision_id: str) -> str:
         ).fetchone()
         if row:
             return row[0]
+        # Robustness (#44): resolve a DECORATED citation form ("BGer 6B 1518/2021
+        # vom ...", stray whitespace) by extracting the single docket and
+        # retrying the exact lookup.
+        _ext = _extract_single_docket(decision_id)
+        if _ext and _ext != decision_id:
+            row = conn.execute(
+                "SELECT decision_id FROM decisions WHERE docket_number = ? "
+                "ORDER BY decision_date DESC LIMIT 1", (_ext,),
+            ).fetchone()
+            if row:
+                return row[0]
         # Joined-docket alias (#41): a secondary docket of a consolidated
         # decision. Only a UNIQUE alias resolves; an ambiguous one falls through.
         alias_ids = _lookup_docket_alias(conn, decision_id)
@@ -4681,12 +4817,15 @@ def _resolve_decision_id(decision_id: str) -> str:
             return alias_ids[0]
         # Last resort: LIKE %x% — full table scan ~2 s on 1M rows.
         # Skip when input clearly looks like a canonical decision_id
-        # (it would have hit step 1 if it existed).
-        if not _CANONICAL_ID_PREFIX_RE.match(decision_id or ""):
+        # (it would have hit step 1 if it existed) or isn't docket-like at all
+        # (bare words/chars/symbols would false-match — #44).
+        if (not _CANONICAL_ID_PREFIX_RE.match(decision_id or "")
+                and _input_is_docket_like(decision_id)):
             for cand in conn.execute(
-                "SELECT decision_id, docket_number FROM decisions WHERE docket_number LIKE ? "
+                "SELECT decision_id, docket_number FROM decisions "
+                "WHERE docket_number LIKE ? ESCAPE '\\' "
                 "ORDER BY decision_date DESC LIMIT 8",
-                (f"%{decision_id}%",),
+                (f"%{_like_escape(decision_id)}%",),
             ).fetchall():
                 # never resolve to a longer docket that merely contains the input
                 # as a numeric prefix (131 III 12 -> 131 III 121); see bug C-1.
@@ -6433,6 +6572,7 @@ def get_decision_by_id(decision_id: str) -> dict | None:
          ~2 s on the live 970k-row table and produces nothing
          meaningful for these inputs.
     """
+    decision_id = (decision_id or "").strip()  # trim so a padded id/docket resolves (#44)
     conn = get_db()
     row = conn.execute(
         "SELECT * FROM decisions WHERE decision_id = ?",
@@ -6458,6 +6598,17 @@ def get_decision_by_id(decision_id: str) -> dict | None:
             (decision_id,),
         ).fetchone()
 
+    if not row:
+        # Robustness (#44): resolve a DECORATED form of the tool's own printed
+        # citation ("BGer 6B 1518/2021 vom 31. Januar 2022", stray whitespace)
+        # by extracting the single docket and retrying the exact lookup.
+        _ext = _extract_single_docket(decision_id)
+        if _ext and _ext != decision_id:
+            row = conn.execute(
+                "SELECT * FROM decisions WHERE docket_number = ? "
+                "ORDER BY decision_date DESC LIMIT 1", (_ext,),
+            ).fetchone()
+
     _via_alias = False
     if not row:
         # Joined-docket alias (#41): resolve a secondary docket of a
@@ -6469,13 +6620,17 @@ def get_decision_by_id(decision_id: str) -> dict | None:
             ).fetchone()
             _via_alias = bool(row)
 
-    if not row and not _CANONICAL_ID_PREFIX_RE.match(decision_id or ""):
+    if (not row and not _CANONICAL_ID_PREFIX_RE.match(decision_id or "")
+            and _input_is_docket_like(decision_id)):
         # Partial match — only for hand-typed dockets, and NEVER a longer docket
         # that merely contains the input as a numeric prefix (131 III 12 -> 121).
+        # Gated by _input_is_docket_like so bare words/chars/symbols don't
+        # false-match decision IDs or titles (#44). Wildcards escaped so '%'/'_'
+        # in the input can't inject LIKE semantics.
         for cand in conn.execute(
-            "SELECT * FROM decisions WHERE docket_number LIKE ? "
+            "SELECT * FROM decisions WHERE docket_number LIKE ? ESCAPE '\\' "
             "ORDER BY decision_date DESC LIMIT 8",
-            (f"%{decision_id}%",),
+            (f"%{_like_escape(decision_id)}%",),
         ).fetchall():
             if not _docket_is_prefix_of_longer(decision_id, cand["docket_number"]):
                 row = cand
@@ -6624,6 +6779,12 @@ def _find_leading_cases(
 ) -> dict:
     """Find the most-cited decisions for a topic or statute."""
     limit = max(1, min(limit, 100))
+    # Reject an unrecognized date instead of silently dropping the filter (#45).
+    _derr = _date_arg_error(date_from, date_to)
+    if _derr:
+        return {"error": _derr}
+    date_from = _parse_date_param(date_from)
+    date_to = _parse_date_param(date_to)
     original_query = query  # preserve for response metadata
 
     # Determine path: statute (graph DB) or global/court-filtered
@@ -6879,6 +7040,13 @@ def analyze_legal_trend(
     """Year-by-year decision counts for a statute or topic."""
     if not query and not law_code:
         return {"error": "At least one of 'query' or 'law_code' is required."}
+
+    # Reject an unrecognized date instead of silently dropping the filter (#45).
+    _derr = _date_arg_error(date_from, date_to)
+    if _derr:
+        return {"error": _derr}
+    date_from = _parse_date_param(date_from)
+    date_to = _parse_date_param(date_to)
 
     year_counts: dict[int, int] = {}
 
@@ -11562,15 +11730,9 @@ def _resolve_decision_id_strict(decision_id: str) -> str | None:
     """
     if not decision_id:
         return None
+    # ATF/DTF (FR/IT) forms resolve too, via _bge_ref_candidates (issue #43).
     candidates = [decision_id]
-    bge_m = re.match(r"(?:BGE\s+)?(\d+)\s+([IVX]+)\s+(\d+)", decision_id)
-    if bge_m:
-        vol, div, page = bge_m.group(1), bge_m.group(2), bge_m.group(3)
-        candidates.extend([
-            f"bge_BGE_{vol}_{div}_{page}",
-            f"bge_{vol}_{div}_{page}",
-            f"bge_{vol} {div} {page}",
-        ])
+    candidates.extend(_bge_ref_candidates(decision_id))
     conn = get_db()
     try:
         for cid in candidates:
@@ -19789,6 +19951,10 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
             )
 
         if name == "search_decisions":
+            _derr = _date_arg_error(arguments.get("date_from"), arguments.get("date_to"))
+            if _derr:
+                return ([TextContent(type="text", text=json.dumps({"error": _derr}, ensure_ascii=False))],
+                        {"error": _derr})
             req_offset = int(arguments.get("offset", 0))
             sort_arg = arguments.get("sort")
             fields_arg = arguments.get("fields", "full")
@@ -22264,6 +22430,9 @@ setInterval(load, 30000);
         # `query` takes precedence when both are supplied.
         if not query and q:
             query = q
+        _derr = _date_arg_error(date_from, date_to)
+        if _derr:
+            raise HTTPException(status_code=422, detail=_derr)  # #45: no silent drop
         results, total = await asyncio.to_thread(
             search_fts5, query=query or "", court=court, canton=canton,
             language=language, date_from=date_from, date_to=date_to,
