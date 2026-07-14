@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feed.xml</link>
     <description>Latest published decisions across all Swiss courts indexed by OpenCaseLaw.</description>
     <language>de-CH</language>
-    <lastBuildDate>Mon, 13 Jul 2026 10:23:06 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 14 Jul 2026 10:10:50 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feed.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -233,6 +233,21 @@ J…</description>
       <category>fr_gerichte</category>
     </item>
     <item>
+      <title>be_verwaltungsgericht 200 2025 504 vom 2026-07-13</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/be_verwaltungsgericht_200%202025%20504</link>
+      <description>IV 200 2025 504
+KNB/FRJ/SEE
+Verwaltungsgericht des Kantons Bern
+Sozialversicherungsrechtliche Abteilung
+Urteil vom 22. Juni 2026
+Verwaltungsrichter Knapp, Kammerpräsident
+Verwaltungsrichter Jakob, Verwaltungsrichter Schwegler
+Gerichtsschreiberin Frés…</description>
+      <pubDate>Mon, 13 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">be_verwaltungsgericht_200 2025 504</guid>
+      <category>be_verwaltungsgericht</category>
+    </item>
+    <item>
       <title>fr_gerichte 502 2026 111 vom 2026-07-13</title>
       <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_502%202026%20111</link>
       <description>Tribunal cantonal TC
@@ -294,6 +309,24 @@ Préside…</description>
       <pubDate>Mon, 13 Jul 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">fr_gerichte_502 2026 149</guid>
       <category>fr_gerichte</category>
+    </item>
+    <item>
+      <title>gr_gerichte SR2 2025 99 vom 2026-07-13</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_SR2%202025%2099</link>
+      <description>Obergericht des Kantons Graubünden
+Dretgira superiura dal chantun Grischun
+Tribunale d'appello del Cantone dei Grigioni
+Verfügung vom 30. Juni 2026
+mitgeteilt am 1. Juli 2026
+Referenz
+SR2 25 99
+Instanz
+Zweite strafrechtliche Kammer
+Besetzung
+Hubert, …</description>
+      <pubDate>Mon, 13 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">gr_gerichte_SR2 2025 99</guid>
+      <category>gr_gerichte</category>
     </item>
     <item>
       <title>be_verwaltungsgericht 100 2026 1 vom 2026-07-10</title>
@@ -835,43 +868,6 @@ Gerichtsschreiberin Spiess
       <pubDate>Fri, 03 Jul 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">be_verwaltungsgericht_100 2025 206</guid>
       <category>be_verwaltungsgericht</category>
-    </item>
-    <item>
-      <title>be_verwaltungsgericht 100 2026 47 vom 2026-07-03</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/be_verwaltungsgericht_100%202026%2047</link>
-      <description>100.2026.47U
-BUC/STS/SRE
-Verwaltungsgericht des Kantons Bern
-Verwaltungsrechtliche Abteilung
-Urteil vom 15. Mai 2026
-Verwaltungsrichter Daum, Abteilungspräsident
-Verwaltungsrichter Bürki, Verwaltungsrichter Häberli
-Gerichtsschreiberin Straub
-A.______…</description>
-      <pubDate>Fri, 03 Jul 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">be_verwaltungsgericht_100 2026 47</guid>
-      <category>be_verwaltungsgericht</category>
-    </item>
-    <item>
-      <title>fr_gerichte 101 2026 78 vom 2026-07-03</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_101%202026%2078</link>
-      <description>Tribunal cantonal TC
-Kantonsgericht KG
-Rue des Augustins 3, case postale 630, 1701 Fribourg
-T +41 26 304 15 00
-www.fr.ch/tc
-—
-Pouvoir Judiciaire PJ
-Gerichtsbehörden GB
-101 2026 78
-Arrêt du 27 mai 2026
-Ie Cour d’appel civil
-Composition
-Président :
-Jér…</description>
-      <pubDate>Fri, 03 Jul 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">fr_gerichte_101 2026 78</guid>
-      <category>fr_gerichte</category>
     </item>
   </channel>
 </rss>

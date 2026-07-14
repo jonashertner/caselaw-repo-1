@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/fr.xml</link>
     <description>Latest published Swiss court decisions in Français.</description>
     <language>de-CH</language>
-    <lastBuildDate>Mon, 13 Jul 2026 10:26:32 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 14 Jul 2026 10:14:33 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/fr.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -426,6 +426,22 @@ www…</description>
       <category>be_zivilstraf</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht E-7663/2024 vom 2026-07-03</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-7663_2024</link>
+      <description>Asile (sans exécution du renvoi)</description>
+      <pubDate>Fri, 03 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-7663.2024</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht F-4210/2026 vom 2026-07-03</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-4210_2026</link>
+      <description>Asile (non-entrée en matière) et renvoi (réexamen)</description>
+      <pubDate>Fri, 03 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-4210.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>fr_gerichte 101 2026 78 vom 2026-07-03</title>
       <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_101%202026%2078</link>
       <description>Tribunal cantonal TC
@@ -476,6 +492,14 @@ individuelle. À ce titre, il est assuré cont…</description>
       <pubDate>Fri, 03 Jul 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ne_gerichte_CDP.2025.328</guid>
       <category>ne_gerichte</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht E-3465/2026 vom 2026-07-02</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-3465_2026</link>
+      <description>Asile (sans excécution du renvoi) (procédure accélérée)</description>
+      <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-3465.2026</guid>
+      <category>bvger</category>
     </item>
     <item>
       <title>ecthr_chamber 25063/20 vom 2026-07-02</title>
@@ -532,6 +556,26 @@ Co…</description>
       <guid isPermaLink="false">hudoc_ch_54708_20</guid>
       <category>hudoc_ch</category>
       <category>EMRK / Menschenrechte</category>
+    </item>
+    <item>
+      <title>ju_gerichte ASS 2025 47 vom 2026-07-02</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ju_gerichte_ASS%202025%2047</link>
+      <description>RÉPUBLIQUE ET CANTON DU JURA
+TRIBUNAL CANTONAL
+COUR DES ASSURANCES
+LAA 2025 47
+Présidente : Carine Guenat
+Greffière e.o. : Océane Migliore
+DÉCISION DU 2 JUILLET 2026
+en la cause liée entre
+A.________,
+recourant,
+et
+B.________ SA, B.________,
+intimée,…</description>
+      <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ju_gerichte_ASS 2025 47</guid>
+      <category>ju_gerichte</category>
     </item>
     <item>
       <title>ne_gerichte CDP.2025.351 vom 2026-07-02</title>
@@ -748,82 +792,6 @@ Dépa…</description>
       <description>Refus de la protection provisoire</description>
       <pubDate>Tue, 30 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-77.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>ecthr_grand_chamber 17982/21_43852/21_44600/21 vom 2026-06-30</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ecthr_grand_chamber_17982_21_43852_21_44600_21</link>
-      <description>Radiation du rôle (Art. 37) Radiation du rôle-{général};(Art. 37-1) Radiation du rôle;(Art. 37-1-c) Poursuite de l'examen non justifiée;Radiation du rôle (Art. 37) Radiation du rôle-{général};(Art. 37-1) Radiation du rôle;(Art. 37-1) Respect des droits de l'homme;(Art. 37-1-a) Absence d'intention de maintenir la requête</description>
-      <pubDate>Tue, 30 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ecthr_grand_chamber_17982_21_43852_21_44600_21</guid>
-      <category>ecthr_grand_chamber</category>
-      <category>CEDH / Droits humains</category>
-    </item>
-    <item>
-      <title>Bundesgericht 5A_1070/2025 vom 2026-06-29</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_1070_2025</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-5A_1070/2025
-
-Ordonnance du 29 juin 2026
-
-IIe Cour de droit civil
-
-Composition
-
-MM. et Mme les Juges fédéraux Bovey, Président,
-
-De Rossa et Josi.
-
-Greffière : Mme Dolivo-Bonvin.
-…</description>
-      <pubDate>Mon, 29 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_1070.2025</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 5A_338/2026 vom 2026-06-29</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_338_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-5A_338/2026
-
-Arrêt du 29 juin 2026
-
-IIe Cour de droit civil
-
-Composition
-
-M. le Juge fédéral Bovey, Président.
-
-Greffière : Mme Hildbrand.
-
-Participants à la procédure
-
-A.________…</description>
-      <pubDate>Mon, 29 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_338.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht C-4003/2026 vom 2026-06-29</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-4003_2026</link>
-      <description>Droit à la rente</description>
-      <pubDate>Mon, 29 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-4003.2026</guid>
       <category>bvger</category>
     </item>
   </channel>

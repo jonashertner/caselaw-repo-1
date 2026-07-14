@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/it.xml</link>
     <description>Latest published Swiss court decisions in Italiano.</description>
     <language>de-CH</language>
-    <lastBuildDate>Mon, 13 Jul 2026 10:26:33 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 14 Jul 2026 10:14:33 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/it.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -22,6 +22,22 @@ Istanza
 Camera delle esecuzioni e dei fallimenti…</description>
       <pubDate>Wed, 08 Jul 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">gr_gerichte_SBK 2025 104</guid>
+      <category>gr_gerichte</category>
+    </item>
+    <item>
+      <title>gr_gerichte SV2 2026 4 vom 2026-06-29</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_SV2%202026%204</link>
+      <description>Obergericht des Kantons Graubünden
+Dretgira superiura dal chantun Grischun
+Tribunale d'appello del Cantone dei Grigioni
+Sentenza del 23 giugno 2026
+comunicata il 25 giugno 2026
+N. d'incarto
+SV2 26 4
+Istanza
+Seconda Camera di diritto delle assicurazio…</description>
+      <pubDate>Mon, 29 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">gr_gerichte_SV2 2026 4</guid>
       <category>gr_gerichte</category>
     </item>
     <item>
@@ -91,6 +107,23 @@ Parteci…</description>
       <pubDate>Tue, 23 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-3951.2025</guid>
       <category>bvger</category>
+    </item>
+    <item>
+      <title>gr_gerichte VR3 2025 95 vom 2026-06-23</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_VR3%202025%2095</link>
+      <description>Obergericht des Kantons Graubünden
+Dretgira superiura dal chantun Grischun
+Tribunale d'appello del Cantone dei Grigioni
+Sentenza del 23 giugno 2026
+comunicata il 26 giugno 2026
+N. d'incarto
+VR3 25 95
+Istanza
+Terza Camera di diritto amministrativo
+Com…</description>
+      <pubDate>Tue, 23 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">gr_gerichte_VR3 2025 95</guid>
+      <category>gr_gerichte</category>
     </item>
     <item>
       <title>Bundesverwaltungsgericht D-2986/2025 vom 2026-06-22</title>
@@ -921,22 +954,6 @@ Partecipanti…</description>
       <description>Assistenza amministrativa</description>
       <pubDate>Thu, 28 May 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:A-1987.2024</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht D-6341/2024 vom 2026-05-28</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-6341_2024</link>
-      <description>Asilo e allontanamento (procedura celere)</description>
-      <pubDate>Thu, 28 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-6341.2024</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht F-3535/2026 vom 2026-05-28</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-3535_2026</link>
-      <description>Asilo (non entrata nel merito) ed allontanamento (procedura Dublino - art. 31a cpv. 1 lett. b LAsi)</description>
-      <pubDate>Thu, 28 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-3535.2026</guid>
       <category>bvger</category>
     </item>
   </channel>
