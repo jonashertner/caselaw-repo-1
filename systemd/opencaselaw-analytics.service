@@ -11,6 +11,10 @@ WorkingDirectory=/opt/caselaw/repo
 # DP noise. See scripts/rollup_analytics.py for the privacy contract.
 Environment=SWISS_CASELAW_DIR=/opt/caselaw/repo/output
 ExecStart=/usr/bin/python3 /opt/caselaw/repo/scripts/rollup_analytics.py
+# Then aggregate the daily tables into weekly_* (2026-07-14: this step was
+# never scheduled, so weekly rollups silently froze at W20 mid-May). Runs in
+# sequence after the daily rollup; reads/writes only analytics.db.
+ExecStart=/usr/bin/python3 /opt/caselaw/repo/scripts/weekly_rollup.py --weeks 14
 TimeoutStartSec=600
 StandardOutput=append:/opt/caselaw/repo/logs/analytics_rollup.log
 StandardError=append:/opt/caselaw/repo/logs/analytics_rollup.log
