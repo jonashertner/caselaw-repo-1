@@ -123,11 +123,22 @@ legitimate distinct decisions") is respected: we remove nothing; we relabel.
   like GE, and are scraped from different portals — `findinfo-tc.vd.ch` vs
   `prestations.vd.ch`, so `source_url` doesn't link them either, and
   `docket_number_2` is unpopulated). The reliable signal: **74%+ of vd_gerichte
-  procedure numbers (≥39,790) appear in a `vd_findinfo` publication page's
-  text.** Link on that cross-reference + equal judgment date (reconciled from the
-  header, per the GE lesson). Canonical = the direct `vd_gerichte` row; keep the
-  FindInfo reference + source URL as a representation. Fix the scraper to record
-  both `affaire.numero` and `decisionHit.numero` going forward. Exclude
+  procedure numbers appear in a `vd_findinfo` publication page's **rubrum**
+  (restrict the match to the first ~700 chars — the rubrum — to exclude a
+  ~0.15% deep-body citation tail). **Require date-match** (or reconcile to the
+  judgment-header date): a single VD procedure number can carry MULTIPLE
+  decisions (a 2021 interim + a 2024 final, both citing the same PE-number), so a
+  diff-date link may be a *distinct ruling of the same case*, NOT a twin — the
+  ~15% date-disagreeing links must be split "date-semantics (merge)" vs
+  "different ruling (keep separate)" at adjudication.
+  **COMPLEMENTARY metadata — merge, do not pick-and-drop** (verified 2026-07-15):
+  `vd_findinfo` carries the **regeste (99%)** — the official headnote —
+  which `vd_gerichte` lacks (0%), while `vd_gerichte` carries **legal_area (70%)
+  + chamber (100%)** which `vd_findinfo` mostly lacks. The merged canonical must
+  harvest the regeste from `vd_findinfo` and the classification from
+  `vd_gerichte`; dropping either side loses legally significant data (the regeste
+  is the most-cited part). Keep both rows as representations. Fix the scraper to
+  record both `affaire.numero` and `decisionHit.numero` going forward. Exclude
   `vd_omni` (own source, 0 overlap confirmed).
 - **SH:** fix the date bug first (take the judgment date from the document
   header), then link `sh_gerichte ↔ sh_obergericht` on normalized docket + very
