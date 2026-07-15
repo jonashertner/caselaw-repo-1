@@ -48,16 +48,18 @@ fingerprint, so it also differs between the two representations.
   `decision_date` in `sh_gerichte.py`) that puts the publication date in the
   judgment-date field (47-day error on OGE 60/2024/13). ~700 rows.
 
-**Corrected scale (Phase-2 manifest, `scripts/build_representation_manifest.py`,
-2026-07-15):** GE **76,636** (exact, `source_url`). VD **60,029** member links
-(`procedure_cross_reference`), of which **85% share a date** (high-confidence
-twins) → VD reduction ~51k (same-date) to ~60k (all). SH **689**. Total duplicate
-representations **~128k → unique decisions ≈ 911.6k (all links) to 920.5k
-(same-date only); best estimate ~915k**, vs the ~1.05M *record* count (~13%
-overcount). The manifest is written to `output/representation_manifest.db`
-(`decision_representations`) — read-only/additive, no rows deleted. GE date-match
-83%, VD 85% (the ~15–17% date-disagreeing links are the GE date-semantics issue
-plus a VD citation-false-positive tail — the gold-set refinement item).
+**Corrected scale (Phase-2 manifest + 2.5 refinement,
+`scripts/build_representation_manifest.py`, 2026-07-15):** duplicate
+representations **137,264 → unique decisions 911,689**, vs 1,048,953 records
+(~13% overcount). GE **76,636** (exact, `source_url`); VD **59,939**
+(`procedure_cross_reference`, restricted to the rubrum/first-700-chars); SH
+**689**. Phase-2.5 validated the VD linkage: rubrum-position matches are twins;
+the deep-body citation-false-positive tail is only **~90 links (~0.15%)** — the
+rubrum restriction excludes it. The manifest is written to
+`output/representation_manifest.db` (`decision_representations`) —
+read-only/additive, no rows deleted. Residual for the merge step: date
+reconciliation (~15% of links carry the judgment-date-vs-communication-date
+semantics seen in GE — same decision, pick the judgment-header date).
 
 ## 2. Guiding principle — retain the representations, de-duplicate the *count*
 

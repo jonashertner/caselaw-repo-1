@@ -102,10 +102,14 @@ def main() -> int:
         "WHERE court='vd_gerichte' AND docket_number != ''"
     ):
         vg[re.sub(r"\s+", "", r["docket_number"]).upper()] = r["decision_id"]
+    # Restrict the match to the rubrum/header (first ~700 chars): a TWIN carries
+    # the procedure number in its own case header, whereas a CITATION mentions it
+    # deep in the reasoning. Phase-2.5 review showed a body+diff-date tail of ~660
+    # links that are the citation-false-positive risk; the rubrum bound excludes it.
     vd_canon = set()
     vd_members = 0
     for r in src.execute(
-        "SELECT decision_id, substr(full_text, 1, 2500) h FROM decisions WHERE court='vd_findinfo'"
+        "SELECT decision_id, substr(full_text, 1, 700) h FROM decisions WHERE court='vd_findinfo'"
     ):
         for m in VD_TOKEN.finditer((r["h"] or "").upper()):
             cn = vg.get(m.group(0))
