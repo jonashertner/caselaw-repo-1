@@ -48,12 +48,16 @@ fingerprint, so it also differs between the two representations.
   `decision_date` in `sh_gerichte.py`) that puts the publication date in the
   judgment-date field (47-day error on OGE 60/2024/13). ~700 rows.
 
-**Corrected scale:** GE reduction is now **exact: 76,636** (168,950 → 92,314
-unique). VD ~53–56k (pending the normalized-body-hash pass; `source_url` does not
-link VD copies — 0 overlap — and `docket_number_2` is unpopulated). SH ~700.
-Total ≈ **~132k** duplicate representations → **unique decisions ≈ 916k**, vs the
-~1.05M *record* count. This is a ~13% overcount that must be corrected
-transparently.
+**Corrected scale (Phase-2 manifest, `scripts/build_representation_manifest.py`,
+2026-07-15):** GE **76,636** (exact, `source_url`). VD **60,029** member links
+(`procedure_cross_reference`), of which **85% share a date** (high-confidence
+twins) → VD reduction ~51k (same-date) to ~60k (all). SH **689**. Total duplicate
+representations **~128k → unique decisions ≈ 911.6k (all links) to 920.5k
+(same-date only); best estimate ~915k**, vs the ~1.05M *record* count (~13%
+overcount). The manifest is written to `output/representation_manifest.db`
+(`decision_representations`) — read-only/additive, no rows deleted. GE date-match
+83%, VD 85% (the ~15–17% date-disagreeing links are the GE date-semantics issue
+plus a VD citation-false-positive tail — the gold-set refinement item).
 
 ## 2. Guiding principle — retain the representations, de-duplicate the *count*
 
@@ -111,11 +115,18 @@ legitimate distinct decisions") is respected: we remove nothing; we relabel.
   prefixes) + equal judgment date. Require exactly one target; ambiguous/missing
   → retain unlinked. Canonical = the judgment-text row; merge the publication
   page's metadata + appeal chain.
-- **VD:** normalized-body-hash + `docket_number_2`-matches-other-primary, within
-  `vd_findinfo` and across `vd_findinfo ↔ vd_gerichte` only; ≥1,000 chars.
-  Exclude `vd_omni`. Canonical = the direct `vd_gerichte` row when present; keep
-  the FindInfo reference + source URL as a representation. Fix the scraper to
-  record both `affaire.numero` and `decisionHit.numero` going forward.
+- **VD:** **procedure-number cross-reference**, NOT body-hash. Verified
+  2026-07-15: a normalized full-text hash finds **0** overlap between
+  `vd_findinfo` and `vd_gerichte` (the two representations carry different text,
+  like GE, and are scraped from different portals — `findinfo-tc.vd.ch` vs
+  `prestations.vd.ch`, so `source_url` doesn't link them either, and
+  `docket_number_2` is unpopulated). The reliable signal: **74%+ of vd_gerichte
+  procedure numbers (≥39,790) appear in a `vd_findinfo` publication page's
+  text.** Link on that cross-reference + equal judgment date (reconciled from the
+  header, per the GE lesson). Canonical = the direct `vd_gerichte` row; keep the
+  FindInfo reference + source URL as a representation. Fix the scraper to record
+  both `affaire.numero` and `decisionHit.numero` going forward. Exclude
+  `vd_omni` (own source, 0 overlap confirmed).
 - **SH:** fix the date bug first (take the judgment date from the document
   header), then link `sh_gerichte ↔ sh_obergericht` on normalized docket + very
   high full-document similarity; keep the official copy canonical, retain the
