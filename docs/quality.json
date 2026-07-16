@@ -1,7 +1,7 @@
 {
-  "run_at": "2026-07-15T10:59:01+00:00",
+  "run_at": "2026-07-16T11:44:52+00:00",
   "db_path": "/opt/caselaw/repo/output/decisions.db",
-  "duration_seconds": 2982.65,
+  "duration_seconds": 3302.31,
   "summary": {
     "total": 67,
     "passed": 57,
@@ -29,7 +29,7 @@
       "passed": true,
       "metric_value": 0,
       "threshold": 0,
-      "message": "0 of 1726 sampled rows contain control chars",
+      "message": "0 of 1772 sampled rows contain control chars",
       "sample_rows": [],
       "fix_advice": "build_fts5._clean_text (d0072b2) must strip these at insert — a hit means the build-side guarantee regressed (check recent build_fts5/_clean_text changes)",
       "court": null,
@@ -154,17 +154,17 @@
       "fix_advice": "check INSERT OR IGNORE / INSERT OR REPLACE in scrapers and build_fts5.merge_shards",
       "court": null,
       "extra": {
-        "total": 1048953,
-        "distinct": 1048953
+        "total": 1049159,
+        "distinct": 1049159
       }
     },
     {
       "name": "schema.corpus_total_count",
       "severity": "critical",
       "passed": true,
-      "metric_value": 1048953,
+      "metric_value": 1049159,
       "threshold": 950000,
-      "message": "corpus total: 1,048,953",
+      "message": "corpus total: 1,049,159",
       "sample_rows": [],
       "fix_advice": "check publish.py Step 2 build_fts5 logs; verify .tmp swap completed atomically",
       "court": null,
@@ -174,9 +174,9 @@
       "name": "mcp_tools.search_fts_returns_hits",
       "severity": "critical",
       "passed": true,
-      "metric_value": 402578,
+      "metric_value": 402689,
       "threshold": 100,
-      "message": "FTS5 'Beschwerde' query: 402,578 hits",
+      "message": "FTS5 'Beschwerde' query: 402,689 hits",
       "sample_rows": [],
       "fix_advice": "if 0, FTS5 build never indexed; rerun build_fts5",
       "court": null,
@@ -230,9 +230,9 @@
       "court": null,
       "extra": {
         "distribution": {
-          "de": 498917,
-          "fr": 459302,
-          "it": 90734
+          "de": 499074,
+          "fr": 459345,
+          "it": 90740
         }
       }
     },
@@ -240,16 +240,16 @@
       "name": "languages.distribution_plausible",
       "severity": "critical",
       "passed": true,
-      "metric_value": 47.56333219886878,
+      "metric_value": 47.568957612716474,
       "threshold": 30.0,
       "message": "DE 47.6% / FR 43.8% / IT 8.6% / RM 0.00%",
       "sample_rows": [],
       "fix_advice": "DE and FR each need ≥30%, IT ≥3%; under-floor means a language-block of scrapers crashed in publish.py Step 1",
       "court": null,
       "extra": {
-        "de": 498917,
-        "fr": 459302,
-        "it": 90734
+        "de": 499074,
+        "fr": 459345,
+        "it": 90740
       }
     },
     {
@@ -580,9 +580,9 @@
       "name": "courts.federal_present.bvger",
       "severity": "critical",
       "passed": true,
-      "metric_value": 107974,
+      "metric_value": 107999,
       "threshold": 1,
-      "message": "bvger: 107,974 decisions",
+      "message": "bvger: 107,999 decisions",
       "sample_rows": [],
       "fix_advice": null,
       "court": "bvger",
@@ -616,9 +616,9 @@
       "name": "courts.federal_present.bger",
       "severity": "critical",
       "passed": true,
-      "metric_value": 191768,
+      "metric_value": 191805,
       "threshold": 1,
-      "message": "bger: 191,768 decisions",
+      "message": "bger: 191,805 decisions",
       "sample_rows": [],
       "fix_advice": null,
       "court": "bger",
@@ -640,9 +640,9 @@
       "name": "courts.federal_present.bge",
       "severity": "critical",
       "passed": true,
-      "metric_value": 50453,
+      "metric_value": 50459,
       "threshold": 1,
-      "message": "bge: 50,453 decisions",
+      "message": "bge: 50,459 decisions",
       "sample_rows": [],
       "fix_advice": null,
       "court": "bge",
@@ -742,22 +742,22 @@
       "passed": false,
       "metric_value": 219783,
       "threshold": 50,
-      "message": "219,783 rows still use http:// (http 219,783 / https 829,170)",
+      "message": "219,783 rows still use http:// (http 219,783 / https 829,376)",
       "sample_rows": [],
       "fix_advice": "upgrade scraper to write https://, then run a REPLACE(source_url, 'http://', 'https://') backfill",
       "court": null,
       "extra": {
         "http": 219783,
-        "https": 829170
+        "https": 829376
       }
     },
     {
       "name": "urls.decision_id_whitespace",
       "severity": "warning",
       "passed": false,
-      "metric_value": 58274,
+      "metric_value": 58302,
       "threshold": 50000,
-      "message": "58,274 decision_ids contain whitespace (percent-encoded in URLs; ugly but functional)",
+      "message": "58,302 decision_ids contain whitespace (percent-encoded in URLs; ugly but functional)",
       "sample_rows": [],
       "fix_advice": "if growing >50k, a new scraper started concatenating dockets with spaces; consider underscore separator at scraper time for cleaner URLs",
       "court": null,
@@ -767,9 +767,9 @@
       "name": "structure.federal_have_erwaegungen",
       "severity": "warning",
       "passed": false,
-      "metric_value": 85.2,
+      "metric_value": 86.5,
       "threshold": 95.0,
-      "message": "BGer (>5y old): 852/1000 sample have sidecar paragraphs (85.2%)",
+      "message": "BGer (>5y old): 865/1000 sample have sidecar paragraphs (86.5%)",
       "sample_rows": [],
       "fix_advice": null,
       "court": null,
@@ -834,9 +834,9 @@
       "name": "dates.publication_before_decision",
       "severity": "warning",
       "passed": false,
-      "metric_value": 40058,
+      "metric_value": 40059,
       "threshold": 28000,
-      "message": "40058 rows with publication_date < decision_date (13411 gross >1mo) — baseline 28000",
+      "message": "40059 rows with publication_date < decision_date (13411 gross >1mo) — baseline 28000",
       "sample_rows": [
         {
           "decision_id": "bge_150 II 417",
@@ -874,7 +874,7 @@
       "extra": {
         "gross_over_1mo": 13411,
         "by_court": {
-          "bge": 15828,
+          "bge": 15829,
           "zh_sozialversicherungsgericht": 13308,
           "ge_gerichte": 7872,
           "gr_gerichte": 984,
@@ -915,14 +915,14 @@
       "name": "cross_db.reference_graph_sanity",
       "severity": "warning",
       "passed": false,
-      "metric_value": 9957396,
+      "metric_value": 9959542,
       "threshold": 5000000,
-      "message": "citation_targets: 9,957,396, statute_references: 0",
+      "message": "citation_targets: 9,959,542, statute_references: 0",
       "sample_rows": [],
       "fix_advice": "if citation count dropped, search_stack/build_reference_graph.py may have failed in publish.py Step 2c",
       "court": null,
       "extra": {
-        "citation_targets": 9957396,
+        "citation_targets": 9959542,
         "statute_references": 0
       }
     },
@@ -930,9 +930,9 @@
       "name": "cross_db.no_orphan_structure_rows",
       "severity": "warning",
       "passed": false,
-      "metric_value": 9.62,
+      "metric_value": 9.02,
       "threshold": 1.0,
-      "message": "481/5000 (9.62%) sidecar rows orphan",
+      "message": "451/5000 (9.02%) sidecar rows orphan",
       "sample_rows": [],
       "fix_advice": "rerun extract_decision_structure.py against current decisions.db so IDs realign",
       "court": null,

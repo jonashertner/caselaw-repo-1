@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feed.xml</link>
     <description>Latest published decisions across all Swiss courts indexed by OpenCaseLaw.</description>
     <language>de-CH</language>
-    <lastBuildDate>Wed, 15 Jul 2026 10:05:30 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 16 Jul 2026 10:46:10 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feed.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -231,6 +231,53 @@ J…</description>
       <pubDate>Mon, 17 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">fr_gerichte_101 2026 140</guid>
       <category>fr_gerichte</category>
+    </item>
+    <item>
+      <title>gr_gerichte SV2 2026 38 vom 2026-07-16</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_SV2%202026%2038</link>
+      <description>Obergericht des Kantons Graubünden
+Dretgira superiura dal chantun Grischun
+Tribunale d'appello del Cantone dei Grigioni
+Sentenza del 9 luglio 2026
+comunicata il 10 luglio 2026
+N. d'incarto
+SV2 26 38
+Istanza
+Seconda Camera di diritto delle assicurazio…</description>
+      <pubDate>Thu, 16 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">gr_gerichte_SV2 2026 38</guid>
+      <category>gr_gerichte</category>
+    </item>
+    <item>
+      <title>fr_gerichte 101 2025 196 vom 2026-07-15</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_101%202025%20196</link>
+      <description>Tribunal cantonal TC
+Kantonsgericht KG
+Augustinergasse 3, Postfach 630, 1701 Freiburg
+T +41 26 304 15 00
+www.fr.ch/tc
+—
+Pouvoir Judiciaire PJ
+Gerichtsbehörden GB
+101 2025 196
+Urteil vom 6. Mai 2026
+I. Zivilappellationshof
+Besetzung
+Vizepräsidentin:
+D…</description>
+      <pubDate>Wed, 15 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">fr_gerichte_101 2025 196</guid>
+      <category>fr_gerichte</category>
+    </item>
+    <item>
+      <title>sh_gerichte Titel hinzufügen... vom 2026-07-15</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/sh_gerichte_Titel%20hinzuf%C3%BCgen...</link>
+      <description>Einem Anzeiger in einem Disziplinarverfahren gegen einen Rechtsanwalt fehlt das Recht zur Beschwerdeerhebung gegen die infolge der Anzeige getroffene Entscheidung (E. 2.3).
+OGE 60/2026/21 vom 12. Mai 2026
+(Auf eine Beschwerde gegen diesen Entscheid t…</description>
+      <pubDate>Wed, 15 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">sh_gerichte_Titel hinzufügen...</guid>
+      <category>sh_gerichte</category>
     </item>
     <item>
       <title>gr_gerichte SBK 2026 45 vom 2026-07-14</title>
@@ -829,33 +876,6 @@ Bas…</description>
       <pubDate>Tue, 07 Jul 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-4508.2022</guid>
       <category>bvger</category>
-    </item>
-    <item>
-      <title>ecthr_chamber 54549/22 vom 2026-07-07</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ecthr_chamber_54549_22</link>
-      <description>Exception préliminaire rejetée (Art. 35) Conditions de recevabilité;(Art. 35-1) Épuisement des voies de recours internes;Violation de l'article 3 - Interdiction de la torture (Article 3 - Enquête effective) (Volet procédural);Violation de l'article 3 - Interdiction de la torture (Article 3 - Traitement inhumain);Préjudice moral - réparation (Article 41 - Préjudice moral;Satisfaction équitable); Violation: 3</description>
-      <pubDate>Tue, 07 Jul 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ecthr_chamber_54549_22</guid>
-      <category>ecthr_chamber</category>
-      <category>CEDH / Droits humains</category>
-    </item>
-    <item>
-      <title>ecthr_committee 58246/18 vom 2026-07-07</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ecthr_committee_58246_18</link>
-      <description>Violation de l'article 6 - Droit à un procès équitable (Article 6 - Procédure pénale;Article 6-1 - Accès à un tribunal); Violation: 6;6-1</description>
-      <pubDate>Tue, 07 Jul 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ecthr_committee_58246_18</guid>
-      <category>ecthr_committee</category>
-      <category>CEDH / Droits humains</category>
-    </item>
-    <item>
-      <title>ecthr_grand_chamber 29550/17 vom 2026-07-07</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ecthr_grand_chamber_29550_17</link>
-      <description>Violation de l'article 8 - Droit au respect de la vie privée et familiale (Article 8-1 - Respect du domicile);Préjudice moral - réparation (Article 41 - Préjudice moral;Satisfaction équitable); Violation: 8;8-1</description>
-      <pubDate>Tue, 07 Jul 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ecthr_grand_chamber_29550_17</guid>
-      <category>ecthr_grand_chamber</category>
-      <category>CEDH / Droits humains</category>
     </item>
   </channel>
 </rss>

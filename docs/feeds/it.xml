@@ -5,9 +5,25 @@
     <link>https://opencaselaw.ch/feeds/it.xml</link>
     <description>Latest published Swiss court decisions in Italiano.</description>
     <language>de-CH</language>
-    <lastBuildDate>Wed, 15 Jul 2026 10:09:16 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 16 Jul 2026 10:49:48 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/it.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>gr_gerichte SV2 2026 38 vom 2026-07-16</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_SV2%202026%2038</link>
+      <description>Obergericht des Kantons Graubünden
+Dretgira superiura dal chantun Grischun
+Tribunale d'appello del Cantone dei Grigioni
+Sentenza del 9 luglio 2026
+comunicata il 10 luglio 2026
+N. d'incarto
+SV2 26 38
+Istanza
+Seconda Camera di diritto delle assicurazio…</description>
+      <pubDate>Thu, 16 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">gr_gerichte_SV2 2026 38</guid>
+      <category>gr_gerichte</category>
+    </item>
     <item>
       <title>gr_gerichte SBK 2025 104 vom 2026-07-08</title>
       <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_SBK%202025%20104</link>
@@ -25,6 +41,30 @@ Camera delle esecuzioni e dei fallimenti…</description>
       <category>gr_gerichte</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht F-4468/2026 vom 2026-07-07</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-4468_2026</link>
+      <description>Asilo (non entrata nel merito) ed allontanamento (procedura Dublino - art. 31a cpv. 1 lett. b LAsi)</description>
+      <pubDate>Tue, 07 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-4468.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>gr_gerichte SV2 2026 7 vom 2026-07-06</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_SV2%202026%207</link>
+      <description>Obergericht des Kantons Graubünden
+Dretgira superiura dal chantun Grischun
+Tribunale d'appello del Cantone dei Grigioni
+Sentenza del 6 luglio 2026
+comunicata il 8 luglio 2026
+N. d'incarto
+SV2 26 7
+Istanza
+Seconda Camera di diritto delle assicurazioni…</description>
+      <pubDate>Mon, 06 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">gr_gerichte_SV2 2026 7</guid>
+      <category>gr_gerichte</category>
+    </item>
+    <item>
       <title>Bundesverwaltungsgericht C-7492/2024 vom 2026-07-02</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-7492_2024</link>
       <description>Revisione della rendita</description>
@@ -39,6 +79,22 @@ Camera delle esecuzioni e dei fallimenti…</description>
       <pubDate>Wed, 01 Jul 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-2339.2024</guid>
       <category>bvger</category>
+    </item>
+    <item>
+      <title>gr_gerichte SV2 2025 62 vom 2026-06-30</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_SV2%202025%2062</link>
+      <description>Obergericht des Kantons Graubünden
+Dretgira superiura dal chantun Grischun
+Tribunale d'appello del Cantone dei Grigioni
+Sentenza del 30 giugno 2026
+comunicata il 2 luglio 2026
+N. d'incarto
+SV2 25 62
+Istanza
+Seconda Camera di diritto delle assicurazio…</description>
+      <pubDate>Tue, 30 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">gr_gerichte_SV2 2025 62</guid>
+      <category>gr_gerichte</category>
     </item>
     <item>
       <title>gr_gerichte SV2 2026 4 vom 2026-06-29</title>
@@ -117,6 +173,44 @@ Parteci…</description>
       <category>bger</category>
     </item>
     <item>
+      <title>Bundesgericht 8C_78/2026 vom 2026-06-23</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_8C_78_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+8C_78/2026
+
+Sentenza del 23 giugno 2026
+
+IV Corte di diritto pubblico
+
+Composizione
+
+Giudici federali Viscione, Presidente,
+
+Maillard, Scherrer Reber,
+
+Cancelliere Colombi.
+
+Parte…</description>
+      <pubDate>Tue, 23 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:8C_78.2026</guid>
+      <category>bger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht A-1274/2025 vom 2026-06-23</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_A-1274_2025</link>
+      <description>Assistenza amministrativa</description>
+      <pubDate>Tue, 23 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:A-1274.2025</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>Bundesverwaltungsgericht D-3951/2025 vom 2026-06-23</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-3951_2025</link>
       <description>Asilo ed allontanamento</description>
@@ -148,6 +242,14 @@ Com…</description>
       <pubDate>Tue, 23 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">gr_gerichte_VR3 2025 95</guid>
       <category>gr_gerichte</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht A-1179/2025 vom 2026-06-22</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_A-1179_2025</link>
+      <description>Assistenza amministrativa</description>
+      <pubDate>Mon, 22 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:A-1179.2025</guid>
+      <category>bvger</category>
     </item>
     <item>
       <title>Bundesverwaltungsgericht D-2986/2025 vom 2026-06-22</title>
@@ -801,138 +903,6 @@ durata del sequestro (art. 33a OAIMP)</description>
       <pubDate>Wed, 03 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BStGer:2026:RR.2026.26</guid>
       <category>bstger</category>
-    </item>
-    <item>
-      <title>Bundesstrafgericht RR.2026.39 vom 2026-06-03</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bstger_RR.2026.39</link>
-      <description>Assistenza giudiziaria internazionale in materia penale alla Città del Vaticano; consegna di mezzi di prova (art. 74 AIMP)</description>
-      <pubDate>Wed, 03 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BStGer:2026:RR.2026.39</guid>
-      <category>bstger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht C-3450/2026 vom 2026-06-03</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-3450_2026</link>
-      <description>Assicurazione per l'invalidità (altro)</description>
-      <pubDate>Wed, 03 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-3450.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>gr_gerichte SR2 2025 87 vom 2026-06-03</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_SR2%202025%2087</link>
-      <description>Obergericht des Kantons Graubünden
-Dretgira superiura dal chantun Grischun
-Tribunale d'appello del Cantone dei Grigioni
-Ordinanza del 22 maggio 2026
-comunicata il 27 maggio 2026
-N. d'incarto
-SR2 25 87
-Istanza
-Seconda Camera penale
-Composizione
-Richte…</description>
-      <pubDate>Wed, 03 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">gr_gerichte_SR2 2025 87</guid>
-      <category>gr_gerichte</category>
-    </item>
-    <item>
-      <title>Bundesgericht 7B_334/2026 vom 2026-06-02</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_7B_334_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-7B_334/2026
-
-Sentenza del 2 giugno 2026
-
-II Corte di diritto penale
-
-Composizione
-
-Giudici federali Abrecht, Presidente,
-
-Koch, Hofmann,
-
-Cancelliere Caprara.
-
-Partecipanti al pro…</description>
-      <pubDate>Tue, 02 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:7B_334.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht B-8078/2025 vom 2026-06-02</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_B-8078_2025</link>
-      <description>Acquisti pubblici</description>
-      <pubDate>Tue, 02 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:B-8078.2025</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 1C_184/2026 vom 2026-06-01</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_1C_184_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-1C_184/2026
-
-Sentenza del 1° giugno 2026
-
-I Corte di diritto pubblico
-
-Composizione
-
-Giudici federali Kneubühler, Giudice presidente,
-
-Chaix, Merz,
-
-Cancelliere M. Piatti.
-
-Partec…</description>
-      <pubDate>Mon, 01 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:1C_184.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 5A_456/2026 vom 2026-05-29</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_456_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-5A_456/2026
-
-Sentenza del 29 maggio 2026
-
-II Corte di diritto civile
-
-Composizione
-
-Giudice federale Bovey, Presidente,
-
-Cancelliera Antonini.
-
-Partecipanti al procedimento
-
-A.___…</description>
-      <pubDate>Fri, 29 May 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_456.2026</guid>
-      <category>bger</category>
     </item>
   </channel>
 </rss>
