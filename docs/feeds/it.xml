@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/it.xml</link>
     <description>Latest published Swiss court decisions in Italiano.</description>
     <language>de-CH</language>
-    <lastBuildDate>Thu, 16 Jul 2026 10:49:48 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 17 Jul 2026 11:03:48 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/it.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -22,6 +22,22 @@ Istanza
 Seconda Camera di diritto delle assicurazio…</description>
       <pubDate>Thu, 16 Jul 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">gr_gerichte_SV2 2026 38</guid>
+      <category>gr_gerichte</category>
+    </item>
+    <item>
+      <title>gr_gerichte SV1 2025 38 vom 2026-07-09</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_SV1%202025%2038</link>
+      <description>Obergericht des Kantons Graubünden
+Dretgira superiura dal chantun Grischun
+Tribunale d'appello del Cantone dei Grigioni
+Sentenza del 9 luglio 2026
+comunicata il 10 luglio 2026
+N. d'incarto
+SV1 25 38
+Istanza
+Prima Camera di diritto delle assicurazioni…</description>
+      <pubDate>Thu, 09 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">gr_gerichte_SV1 2025 38</guid>
       <category>gr_gerichte</category>
     </item>
     <item>
@@ -894,15 +910,6 @@ Cancelliera Cometta Rizzi.…</description>
       <pubDate>Wed, 03 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BGer:2026:9C_213.2026</guid>
       <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesstrafgericht RR.2026.26 vom 2026-06-03</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bstger_RR.2026.26</link>
-      <description>Assistenza giudiziaria internazionale in materia penale alla Città del Vaticano; consegna di mezzi di prova (art. 74 AIMP); 
-durata del sequestro (art. 33a OAIMP)</description>
-      <pubDate>Wed, 03 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BStGer:2026:RR.2026.26</guid>
-      <category>bstger</category>
     </item>
   </channel>
 </rss>
