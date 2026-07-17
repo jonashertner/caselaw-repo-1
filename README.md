@@ -412,7 +412,7 @@ Available on both remote and local unless noted.
 
 | Tool | Description |
 |------|-------------|
-| `search_decisions` | Full-text search with filters (court, canton, language, date range, chamber, decision type) |
+| `search_decisions` | Full-text search with filters (court, canton, language, date range, chamber) |
 | `get_decision` | Fetch a single decision by docket number or ID. Includes citation graph counts (cited by / cites). |
 | `list_courts` | List all courts with decision counts |
 | `get_statistics` | Aggregate stats by court, canton, or year |

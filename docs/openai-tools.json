@@ -52,7 +52,7 @@
       "type": "function",
       "function": {
         "name": "search_decisions",
-        "description": "Search Swiss court decisions AND European Court of Human Rights decisions concerning Switzerland (~2,800 ECHR docs across bge_egmr, hudoc_ch, ecthr_chamber, ecthr_committee, ecthr_grand_chamber) using full-text search. Supports keywords, phrases (in quotes), Boolean operators (AND, OR, NOT), and prefix matching (word*). Filter by court, canton, language, date range, chamber, and decision type. Also handles docket number lookup (e.g., 6B_1234/2025) and column-scoped search (regeste:keyword, full_text:keyword). Returns relevance-ranked results enriched with:\n- court_name (human-readable), court_level, legal_area\n- statutes: relevant statute articles (e.g. Art. 41 OR)\n- citation_count: how many decisions cite this one\n- cited_by_results: how many other results cite this one\n- is_leading_case: true for highly-cited authoritative decisions\nUse offset for pagination through large result sets.\n\nTo find the MOST RECENT decisions: omit the query (or set it empty) and use sort='date_desc' with optional court/canton filters. Example: query='', court='bger', sort='date_desc', limit=5.",
+        "description": "Search Swiss court decisions AND European Court of Human Rights decisions concerning Switzerland (~2,800 ECHR docs across bge_egmr, hudoc_ch, ecthr_chamber, ecthr_committee, ecthr_grand_chamber) using full-text search. Supports keywords, phrases (in quotes), Boolean operators (AND, OR, NOT), and prefix matching (word*). Filter by court, canton, language, date range, and chamber. Also handles docket number lookup (e.g., 6B_1234/2025) and column-scoped search (regeste:keyword, full_text:keyword). Returns relevance-ranked results enriched with:\n- court_name (human-readable), court_level, legal_area\n- statutes: relevant statute articles (e.g. Art. 41 OR)\n- citation_count: how many decisions cite this one\n- cited_by_results: how many other results cite this one\n- is_leading_case: true for highly-cited authoritative decisions\nUse offset for pagination through large result sets.\n\nTo find the MOST RECENT decisions: omit the query (or set it empty) and use sort='date_desc' with optional court/canton filters. Example: query='', court='bger', sort='date_desc', limit=5.",
         "parameters": {
           "type": "object",
           "properties": {
@@ -89,14 +89,6 @@
             "chamber": {
               "type": "string",
               "description": "Filter by chamber/division (substring match). Examples: 'Abteilung V' (BVGer asylum), 'Zivilrechtliche', 'CASSO', 'Strafrechtliche'"
-            },
-            "decision_type": {
-              "type": "string",
-              "description": "Filter by decision type (substring match). Examples: 'Urteil', 'Beschluss', 'Leitentscheid', 'BVGE', 'Verfügung', 'Endentscheid'"
-            },
-            "legal_area": {
-              "type": "string",
-              "description": "Filter by legal area/Rechtsgebiet (substring match). Examples: 'Strafrecht', 'Zivilrecht', 'Arbeitsrecht', 'Mietrecht', 'Familienrecht', 'Sozialversicherung', 'Schuldbetreibung', 'Ausländerrecht'"
             },
             "marked_for_publication": {
               "type": "boolean",

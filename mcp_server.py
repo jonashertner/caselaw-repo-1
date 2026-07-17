@@ -951,7 +951,8 @@ LAW_SEARCH_EXPANSIONS: dict[str, tuple[str, ...]] = {
     "custodia": ("autorita parentale", "custodia", "diritto visita"),
     "alimente": ("unterhaltsbeitrag", "kindesunterhalt", "unterhalt"),
     "pension alimentaire": ("contribution", "entretien", "pension"),
-    "kindesschutz": ("kindesschutzmassnahme", "gefahrdung", "beistandschaft"),
+    "kindesschutz": ("kindesschutzmassnahme", "gefahrdung", "beistandschaft",
+                     "kindesschutz", "protection enfant", "protezione minore"),
     # ── Succession ──
     "erbe": ("erbrecht", "erbschaft", "nachlass", "erbteilung"),
     "testament": ("letztwillige verfugung", "testament", "erbvertrag"),
@@ -970,9 +971,10 @@ LAW_SEARCH_EXPANSIONS: dict[str, tuple[str, ...]] = {
     "permis sejour": ("autorisation", "sejour", "etablissement"),
     "asylbewerber": ("asylsuchend", "asylverfahren", "fluchtling"),
     # ── Animals / environment ──
-    "hund": ("hund", "hundehalter", "tierhaltung", "tierschutz"),
-    "chien": ("chien", "detenteur", "animaux"),
-    "cane": ("cane", "detentore", "animali"),
+    "hund": ("hund", "hundehalter", "tierhaltung", "tierschutz",
+             "chien", "detenteur", "cane", "detentore"),
+    "chien": ("chien", "detenteur", "animaux", "hund", "hundehalter", "cane"),
+    "cane": ("cane", "detentore", "animali", "hund", "chien"),
     "hundebiss": ("tierhalterhaftung", "hund", "bissverletzung"),
     "umwelt": ("umweltschutz", "umweltvertraglichkeit", "emission"),
     "laerm": ("larm", "immissionen", "larmschutz"),
@@ -1021,9 +1023,7 @@ LAW_SEARCH_EXPANSIONS: dict[str, tuple[str, ...]] = {
     # without manually translating the query.  Each entry maps a
     # term in one language to its equivalents in the other two.
     # ── Animal / environment (cross-lang) ──
-    "hund": ("hund", "hundehalter", "chien", "detenteur", "cane", "detentore"),
-    "chien": ("chien", "detenteur", "hund", "hundehalter", "cane"),
-    "cane": ("cane", "detentore", "hund", "chien"),
+    # (hund/chien/cane merged into their topical entries above — issue #51)
     "leinenpflicht": ("leine", "hund", "laisse", "chien", "guinzaglio", "cane"),
     "tierschutz": ("tierschutz", "protection animaux", "protezione animali"),
     "umweltschutz": ("umweltschutz", "protection environnement", "protezione ambiente"),
@@ -1047,7 +1047,7 @@ LAW_SEARCH_EXPANSIONS: dict[str, tuple[str, ...]] = {
     "ehe": ("ehe", "mariage", "matrimonio"),
     "unterhaltsbeitrag": ("unterhaltsbeitrag", "contribution entretien", "contributo mantenimento"),
     "besuchsrecht": ("besuchsrecht", "droit visite", "diritto visita"),
-    "kindesschutz": ("kindesschutz", "protection enfant", "protezione minore"),
+    # (kindesschutz merged into its topical entry above — issue #51)
     # ── Citizenship / foreigners (cross-lang) ──
     "aufenthalt": ("aufenthalt", "sejour", "soggiorno", "domicile"),
     "niederlassung": ("niederlassung", "etablissement", "domicilio"),
@@ -2230,6 +2230,18 @@ def _sanitize_fts5(query: str) -> str:
     return result
 
 
+# A query that is exactly one balanced double-quoted phrase (e.g. `"Treu und
+# Glauben"`). Such a query must stay a phrase MATCH: the OR/expansion strategies
+# would turn it into a term-alternation ("Glauben" alone matches) with ~92% false
+# positives (issue #42). re.DOTALL is irrelevant \u2014 phrases are single-line.
+_PURE_PHRASE_RE = re.compile(r'^"[^"]+"$')
+
+
+def _is_pure_phrase_query(fts_query: str) -> bool:
+    """True if the sanitized query is a single quoted phrase and nothing else."""
+    return bool(_PURE_PHRASE_RE.match((fts_query or "").strip()))
+
+
 # Exact match-count for the `total` field on text searches. The reranked path
 # returns a bounded candidate POOL, so its size is not the true number of
 # matching decisions: it scales with `limit` and caps at MAX_RERANK_CANDIDATES.
@@ -2848,6 +2860,12 @@ def _search_fts5_inner(
     # Use both regex extraction AND structured parse for maximum coverage
     STATUTE_GRAPH_RRF_WEIGHT = SCORING_CONFIG["statute_graph_rrf_weight"]
     has_structured_statutes = False
+    # NOTE: statute-graph MUST run even for a quoted statute ref like "Art. 8 BV"
+    # — that is the advertised article-search syntax, and it reaches ~2x more
+    # decisions (cross-lingual "art. 8 Cst.", pinpoints) than a literal phrase
+    # MATCH. A quoted DOCTRINE phrase ("Treu und Glauben") extracts no statute
+    # ref, so this block is a no-op for it — the #42 exactness comes from the
+    # strategy short-circuit + skipped doctrine/vector, not from gating here.
     if not is_docket_query:
         query_statutes = _extract_query_statute_refs(fts_query)
         if llm_terms:
@@ -4906,7 +4924,7 @@ def _count_citations(decision_id: str) -> tuple[int, int]:
 
 
 def _find_outgoing_citations(
-    decision_id: str, *, min_confidence: float = 0.3, limit: int = 50
+    decision_id: str, *, min_confidence: float = 0.3, limit: int = 50, offset: int = 0
 ) -> list[dict]:
     """Find citations made by this decision (what it cites)."""
     conn = _get_graph_conn()
@@ -4930,10 +4948,11 @@ def _find_outgoing_citations(
               ON d.decision_id = ct.target_decision_id
             WHERE dc.source_decision_id IN ({placeholders})
               AND (ct.confidence_score IS NULL OR ct.confidence_score >= ?)
-            ORDER BY dc.mention_count DESC, ct.confidence_score DESC
-            LIMIT ?
+            ORDER BY dc.mention_count DESC, ct.confidence_score DESC,
+                     dc.target_ref, ct.target_decision_id, dc.source_decision_id
+            LIMIT ? OFFSET ?
             """,
-            (*variants, min_confidence, limit),
+            (*variants, min_confidence, limit, offset),
         ).fetchall()
         return [dict(r) for r in rows]
     except sqlite3.Error as e:
@@ -4943,8 +4962,56 @@ def _find_outgoing_citations(
         conn.close()
 
 
+def _count_citations_filtered(
+    decision_id: str, *, min_confidence: float = 0.3
+) -> tuple[int, int]:
+    """Return (incoming_total, outgoing_total) mirroring the exact WHERE clauses of
+    _find_incoming_citations / _find_outgoing_citations, so truncation flags on the
+    fetched pages are accurate (the plain _count_citations ignores min_confidence)."""
+    conn = _get_graph_conn()
+    if conn is None:
+        return (0, 0)
+    try:
+        variants = _decision_id_variants(decision_id)
+        ph = ",".join(["?"] * len(variants))
+        out_row = conn.execute(
+            f"""
+            SELECT COUNT(*) AS n
+            FROM decision_citations dc
+            LEFT JOIN citation_targets ct
+              ON ct.source_decision_id = dc.source_decision_id
+             AND ct.target_ref = dc.target_ref
+            WHERE dc.source_decision_id IN ({ph})
+              AND (ct.confidence_score IS NULL OR ct.confidence_score >= ?)
+            """,
+            (*variants, min_confidence),
+        ).fetchone()
+        outgoing = int(out_row["n"]) if out_row else 0
+        in_row = conn.execute(
+            f"""
+            SELECT COUNT(*) AS n
+            FROM citation_targets ct
+            JOIN decision_citations dc
+              ON dc.source_decision_id = ct.source_decision_id
+             AND dc.target_ref = ct.target_ref
+            JOIN decisions d
+              ON d.decision_id = ct.source_decision_id
+            WHERE ct.target_decision_id IN ({ph})
+              AND ct.confidence_score >= ?
+            """,
+            (*variants, min_confidence),
+        ).fetchone()
+        incoming = int(in_row["n"]) if in_row else 0
+        return (incoming, outgoing)
+    except sqlite3.Error as e:
+        logger.debug("Filtered citation count failed: %s", e)
+        return (0, 0)
+    finally:
+        conn.close()
+
+
 def _find_incoming_citations(
-    decision_id: str, *, min_confidence: float = 0.3, limit: int = 50
+    decision_id: str, *, min_confidence: float = 0.3, limit: int = 50, offset: int = 0
 ) -> list[dict]:
     """Find decisions that cite this decision."""
     conn = _get_graph_conn()
@@ -4968,10 +5035,11 @@ def _find_incoming_citations(
               ON d.decision_id = ct.source_decision_id
             WHERE ct.target_decision_id IN ({placeholders})
               AND ct.confidence_score >= ?
-            ORDER BY d.decision_date DESC, ct.confidence_score DESC
-            LIMIT ?
+            ORDER BY d.decision_date DESC, ct.confidence_score DESC,
+                     ct.source_decision_id, ct.target_ref, ct.target_decision_id
+            LIMIT ? OFFSET ?
             """,
-            (*variants, min_confidence, limit),
+            (*variants, min_confidence, limit, offset),
         ).fetchall()
         return [dict(r) for r in rows]
     except sqlite3.Error as e:
@@ -5500,7 +5568,13 @@ def _analyze_query(fts_query: str, is_docket_query: bool) -> tuple[list, list, d
 
     def _run_parse():
         try:
-            _box["parse"] = {} if is_docket_query else _parse_query_structured(fts_query)
+            # Skip the structured (Haiku) parse for docket lookups AND for pure
+            # quoted phrases: for a phrase, the parse's doctrine/synonym terms get
+            # injected as broad OR strategies downstream, which would reintroduce
+            # the exact non-phrase false positives the phrase MATCH is meant to
+            # avoid (#42). Keep the phrase exact end to end.
+            skip = is_docket_query or _is_pure_phrase_query(fts_query)
+            _box["parse"] = {} if skip else _parse_query_structured(fts_query)
         except Exception:
             _box["parse"] = {}
 
@@ -5522,6 +5596,18 @@ def _build_query_strategies(raw_query: str) -> tuple[list[dict], list[str]]:
     terms (for use in vector search augmentation).
     """
     raw = raw_query.strip()
+    # #42: a pure quoted phrase must stay an exact phrase MATCH. The OR/expansion
+    # strategies below would decompose "Treu und Glauben" into a term-alternation
+    # (matching "Glauben" alone → ~92% false positives). Run ONLY the phrase MATCH
+    # and its field-focused boosts, all of which keep the phrase intact; no LLM
+    # expansion. FTS5 phrase MATCH already enforces token adjacency, so this is
+    # exact without a post-filter (which would break `NOT "phrase"` and, on the
+    # bounded candidate pool, drop verbatim matches ranked below the cap).
+    if _is_pure_phrase_query(raw):
+        # Only the phrase MATCH over the full index. bm25 column weights already
+        # rank regeste/title hits above body-only hits, so no field-focus (which
+        # AND-combines tokens and would lose the phrase's adjacency) is needed.
+        return ([{"name": "raw", "query": raw, "weight": SCORING_CONFIG["sw_raw"]}], [])
     has_explicit_syntax = _has_explicit_fts_syntax(raw)
     nl_and = _build_nl_and_query(raw)
     nl_or = _build_nl_or_query(raw, include_expansions=False)
@@ -6738,15 +6824,20 @@ def find_citations(
     direction: str = "both",
     min_confidence: float = 0.3,
     limit: int = 50,
+    offset: int = 0,
 ) -> dict:
     """Find outgoing and/or incoming citations for a decision."""
     limit = max(1, min(limit, 200))
+    offset = max(0, offset)
     min_confidence = max(0.0, min(min_confidence, 1.0))
 
     # Resolve user-supplied ID to actual stored ID (handles format differences)
     decision_id = _resolve_decision_id(decision_id)
 
-    result: dict = {"decision_id": decision_id, "direction": direction}
+    result: dict = {
+        "decision_id": decision_id, "direction": direction,
+        "limit": limit, "offset": offset,
+    }
 
     check_conn = _get_graph_conn()
     if check_conn is None:
@@ -6754,15 +6845,33 @@ def find_citations(
         return result
     check_conn.close()
 
+    # Exact totals (confidence-filtered) so the caller can tell a capped page from
+    # a complete one, and paginate the rest via offset (issue #49). Neither
+    # direction is silently truncated without a signal.
+    incoming_total, outgoing_total = _count_citations_filtered(
+        decision_id, min_confidence=min_confidence,
+    )
+
     if direction in ("both", "outgoing"):
-        result["outgoing"] = _find_outgoing_citations(
-            decision_id, min_confidence=min_confidence, limit=limit,
+        rows = _find_outgoing_citations(
+            decision_id, min_confidence=min_confidence, limit=limit, offset=offset,
         )
+        result["outgoing"] = rows
+        result["outgoing_total"] = outgoing_total
+        result["outgoing_returned"] = len(rows)
+        result["outgoing_has_more"] = (offset + len(rows)) < outgoing_total
 
     if direction in ("both", "incoming"):
-        result["incoming"] = _find_incoming_citations(
-            decision_id, min_confidence=min_confidence, limit=limit,
+        rows = _find_incoming_citations(
+            decision_id, min_confidence=min_confidence, limit=limit, offset=offset,
         )
+        result["incoming"] = rows
+        result["incoming_total"] = incoming_total
+        result["incoming_returned"] = len(rows)
+        result["incoming_has_more"] = (offset + len(rows)) < incoming_total
+
+    if result.get("outgoing_has_more") or result.get("incoming_has_more"):
+        result["next_offset"] = offset + limit
 
     return result
 
@@ -8038,11 +8147,32 @@ def _format_citations_response(result: dict) -> str:
     self_url = _canonical_decision_url(did)
     text = f"# Citations for {_md_link(did, self_url)}\n\n"
 
-    outgoing = result.get("outgoing", [])
+    # KNOWN LIMITATION (#49): BGE dual-ID-format dedup (_dedup_bge_citations)
+    # runs per response, AFTER SQL offset/limit paging. So a decision cited under
+    # two BGE ID formats could, near a page boundary, appear on two adjacent
+    # pages. Low severity (dual-ID BGE citations only, only when paginating).
+    # A full fix means de-duping before paging (fetch-all-then-slice), which
+    # sacrifices LIMIT/OFFSET efficiency on decisions with thousands of cites.
+    offset = result.get("offset", 0)
+
+    def _range_hdr(returned: int, total, has_more: bool) -> str:
+        if total is None:
+            return f"{returned}"
+        base = f"{returned} of {total}"
+        if offset:
+            base = f"{offset + 1}-{offset + returned} of {total}"
+        if has_more:
+            base += f", truncated \u2014 next_offset={result.get('next_offset')}"
+        return base
+
+    outgoing = result.get("outgoing")
     if outgoing is not None:
+        raw_n = result.get("outgoing_returned", len(outgoing))
         outgoing = _dedup_bge_citations(outgoing, "target_decision_id")
         outgoing = _override_citation_dates(outgoing, "target_decision_id")
-        text += f"## Outgoing ({len(outgoing)} \u2014 what this decision cites)\n"
+        hdr = _range_hdr(raw_n, result.get("outgoing_total"),
+                         result.get("outgoing_has_more", False))
+        text += f"## Outgoing ({hdr} \u2014 what this decision cites)\n"
         if not outgoing:
             text += "No outgoing citations found.\n"
         for i, c in enumerate(outgoing, 1):
@@ -8063,11 +8193,14 @@ def _format_citations_response(result: dict) -> str:
                 text += f"{i}. {ref} (unresolved, type={ttype}) mentions={mentions}\n"
         text += "\n"
 
-    incoming = result.get("incoming", [])
+    incoming = result.get("incoming")
     if incoming is not None:
+        raw_n = result.get("incoming_returned", len(incoming))
         incoming = _dedup_bge_citations(incoming, "source_decision_id")
         incoming = _override_citation_dates(incoming, "source_decision_id")
-        text += f"## Incoming ({len(incoming)} \u2014 what cites this decision)\n"
+        hdr = _range_hdr(raw_n, result.get("incoming_total"),
+                         result.get("incoming_has_more", False))
+        text += f"## Incoming ({hdr} \u2014 what cites this decision)\n"
         if not incoming:
             text += "No incoming citations found.\n"
         for i, c in enumerate(incoming, 1):
@@ -9435,11 +9568,27 @@ def _format_date_localized(iso_date: str | None, lang: str) -> str:
     return f"{day} {month} {y}"  # fr / it
 
 
+# Leading Erwägung/considérant marker (DE/FR/IT), stripped only when a digit
+# follows. Replaces the old `.lstrip("E.")` which is a CHARACTER strip, not a
+# prefix strip: it mangled "Erw. 2" -> "rw. 2" and never matched consid./cons.
+# (issue #47). Longest alternatives first so "erw" doesn't pre-empt "erwägung".
+_ERW_PREFIX_RE = re.compile(
+    r"^(?:erwägung|erwaegung|considérant|considerant|considerando|consid|cons|erw|e)"
+    r"\.?\s*(?=\d)",
+    re.IGNORECASE,
+)
+
+
+def _strip_erw_prefix(s: str | None) -> str:
+    """Normalise an Erwägung/pinpoint token to its bare number ('E. 2' -> '2')."""
+    return _ERW_PREFIX_RE.sub("", (s or "").strip()).strip()
+
+
 def _pinpoint_anchor(pinpoint: str | None) -> str:
     """Turn '2.3' into '#e-2-3' for SEO-page anchor links."""
     if not pinpoint:
         return ""
-    cleaned = pinpoint.strip().lstrip("E.").strip()
+    cleaned = _strip_erw_prefix(pinpoint)
     if not cleaned:
         return ""
     return "#e-" + cleaned.replace(".", "-")
@@ -9491,7 +9640,7 @@ def _canonical_decision_url(decision_id: str, pinpoint: str | None = None) -> st
     """Build the /entscheid/<id>[#e-N-M] URL for a given decision id."""
     if not decision_id:
         return ""
-    pin = (pinpoint or "").strip().lstrip("E.").strip()
+    pin = _strip_erw_prefix(pinpoint)
     anchor = _pinpoint_anchor(pin) if pin else ""
     return f"{_CITATION_BASE_URL}/entscheid/{decision_id}{anchor}"
 
@@ -9571,7 +9720,7 @@ def _build_citation_strings(decision: dict, pinpoint: str | None = None) -> dict
     docket = _clean_docket(decision.get("docket_number"))
     decision_id = decision.get("decision_id", "")
     decision_date = decision.get("decision_date") or ""
-    pin = (pinpoint or "").strip().lstrip("E.").strip()
+    pin = _strip_erw_prefix(pinpoint)
     anchor = _pinpoint_anchor(pin) if pin else ""
     url = f"{_CITATION_BASE_URL}/entscheid/{decision_id}{anchor}"
 
@@ -9756,7 +9905,7 @@ def _handle_get_erwaegung(*, decision_id: str, e_number: str) -> dict:
     if not decision_id or not e_number:
         return {"error": "Provide both decision_id and e_number (e.g. '2.3')."}
     resolved = _resolve_decision_id(decision_id.strip())
-    e_clean = e_number.strip().lstrip("E.").strip()
+    e_clean = _strip_erw_prefix(e_number)
     paragraphs = _fetch_structure_paragraphs(resolved)
     if not paragraphs:
         return {"error": f"No structured Erwägungen found for {decision_id!r}."}
@@ -11244,6 +11393,70 @@ def _docket_close_matches(reference: str, limit: int = 5) -> list[dict] | None:
     return [r for _, r in scored[:limit]]
 
 
+# BGE reference shape: (optional BGE/ATF/DTF) volume, division (roman + a/b), page.
+# Mirrors _bge_ref_candidates so the two agree on what a BGE ref is.
+_BGE_REF_TEXT_RE = re.compile(
+    r"(?:(?:BGE|ATF|DTF)\s+)?(\d+)\s+([IVX]+)([ab]?)\s+(\d+)\s*$", re.IGNORECASE)
+
+
+def _parse_bge_ref_text(ref: str) -> tuple[str, str, int] | None:
+    """Parse 'BGE 129 I 236' (or 'ATF 129 I 236, consid. 4') into
+    (volume, DIVISION_UPPER, page). Division is upper-cased to match the stored
+    docket form ('129 I 232', '116 IA 28'). Returns None if not BGE-shaped."""
+    r = re.sub(r"\s*,?\s+(?:E|Erw|consid|cons)\.?\s.*$", "", (ref or "").strip(),
+               flags=re.IGNORECASE)
+    m = _BGE_REF_TEXT_RE.match(r)
+    if not m:
+        return None
+    return (m.group(1), (m.group(2) + m.group(3)).upper(), int(m.group(4)))
+
+
+def _bge_containing_decision(ref: str) -> dict | None:
+    """For a BGE page reference whose page is not a start page (a pinpoint page),
+    return the decision in the SAME volume+division whose start page is the
+    largest <= the queried page — the decision the page falls inside. This is the
+    correct 'did you mean' for e.g. 'BGE 129 I 236' -> BGE 129 I 232, instead of
+    an FTS token match on '236' that surfaces unrelated volumes (issue #48).
+    Returns a decision row dict or None (page before the first decision / no BGE)."""
+    parsed = _parse_bge_ref_text(ref)
+    if parsed is None:
+        return None
+    vol, div, page = parsed
+    conn = get_db()
+    try:
+        rows = conn.execute(
+            "SELECT * FROM decisions WHERE court IN ('bge', 'bge_egmr') "
+            "AND upper(docket_number) LIKE ?",
+            (f"{vol} {div} %",),
+        ).fetchall()
+    finally:
+        conn.close()
+    rgx = re.compile(rf"^{re.escape(vol)}\s+{re.escape(div)}\s+(\d+)$")
+    # (start_page -> row) for every decision in this volume+division.
+    starts: dict[int, dict] = {}
+    for r in rows:
+        m = rgx.match((r["docket_number"] or "").strip().upper())
+        if m:
+            starts[int(m.group(1))] = dict(r)
+    if not starts:
+        return None
+    below = [p for p in starts if p <= page]
+    if not below:
+        return None  # page precedes the first decision in the division
+    best_page = max(below)
+    # The decision spans [best_page, next_start - 1]. Only suggest it when the
+    # queried page actually falls inside that range — otherwise a wildly out-of-
+    # range page (e.g. 129 I 9999) would wrongly point at the division's last
+    # decision. For the final decision (no next start) bound by a generous max
+    # decision length so a plausible pinpoint still resolves (#48, Codex review).
+    MAX_BGE_DECISION_PAGES = 60
+    above = [p for p in starts if p > best_page]
+    end_page = (min(above) - 1) if above else (best_page + MAX_BGE_DECISION_PAGES - 1)
+    if page > end_page:
+        return None
+    return starts[best_page]
+
+
 def _handle_cite(
     *,
     reference: str,
@@ -11281,20 +11494,34 @@ def _handle_cite(
         # year, surfacing an unrelated different-year docket (#41). Fall back to
         # FTS only for non-docket references.
         close_matches: list[dict] = []
+        bge_parsed = _parse_bge_ref_text(ref)
         try:
-            cand_rows = _docket_close_matches(ref, limit=5)
-            if cand_rows is None:  # not docket-shaped → generic search
-                cand_rows, _ = search_fts5(query=ref, limit=5)
+            if bge_parsed is not None:
+                # BGE page ref: the only useful suggestion is the decision whose
+                # page range contains the queried (pinpoint) page. Never fall back
+                # to an FTS token match on the page number (the #48 noise).
+                containing = _bge_containing_decision(ref)
+                cand_rows = [containing] if containing else []
+            else:
+                cand_rows = _docket_close_matches(ref, limit=5)
+                if cand_rows is None:  # not docket-shaped → generic search
+                    cand_rows, _ = search_fts5(query=ref, limit=5)
             for r in cand_rows[:5]:
                 cand_citation = _build_citation_strings(r)
-                close_matches.append({
+                item = {
                     "decision_id": r.get("decision_id"),
                     "docket_number": r.get("docket_number"),
                     "court": r.get("court"),
                     "decision_date": r.get("decision_date"),
                     "citation_string_de": cand_citation["citation_string_de"],
                     "canonical_url": cand_citation["canonical_url"],
-                })
+                }
+                if bge_parsed is not None:
+                    # Signal WHY this is suggested: the queried page falls inside
+                    # this decision (a pinpoint page), so the LLM re-cites the
+                    # decision's start-page reference.
+                    item["match_reason"] = "queried_page_within_this_decision"
+                close_matches.append(item)
         except Exception:
             pass
         return {
@@ -11318,7 +11545,7 @@ def _handle_cite(
     if pinpoint:
         # Best-effort: fetch the referenced Erwägung if available.
         paras = _fetch_structure_paragraphs(decision.get("decision_id") or resolved_id)
-        pin_clean = pinpoint.strip().lstrip("E.").strip()
+        pin_clean = _strip_erw_prefix(pinpoint)
         for p in paras:
             if p["e_number"] == pin_clean:
                 pinpoint_text = p["text"]
@@ -11394,7 +11621,7 @@ def _handle_check_claim_support(
     text_source = ""
     if pinpoint:
         paras = _fetch_structure_paragraphs(resolved_id)
-        pin_clean = pinpoint.strip().lstrip("E.").strip()
+        pin_clean = _strip_erw_prefix(pinpoint)
         # Accept exact match OR parent-match: "4" passes if "4.1"/"4.2" etc.
         # exist (lawyers cite "E. 4" to mean the whole section).
         direct = [p for p in paras if p["e_number"] == pin_clean]
@@ -12208,7 +12435,10 @@ def _audit_dates(
             "gennaio": 1, "febbraio": 2, "marzo": 3, "aprile": 4, "maggio": 5, "giugno": 6,
             "luglio": 7, "agosto": 8, "settembre": 9, "ottobre": 10, "dicembre": 12,
         }
-        m = re.match(r"^(\d{1,2})\.?\s+([A-Za-zÄÖÜäöüé]+)\s+(\d{4})$", s)
+        # Full Latin-1 letter class (matches the date-finding pattern's own class):
+        # the earlier [A-Za-zÄÖÜäöüé]+ omitted û, so "août" matched only "ao" and
+        # every French August date silently failed to parse (issue #50).
+        m = re.match(r"^(\d{1,2})\.?\s+([A-Za-zÀ-ÖØ-öø-ÿß]+)\s+(\d{4})$", s)
         if m:
             d, name, y = m.group(1), m.group(2).lower(), m.group(3)
             mo = months.get(name)
@@ -17998,7 +18228,7 @@ def _list_tools() -> list[Tool]:
                 "ecthr_grand_chamber) using full-text search. "
                 "Supports keywords, phrases (in quotes), Boolean operators "
                 "(AND, OR, NOT), and prefix matching (word*). "
-                "Filter by court, canton, language, date range, chamber, and decision type. "
+                "Filter by court, canton, language, date range, and chamber. "
                 "Also handles docket number lookup (e.g., 6B_1234/2025) and "
                 "column-scoped search (regeste:keyword, full_text:keyword). "
                 "Returns relevance-ranked results enriched with:\n"
@@ -18072,23 +18302,6 @@ def _list_tools() -> list[Tool]:
                             "Filter by chamber/division (substring match). "
                             "Examples: 'Abteilung V' (BVGer asylum), "
                             "'Zivilrechtliche', 'CASSO', 'Strafrechtliche'"
-                        ),
-                    },
-                    "decision_type": {
-                        "type": "string",
-                        "description": (
-                            "Filter by decision type (substring match). "
-                            "Examples: 'Urteil', 'Beschluss', 'Leitentscheid', "
-                            "'BVGE', 'Verfügung', 'Endentscheid'"
-                        ),
-                    },
-                    "legal_area": {
-                        "type": "string",
-                        "description": (
-                            "Filter by legal area/Rechtsgebiet (substring match). "
-                            "Examples: 'Strafrecht', 'Zivilrecht', 'Arbeitsrecht', "
-                            "'Mietrecht', 'Familienrecht', 'Sozialversicherung', "
-                            "'Schuldbetreibung', 'Ausländerrecht'"
                         ),
                     },
                     "marked_for_publication": {
@@ -18220,8 +18433,18 @@ def _list_tools() -> list[Tool]:
                     },
                     "limit": {
                         "type": "integer",
-                        "description": "Max citations per direction (default 50, max 200)",
+                        "description": "Max citations per direction per page (default 50, max 200)",
                         "default": 50,
+                    },
+                    "offset": {
+                        "type": "integer",
+                        "description": (
+                            "Pagination offset per direction (default 0). The response reports "
+                            "*_total and *_has_more; when has_more is true, re-query with "
+                            "offset=next_offset to retrieve the rest (heavily-cited leading "
+                            "decisions exceed the 200-per-page cap)."
+                        ),
+                        "default": 0,
                     },
                 },
                 "required": ["decision_id"],
@@ -19951,6 +20174,22 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
             )
 
         if name == "search_decisions":
+            # #46: decision_type / legal_area were advertised but non-functional
+            # (columns too sparse to filter honestly — decision_type silently
+            # returned 0, legal_area was a no-op boost). Removed from the schema;
+            # reject explicitly if a stale client still sends them rather than
+            # return misleading zero/unfiltered results.
+            _unsupported = [p for p in ("decision_type", "legal_area")
+                            if arguments.get(p) not in (None, "")]
+            if _unsupported:
+                _msg = (
+                    f"Unsupported search filter(s): {', '.join(_unsupported)}. "
+                    "These fields are too sparse in the corpus to filter honestly, "
+                    "so no search was run. Express the concept in `query`, or filter "
+                    "by `court` / `chamber`."
+                )
+                return ([TextContent(type="text", text=json.dumps({"error": _msg}, ensure_ascii=False))],
+                        {"error": _msg})
             _derr = _date_arg_error(arguments.get("date_from"), arguments.get("date_to"))
             if _derr:
                 return ([TextContent(type="text", text=json.dumps({"error": _derr}, ensure_ascii=False))],
@@ -19967,8 +20206,6 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 date_from=arguments.get("date_from"),
                 date_to=arguments.get("date_to"),
                 chamber=arguments.get("chamber"),
-                decision_type=arguments.get("decision_type"),
-                legal_area=arguments.get("legal_area"),
                 marked_for_publication=arguments.get("marked_for_publication"),
                 limit=arguments.get("limit", DEFAULT_LIMIT),
                 offset=req_offset,
@@ -20219,6 +20456,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 direction=arguments.get("direction", "both"),
                 min_confidence=float(arguments.get("min_confidence", 0.3)),
                 limit=int(arguments.get("limit", 50)),
+                offset=int(arguments.get("offset", 0)),
             )
             return [TextContent(type="text", text=_format_citations_response(result))]
 
@@ -21886,16 +22124,25 @@ setInterval(load, 30000);
             "properties": {
                 "decision_id":  {"type": "string"},
                 "direction":    {"type": "string"},
+                "limit":        {"type": "integer"},
+                "offset":       {"type": "integer"},
+                "next_offset":  {"type": "integer", "nullable": True},
                 "incoming": {
                     "type": "array",
                     "nullable": True,
                     "items": _COPILOT_SEARCH_ITEM_SCHEMA,
                 },
+                "incoming_total":    {"type": "integer", "nullable": True},
+                "incoming_returned": {"type": "integer", "nullable": True},
+                "incoming_has_more": {"type": "boolean", "nullable": True},
                 "outgoing": {
                     "type": "array",
                     "nullable": True,
                     "items": _COPILOT_SEARCH_ITEM_SCHEMA,
                 },
+                "outgoing_total":    {"type": "integer", "nullable": True},
+                "outgoing_returned": {"type": "integer", "nullable": True},
+                "outgoing_has_more": {"type": "boolean", "nullable": True},
             },
         },
         # /laws/<abbr> wire fields (verified live): abbreviation,
@@ -22408,6 +22655,7 @@ setInterval(load, 30000);
                               "entries; use `total`, `has_more` and `next_offset` to page with `offset` "
                               "until has_more is false to retrieve the complete list.")
     async def api_search_decisions(
+        request: Request,
         query: str = Query(None, description="Search query (FTS5 syntax: keywords, \"phrases\", AND/OR/NOT)"),
         q: str = Query(None, description="Alias for `query` (the short name used in the public docs / by most clients). `query` wins if both are given."),
         court: str = Query(None, description="Filter by court code (e.g., bger, bvger, zh_obergericht)"),
@@ -22416,7 +22664,6 @@ setInterval(load, 30000);
         date_from: str = Query(None, description="Start date (YYYY-MM-DD)"),
         date_to: str = Query(None, description="End date (YYYY-MM-DD)"),
         chamber: str = Query(None, description="Filter by chamber/division (substring match)"),
-        decision_type: str = Query(None, description="Filter by decision type (Urteil, Beschluss, etc.)"),
         marked_for_publication: bool = Query(None, description="If true, return only Federal Supreme Court rulings flagged for the official BGE collection (Neuheiten '*' = 'für die Publikation vorgesehen') — future leading cases, flagged before the BGE number is assigned. Populated for BGer decisions from mid-2026 onward."),
         limit: int = Query(50, ge=1, le=2000, description="Max results to return"),
         offset: int = Query(0, ge=0, description="Skip results for pagination"),
@@ -22430,13 +22677,23 @@ setInterval(load, 30000);
         # `query` takes precedence when both are supplied.
         if not query and q:
             query = q
+        # #46: decision_type / legal_area are no longer supported (too sparse to
+        # filter honestly). Reject explicitly rather than silently mislead.
+        _unsupported = [p for p in ("decision_type", "legal_area")
+                        if request.query_params.get(p) not in (None, "")]
+        if _unsupported:
+            raise HTTPException(
+                status_code=422,
+                detail=(f"Unsupported search filter(s): {', '.join(_unsupported)}. "
+                        "Corpus metadata is too sparse to apply them honestly; express "
+                        "the concept in `query`, or filter by `court` / `chamber`."))
         _derr = _date_arg_error(date_from, date_to)
         if _derr:
             raise HTTPException(status_code=422, detail=_derr)  # #45: no silent drop
         results, total = await asyncio.to_thread(
             search_fts5, query=query or "", court=court, canton=canton,
             language=language, date_from=date_from, date_to=date_to,
-            chamber=chamber, decision_type=decision_type,
+            chamber=chamber,
             marked_for_publication=marked_for_publication,
             limit=limit, offset=offset, sort=sort,
         )
@@ -22668,11 +22925,12 @@ setInterval(load, 30000);
         decision_id: str = PathParam(description="Decision ID (e.g., bger_6B_1_2025)"),
         direction: str = Query("both", description="Citation direction: both, outgoing, or incoming"),
         min_confidence: float = Query(0.3, ge=0, le=1, description="Minimum confidence score (0-1)"),
-        limit: int = Query(50, ge=1, le=200, description="Max citations per direction"),
+        limit: int = Query(50, ge=1, le=200, description="Max citations per direction per page"),
+        offset: int = Query(0, ge=0, description="Pagination offset per direction (see *_has_more / next_offset)"),
     ):
         return await asyncio.to_thread(
             find_citations, decision_id=decision_id, direction=direction,
-            min_confidence=min_confidence, limit=limit,
+            min_confidence=min_confidence, limit=limit, offset=offset,
         )
 
     @rest_api.get("/appeal-chain/{decision_id}", tags=["Citation Graph"],

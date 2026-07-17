@@ -60,7 +60,6 @@ MCP_TOOLS = [
                 "date_from": {"type": "string", "description": "Start date (YYYY-MM-DD)"},
                 "date_to": {"type": "string", "description": "End date (YYYY-MM-DD)"},
                 "chamber": {"type": "string", "description": "Filter by chamber/division"},
-                "decision_type": {"type": "string", "description": "Filter by decision type"},
                 "limit": {"type": "integer", "description": "Max results to return. Use 100 for thorough research. Max 200.", "default": 100},
             },
             "required": ["query"],
