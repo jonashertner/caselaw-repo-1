@@ -1,13 +1,13 @@
 {
-  "total": 1049320,
+  "total": 1049364,
   "by_court": [
     {
       "court": "bger",
       "canton": "CH",
-      "count": 191836,
+      "count": 191880,
       "earliest": "1986-10-06",
-      "latest": "2026-07-08",
-      "last_scraped": "2026-07-16T10:01:15.408397+00:00",
+      "latest": "2026-07-09",
+      "last_scraped": "2026-07-17T10:01:41.988732+00:00",
       "languages": [
         "de",
         "fr",
@@ -1830,9 +1830,9 @@
     }
   ],
   "by_language": {
-    "de": 499167,
-    "fr": 459411,
-    "it": 90742
+    "de": 499191,
+    "fr": 459430,
+    "it": 90743
   },
   "by_year": {
     "1875": 179,
@@ -1986,27 +1986,27 @@
     "2023": 51451,
     "2024": 51396,
     "2025": 48417,
-    "2026": 15941
+    "2026": 15985
   },
   "recent_daily": {
     "2026-06-17": 77,
-    "2026-06-18": 83,
+    "2026-06-18": 86,
     "2026-06-19": 85,
-    "2026-06-22": 66,
-    "2026-06-23": 82,
-    "2026-06-24": 60,
-    "2026-06-25": 49,
+    "2026-06-22": 67,
+    "2026-06-23": 85,
+    "2026-06-24": 64,
+    "2026-06-25": 51,
     "2026-06-26": 33,
     "2026-06-28": 1,
-    "2026-06-29": 50,
-    "2026-06-30": 27,
+    "2026-06-29": 55,
+    "2026-06-30": 30,
     "2026-07-01": 33,
-    "2026-07-02": 39,
-    "2026-07-03": 34,
+    "2026-07-02": 41,
+    "2026-07-03": 35,
     "2026-07-06": 16,
-    "2026-07-07": 12,
-    "2026-07-08": 10,
-    "2026-07-09": 15,
+    "2026-07-07": 14,
+    "2026-07-08": 14,
+    "2026-07-09": 16,
     "2026-07-10": 5,
     "2026-07-13": 5,
     "2026-07-14": 2,
@@ -2023,7 +2023,7 @@
     {
       "court": "bger",
       "canton": "CH",
-      "count": 191836
+      "count": 191880
     },
     {
       "court": "ge_gerichte",
@@ -2222,10 +2222,10 @@
     "2023": -0.2,
     "2024": -0.1,
     "2025": -5.8,
-    "2026": -67.1
+    "2026": -67.0
   },
   "federal_vs_cantonal": {
-    "federal": 395102,
+    "federal": 395146,
     "cantonal": 654218
   },
   "language_by_year": {
@@ -2335,9 +2335,9 @@
       "it": 1548
     },
     "2026": {
-      "de": 8477,
-      "fr": 6785,
-      "it": 679
+      "de": 8501,
+      "fr": 6804,
+      "it": 680
     }
   },
   "by_month": {
@@ -2375,11 +2375,11 @@
     "2026-02": 3331,
     "2026-03": 3062,
     "2026-04": 2588,
-    "2026-05": 2235,
-    "2026-06": 1751,
-    "2026-07": 176
+    "2026-05": 2242,
+    "2026-06": 1778,
+    "2026-07": 186
   },
-  "generated_at": "2026-07-17T10:55:45.972210+00:00",
+  "generated_at": "2026-07-17T17:14:43.046843+00:00",
   "scraper_health": {
     "run_at": "2026-07-17T02:34:58.897143+00:00",
     "run_duration_s": 5638.1,
@@ -2756,7 +2756,7 @@
         "note": null,
         "state_count": 97675,
         "jsonl_size_mb": 1473.2,
-        "jsonl_mtime": "2026-07-17T10:34:41.491466+00:00"
+        "jsonl_mtime": "2026-07-17T16:00:56.977486+00:00"
       },
       "be_zivilstraf": {
         "success": true,
@@ -3062,7 +3062,7 @@
         "note": "1768 listed on portal but content not downloadable (empty page or missing PDF)",
         "state_count": 1532,
         "jsonl_size_mb": 93.3,
-        "jsonl_mtime": "2026-07-17T01:50:02.818025+00:00"
+        "jsonl_mtime": "2026-07-17T14:57:15.160430+00:00"
       },
       "gr_gerichte": {
         "success": true,
@@ -3613,19 +3613,19 @@
       "reference_article": 40,
       "bachelor_thesis": 3
     },
-    "citation_edges": 9638250,
-    "statute_edges": 12396836
+    "citation_edges": 9640676,
+    "statute_edges": 12399184
   },
   "interesting_stats": {
     "most_cited_decision": {
       "docket": "125 V 351",
-      "citation_count": 66138,
+      "citation_count": 66149,
       "url": "https://mcp.opencaselaw.ch/entscheid/bge_125 V 351"
     },
     "most_cited_statute": {
       "law_code": "LTF",
       "article": "100",
-      "ref_count": 183567
+      "ref_count": 183582
     },
     "oldest_decision": {
       "docket": "1_I_26",
@@ -3637,57 +3637,57 @@
       "de_pct": 47.6,
       "fr_pct": 43.8,
       "it_pct": 8.6,
-      "total": 1049190
+      "total": 1049364
     },
     "regeste_coverage": {
       "pct": 38.6,
-      "with_regeste": 404890,
-      "total": 1049190
+      "with_regeste": 404924,
+      "total": 1049364
     },
     "graph_size": {
-      "decision_edges": 9962687,
-      "statute_edges": 12396836,
-      "total": 22359523
+      "decision_edges": 9965259,
+      "statute_edges": 12399184,
+      "total": 22364443
     },
     "echr_switzerland": {
-      "total": 2860,
+      "total": 2863,
       "grand_chamber": 98,
-      "in_2026": 135,
+      "in_2026": 137,
       "most_recent": {
-        "decision_date": "2026-07-09",
-        "docket": "14652/22",
-        "regeste_excerpt": "Violation de l'article 10 - Liberté d'expression - {général} (Article 10-1 - Liberté d'expression); Violation: 10;10-1",
-        "url": "https://mcp.opencaselaw.ch/entscheid/ecthr_committee_14652_22"
+        "decision_date": "2026-07-16",
+        "docket": "55299/20_31515/22",
+        "regeste_excerpt": "Preliminary objection dismissed (Art. 35) Admissibility criteria;(Art. 35-1) Exhaustion of domestic remedies;Violation of Article 13+9 - Rig",
+        "url": "https://mcp.opencaselaw.ch/entscheid/hudoc_ch_55299_20_31515_22"
       }
     },
     "top_5_decisions": [
       {
         "docket": "125 V 351",
-        "citation_count": 66138,
+        "citation_count": 66149,
         "regeste_excerpt": "Regeste\n Art. 4 BV; Art. 108 Abs. 1 lit. b UVG; Art. 40 BZP in Verbindung mit Art. 19 VwVG; Art. 95 Abs. 2 in Verbindung mit Art. 113 und 132 OG: Beweiswürdigun",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_125 V 351"
       },
       {
         "docket": "BGE 125 V 351",
-        "citation_count": 51893,
+        "citation_count": 51898,
         "regeste_excerpt": "Regeste\n Art. 4 BV; Art. 108 Abs. 1 lit. b UVG; Art. 40 BZP in Verbindung mit Art. 19 VwVG; Art. 95 Abs. 2 in Verbindung mit Art. 113 und 132 OG: Beweiswürdigun",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
       },
       {
         "docket": "BGE 134 V 231",
-        "citation_count": 38314,
+        "citation_count": 38320,
         "regeste_excerpt": "Regeste\n Art. 6 Abs. 1 UVG; Beweiswert diagnostischer Methoden; funktionelle Magnetresonanztomographie; Schleudertrauma. Eine medizinisch-diagnostische Methode ",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_134_V_231"
       },
       {
         "docket": "BGE 115 V 133",
-        "citation_count": 33994,
+        "citation_count": 33995,
         "regeste_excerpt": "Regeste\n Art. 67 und 76 KUVG, Art. 6 und 18 UVG. Präzisierung der in BGE 113 V 307 veröffentlichten Rechtsprechung zum adäquaten Kausalzusammenhang.\nRegeste\n Ar",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_115_V_133"
       },
       {
         "docket": "122 V 157",
-        "citation_count": 30058,
+        "citation_count": 30061,
         "regeste_excerpt": "Regeste\n Art. 4 BV, Art. 6 Ziff. 1 EMRK. - Art. 4 BV und Art. 6 Ziff. 1 EMRK umfassen keinen formellen Anspruch auf Beizug versicherungsexterner medizinischer G",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_122 V 157"
       }
@@ -3696,37 +3696,37 @@
       {
         "law_code": "LTF",
         "article": "100",
-        "ref_count": 183567
+        "ref_count": 183582
       },
       {
         "law_code": "LTF",
         "article": "113",
-        "ref_count": 113222
+        "ref_count": 113228
       },
       {
         "law_code": "LTF",
         "article": "42",
-        "ref_count": 107925
+        "ref_count": 107962
       },
       {
         "law_code": "BGG",
         "article": "42",
-        "ref_count": 95335
+        "ref_count": 95366
       },
       {
         "law_code": "BGG",
         "article": "66",
-        "ref_count": 60024
+        "ref_count": 60045
       }
     ],
     "materialien_coverage": {
-      "total_documents": 6145,
-      "paragraphs": 419143,
+      "total_documents": 6148,
+      "paragraphs": 419762,
       "article_links": 19809,
       "by_language": {
-        "de": 2048,
-        "fr": 2049,
-        "it": 2048
+        "de": 2049,
+        "fr": 2050,
+        "it": 2049
       },
       "year_range": {
         "from": 1999,
@@ -3772,9 +3772,9 @@
       {
         "court": "ge_gerichte",
         "earliest": "1908-11-08",
-        "latest": "2026-06-26",
+        "latest": "2026-06-30",
         "span_years": 118,
-        "decision_count": 168961
+        "decision_count": 169008
       }
     ]
   },
@@ -4070,12 +4070,68 @@
   "recent": {
     "bge": [
       {
+        "decision_id": "bger_9C_399_2026",
+        "docket": "9C_399/2026",
+        "date": "2026-07-09",
+        "court": "bger",
+        "language": "de",
+        "summary": "Staats- und Gemeindesteuern des Kantons Aargau, Steuerperioden 2022-2024,"
+      },
+      {
         "decision_id": "bger_6B_467_2026",
         "docket": "6B_467/2026",
         "date": "2026-07-08",
         "court": "bger",
         "language": "de",
         "summary": "Mehrfacher Ungehorsam gegen amtliche Verfügungen; Nichteintreten,"
+      },
+      {
+        "decision_id": "bger_5G_1_2026",
+        "docket": "5G_1/2026",
+        "date": "2026-07-08",
+        "court": "bger",
+        "language": "fr",
+        "summary": "demande d'interprétation de l'arrêt du Tribunal fédéral suisse du 3 mars 2025 (5A_429/2024 [arrêt du Juge unique de la Cour d'appel civile du Tribunal cantonal du canton de Vaud du 21 mai 2024; JS21.046280-221542-221544…"
+      },
+      {
+        "decision_id": "bger_5A_608_2026",
+        "docket": "5A_608/2026",
+        "date": "2026-07-08",
+        "court": "bger",
+        "language": "fr",
+        "summary": "refus de l'effet suspensif (plainte LP, séquestre),"
+      },
+      {
+        "decision_id": "bger_5A_572_2026",
+        "docket": "5A_572/2026",
+        "date": "2026-07-08",
+        "court": "bger",
+        "language": "de",
+        "summary": "Konkurseröffnung,"
+      },
+      {
+        "decision_id": "bger_5A_278_2026",
+        "docket": "5A_278/2026",
+        "date": "2026-07-08",
+        "court": "bger",
+        "language": "fr",
+        "summary": "avance de frais (mesures provisionnelles; fixation des contributions d'entretien et des droit parentaux),"
+      },
+      {
+        "decision_id": "bger_8C_379_2026",
+        "docket": "8C_379/2026",
+        "date": "2026-07-07",
+        "court": "bger",
+        "language": "de",
+        "summary": "Ergänzungsleistung zur AHV/IV (Rechtsverzögerung),"
+      },
+      {
+        "decision_id": "bger_7B_796_2026",
+        "docket": "7B_796/2026",
+        "date": "2026-07-07",
+        "court": "bger",
+        "language": "de",
+        "summary": "Untersuchungshaft,"
       },
       {
         "decision_id": "bger_5A_96_2024",
@@ -4092,62 +4148,6 @@
         "court": "bger",
         "language": "de",
         "summary": "Anordnung der Sicherheitshaft; Nichteintreten,"
-      },
-      {
-        "decision_id": "bger_5G_3_2026",
-        "docket": "5G_3/2026",
-        "date": "2026-07-06",
-        "court": "bger",
-        "language": "fr",
-        "summary": "requête relative à l'arrêt 5A_483/2025, 5A_495/2025 du Tribunal fédéral du 9 juin 2026."
-      },
-      {
-        "decision_id": "bger_5G_2_2026",
-        "docket": "5G_2/2026",
-        "date": "2026-07-06",
-        "court": "bger",
-        "language": "fr",
-        "summary": "requête de rectification de l'arrêt 5A_483/2025, 5A_495/2025 du Tribunal fédéral du 9 juin 2026."
-      },
-      {
-        "decision_id": "bger_4A_311_2026",
-        "docket": "4A_311/2026",
-        "date": "2026-07-06",
-        "court": "bger",
-        "language": "de",
-        "summary": "Mieterausweisung,"
-      },
-      {
-        "decision_id": "bger_1C_239_2025",
-        "docket": "1C_239/2025",
-        "date": "2026-07-06",
-        "court": "bger",
-        "language": "de",
-        "summary": "Baupolizei; Baubewilligungspflicht von Arbeiten an bestehendem Holzsteg und Wiederherstellung des rechtmässigen Zustands,"
-      },
-      {
-        "decision_id": "bger_7B_1323_2024",
-        "docket": "7B_1323/2024",
-        "date": "2026-07-03",
-        "court": "bger",
-        "language": "de",
-        "summary": "Fahrlässige schwere Körperverletzung,"
-      },
-      {
-        "decision_id": "bger_5A_622_2026",
-        "docket": "5A_622/2026",
-        "date": "2026-07-03",
-        "court": "bger",
-        "language": "fr",
-        "summary": "récusation (divorce),"
-      },
-      {
-        "decision_id": "bger_5A_598_2026",
-        "docket": "5A_598/2026",
-        "date": "2026-07-03",
-        "court": "bger",
-        "language": "fr",
-        "summary": "5A_598/2026 rejet de l'effet suspensif, tableau de distribution,"
       }
     ],
     "cantonal": [
@@ -4366,8 +4366,9 @@
     }
   ],
   "delta": {
-    "total": 130,
+    "total": 174,
     "by_court": {
+      "bger": 44,
       "ge_gerichte": 47,
       "bvger": 18,
       "vd_gerichte": 3,
@@ -4398,7 +4399,10 @@
       "SZ": 4,
       "ZG": 2
     },
-    "corpus": {},
+    "corpus": {
+      "citation_edges": 2426,
+      "statute_edges": 2348
+    },
     "previous_generated_at": "2026-07-16T17:02:50.346471+00:00"
   }
 }
