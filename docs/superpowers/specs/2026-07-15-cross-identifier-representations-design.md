@@ -194,3 +194,47 @@ periodically and **version** the representation, capturing the appeal outcome
 when it lands. This turns the publication pages into a live treatment feed — a
 Tier-1 goal — rather than a static snapshot. Prerequisite: confirm whether the
 scrapers currently update or freeze existing rows on re-scrape.
+
+## 9. Corpus-wide detection scan (2026-07-17)
+
+A read-only scan of all 1,048,953 rows across 118 courts (four signals per court:
+shared `source_url`, shared `pdf_url`, `content_hash` reused across dockets,
+`docket_number_2` populated) confirmed GE/VD/SH as the dominant double-publishers
+and surfaced **~3,672 additional confirmed dupes in four smaller courts** (each
+verified by reading actual row-pairs, not assumed):
+
+- **`ch_vb` (~2,405)** — byte-identical republication: same `source_url`, same
+  date, identical `content_hash` and length, but the two `docket_number`s are
+  **garbage** (`'.001'` vs `'83.001'`; `'<td class="metadataCell">30004634</td>'`).
+  A docket-PARSER bug, not two legitimate identifiers. Because the garbage dockets
+  differ, the content-aware dedup (keyed on docket) never collapses them. Safest
+  of all findings: a within-court same-`(source_url, content_hash)` collapse is
+  essentially risk-free. Fixing the ch_vb docket parser also lets normal dedup
+  catch these going forward. (The HTML-docket artifact is already defended at the
+  citation layer — see `tests/test_citation_sanitize.py`.)
+- **`nw_gerichte` (~484)** and **`ur_gerichte` (~199)** — the **VD complementary-
+  metadata twin** pattern: court-docket row (no regeste) vs portal-publication-ID
+  row (**carries the regeste**), same `source_url`/date, non-identical body. Merge
+  must harvest the regeste. `ur` additionally has a `1905-01-01` default-date bug
+  on the portal-side rows.
+- **`edoeb` (~584)** — full-text row + a ~900-char metadata-**stub** row at the
+  same `source_url`/date; the stub carries a title/abstract. Same document.
+
+Folding these in adjusts the corrected corpus from **911,689 → ~908,000 unique**.
+
+**Not duplication (already the target state):** `bs_appellationsgericht` (100%),
+`bs_sozialversicherungsgericht` (100%), `bl_gerichte`, `gl_gerichte`,
+`tg_obergericht`, `zh_steuerrekursgericht`, and `bger`'s 49,845 (BGE↔BGer
+linkage) score only on `docket_number_2` with **zero duplicate rows** — both
+identifiers already live on one row. No action.
+
+**Ambiguous — flagged, NOT assumed:** `lu_gerichte` (~1,191) and
+`be_verwaltungsgericht` (~378) have 2-row same-URL groups with the **same**
+docket, **different** dates/bodies, asymmetric regeste — not the cross-identifier
+shape. Needs manual adjudication before any claim. Generic listing-URL noise
+(`vd_gerichte` single index URL, `sz`/`zg`/`ju`, `mkg`, `weko`) correctly excluded.
+
+Scripts (read-only): `scripts/detect_cross_identifier_dupes.py` (detector),
+`scripts/verify_cross_identifier_dupes.py` (pair-level verifier). Next: extend
+`build_representation_manifest.py` to cover ch_vb/nw/ur/edoeb, and file the ch_vb
+docket-parser + ur date-bug scraper fixes (invariant-#5-gated).
