@@ -122,6 +122,41 @@ def test_analyze_query_skips_haiku_parse_for_pure_phrase():
     assert llm_terms == []
 
 
+def test_bge_lettered_division_citation_is_correct():
+    # #48/R1: an old lettered-division BGE row ("116 IA 28" in storage) must cite
+    # as "BGE 116 Ia 28", not fall through to a generic "Gericht CH ..." string.
+    assert mcp_server._norm_bge_division("IA") == "Ia"
+    assert mcp_server._norm_bge_division("ib") == "Ib"
+    assert mcp_server._norm_bge_division("III") == "III"
+    r = {"court": "bge", "docket_number": "116 IA 28",
+         "decision_id": "bge_116 IA 28", "decision_date": "1990-01-01"}
+    assert mcp_server._parse_bge_ref(r) == {"volume": 116, "division": "Ia", "page": 28}
+    cs = mcp_server._build_citation_strings(r)
+    assert cs["citation_string_de"] == "BGE 116 Ia 28"
+    assert cs["citation_string_fr"] == "ATF 116 Ia 28"
+    # unlettered divisions unchanged
+    r2 = {"court": "bge", "docket_number": "140 III 86",
+          "decision_id": "bge_140 III 86", "decision_date": "2014-01-01"}
+    assert mcp_server._build_citation_strings(r2)["citation_string_de"] == "BGE 140 III 86"
+
+
+def test_citations_formatter_offset_beyond_end():
+    # #49: offset past the end must not render a nonsensical "201-200 of 163".
+    result = {"decision_id": "bge_x", "direction": "incoming",
+              "limit": 200, "offset": 200, "incoming": [],
+              "incoming_total": 163, "incoming_returned": 0, "incoming_has_more": False}
+    text = mcp_server._format_citations_response(result)
+    assert "0 of 163" in text
+    assert "201-200" not in text
+    assert "beyond end" in text  # paged past the end -> flagged
+    # but a legitimate empty first page (offset 0, no citations) is NOT "beyond end"
+    empty = {"decision_id": "bge_y", "direction": "incoming", "limit": 200,
+             "offset": 0, "incoming": [], "incoming_total": 0,
+             "incoming_returned": 0, "incoming_has_more": False}
+    etext = mcp_server._format_citations_response(empty)
+    assert "0 of 0" in etext and "beyond end" not in etext
+
+
 def test_quoted_statute_ref_preserves_article_search():
     # Both a quoted doctrine phrase and a quoted statute ref drop the nl_or noise
     # (pure-phrase strategy short-circuit). But a quoted statute ref must STILL

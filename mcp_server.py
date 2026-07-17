@@ -8158,6 +8158,13 @@ def _format_citations_response(result: dict) -> str:
     def _range_hdr(returned: int, total, has_more: bool) -> str:
         if total is None:
             return f"{returned}"
+        if returned == 0:
+            # No rows on this page \u2014 e.g. offset past the end. Avoid a nonsensical
+            # "201-200 of 163" range (Codex review). Only call it "beyond end" when
+            # the caller actually paged forward (offset>0); offset 0 with total 0 is
+            # just an empty first page, not a bad offset.
+            beyond = offset > 0 and offset >= total
+            return f"0 of {total}" + (f" (offset {offset} beyond end)" if beyond else "")
         base = f"{returned} of {total}"
         if offset:
             base = f"{offset + 1}-{offset + returned} of {total}"
@@ -9594,24 +9601,37 @@ def _pinpoint_anchor(pinpoint: str | None) -> str:
     return "#e-" + cleaned.replace(".", "-")
 
 
+def _norm_bge_division(div: str) -> str:
+    """Canonicalise a BGE division to 'III' / 'Ia' form (roman upper + a/b lower)
+    from any case, so old lettered divisions ('116 IA 28') format correctly as
+    'BGE 116 Ia 28' rather than falling through to a generic 'Gericht' citation."""
+    m = re.match(r"([IVXivx]+)([ABab]?)", div or "")
+    if not m:
+        return div
+    return m.group(1).upper() + m.group(2).lower()
+
+
 def _parse_bge_ref(decision: dict) -> dict | None:
-    """Extract BGE volume/division/page from decision_id or bge_reference."""
+    """Extract BGE volume/division/page from decision_id or bge_reference.
+    Divisions include the old lettered forms Ia/Ib (upper 'IA' in storage)."""
     ref = (decision.get("bge_reference") or "").strip()
     if not ref:
-        # Try docket_number: "BGE 140 III 86"
+        # Try docket_number: "BGE 140 III 86" / "116 IA 28"
         docket = (decision.get("docket_number") or "").strip()
-        if "BGE" in docket.upper() or re.search(r"\b\d+\s+[IVX]+\s+\d+", docket):
+        if "BGE" in docket.upper() or re.search(r"\b\d+\s+[IVX]+[ab]?\s+\d+", docket, re.I):
             ref = docket
         else:
-            # Try decision_id: "bge_BGE_140_III_86" or "bge_140_III_86"
+            # Try decision_id: "bge_BGE_140_III_86" or "bge_116 IA 28"
             did = decision.get("decision_id", "")
-            m = re.search(r"(\d+)[ _]+([IVX]+)[ _]+(\d+)", did)
+            m = re.search(r"(\d+)[ _]+([IVX]+[ab]?)[ _]+(\d+)", did, re.I)
             if m:
-                return {"volume": int(m.group(1)), "division": m.group(2), "page": int(m.group(3))}
+                return {"volume": int(m.group(1)),
+                        "division": _norm_bge_division(m.group(2)), "page": int(m.group(3))}
             return None
-    m = re.search(r"(?:BGE|ATF|DTF)?\s*(\d+)\s+([IVX]+)\s+(\d+)", ref)
+    m = re.search(r"(?:BGE|ATF|DTF)?\s*(\d+)\s+([IVX]+[ab]?)\s+(\d+)", ref, re.I)
     if m:
-        return {"volume": int(m.group(1)), "division": m.group(2), "page": int(m.group(3))}
+        return {"volume": int(m.group(1)),
+                "division": _norm_bge_division(m.group(2)), "page": int(m.group(3))}
     return None
 
 
