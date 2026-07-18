@@ -472,10 +472,10 @@ def _trigger_scraper():
                 # re-detects them, re-runs the scraper (idempotent
                 # append: +0 new) and retries quick_publish.
                 logger.warning(
-                    "Quick-publish SKIPPED: full publish.py holds the lock "
-                    "— freshly-scraped BGer dockets remain in bger.jsonl; "
-                    "the next poll retries once the lock releases (after "
-                    "the Step 2 swap)"
+                    "Quick-publish SKIPPED: full publish.py or another "
+                    "quick_publish holds a lock — freshly-scraped BGer dockets "
+                    "remain in bger.jsonl; the next poll retries once the lock "
+                    "releases"
                 )
             else:
                 logger.info("Quick-publish: inserted %d new decisions",

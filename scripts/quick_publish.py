@@ -50,6 +50,13 @@ DB_PATH = OUTPUT_DIR / "decisions.db"
 JSONL_DIR = OUTPUT_DIR / "decisions"
 TMP_PATH = Path(str(DB_PATH) + ".quick")
 PUBLISH_LOCK_PATH = "/tmp/opencaselaw-publish.lock"
+# Dedicated mutex so two quick_publish runs (bger-poller hourly + ecthr daily)
+# never share the single decisions.db.quick working copy — the concurrency bug
+# that corrupted the copy ("database disk image is malformed") and failed the
+# ECtHR daily. Bounded wait, then skip (JSONL rows are re-ingested by the next
+# quick/full publish, so a skip is zero-loss).
+QUICK_PUBLISH_LOCK_PATH = "/tmp/opencaselaw-quick-publish.lock"
+QUICK_PUBLISH_LOCK_TIMEOUT_S = 15 * 60
 
 # Tracked so atexit / SIGTERM handlers can unlink the .quick file even if
 # the normal try/finally block doesn't run (e.g. parent kills us with SIGTERM
@@ -73,6 +80,40 @@ def _publish_in_progress() -> bool:
                 return True
     except FileNotFoundError:
         return False
+
+
+def _acquire_quick_publish_lock():
+    """Acquire the process-wide quick_publish mutex with a bounded wait.
+
+    Returns the held lock file object, or None if the timeout elapsed while
+    another quick_publish held it. The lock file is deliberately PERSISTENT and
+    never unlinked: unlinking an flock'd file lets two processes lock different
+    inodes at the same pathname. flock is released automatically when the fd is
+    closed — including on SIGKILL — so a crashed holder never wedges future runs.
+    """
+    lock_file = open(QUICK_PUBLISH_LOCK_PATH, "a+")
+    deadline = time.monotonic() + QUICK_PUBLISH_LOCK_TIMEOUT_S
+    announced_wait = False
+    try:
+        while True:
+            try:
+                fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+                return lock_file
+            except BlockingIOError:
+                if not announced_wait:
+                    logger.info(
+                        "Another quick_publish holds %s; waiting up to %ds",
+                        QUICK_PUBLISH_LOCK_PATH, QUICK_PUBLISH_LOCK_TIMEOUT_S,
+                    )
+                    announced_wait = True
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    lock_file.close()
+                    return None
+                time.sleep(min(1.0, remaining))
+    except BaseException:
+        lock_file.close()
+        raise
 
 
 def _cleanup_active_tmp() -> None:
@@ -131,7 +172,7 @@ def _read_new_jsonl(courts: list[str] | None, existing_ids: set[str]) -> list[di
     return new_rows
 
 
-def quick_publish(courts: list[str] | None = None, dry_run: bool = False) -> int:
+def _quick_publish_locked(courts: list[str] | None = None, dry_run: bool = False) -> int:
     """Insert new JSONL decisions into FTS5 DB. Returns count of inserted rows.
 
     The temp .quick copy is always cleaned up on exit (success, error, or
@@ -151,15 +192,16 @@ def quick_publish(courts: list[str] | None = None, dry_run: bool = False) -> int
     # Without this, quick_publish accumulates 60+ GB of dead files until
     # the data volume fills up and the nightly publish blocks at
     # pre-flight. This burned the 2026-05-02 nightly.
-    if real_tmp.exists():
+    if not dry_run and real_tmp.exists():
         try:
-            stale_age_h = (time.time() - real_tmp.stat().st_mtime) / 3600
+            stale_stat = real_tmp.stat()  # stat BEFORE unlink (was read-after-unlink)
+            stale_age_h = (time.time() - stale_stat.st_mtime) / 3600
+            stale_size_gb = stale_stat.st_size / 1e9
             real_tmp.unlink()
             logger.warning(
                 "Cleaned up stale .quick from prior crashed run "
                 "(age %.1fh, freed %.1f GB)",
-                stale_age_h, real_tmp.stat().st_size / 1e9
-                if real_tmp.exists() else 0,
+                stale_age_h, stale_size_gb,
             )
         except OSError as e:
             logger.error("Failed to clean stale .quick: %s", e)
@@ -177,9 +219,12 @@ def quick_publish(courts: list[str] | None = None, dry_run: bool = False) -> int
             _active_tmp = real_tmp
             shutil.copy2(str(real_db), str(real_tmp))
 
-        # Step 2: Find new rows
-        conn = sqlite3.connect(str(real_tmp) if not dry_run else f"file:{real_db}?mode=ro",
-                               uri=dry_run)
+        # Step 2: Find new rows (dry-run reads the LIVE db read-only + immutable)
+        read_uri = f"file:{real_db}?mode=ro&immutable=1"
+        conn = sqlite3.connect(
+            str(real_tmp) if not dry_run else read_uri,
+            uri=dry_run,
+        )
         existing_ids = _get_existing_ids(conn)
         logger.info("Existing decisions: %d", len(existing_ids))
 
@@ -244,13 +289,54 @@ def quick_publish(courts: list[str] | None = None, dry_run: bool = False) -> int
                 conn.close()
             except Exception:
                 pass
-        if not swap_done and real_tmp.exists():
+        # dry_run never creates/owns .quick (no copy, no mutex) — it must NOT
+        # unlink a concurrent real run's working file (Codex review).
+        if not dry_run and not swap_done and real_tmp.exists():
             try:
                 real_tmp.unlink()
                 logger.info("Cleaned up temp file %s", real_tmp)
             except OSError as e:
                 logger.warning("Failed to clean up %s: %s", real_tmp, e)
         _active_tmp = None
+
+
+def quick_publish(courts: list[str] | None = None, dry_run: bool = False) -> int | None:
+    """Run quick publish under the dedicated process-wide mutex.
+
+    Returns the inserted-row count, or None if the run was deliberately SKIPPED
+    because another publisher held a lock (JSONL input is retained for the next
+    quick/full publish — zero loss). Dry-run needs no mutex (read-only).
+    """
+    if dry_run:
+        return _quick_publish_locked(courts=courts, dry_run=True)
+
+    lock_file = _acquire_quick_publish_lock()
+    if lock_file is None:
+        logger.info(
+            "Another quick_publish still holds %s after %ds; skipping "
+            "quick_publish. No JSONL rows were discarded; the next quick or "
+            "full publish will retry them.",
+            QUICK_PUBLISH_LOCK_PATH, QUICK_PUBLISH_LOCK_TIMEOUT_S,
+        )
+        return None
+
+    try:
+        # Recheck AFTER acquiring the mutex: a full publish may have started
+        # while this process was queued behind another quick_publish.
+        if _publish_in_progress():
+            logger.info(
+                "Full publish.py is running (holds %s); skipping quick_publish.",
+                PUBLISH_LOCK_PATH,
+            )
+            return None
+        return _quick_publish_locked(courts=courts, dry_run=False)
+    finally:
+        try:
+            fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
+        except OSError as e:
+            logger.warning("Failed to explicitly release quick_publish lock: %s", e)
+        finally:
+            lock_file.close()
 
 
 def main():
@@ -283,6 +369,9 @@ def main():
 
     courts = args.courts.split(",") if args.courts else None
     inserted = quick_publish(courts=courts, dry_run=args.dry_run)
+    if inserted is None:
+        # Deliberately skipped (a lock was held); wrapper already logged why.
+        return
     if inserted:
         logger.info("Done — %d new decisions published", inserted)
     else:
