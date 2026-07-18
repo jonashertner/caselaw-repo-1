@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/it.xml</link>
     <description>Latest published Swiss court decisions in Italiano.</description>
     <language>de-CH</language>
-    <lastBuildDate>Fri, 17 Jul 2026 11:03:48 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 18 Jul 2026 10:00:08 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/it.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -55,6 +55,14 @@ Camera delle esecuzioni e dei fallimenti…</description>
       <pubDate>Wed, 08 Jul 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">gr_gerichte_SBK 2025 104</guid>
       <category>gr_gerichte</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht C-2148/2024 vom 2026-07-07</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-2148_2024</link>
+      <description>Assicurazione per la vecchiaia e i superstiti (altro)</description>
+      <pubDate>Tue, 07 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-2148.2024</guid>
+      <category>bvger</category>
     </item>
     <item>
       <title>Bundesverwaltungsgericht F-4468/2026 vom 2026-07-07</title>
@@ -186,6 +194,34 @@ Cancelliera Ortolano Ribordy.
 Parteci…</description>
       <pubDate>Wed, 24 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BGer:2026:6B_497.2025</guid>
+      <category>bger</category>
+    </item>
+    <item>
+      <title>Bundesgericht 8C_254/2025 vom 2026-06-23</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_8C_254_2025</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+8C_254/2025
+
+Sentenza del 23 giugno 2026
+
+IV Corte di diritto pubblico
+
+Composizione
+
+Giudici federali Viscione, Presidente,
+
+Maillard, Heine, Scherrer Reber, Métral,
+
+Cancelliere…</description>
+      <pubDate>Tue, 23 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:8C_254.2025</guid>
       <category>bger</category>
     </item>
     <item>
@@ -864,52 +900,6 @@ Partecipanti al pr…</description>
       <pubDate>Thu, 04 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-4008.2024</guid>
       <category>bvger</category>
-    </item>
-    <item>
-      <title>gr_gerichte SR1 2025 7 vom 2026-06-04</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_SR1%202025%207</link>
-      <description>Obergericht des Kantons Graubünden
-Dretgira superiura dal chantun Grischun
-Tribunale d'appello del Cantone dei Grigioni
-Sentenza del 22 gennaio 2026
-comunicata il 28 maggio 2026
-N. d’incarto
-SR1 25 7
-Istanza
-Prima Camera penale
-Composizione
-Moses, pr…</description>
-      <pubDate>Thu, 04 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">gr_gerichte_SR1 2025 7</guid>
-      <category>gr_gerichte</category>
-    </item>
-    <item>
-      <title>Bundesgericht 9C_213/2026 vom 2026-06-03</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_9C_213_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-9C_213/2026
-
-Sentenza del 3 giugno 2026
-
-III Corte di diritto pubblico
-
-Composizione
-
-Giudici federali Moser-Szeless, Presidente,
-
-Stadelmann, Parrino,
-
-Cancelliera Cometta Rizzi.…</description>
-      <pubDate>Wed, 03 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:9C_213.2026</guid>
-      <category>bger</category>
     </item>
   </channel>
 </rss>
