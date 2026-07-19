@@ -82,7 +82,7 @@ jobs:
           else
             echo "build=false" >> "$GITHUB_OUTPUT"
           fi
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         if: steps.web.outputs.build == 'true'
         with:
           node-version: '20'
