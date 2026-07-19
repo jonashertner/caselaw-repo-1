@@ -2378,7 +2378,7 @@
     "2026-06": 1846,
     "2026-07": 210
   },
-  "generated_at": "2026-07-18T14:42:56.779840+00:00",
+  "generated_at": "2026-07-18T22:08:13.451372+00:00",
   "scraper_health": {
     "run_at": "2026-07-18T02:32:12.320753+00:00",
     "run_duration_s": 5471.3,
@@ -2755,7 +2755,7 @@
         "note": null,
         "state_count": 97675,
         "jsonl_size_mb": 1473.2,
-        "jsonl_mtime": "2026-07-18T10:34:48.650790+00:00"
+        "jsonl_mtime": "2026-07-18T20:55:55.193492+00:00"
       },
       "finma_versicherungsrecht": {
         "success": true,
@@ -3299,7 +3299,7 @@
         "note": "1774 listed on portal but content not downloadable (empty page or missing PDF)",
         "state_count": 1532,
         "jsonl_size_mb": 93.3,
-        "jsonl_mtime": "2026-07-18T02:06:43.450295+00:00"
+        "jsonl_mtime": "2026-07-18T14:44:55.514590+00:00"
       },
       "zg_verwaltungsgericht": {
         "success": true,
