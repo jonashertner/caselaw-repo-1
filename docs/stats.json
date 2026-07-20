@@ -1,13 +1,13 @@
 {
-  "total": 1049520,
+  "total": 1049554,
   "by_court": [
     {
       "court": "bger",
       "canton": "CH",
-      "count": 191880,
+      "count": 191914,
       "earliest": "1986-10-06",
-      "latest": "2026-07-09",
-      "last_scraped": "2026-07-17T10:01:41.988732+00:00",
+      "latest": "2026-07-10",
+      "last_scraped": "2026-07-20T10:01:21.349685+00:00",
       "languages": [
         "de",
         "fr",
@@ -1830,8 +1830,8 @@
     }
   ],
   "by_language": {
-    "de": 499268,
-    "fr": 459508,
+    "de": 499282,
+    "fr": 459528,
     "it": 90744
   },
   "by_year": {
@@ -1986,25 +1986,25 @@
     "2023": 51451,
     "2024": 51396,
     "2025": 48422,
-    "2026": 16135
+    "2026": 16169
   },
   "recent_daily": {
     "2026-06-22": 72,
-    "2026-06-23": 86,
-    "2026-06-24": 69,
+    "2026-06-23": 87,
+    "2026-06-24": 75,
     "2026-06-25": 61,
     "2026-06-26": 35,
     "2026-06-28": 1,
     "2026-06-29": 59,
-    "2026-06-30": 31,
+    "2026-06-30": 38,
     "2026-07-01": 43,
     "2026-07-02": 44,
-    "2026-07-03": 37,
+    "2026-07-03": 40,
     "2026-07-06": 18,
-    "2026-07-07": 15,
-    "2026-07-08": 17,
-    "2026-07-09": 18,
-    "2026-07-10": 6,
+    "2026-07-07": 18,
+    "2026-07-08": 18,
+    "2026-07-09": 19,
+    "2026-07-10": 7,
     "2026-07-13": 7,
     "2026-07-14": 4,
     "2026-07-15": 2,
@@ -2020,7 +2020,7 @@
     {
       "court": "bger",
       "canton": "CH",
-      "count": 191880
+      "count": 191914
     },
     {
       "court": "ge_gerichte",
@@ -2219,10 +2219,10 @@
     "2023": -0.2,
     "2024": -0.1,
     "2025": -5.8,
-    "2026": -66.7
+    "2026": -66.6
   },
   "federal_vs_cantonal": {
-    "federal": 395167,
+    "federal": 395201,
     "cantonal": 654353
   },
   "language_by_year": {
@@ -2332,8 +2332,8 @@
       "it": 1548
     },
     "2026": {
-      "de": 8573,
-      "fr": 6881,
+      "de": 8587,
+      "fr": 6901,
       "it": 681
     }
   },
@@ -2372,11 +2372,11 @@
     "2026-02": 3341,
     "2026-03": 3074,
     "2026-04": 2594,
-    "2026-05": 2257,
-    "2026-06": 1852,
-    "2026-07": 216
+    "2026-05": 2259,
+    "2026-06": 1875,
+    "2026-07": 225
   },
-  "generated_at": "2026-07-20T10:37:29.577056+00:00",
+  "generated_at": "2026-07-20T15:51:26.403085+00:00",
   "scraper_health": {
     "run_at": "2026-07-20T02:08:14.777100+00:00",
     "run_duration_s": 4034.1,
@@ -2838,7 +2838,7 @@
         "note": null,
         "state_count": 97709,
         "jsonl_size_mb": 1473.7,
-        "jsonl_mtime": "2026-07-20T10:34:25.873864+00:00"
+        "jsonl_mtime": "2026-07-20T11:01:00.440057+00:00"
       },
       "mkg": {
         "success": true,
@@ -2923,7 +2923,7 @@
         "note": null,
         "state_count": 21320,
         "jsonl_size_mb": 489.3,
-        "jsonl_mtime": "2026-07-20T09:18:25.553859+00:00"
+        "jsonl_mtime": "2026-07-20T10:38:23.570615+00:00"
       },
       "ne_jurisprudence_adm": {
         "success": true,
@@ -3416,7 +3416,7 @@
         "note": null,
         "state_count": 7645,
         "jsonl_size_mb": 190.1,
-        "jsonl_mtime": "2026-07-20T10:21:29.516278+00:00"
+        "jsonl_mtime": "2026-07-20T10:58:52.294398+00:00"
       },
       "zh_verwaltungsgericht": {
         "success": true,
@@ -3501,7 +3501,7 @@
         "note": "1973 listed on portal but content not downloadable (empty page or missing PDF)",
         "state_count": 1532,
         "jsonl_size_mb": 93.3,
-        "jsonl_mtime": "2026-07-20T02:00:45.179524+00:00"
+        "jsonl_mtime": "2026-07-20T14:58:36.242144+00:00"
       },
       "ti_gerichte": {
         "success": true,
@@ -3635,12 +3635,12 @@
       "de_pct": 47.6,
       "fr_pct": 43.8,
       "it_pct": 8.6,
-      "total": 1049520
+      "total": 1049554
     },
     "regeste_coverage": {
       "pct": 38.6,
       "with_regeste": 404931,
-      "total": 1049520
+      "total": 1049554
     },
     "graph_size": {
       "decision_edges": 9967366,
@@ -4068,12 +4068,36 @@
   "recent": {
     "bge": [
       {
+        "decision_id": "bger_5A_649_2026",
+        "docket": "5A_649/2026",
+        "date": "2026-07-10",
+        "court": "bger",
+        "language": "de",
+        "summary": "Zustimmung zur Impfung,"
+      },
+      {
         "decision_id": "bger_9C_399_2026",
         "docket": "9C_399/2026",
         "date": "2026-07-09",
         "court": "bger",
         "language": "de",
         "summary": "Staats- und Gemeindesteuern des Kantons Aargau, Steuerperioden 2022-2024,"
+      },
+      {
+        "decision_id": "bger_5A_462_2026",
+        "docket": "5A_462/2026",
+        "date": "2026-07-09",
+        "court": "bger",
+        "language": "fr",
+        "summary": "plainte 17 LP (notification du commandement de payer),"
+      },
+      {
+        "decision_id": "bger_9C_424_2026",
+        "docket": "9C_424/2026",
+        "date": "2026-07-08",
+        "court": "bger",
+        "language": "de",
+        "summary": "Staats- und Gemeindesteuern des Kantons St. Gallen, Steuerperioden 2012-2021,"
       },
       {
         "decision_id": "bger_6B_467_2026",
@@ -4116,36 +4140,12 @@
         "summary": "avance de frais (mesures provisionnelles; fixation des contributions d'entretien et des droit parentaux),"
       },
       {
-        "decision_id": "bger_8C_379_2026",
-        "docket": "8C_379/2026",
-        "date": "2026-07-07",
-        "court": "bger",
-        "language": "de",
-        "summary": "Ergänzungsleistung zur AHV/IV (Rechtsverzögerung),"
-      },
-      {
-        "decision_id": "bger_7B_796_2026",
-        "docket": "7B_796/2026",
-        "date": "2026-07-07",
-        "court": "bger",
-        "language": "de",
-        "summary": "Untersuchungshaft,"
-      },
-      {
-        "decision_id": "bger_5A_96_2024",
-        "docket": "5A_96/2024",
+        "decision_id": "bger_9C_92_2025",
+        "docket": "9C_92/2025",
         "date": "2026-07-07",
         "court": "bger",
         "language": "fr",
-        "summary": "modification du jugement de divorce (contributions d'entretien),"
-      },
-      {
-        "decision_id": "bger_7B_737_2026",
-        "docket": "7B_737/2026",
-        "date": "2026-07-06",
-        "court": "bger",
-        "language": "de",
-        "summary": "Anordnung der Sicherheitshaft; Nichteintreten,"
+        "summary": "Prévoyance professionnelle,"
       }
     ],
     "cantonal": [
@@ -4364,8 +4364,10 @@
     }
   ],
   "delta": {
-    "total": 0,
-    "by_court": {},
+    "total": 34,
+    "by_court": {
+      "bger": 34
+    },
     "by_canton": {},
     "corpus": {},
     "previous_generated_at": "2026-07-19T16:28:10.453989+00:00"
