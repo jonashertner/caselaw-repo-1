@@ -1,13 +1,13 @@
 {
-  "run_at": "2026-07-19T10:34:02+00:00",
+  "run_at": "2026-07-20T11:03:16+00:00",
   "db_path": "/opt/caselaw/repo/output/decisions.db",
-  "duration_seconds": 816.54,
+  "duration_seconds": 986.45,
   "summary": {
-    "total": 67,
+    "total": 68,
     "passed": 57,
     "critical_failures": 0,
     "quarantine_failures": 0,
-    "warning_failures": 10,
+    "warning_failures": 11,
     "publish_safe": true
   },
   "results": [
@@ -29,7 +29,7 @@
       "passed": true,
       "metric_value": 0,
       "threshold": 0,
-      "message": "0 of 1722 sampled rows contain control chars",
+      "message": "0 of 1738 sampled rows contain control chars",
       "sample_rows": [],
       "fix_advice": "build_fts5._clean_text (d0072b2) must strip these at insert — a hit means the build-side guarantee regressed (check recent build_fts5/_clean_text changes)",
       "court": null,
@@ -690,9 +690,9 @@
       "name": "dates.future_window",
       "severity": "quarantine",
       "passed": true,
-      "metric_value": 9,
+      "metric_value": 8,
       "threshold": 50,
-      "message": "9 future-dated rows (within tolerance)",
+      "message": "8 future-dated rows (within tolerance)",
       "sample_rows": [
         {
           "decision_id": "fr_gerichte_105 2026 74",
@@ -772,6 +772,18 @@
       "message": "BGer (>5y old): 864/1000 sample have sidecar paragraphs (86.4%)",
       "sample_rows": [],
       "fix_advice": null,
+      "court": null,
+      "extra": {}
+    },
+    {
+      "name": "scholarship.statute_citations_floor",
+      "severity": "warning",
+      "passed": false,
+      "metric_value": 59881,
+      "threshold": 65000,
+      "message": "59,881 pub→statute citations (expect ~90k)",
+      "sample_rows": [],
+      "fix_advice": "check statute regex + law-abbreviation map. statutes.db schema may have changed.",
       "court": null,
       "extra": {}
     },
@@ -915,14 +927,14 @@
       "name": "cross_db.reference_graph_sanity",
       "severity": "warning",
       "passed": false,
-      "metric_value": 9967227,
+      "metric_value": 9967366,
       "threshold": 5000000,
-      "message": "citation_targets: 9,967,227, statute_references: 0",
+      "message": "citation_targets: 9,967,366, statute_references: 0",
       "sample_rows": [],
       "fix_advice": "if citation count dropped, search_stack/build_reference_graph.py may have failed in publish.py Step 2c",
       "court": null,
       "extra": {
-        "citation_targets": 9967227,
+        "citation_targets": 9967366,
         "statute_references": 0
       }
     },
@@ -930,9 +942,9 @@
       "name": "cross_db.no_orphan_structure_rows",
       "severity": "warning",
       "passed": false,
-      "metric_value": 8.18,
+      "metric_value": 8.76,
       "threshold": 1.0,
-      "message": "409/5000 (8.18%) sidecar rows orphan",
+      "message": "438/5000 (8.76%) sidecar rows orphan",
       "sample_rows": [],
       "fix_advice": "rerun extract_decision_structure.py against current decisions.db so IDs realign",
       "court": null,
