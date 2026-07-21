@@ -64,11 +64,12 @@ def _wire(monkeypatch):
 
 
 def test_exact_fts_total_matches_direct_count():
+    # Returns (total, is_capped); under-cap counts are exact -> is_capped False (#53).
     conn = _conn_with_n_matches(7)
-    assert mcp_server._exact_fts_total(conn, "Notwehr", "", []) == 7
-    assert mcp_server._exact_fts_total(conn, "Notwehr", " AND d.court = ?", ["bger"]) == 7
-    assert mcp_server._exact_fts_total(conn, "Notwehr", " AND d.court = ?", ["bvger"]) == 0
-    assert mcp_server._exact_fts_total(conn, "Nichttreffer", "", []) == 0
+    assert mcp_server._exact_fts_total(conn, "Notwehr", "", []) == (7, False)
+    assert mcp_server._exact_fts_total(conn, "Notwehr", " AND d.court = ?", ["bger"]) == (7, False)
+    assert mcp_server._exact_fts_total(conn, "Notwehr", " AND d.court = ?", ["bvger"]) == (0, False)
+    assert mcp_server._exact_fts_total(conn, "Nichttreffer", "", []) == (0, False)
 
 
 def test_total_is_bounded_by_cap(monkeypatch):
@@ -77,12 +78,13 @@ def test_total_is_bounded_by_cap(monkeypatch):
     doclist."""
     conn = _conn_with_n_matches(7)
     monkeypatch.setattr(mcp_server, "_FTS_TOTAL_CAP", 3)
-    assert mcp_server._exact_fts_total(conn, "Notwehr", "", []) == 3
+    # Capped -> total is the cap AND is_capped True (the #53 lower-bound signal).
+    assert mcp_server._exact_fts_total(conn, "Notwehr", "", []) == (3, True)
     # cap is a constant in production (not part of the cache key); clear the
     # cache before re-counting under a different cap in this test.
     mcp_server._FTS_TOTAL_CACHE.clear()
     monkeypatch.setattr(mcp_server, "_FTS_TOTAL_CAP", 100)
-    assert mcp_server._exact_fts_total(conn, "Notwehr", "", []) == 7
+    assert mcp_server._exact_fts_total(conn, "Notwehr", "", []) == (7, False)
 
 
 def test_text_total_is_exact_not_pool_and_limit_independent(monkeypatch):
@@ -98,3 +100,33 @@ def test_text_total_is_exact_not_pool_and_limit_independent(monkeypatch):
         conn, "Notwehr", None, None, None, None, None, None, None, None, 9)
     assert t1 == 4, f"total should be the exact match count 4, got {t1}"
     assert t1 == t9, f"total must not depend on limit ({t1} vs {t9})"
+
+
+def test_meta_flags_lower_bound_only_when_capped(monkeypatch):
+    """#53: meta['total_is_lower_bound'] is True only when the FTS count hit the
+    cap; an exact under-cap count is not a lower bound."""
+    conn = _conn_with_n_matches(7)
+    _wire(monkeypatch)
+    monkeypatch.setattr(mcp_server, "MIN_CANDIDATE_POOL", 1)
+    monkeypatch.setattr(mcp_server, "MAX_RERANK_CANDIDATES", 1)
+
+    # Exact (under cap) -> not a lower bound.
+    meta = {}
+    _, total = mcp_server._search_fts5_inner(
+        conn, "Notwehr", None, None, None, None, None, None, None, None, 5, meta=meta)
+    assert total == 7 and meta["total_is_lower_bound"] is False
+
+    # Capped -> total is the cap AND the flag is set.
+    mcp_server._FTS_TOTAL_CACHE.clear()
+    monkeypatch.setattr(mcp_server, "_FTS_TOTAL_CAP", 3)
+    meta2 = {}
+    _, total2 = mcp_server._search_fts5_inner(
+        conn, "Notwehr", None, None, None, None, None, None, None, None, 5, meta=meta2)
+    assert total2 == 3 and meta2["total_is_lower_bound"] is True
+
+    # Filter-only path is always exact -> never a lower bound.
+    mcp_server._FTS_TOTAL_CACHE.clear()
+    meta3 = {}
+    mcp_server._search_fts5_inner(
+        conn, "", "bger", None, None, None, None, None, None, None, 5, meta=meta3)
+    assert meta3["total_is_lower_bound"] is False

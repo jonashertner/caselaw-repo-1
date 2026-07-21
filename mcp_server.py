@@ -2282,11 +2282,12 @@ _FTS_TOTAL_CAP = MAX_LIMIT
 
 
 def _exact_fts_total(conn, fts_query: str, where: str, params: list):
-    """Count of decisions matching `fts_query` + filters, or None on any error
-    (caller then falls back to the candidate-pool size). Bounded by
-    _FTS_TOTAL_CAP — exact up to the cap, the cap as a floor beyond it — so a
-    broad term cannot make COUNT walk the whole doclist. Unfiltered queries count
-    the FTS index directly (no table join) for speed."""
+    """Return `(total, is_capped)` for decisions matching `fts_query` + filters,
+    or None on any error (caller then falls back to the candidate-pool size).
+    Bounded by _FTS_TOTAL_CAP — exact up to the cap, the cap as a floor beyond it
+    — so a broad term cannot make COUNT walk the whole doclist. `is_capped` is
+    True when the true count exceeds the cap, i.e. `total` is a lower bound (#53).
+    Unfiltered queries count the FTS index directly (no table join) for speed."""
     if not fts_query or not fts_query.strip():
         return None
     try:
@@ -2320,7 +2321,11 @@ def _exact_fts_total(conn, fts_query: str, where: str, params: list):
                 "WHERE decisions_fts MATCH ? LIMIT ?)",
                 [fts_query, cap1],
             ).fetchone()
-        total = min(int(row[0]), _FTS_TOTAL_CAP) if row and row[0] is not None else 0
+        raw = int(row[0]) if row and row[0] is not None else 0
+        # raw is at most cap+1 (the subquery LIMIT); raw > cap means the count
+        # was clipped -> the reported total is a lower bound, not exact (#53).
+        total = min(raw, _FTS_TOTAL_CAP)
+        is_capped = raw > _FTS_TOTAL_CAP
     except Exception:
         return None
     if len(_FTS_TOTAL_CACHE) >= _FTS_TOTAL_CACHE_MAX:
@@ -2332,8 +2337,8 @@ def _exact_fts_total(conn, fts_query: str, where: str, params: list):
         # oldest; popping a fraction keeps hot counts resident (2026-07-09).
         for _old_key in list(_FTS_TOTAL_CACHE.keys())[:_FTS_TOTAL_CACHE_MAX // 8]:
             _FTS_TOTAL_CACHE.pop(_old_key, None)
-    _FTS_TOTAL_CACHE[key] = total
-    return total
+    _FTS_TOTAL_CACHE[key] = (total, is_capped)
+    return (total, is_capped)
 
 
 def search_fts5(
@@ -2350,12 +2355,17 @@ def search_fts5(
     limit: int = DEFAULT_LIMIT,
     offset: int = 0,
     sort: str | None = None,
+    meta: dict | None = None,
 ) -> tuple[list[dict], int]:
     """
     Full-text search using SQLite FTS5 with BM25 ranking.
 
     Returns (results, total_count) where total_count is the approximate
     total number of matching decisions (exact for filter-only queries).
+
+    Pass `meta={}` to receive out-of-band `meta["total_is_lower_bound"]` — True
+    when total_count is a capped floor rather than an exact count (#53). Kept as
+    an out-param so the 6 callers that discard total stay unchanged.
 
     The FTS5 query supports:
     - Simple words: verfassungsrecht
@@ -2371,6 +2381,7 @@ def search_fts5(
             date_from, date_to, chamber, decision_type, legal_area,
             limit, offset, sort=sort,
             marked_for_publication=marked_for_publication,
+            meta=meta,
         )
         # Surface the BGE-bound flag on each result (BGer Neuheiten "*" =
         # "für die Publikation vorgesehen"). Single guarded lookup — the column
@@ -2455,8 +2466,15 @@ def _search_fts5_inner(
     offset: int = 0,
     sort: str | None = None,
     marked_for_publication: bool | None = None,
+    meta: dict | None = None,
 ) -> tuple[list[dict], int]:
-    """Inner search logic. Returns (results, total_count). Caller closes conn."""
+    """Inner search logic. Returns (results, total_count). Caller closes conn.
+
+    When `meta` is a dict, sets `meta["total_is_lower_bound"]` — default False;
+    only the reranked FTS path sets it True (capped count or count failure).
+    Filter-only and docket totals are exact, so they leave the default (#53)."""
+    if meta is not None:
+        meta["total_is_lower_bound"] = False
     _trace_t0 = time.monotonic()
     _deadline = (_trace_t0 + SEARCH_DEADLINE_MS / 1000.0) if SEARCH_DEADLINE_MS > 0 else None
     _trace = {
@@ -3107,8 +3125,18 @@ def _search_fts5_inner(
         # Honest `total`: exact count of decisions matching the query + filters,
         # not the reranked candidate-pool size. max() keeps total >= what is
         # returned when query-expansion surfaces candidates beyond the base match.
-        _exact_total = _exact_fts_total(conn, fts_query, where, params)
-        total_out = max(_exact_total, total_candidates) if _exact_total is not None else total_candidates
+        _exact_info = _exact_fts_total(conn, fts_query, where, params)
+        if _exact_info is None:
+            # Count failed → we report the candidate-pool size, which is not an
+            # exact match count; flag it as a lower bound (#53).
+            total_out = total_candidates
+            _lower_bound = True
+        else:
+            _exact_total, _exact_capped = _exact_info
+            total_out = max(_exact_total, total_candidates)
+            _lower_bound = _exact_capped
+        if meta is not None:
+            meta["total_is_lower_bound"] = _lower_bound
         return reranked, total_out
 
     if had_success:
@@ -20236,6 +20264,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
             req_offset = int(arguments.get("offset", 0))
             sort_arg = arguments.get("sort")
             fields_arg = arguments.get("fields", "full")
+            _search_meta: dict = {}
             results, total_count = await asyncio.to_thread(
                 search_fts5,
                 query=arguments.get("query", ""),
@@ -20249,9 +20278,18 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 limit=arguments.get("limit", DEFAULT_LIMIT),
                 offset=req_offset,
                 sort=sort_arg,
+                meta=_search_meta,
             )
+            _total_lb = bool(_search_meta.get("total_is_lower_bound"))
             if not results:
-                text = f"No decisions found matching your query (total: {total_count})."
+                if _total_lb:
+                    # No rows on THIS page but the (capped) total is a lower bound
+                    # — matches exist beyond the retrievable pool; don't imply zero.
+                    text = (f"No decisions on this page (total: {total_count}+, a lower "
+                            f"bound — the exact count is capped; narrow with "
+                            f"court/canton/date filters or page back).")
+                else:
+                    text = f"No decisions found matching your query (total: {total_count})."
             else:
                 # Strip <mark> tags from snippets (noise for LLM consumers)
                 for r in results:
@@ -20288,7 +20326,11 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
 
                 end = req_offset + len(results)
                 _record_query(arguments.get("query", ""))
-                text = f"Found {total_count} decisions (showing {req_offset + 1}\u2013{end}):\n\n"
+                _cap_note = (" (lower bound; the exact count is capped \u2014 narrow "
+                             "with court/canton/date filters for an exact total)"
+                             if _total_lb else "")
+                text = (f"Found {total_count}{'+' if _total_lb else ''} decisions"
+                        f"{_cap_note} (showing {req_offset + 1}\u2013{end}):\n\n")
 
                 # Each result is rendered as a Markdown link so the LLM
                 # propagates a clickable citation to the user-facing answer.
@@ -22122,6 +22164,7 @@ setInterval(load, 30000);
             "additionalProperties": True,
             "properties": {
                 "total":   {"type": "integer"},
+                "total_is_lower_bound": {"type": "boolean"},
                 "limit":   {"type": "integer"},
                 "offset":  {"type": "integer"},
                 "results": {
@@ -22723,13 +22766,16 @@ setInterval(load, 30000);
         _derr = _date_arg_error(date_from, date_to)
         if _derr:
             raise HTTPException(status_code=422, detail=_derr)  # #45: no silent drop
+        _search_meta: dict = {}
         results, total = await asyncio.to_thread(
             search_fts5, query=query or "", court=court, canton=canton,
             language=language, date_from=date_from, date_to=date_to,
             chamber=chamber,
             marked_for_publication=marked_for_publication,
-            limit=limit, offset=offset, sort=sort,
+            limit=limit, offset=offset, sort=sort, meta=_search_meta,
         )
+        total_is_lower_bound = bool(_search_meta.get("total_is_lower_bound"))
+        _tp = f"{total}+" if total_is_lower_bound else f"{total}"  # display total
         # Bound the response so an enumeration ("list ALL cases on X") returns
         # EVERY matching case (completeness is paramount) WITHOUT overflowing a
         # token-limited connector (OpenAI/Copilot/Perplexity). Strategy: full
@@ -22743,7 +22789,7 @@ setInterval(load, 30000);
         note = None
         if fields != "compact" and len(results) > FULL_FIELDS_MAX:
             fields = "compact"
-            note = (f"{total} matching decisions — returned as compact citation entries to stay "
+            note = (f"{_tp} matching decisions — returned as compact citation entries to stay "
                     f"within connector response limits; fetch a specific decision "
                     f"(GET /decisions/{{decision_id}}) for full text.")
         if fields == "compact":
@@ -22754,10 +22800,15 @@ setInterval(load, 30000);
             results = [{k: r[k] for k in compact_keys if k in r} for r in results]
             if len(results) > COMPACT_PAGE_MAX:
                 results = results[:COMPACT_PAGE_MAX]
+                _enum = (
+                    f"the reported total ({_tp}) is a lower bound — the exact count is capped, "
+                    "so narrow with court / canton / date filters for an exact total and complete "
+                    "enumeration"
+                    if total_is_lower_bound else
+                    f"to retrieve every one of the {total}, narrow with court / canton / date filters")
                 note = ((note + " ") if note else "") + (
                     f"Showing {COMPACT_PAGE_MAX} per page — page with offset until has_more is "
-                    f"false. A relevance-ranked text query returns the top matches; to retrieve "
-                    f"every one of the {total}, narrow with court / canton / date filters.")
+                    f"false. A relevance-ranked text query returns the top matches; {_enum}.")
         else:
             results = [_enrich_with_citation(r) for r in results]
             # Auto-pinpoint top-5 results so the JSON payload carries a
@@ -22776,7 +22827,8 @@ setInterval(load, 30000);
         page_cap = min(limit, COMPACT_PAGE_MAX) if fields == "compact" else limit
         has_more = returned >= page_cap and (offset + returned) < total
         resp = {
-            "total": total, "returned": returned, "results": results,
+            "total": total, "total_is_lower_bound": total_is_lower_bound,
+            "returned": returned, "results": results,
             "limit": limit, "offset": offset,
             "has_more": has_more,
             "next_offset": (offset + returned) if has_more else None,
