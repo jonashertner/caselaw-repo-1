@@ -751,6 +751,16 @@ FTS_COLUMNS = {
     "full_text",
 }
 
+# Statute-reference tokens (law abbreviations + structural words) that identify a
+# citation but carry no topical context. Used to detect a claim that is a bare
+# statute reference (e.g. "Art. 8 BV"), whose paragraph-FTS pinpoint search would
+# otherwise degenerate to matching an ultra-common token ("Art") corpus-wide.
+_STATUTE_REFERENCE_NOISE = frozenset({
+    "art", "abs", "or", "zpo", "stpo", "stgb", "zgb", "schkg", "bv",
+    "aig", "irsg", "bgg", "vwvg", "emrk", "svg", "uvg", "kvg",
+    "ahvg", "ivg", "asylg", "lit", "al", "cpv",
+})
+
 # Lightweight multilingual stopword set for natural-language fallback queries.
 NL_STOPWORDS = {
     # German
@@ -2885,10 +2895,7 @@ def _search_fts5_inner(
         # - Mixed queries ("Art. 41 OR Haftpflicht Schadenersatz"): lower weight,
         #   FTS keyword matches are more relevant for ranking
         query_tokens = set(re.findall(r'[a-zäöü]+', fts_query.lower()))
-        statute_noise = {"art", "abs", "or", "zpo", "stpo", "stgb", "zgb", "schkg", "bv",
-                         "aig", "irsg", "bgg", "vwvg", "emrk", "svg", "uvg", "kvg",
-                         "ahvg", "ivg", "asylg", "lit", "abs", "al", "cpv"}
-        non_statute_tokens = query_tokens - statute_noise
+        non_statute_tokens = query_tokens - _STATUTE_REFERENCE_NOISE
         has_keyword_context = len(non_statute_tokens) >= 2
         if has_structured_statutes:
             sg_weight = SCORING_CONFIG["sg_weight_with_keywords"] if has_keyword_context else SCORING_CONFIG["sg_weight_pure_statute"]
@@ -10197,7 +10204,19 @@ def _compute_pinpoint(
         # still relies on the gap-confidence floor below to suppress noise.
         phrase_query = '"' + claim.replace('"', '""') + '"'
         tokens = [t for t in re.findall(r"\w+", claim) if len(t) > 2]
-        or_query = " OR ".join(tokens) if tokens else None
+        # Gate the OR pass on topical context. A bare statute reference like
+        # "Art. 8 BV" leaves only the ultra-common token "Art", whose corpus-wide
+        # MATCH (decision_id is a post-filter, not in the FTS) scans millions of
+        # paragraphs and returns nothing confident (~4s/case). When ≥1 selective
+        # token remains, the OR query is unchanged BYTE-FOR-BYTE, so BM25 rank +
+        # confidence for real claims are identical; only all-noise claims bail.
+        selective_tokens = [
+            t for t in tokens
+            if not t.isdigit()
+            and t.lower() not in _LEGAL_STOPWORDS
+            and t.lower() not in _STATUTE_REFERENCE_NOISE
+        ]
+        or_query = " OR ".join(tokens) if selective_tokens else None
 
         sql = """
             SELECT
@@ -20499,18 +20518,12 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 date_to=arguments.get("date_to"),
                 limit=int(arguments.get("limit", 20)),
             )
-            # Pinpoint top-3 leading cases against an effective claim built
-            # from (Art./law_code) + free-text query. Skipped for global
-            # mode where there's no claim to anchor against.
+            # Pinpoint top-3 leading cases against the free-text query only. A
+            # bare statute reference ("Art. 8 BV") is too broad to pinpoint an
+            # Erwägung and made this path ~18s (issue: leading_cases latency);
+            # statute-only lookups now skip the pinpoint entirely.
             if bool(arguments.get("include_pinpoint", True)):
-                claim_parts = []
-                if arguments.get("article") and arguments.get("law_code"):
-                    claim_parts.append(
-                        f"Art. {arguments['article']} {arguments['law_code']}"
-                    )
-                if arguments.get("query"):
-                    claim_parts.append(str(arguments["query"]))
-                claim = " ".join(claim_parts).strip()
+                claim = str(arguments.get("query") or "").strip()
                 if claim and isinstance(result, dict):
                     items = result.get("results") or []
                     if items:
@@ -22990,13 +23003,10 @@ setInterval(load, 30000);
                 if isinstance(inner, list):
                     for item in inner:
                         _enrich_with_citation(item)
-            # Auto-pinpoint top-3 leading cases against the effective claim.
-            claim_parts = []
-            if law_code and article:
-                claim_parts.append(f"Art. {article} {law_code}")
-            if query:
-                claim_parts.append(query)
-            claim = " ".join(claim_parts).strip()
+            # Auto-pinpoint top-3 leading cases against the free-text query only.
+            # A bare statute reference is too broad to pinpoint an Erwägung and
+            # made this path ~18s; statute-only lookups now skip the pinpoint.
+            claim = (query or "").strip()
             if claim:
                 inner = (result.get("results") or result.get("cases")
                          or result.get("leading_cases") or [])
