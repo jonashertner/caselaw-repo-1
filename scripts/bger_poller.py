@@ -188,6 +188,21 @@ def _is_workday(d=None) -> bool:
     return (d or _date.today()).weekday() < 5
 
 
+# BGer publishes its Neuheiten around 10:00 UTC; before that an empty feed is
+# normal (not yet published), not a blocked fetch. Alarm only once this window
+# has passed (with an hour of margin).
+BGER_PUBLICATION_HOUR_UTC = 11
+
+
+def _empty_feed_is_anomalous(now=None) -> bool:
+    """True when an empty Neuheiten feed signals a blocked fetch: a workday AND
+    past BGer's ~10:00 UTC publication window. Before ~11:00 UTC an empty feed is
+    the normal pre-publication state — alarming there produced ~5 false ERROR
+    alerts every workday morning (05:00-09:00 UTC)."""
+    now = now or datetime.now(timezone.utc)
+    return _is_workday(now.date()) and now.hour >= BGER_PUBLICATION_HOUR_UTC
+
+
 def _alert_empty_neuheiten(today_iso: str) -> None:
     """Workday + zero dockets ⇒ the fetch is almost certainly blocked (the feed is
     never empty on a business day). Surface it loudly — the silent count:0 path is
@@ -666,10 +681,11 @@ def main():
 
     logger.info("Neuheiten %s: %d decisions", today_iso, len(current_dockets))
 
-    # Silent-failure guard: the feed is never empty on a business day, so 0 dockets
-    # on a workday means the fetch is blocked (not "no new decisions"). Alert
-    # instead of quietly recording count:0 — that path hid a multi-week gap.
-    if not current_dockets and _is_workday():
+    # Silent-failure guard: the feed is never empty on a business day AFTER BGer's
+    # ~10:00 UTC publication, so 0 dockets then means the fetch is blocked (not "no
+    # new decisions"). Alert instead of quietly recording count:0 — that path hid a
+    # multi-week gap. The publication-window guard drops the daily pre-10:00 noise.
+    if not current_dockets and _empty_feed_is_anomalous():
         _alert_empty_neuheiten(today_iso)
 
     # Compare against last state
