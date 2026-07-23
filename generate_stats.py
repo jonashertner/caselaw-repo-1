@@ -35,6 +35,17 @@ CANTON_NAMES = {
 }
 
 
+# Max drift (in records) between the manifest's build corpus and the live corpus
+# before the unique count is withheld as stale. Every swap (nightly + the ~daily
+# incremental + poller quick_publish) re-stamps user_version, so an exact-
+# generation match would go stale after each daytime swap and hide the number
+# ~half the day. The manifest's *reduction* is stable across a small daytime drift
+# (a handful to a few hundred new rows), and the count is an estimate with a band,
+# so we tolerate drift and fail closed only when the corpus has genuinely moved
+# past the manifest (e.g. the nightly rebuild has been broken for days).
+_MANIFEST_DRIFT_TOLERANCE = 2500
+
+
 def _representation_dual_count(db_path: Path, conn) -> dict:
     """Additive cross-identifier dual-count from the representation manifest
     sidecar (output/representation_manifest.db), or {} if absent.
@@ -42,14 +53,15 @@ def _representation_dual_count(db_path: Path, conn) -> dict:
     Emits `source_representations` (== total, the record count) plus an ESTIMATED
     unique-decision count that collapses cross-identifier duplicates (GE/VD/SH +
     ch_vb/nw/edoeb/ur). NEVER replaces `total`: make verify and the 950k health
-    floors gate on the record count, which is unchanged. If the sidecar was built
-    against a different decisions.db generation, the count is marked stale and the
-    unique number is withheld (a stale count is worse than none)."""
+    floors gate on the record count, which is unchanged. `unique` is derived from
+    the LIVE total minus the manifest's stable duplicate count, so it tracks corpus
+    growth (a fresh decision is a singleton until its twin is published). If the
+    manifest's build corpus has drifted too far from the live corpus, the count is
+    marked stale and withheld (a stale count is worse than none)."""
     manifest = Path(db_path).with_name("representation_manifest.db")
     if not manifest.exists():
         return {}
     try:
-        src_gen = conn.execute("PRAGMA user_version").fetchone()[0]
         m = sqlite3.connect(f"file:{manifest}?mode=ro&immutable=1", uri=True)
         try:
             meta = dict(m.execute("SELECT key, value FROM manifest_meta"))
@@ -58,22 +70,29 @@ def _representation_dual_count(db_path: Path, conn) -> dict:
     except Exception as e:  # pragma: no cover - defensive
         logger.warning("representation manifest unreadable, skipping dual-count: %s", e)
         return {}
+    live_total = stats_total(conn)
     out: dict = {
-        "source_representations": stats_total(conn),
+        "source_representations": live_total,
         "representation_method_version": meta.get("algo_version"),
     }
-    if str(src_gen) != str(meta.get("source_user_version")):
-        out["unique_decisions_status"] = "stale"
-        return out
     try:
-        out.update({
-            "unique_decisions": int(meta["estimated_unique_decisions"]),
-            "unique_decisions_lower_bound": int(meta["estimated_unique_lower_bound"]),
-            "duplicate_representations": int(meta["duplicate_representations"]),
-            "unique_decisions_status": "current",
-        })
+        mani_total = int(meta["source_total_rows"])
+        dup = int(meta["duplicate_representations"])
+        band = int(meta["band_unlinked_date_disagree"])
     except (KeyError, ValueError) as e:  # pragma: no cover - defensive
         logger.warning("representation manifest meta incomplete: %s", e)
+        out["unique_decisions_status"] = "stale"
+        return out
+    if abs(live_total - mani_total) > _MANIFEST_DRIFT_TOLERANCE:
+        out["unique_decisions_status"] = "stale"  # corpus moved past the manifest
+        return out
+    # reduction is stable; anchor on the live total so unique + duplicates == total.
+    out.update({
+        "unique_decisions": live_total - dup,
+        "unique_decisions_lower_bound": live_total - dup - band,
+        "duplicate_representations": dup,
+        "unique_decisions_status": "current",
+    })
     return out
 
 
