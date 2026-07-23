@@ -2,7 +2,7 @@
   "total": 1050114,
   "source_representations": 1050114,
   "representation_method_version": "2026-07-23.1",
-  "unique_decisions_status": "stale",
+  "unique_decisions_status": "current",
   "by_court": [
     {
       "court": "bger",
@@ -2382,7 +2382,7 @@
     "2026-06": 2118,
     "2026-07": 399
   },
-  "generated_at": "2026-07-23T15:39:00.331172+00:00",
+  "generated_at": "2026-07-23T22:09:44.447818+00:00",
   "scraper_health": {
     "run_at": "2026-07-23T02:56:34.588323+00:00",
     "run_duration_s": 6933.6,
@@ -4421,5 +4421,8 @@
       "statute_edges": 2978
     },
     "previous_generated_at": "2026-07-22T15:36:23.794828+00:00"
-  }
+  },
+  "unique_decisions": 909203,
+  "unique_decisions_lower_bound": 909153,
+  "duplicate_representations": 140911
 }
