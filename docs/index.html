@@ -255,6 +255,7 @@ a{color:inherit;text-decoration:none}
       <p class="bignum tnum" id="bignum">991&#8217;298</p>
       <div class="num-rule" aria-hidden="true"></div>
       <p class="num-label" data-t="hero_label">published Swiss court decisions, 1875–<span class="cy"></span></p>
+      <p class="num-label" id="num-unique" style="color:var(--t3);margin-top:6px;font-size:13px"></p>
       <h1 class="headline" data-t="hero_h1">The complete record of Swiss case law — <em>rebuilt every day.</em></h1>
       <p class="subline" data-t="hero_sub">Every published decision from every federal and cantonal court, plus 21,000+ federal and cantonal laws. Open data (CC0), machine-readable.</p>
       <div class="hero-actions">
@@ -376,7 +377,7 @@ var I18N={
   hero_h1:'Das vollständige Verzeichnis der Schweizer Rechtsprechung — <em>täglich neu aufgebaut.</em>',
   hero_sub:'Jeder publizierte Entscheid jedes Bundes- und kantonalen Gerichts, dazu 21 000+ Bundes- und kantonale Gesetze. Offene Daten (CC0), maschinenlesbar.',
   cta_connect:'KI verbinden',cta_search:'Korpus durchsuchen',trust_new:'+',trust_today:'heute',trust_cov:'alle 26 Kantone + Bundesgerichte',
-  t_inside:'Im Korpus',inside_h:'Ein offener Datensatz des Schweizer Rechts.',u_decisions:'Entscheide',u_laws:'Gesetze',u_cites:'Zitate',
+  t_inside:'Im Korpus',inside_h:'Ein offener Datensatz des Schweizer Rechts.',u_decisions:'Entscheide',u_laws:'Gesetze',u_cites:'Zitate',u_unique:'eindeutige Entscheide',u_records:'Quelldatensätze',
   f_decisions_t:'Publizierte Urteile des Bundesgerichts, aller Bundesgerichte und aller 26 Kantone — <b>1875–<span class="cy"></span></b>, auf Deutsch, Französisch und Italienisch.',
   f_laws_t:'<b>5519 Bundesgesetze</b> (Fedlex) und <b>15 589 kantonale</b> Erlasse mit über 494 000 Artikeln.',
   f_cites_t:'Ein aufgelöster Zitationsgraph, der Entscheide mit den zitierten Entscheiden und Gesetzen verbindet.',
@@ -393,7 +394,7 @@ var I18N={
   hero_h1:'Le registre complet de la jurisprudence suisse — <em>reconstruit chaque jour.</em>',
   hero_sub:'Chaque décision publiée de chaque tribunal fédéral et cantonal, plus 21 000+ lois fédérales et cantonales. Données ouvertes (CC0), lisibles par machine.',
   cta_connect:'Connecter l’IA',cta_search:'Rechercher le corpus',trust_new:'+',trust_today:'aujourd’hui',trust_cov:'les 26 cantons + tribunaux fédéraux',
-  t_inside:'Dans le corpus',inside_h:'Un jeu de données ouvert du droit suisse.',u_decisions:'décisions',u_laws:'lois',u_cites:'citations',
+  t_inside:'Dans le corpus',inside_h:'Un jeu de données ouvert du droit suisse.',u_decisions:'décisions',u_laws:'lois',u_cites:'citations',u_unique:'décisions uniques',u_records:'enregistrements source',
   f_decisions_t:'Arrêts publiés du Tribunal fédéral, de tous les tribunaux fédéraux et des 26 cantons — <b>de 1875–<span class="cy"></span></b>, en allemand, français et italien.',
   f_laws_t:'<b>5519 lois fédérales</b> (Fedlex) et <b>15 589 actes cantonaux</b>, avec plus de 494 000 articles.',
   f_cites_t:'Un graphe de citations résolu reliant les décisions aux décisions et lois qu’elles citent.',
@@ -410,7 +411,7 @@ var I18N={
   hero_h1:'Il registro completo della giurisprudenza svizzera — <em>ricostruito ogni giorno.</em>',
   hero_sub:'Ogni decisione pubblicata di ogni tribunale federale e cantonale, più 21 000+ leggi federali e cantonali. Dati aperti (CC0), leggibili dalle macchine.',
   cta_connect:'Collega l’IA',cta_search:'Cerca nel corpus',trust_new:'+',trust_today:'oggi',trust_cov:'tutti i 26 cantoni + tribunali federali',
-  t_inside:'Nel corpus',inside_h:'Un dataset aperto del diritto svizzero.',u_decisions:'decisioni',u_laws:'leggi',u_cites:'citazioni',
+  t_inside:'Nel corpus',inside_h:'Un dataset aperto del diritto svizzero.',u_decisions:'decisioni',u_laws:'leggi',u_cites:'citazioni',u_unique:'decisioni uniche',u_records:'record di origine',
   f_decisions_t:'Sentenze pubblicate del Tribunale federale, di ogni tribunale federale e dei 26 cantoni — <b>dal 1875–<span class="cy"></span></b>, in tedesco, francese e italiano.',
   f_laws_t:'<b>5519 leggi federali</b> (Fedlex) e <b>15 589 atti cantonali</b>, con oltre 494 000 articoli.',
   f_cites_t:'Un grafo di citazioni risolto che collega le decisioni alle decisioni e alle leggi citate.',
@@ -427,7 +428,7 @@ var I18N={
   hero_h1:'Il register cumplet da la giurisprudenza svizra — <em>reconstruì mintga di.</em>',
   hero_sub:'Mintga decisiun publitgada da mintga dretgira federala e chantunala, plus 21 000+ leschas federalas e chantunalas. Datas avertas (CC0), legiblas da maschinas.',
   cta_connect:'Connectar l’IA',cta_search:'Tschertgar el corpus',trust_new:'+',trust_today:'oz',trust_cov:'tut ils 26 chantuns + dretgiras federalas',
-  t_inside:'El corpus',inside_h:'In set da datas avert dal dretg svizzer.',u_decisions:'decisiuns',u_laws:'leschas',u_cites:'citaziuns',
+  t_inside:'El corpus',inside_h:'In set da datas avert dal dretg svizzer.',u_decisions:'decisiuns',u_laws:'leschas',u_cites:'citaziuns',u_unique:'decisiuns unicas',u_records:'datasets da funtauna',
   f_decisions_t:'Sentenzas publitgadas dal Tribunal federal, da mintga dretgira federala e da tut ils 26 chantuns — <b>da 1875–<span class="cy"></span></b>, en tudestg, franzos ed talian.',
   f_laws_t:'<b>5519 leschas federalas</b> (Fedlex) e <b>15 589 acts chantunals</b>, cun passa 494 000 artitgels.',
   f_cites_t:'In graf da citaziuns resolvì che colliescha las decisiuns cun las decisiuns e leschas citadas.',
@@ -444,7 +445,7 @@ var I18N={
   hero_h1:'The complete record of Swiss case law — <em>rebuilt every day.</em>',
   hero_sub:'Every published decision from every federal and cantonal court, plus 21,000+ federal and cantonal laws. Open data (CC0), machine-readable.',
   cta_connect:'Connect your AI',cta_search:'Search the corpus',trust_new:'+',trust_today:'today',trust_cov:'all 26 cantons + federal courts',
-  t_inside:'Inside the corpus',inside_h:'An open dataset of Swiss law.',u_decisions:'decisions',u_laws:'laws',u_cites:'citations',
+  t_inside:'Inside the corpus',inside_h:'An open dataset of Swiss law.',u_decisions:'decisions',u_laws:'laws',u_cites:'citations',u_unique:'unique decisions',u_records:'source records',
   f_decisions_t:'Published rulings from the Federal Supreme Court, every federal court, and all 26 cantons — <b>1875–<span class="cy"></span></b>, in German, French and Italian.',
   f_laws_t:'<b>5,519 federal</b> laws (Fedlex) and <b>15,589 cantonal</b> acts, with 494,000+ articles.',
   f_cites_t:'A resolved citation graph linking decisions to the decisions and statutes they cite.',
@@ -501,6 +502,17 @@ function applyStats(s){
   var total=s.total;
   animateNum(document.getElementById('bignum'),total);
   document.getElementById('f-decisions').innerHTML=fmt(total)+' <span class="u">'+t('u_decisions')+'</span>';
+  // Additive cross-identifier dual-count: the corpus holds `total` source records
+  // (what is queryable / in the Parquet mirror); ~N of them are unique decisions
+  // after linking the same ruling published under two portal identifiers. Shown
+  // only when generate_stats emitted a current (generation-matched) figure.
+  var uq=document.getElementById('num-unique');
+  if(uq){
+    if(s.unique_decisions && s.unique_decisions_status==='current'){
+      uq.textContent='≈ '+fmt(s.unique_decisions)+' '+t('u_unique')+' · '+fmt(total)+' '+t('u_records');
+      uq.style.display='';
+    } else { uq.style.display='none'; }
+  }
   var laws=(s.corpus&&(s.corpus.federal_laws+s.corpus.cantonal_laws))||21108;
   document.getElementById('f-laws').innerHTML=fmt(laws)+' <span class="u">'+t('u_laws')+'</span>';
   var delta=(s.delta&&s.delta.total)||0;

@@ -2,7 +2,7 @@
 
 **The complete machine-readable archive of Swiss case law and legislation — built for humans, designed for AI agents.**
 
-**991,000+ court decisions · 5,519 federal laws · 15,589 cantonal laws · 8.6 M resolved citation edges (9.2 M extracted) · 11.8 M statute references · 83,958 Botschaft amendment references (5,900+ verbatim Botschaften ingested, scaling) · daily RFC-6962 Merkle root + OpenTimestamps anchor (cryptographic provenance) · cli:ch + ECLI identifiers on every decision**
+**1,050,000+ decision records (~909,000 unique decisions after cross-identifier linkage) · 5,519 federal laws · 15,589 cantonal laws · 8.6 M resolved citation edges (9.2 M extracted) · 11.8 M statute references · 83,958 Botschaft amendment references (5,900+ verbatim Botschaften ingested, scaling) · daily RFC-6962 Merkle root + OpenTimestamps anchor (cryptographic provenance) · cli:ch + ECLI identifiers on every decision**
 
 *Figures as of 2026-06-21 — corpus refreshed daily; live counts at [opencaselaw.ch](https://opencaselaw.ch).*
 
@@ -24,7 +24,7 @@ OpenCaseLaw fixes this. **Every published Swiss court decision, every federal an
 
 ## What you get
 
-**Case law** — 991,000+ decisions from 1875 to today across **118 courts**, full text + structured metadata, covering:
+**Case law** — 1,050,000+ decision records (~909,000 unique decisions; cross-identifier duplicates retained and linked, never deleted) from 1875 to today across **118 courts**, full text + structured metadata, covering:
 - All 7 federal courts (BGer, BVGer, BStGer, BPatGer, BGE, BGE historical, BGE-EGMR)
 - Federal military court (Militärkassationsgericht / MKG, 1,244 decisions 1915–2025)
 - All 26 cantonal court systems (first, second, and third instance)

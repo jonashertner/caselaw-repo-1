@@ -32,7 +32,7 @@ configs:
 
 # Swiss Case Law Dataset
 
-**991,000+ published decisions from Swiss federal, cantonal, and regulatory bodies.**
+**1,050,000+ published decision records (~909,000 unique decisions) from Swiss federal, cantonal, and regulatory bodies.**
 
 *Figures as of 2026-06-21 — refreshed daily; live counts at [opencaselaw.ch](https://opencaselaw.ch).*
 
@@ -46,7 +46,7 @@ Full text, structured metadata, extracted case-citation references, and daily up
 
 ## Dataset Summary
 
-The largest open collection of Swiss court decisions: 991,000+ decisions from 108 federal, cantonal, regulatory, and international courts, scraped from official publication channels. New decisions are added every night.
+The largest open collection of Swiss court decisions: 1,050,000+ decision records from 108 federal, cantonal, regulatory, and international courts, scraped from official publication channels. These records represent ~909,000 unique decisions: the Romandie portals (GE, VD) and a few others publish one ruling under two identifiers (procedure number + decision number), so ~141,000 rows are cross-identifier duplicate representations, which we retain and link rather than delete. New decisions are added every night.
 
 - **20+ federal courts and bodies**: BGer, BVGer, BStGer, BPatGer, BGE, FINMA, WEKO, EDÖB, MKG (Militärkassationsgericht), VPB, Sports Tribunal, and more
 - **80+ cantonal courts** across all 26 cantons
