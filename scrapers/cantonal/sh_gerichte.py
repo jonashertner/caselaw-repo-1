@@ -42,11 +42,51 @@ PAGE_SIZE = 100
 RE_DATE = re.compile(r"(\d{2})\.(\d{2})\.(\d{4})")
 RE_NR = re.compile(r"Nr\.\s*(\d+/\d{4}/\d+)")
 
+# The CMS metadata fields (custom_publication_date_date, publication_date) are
+# PUBLICATION dates, never the judgment date (verified 2026-07: a case docketed
+# 60/2017/43 carries custom_publication_date_date=10.01.2020). The real decision
+# date lives only in the PDF/document header, so it is parsed from there.
+_GERMAN_MONTHS = {
+    "Januar": 1, "Februar": 2, "März": 3, "April": 4, "Mai": 5, "Juni": 6,
+    "Juli": 7, "August": 8, "September": 9, "Oktober": 10, "November": 11,
+    "Dezember": 12,
+}
+_MONTH_NAMES = "|".join(_GERMAN_MONTHS)
+RE_HEAD_LONG = re.compile(
+    r"(?:Entscheid|Urteil|Beschluss|Verf[üu]gung)?\s*vom\s+(\d{1,2})\.?\s*("
+    + _MONTH_NAMES + r")\s+(\d{4})")
+RE_HEAD_NUM = re.compile(
+    r"(?:Entscheid|Urteil|Beschluss|Verf[üu]gung)?\s*vom\s+(\d{1,2})\.(\d{1,2})\.(\d{4})")
+
 
 def _parse_swiss_date(text):
     if not text:
         return None
     m = RE_DATE.search(text)
+    if m:
+        try:
+            return date(int(m.group(3)), int(m.group(2)), int(m.group(1)))
+        except ValueError:
+            pass
+    return None
+
+
+def _parse_head_date(text):
+    """Judgment date from the document header, anchored on 'vom <date>' so it does
+    not grab case dates scattered through the body. German-month and numeric
+    forms; scans only the first ~2500 chars (the header/rubrum)."""
+    if not text:
+        return None
+    head = text[:2500]
+    m = RE_HEAD_LONG.search(head)
+    if m:
+        month = _GERMAN_MONTHS.get(m.group(2))
+        if month:
+            try:
+                return date(int(m.group(3)), month, int(m.group(1)))
+            except ValueError:
+                pass
+    m = RE_HEAD_NUM.search(head)
     if m:
         try:
             return date(int(m.group(3)), int(m.group(2)), int(m.group(1)))
@@ -107,7 +147,10 @@ class SHGerichteScraper(BaseScraper):
                 if self.state.is_known(stub["decision_id"]):
                     continue
 
-                if since_date and stub.get("decision_date") and stub["decision_date"] < since_date:
+                # decision_date is not known until the PDF is fetched, so gate the
+                # incremental window on the publication date (a safe proxy: a
+                # decision is published at/after it is issued).
+                if since_date and stub.get("publication_date") and stub["publication_date"] < since_date:
                     continue
 
                 total_yielded += 1
@@ -136,13 +179,12 @@ class SHGerichteScraper(BaseScraper):
         headline = item.get("articleHeadline", "")
         listlabel = item.get("listlabel", "")
 
-        # Decision date from custom_publication_date_date
-        decision_date_str = item.get("custom_publication_date_date", "")
-        decision_date = _parse_swiss_date(decision_date_str)
-
-        # Publication date
-        pub_date_str = item.get("publication_date", "")
-        pub_date = _parse_swiss_date(pub_date_str)
+        # Publication date. custom_publication_date_date is the PORTAL publication
+        # date (the better proxy); the plain `publication_date` field is a CMS
+        # migration timestamp (bulk-set), so prefer the former. Neither is the
+        # judgment date, which fetch_decision extracts from the PDF header.
+        pub_date = (_parse_swiss_date(item.get("custom_publication_date_date", ""))
+                    or _parse_swiss_date(item.get("publication_date", "")))
 
         # Excerpt text (HTML)
         post_content = item.get("post_content", "")
@@ -159,7 +201,8 @@ class SHGerichteScraper(BaseScraper):
             "decision_id": decision_id,
             "content_id": content_id,
             "docket_number": docket,
-            "decision_date": decision_date,
+            # decision_date is deliberately omitted here: it is extracted from the
+            # PDF header in fetch_decision, never from CMS publication metadata.
             "publication_date": pub_date,
             "title": headline,
             "listlabel": listlabel,
@@ -203,11 +246,14 @@ class SHGerichteScraper(BaseScraper):
                 parts.append(stub["listlabel"])
             full_text = "\n\n".join(parts) if parts else f"[Text extraction failed for {docket}]"
 
-        decision_date = stub.get("decision_date")
+        # The judgment date lives only in the document header. Extract it there;
+        # never substitute the publication date (that is the historical bug that
+        # put a publication date up to years off into decision_date).
+        decision_date = _parse_head_date(full_text)
         if not decision_date:
-            decision_date = stub.get("publication_date")
-        if not decision_date:
-            logger.warning(f"SH: no date for {stub.get('docket_number', '?')}")
+            logger.warning(
+                f"SH: no judgment date in header for {stub.get('docket_number', '?')}; "
+                f"leaving decision_date null")
 
         language = detect_language(full_text) if len(full_text) > 100 else "de"
 

@@ -36,8 +36,32 @@ BASE_URL = "https://www.ur.ch"
 LIST_URL = f"{BASE_URL}/rechtsprechung"
 
 RE_DATE = re.compile(r"(\d{2})\.(\d{2})\.(\d{4})")
+RE_ISO_DATE = re.compile(r"(\d{4})-(\d{2})-(\d{2})")
 RE_DOCKET = re.compile(r"(OG\s+[A-Z]\s+\d{2}\s+\d+|VGE?\s+\d+[/-]\d+)")
 RE_HREF = re.compile(r'href="([^"]+)"')
+
+# The portal serves a 1905-01-01 placeholder for entries with no real date; it
+# must never be stored as a decision date. Reject it and anything implausibly old.
+DATE_SENTINEL = date(1905, 1, 1)
+DATE_FLOOR_YEAR = 1950
+
+# Judgment date from the PDF header (rescue for sentinel/missing portal dates).
+# Anchored on 'vom <date>'; tolerant of OCR spacing (e.g. 'Entsc heid v om').
+_GERMAN_MONTHS = {
+    "Januar": 1, "Februar": 2, "März": 3, "April": 4, "Mai": 5, "Juni": 6,
+    "Juli": 7, "August": 8, "September": 9, "Oktober": 10, "November": 11,
+    "Dezember": 12,
+}
+_MONTH_NAMES = "|".join(_GERMAN_MONTHS)
+RE_HEAD_LONG = re.compile(r"vom\s+(\d{1,2})\.?\s*(" + _MONTH_NAMES + r")\s+(\d{4})")
+RE_HEAD_NUM = re.compile(r"vom\s+(\d{1,2})\.(\d{1,2})\.(\d{4})")
+
+
+def _reject_sentinel(d):
+    """None out the 1905 placeholder and any implausibly old parse."""
+    if d is None or d == DATE_SENTINEL or d.year < DATE_FLOOR_YEAR:
+        return None
+    return d
 
 
 def _parse_swiss_date(text):
@@ -47,6 +71,44 @@ def _parse_swiss_date(text):
     if m:
         try:
             return date(int(m.group(3)), int(m.group(2)), int(m.group(1)))
+        except ValueError:
+            pass
+    return None
+
+
+def _parse_iso_date(text):
+    """Parse the portal's `datum-sort` ISO form (YYYY-MM-DD). The old code passed
+    this to _parse_swiss_date, whose DD.MM.YYYY regex never matched it — a silent
+    dead fallback."""
+    if not text:
+        return None
+    m = RE_ISO_DATE.search(text)
+    if m:
+        try:
+            return date(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+        except ValueError:
+            pass
+    return None
+
+
+def _parse_head_date(text):
+    """Judgment date from the document header (first ~2500 chars), anchored on
+    'vom <date>'. German-month and numeric forms."""
+    if not text:
+        return None
+    head = text[:2500]
+    m = RE_HEAD_LONG.search(head)
+    if m:
+        month = _GERMAN_MONTHS.get(m.group(2))
+        if month:
+            try:
+                return _reject_sentinel(date(int(m.group(3)), month, int(m.group(1))))
+            except ValueError:
+                pass
+    m = RE_HEAD_NUM.search(head)
+    if m:
+        try:
+            return _reject_sentinel(date(int(m.group(3)), int(m.group(2)), int(m.group(1))))
         except ValueError:
             pass
     return None
@@ -164,8 +226,10 @@ class URGerichteScraper(BaseScraper):
         if not docket:
             return None
 
-        # Extract decision date
-        decision_date = _parse_swiss_date(datum) or _parse_swiss_date(datum_sort)
+        # Extract decision date. datum is DD.MM.YYYY; datum-sort is ISO. Reject the
+        # 1905 sentinel here; fetch_decision rescues those from the PDF header.
+        decision_date = _reject_sentinel(
+            _parse_swiss_date(datum) or _parse_iso_date(datum_sort))
 
         # Title: full name field
         title = name[:200] if name else None
@@ -199,7 +263,10 @@ class URGerichteScraper(BaseScraper):
         if not full_text or len(full_text) < 50:
             full_text = stub.get("title", "") or f"[Text extraction failed for {stub['docket_number']}]"
 
-        decision_date = stub.get("decision_date")
+        # Prefer the valid portal date (reliable for most rows); rescue the
+        # sentinel/missing cases from the PDF header. Never fabricate from the
+        # docket year (a year is not a date).
+        decision_date = stub.get("decision_date") or _parse_head_date(full_text)
         if not decision_date:
             logger.warning(f"[ur_gerichte] No date for {stub['docket_number']}")
 
