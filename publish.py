@@ -860,9 +860,39 @@ def step_2h_build_legal_scholarship(dry_run: bool = False, full_rebuild: bool = 
     )
 
 
+def _ensure_representation_manifest(dry_run: bool = False) -> None:
+    """Rebuild the cross-identifier representation manifest against the freshly
+    swapped decisions.db so generate_stats can emit a generation-matched
+    unique-decision count.
+
+    Read-only w.r.t. serving: it writes ONLY output/representation_manifest.db (a
+    sidecar nothing serves from yet) and never touches decisions.db. Fully
+    failure-tolerant: on any failure generate_stats omits the unique block (it
+    treats an absent or generation-mismatched sidecar gracefully). ~10 min on the
+    full corpus; runs here because step 5a is post-swap (final DB, stable inode)."""
+    script = REPO_DIR / "scripts" / "build_representation_manifest.py"
+    if not script.exists():
+        logger.warning("  build_representation_manifest.py not found; skipping dual-count")
+        return
+    ok = run_cmd(
+        [sys.executable, str(script)],
+        "Rebuild representation manifest (cross-identifier dual-count)",
+        dry_run,
+        timeout=1800,        # 30 min hard cap (build is ~10 min)
+        stall_timeout=None,  # one long silent scan phase; the wall-clock cap suffices
+    )
+    if not ok:
+        logger.warning("  representation manifest rebuild failed (non-fatal); "
+                       "stats.json will omit or mark-stale the unique count")
+
+
 def step_5_generate_stats(dry_run: bool = False) -> bool:
     """Step 5: Generate stats.json from database."""
     logger.info("Step 5: Generate stats.json")
+
+    # Build the dual-count sidecar first (non-fatal) so stats.json carries a
+    # generation-matched unique-decision estimate alongside the record count.
+    _ensure_representation_manifest(dry_run)
 
     script = REPO_DIR / "generate_stats.py"
     if not script.exists():

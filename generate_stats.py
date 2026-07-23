@@ -35,6 +35,52 @@ CANTON_NAMES = {
 }
 
 
+def _representation_dual_count(db_path: Path, conn) -> dict:
+    """Additive cross-identifier dual-count from the representation manifest
+    sidecar (output/representation_manifest.db), or {} if absent.
+
+    Emits `source_representations` (== total, the record count) plus an ESTIMATED
+    unique-decision count that collapses cross-identifier duplicates (GE/VD/SH +
+    ch_vb/nw/edoeb/ur). NEVER replaces `total`: make verify and the 950k health
+    floors gate on the record count, which is unchanged. If the sidecar was built
+    against a different decisions.db generation, the count is marked stale and the
+    unique number is withheld (a stale count is worse than none)."""
+    manifest = Path(db_path).with_name("representation_manifest.db")
+    if not manifest.exists():
+        return {}
+    try:
+        src_gen = conn.execute("PRAGMA user_version").fetchone()[0]
+        m = sqlite3.connect(f"file:{manifest}?mode=ro&immutable=1", uri=True)
+        try:
+            meta = dict(m.execute("SELECT key, value FROM manifest_meta"))
+        finally:
+            m.close()
+    except Exception as e:  # pragma: no cover - defensive
+        logger.warning("representation manifest unreadable, skipping dual-count: %s", e)
+        return {}
+    out: dict = {
+        "source_representations": stats_total(conn),
+        "representation_method_version": meta.get("algo_version"),
+    }
+    if str(src_gen) != str(meta.get("source_user_version")):
+        out["unique_decisions_status"] = "stale"
+        return out
+    try:
+        out.update({
+            "unique_decisions": int(meta["estimated_unique_decisions"]),
+            "unique_decisions_lower_bound": int(meta["estimated_unique_lower_bound"]),
+            "duplicate_representations": int(meta["duplicate_representations"]),
+            "unique_decisions_status": "current",
+        })
+    except (KeyError, ValueError) as e:  # pragma: no cover - defensive
+        logger.warning("representation manifest meta incomplete: %s", e)
+    return out
+
+
+def stats_total(conn) -> int:
+    return conn.execute("SELECT COUNT(*) FROM decisions").fetchone()[0]
+
+
 def generate_stats(db_path: Path) -> dict:
     """Query the FTS5 database and return comprehensive statistics."""
     conn = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
@@ -45,8 +91,11 @@ def generate_stats(db_path: Path) -> dict:
     current_year = now_utc.year
     today_iso = now_utc.date().isoformat()
 
-    # Total decisions
+    # Total decisions (record count — load-bearing for make verify + health floors)
     stats["total"] = conn.execute("SELECT COUNT(*) FROM decisions").fetchone()[0]
+
+    # Additive dual-count (never replaces `total`); {} when the sidecar is absent.
+    stats.update(_representation_dual_count(db_path, conn))
 
     # By court (with date ranges and languages)
     courts = conn.execute("""
