@@ -4412,5 +4412,11 @@
     },
     "corpus": {},
     "previous_generated_at": "2026-07-22T15:36:23.794828+00:00"
-  }
+  },
+  "source_representations": 1050074,
+  "representation_method_version": "2026-07-23.1",
+  "unique_decisions": 909163,
+  "unique_decisions_lower_bound": 909113,
+  "duplicate_representations": 140911,
+  "unique_decisions_status": "current"
 }
