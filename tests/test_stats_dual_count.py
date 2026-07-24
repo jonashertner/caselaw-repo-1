@@ -99,6 +99,25 @@ def test_large_drift_withholds_unique_number(tmp_path):
     assert out["source_representations"] == 100
 
 
+def test_manifest_found_via_canonical_fallback_when_db_not_colocated(tmp_path, monkeypatch):
+    # Simulate the early-stats-push: db_path is the resolved /mnt path with NO
+    # co-located manifest, but the manifest lives in the canonical repo output/.
+    mnt = tmp_path / "mnt" / "output"
+    mnt.mkdir(parents=True)
+    _decisions_db(mnt / "decisions.db", 100, 7)          # db on the "volume"
+    canon = tmp_path / "repo_output"
+    canon.mkdir()
+    _manifest(canon / "representation_manifest.db", _meta(100, 8))
+    monkeypatch.setattr(gs, "_CANONICAL_OUTPUT_DIR", canon)
+    db = mnt / "decisions.db"
+    out = gs._representation_dual_count(db, _conn(db))
+    assert out["unique_decisions_status"] == "current"   # found via fallback
+    assert out["unique_decisions"] == 92
+    # and if neither location has it -> {}
+    monkeypatch.setattr(gs, "_CANONICAL_OUTPUT_DIR", tmp_path / "nowhere")
+    assert gs._representation_dual_count(db, _conn(db)) == {}
+
+
 def test_generate_stats_keeps_total_and_adds_dual_count(tmp_path):
     db = tmp_path / "decisions.db"
     _decisions_db(db, 50, 3)

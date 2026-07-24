@@ -45,6 +45,23 @@ CANTON_NAMES = {
 # past the manifest (e.g. the nightly rebuild has been broken for days).
 _MANIFEST_DRIFT_TOLERANCE = 2500
 
+# Canonical location of the representation manifest sidecar. decisions.db is a
+# symlink onto the /mnt data volume, but the manifest is a real file in the repo
+# output/ dir (they are NOT co-located), so a caller that passes the RESOLVED
+# /mnt db path (the early-stats-push does) must still find the manifest here.
+_CANONICAL_OUTPUT_DIR = Path(__file__).resolve().parent / "output"
+
+
+def _find_manifest(db_path) -> Path | None:
+    """Locate representation_manifest.db robustly: first co-located with db_path
+    (the repo-relative case), then the canonical repo output/ dir (for callers
+    that pass the resolved /mnt decisions.db path)."""
+    for cand in (Path(db_path).with_name("representation_manifest.db"),
+                 _CANONICAL_OUTPUT_DIR / "representation_manifest.db"):
+        if cand.exists():
+            return cand
+    return None
+
 
 def _representation_dual_count(db_path: Path, conn) -> dict:
     """Additive cross-identifier dual-count from the representation manifest
@@ -58,8 +75,8 @@ def _representation_dual_count(db_path: Path, conn) -> dict:
     growth (a fresh decision is a singleton until its twin is published). If the
     manifest's build corpus has drifted too far from the live corpus, the count is
     marked stale and withheld (a stale count is worse than none)."""
-    manifest = Path(db_path).with_name("representation_manifest.db")
-    if not manifest.exists():
+    manifest = _find_manifest(db_path)
+    if manifest is None:
         return {}
     try:
         m = sqlite3.connect(f"file:{manifest}?mode=ro&immutable=1", uri=True)
