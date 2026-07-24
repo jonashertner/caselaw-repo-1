@@ -15,7 +15,7 @@ update all listed consumers in the same commit.
 | Concept | Use when | Examples |
 |---|---|---|
 | **Paper snapshot** | Anything in the v3 paper or `docs/paper/v3/tables/*.json` | "971,992 decisions, snapshot 2026-05-13" |
-| **Live** | Dashboards / README / dataset card | "990,000+ decisions" (rounded; grows daily) |
+| **Live** | Dashboards / README / dataset card | "1,050,000+ records (~909,000 unique)" (rounded; grows daily) |
 
 ## The numbers
 
@@ -23,12 +23,22 @@ update all listed consumers in the same commit.
 
 | Quantity | Snapshot value (paper) | Live value | Source of truth | Consumers |
 |---|---:|---|---|---|
-| Decisions | **971,992** | **~990k** | `docs/paper/v3/tables/corpus_graph_stats.json::total_decisions` (live: `decisions.db`) | paper §3 abstract, dataset_card.md, README.md, methodology.html, index.html |
+| Decision records | **971,992** | **~1.05M** | `docs/paper/v3/tables/corpus_graph_stats.json::total_decisions` (live: `decisions.db` COUNT) | paper §3 abstract, dataset_card.md, README.md, methodology.html, index.html |
+| **Unique decisions** (live only) | — | **~909k** | `output/representation_manifest.db` (live: `stats.json::unique_decisions`) | dataset_card.md, README.md, index.html, llms.txt |
 | Courts | 108 | 118 | same JSON (live: `decisions.db`) | all |
 | Cantons | 26 | 26 | constant | all |
 | Languages | DE 449,575 (46.3 %), FR 441,158 (45.4 %), IT 80,704 (8.3 %) | same | corpus_overview.tex | paper §3, methodology.html |
 | Date range | 1875–2026 | 1875–2026 | constant | all |
 | Snapshot date (paper) | **2026-05-13** | — | `corpus_graph_stats.json::snapshot_date` | paper, methodology.html date references |
+
+**Record vs. unique (cross-identifier dual-count):** the live corpus is a RECORD
+count (`decisions.db` rows). Romandie portals (GE, VD) and a few smaller sources
+(ch_vb, nw, edoeb, ur) publish one ruling under two identifiers, so ~141k rows are
+duplicate representations that we retain and link (never delete). Live figures:
+**~1.05M records → ~909k unique decisions** (`stats.json::unique_decisions`,
+generation-tracked via `representation_manifest.db`). Public surfaces state both;
+the paper snapshot predates this and reports the record count only. See
+`docs/superpowers/specs/2026-07-15-cross-identifier-representations-design.md`.
 
 ### Citation graph
 
@@ -36,8 +46,8 @@ update all listed consumers in the same commit.
 |---|---:|---|---|
 | Citation edges extracted (paper snapshot) | 8,649,879 | `corpus_graph_stats.json::rg_citation_edges` | paper §4 |
 | Resolved edges (paper snapshot) | 8,089,112 (93.5 %) | same | paper |
-| **Citation edges extracted (live)** | **~9.2M** | `reference_graph.db::decision_citations` | README, dataset_card, dashboards |
-| **Resolved edges (live)** | **~8.65M** | `reference_graph.db::citation_targets` | README, dataset_card, dashboards |
+| **Resolved citation edges (live)** | **~9.65M** | `reference_graph.db::decision_citations` (= `stats.json::citation_edges`) | README, dataset_card, dashboards |
+| **Extracted citations (live)** | **~10M** | `reference_graph.db::citation_targets` | README, dataset_card, dashboards |
 | Cited ≥ 100 times | 10,874 | `in_degree_buckets` | paper Table 2 |
 | Cited ≥ 1,000 times | 999 | same | paper |
 | Cited ≥ 10,000 times | **47** | same | paper §4, citation_graph.tex |
@@ -49,11 +59,11 @@ update all listed consumers in the same commit.
 | Quantity | Value | Source | Consumers |
 |---|---:|---|---|
 | Decision–statute edges (paper snapshot) | 11,261,717 | `corpus_graph_stats.json::rg_statute_edges` | paper |
-| **Decision–statute edges (live)** | **~11.85M** | `reference_graph.db::decision_statutes` | README, dataset_card, dashboards |
+| **Decision–statute edges (live)** | **~12.4M** | `reference_graph.db::decision_statutes` | README, dataset_card, dashboards |
 | Distinct provisions | 283,119 | `rg_distinct_statutes` | all |
-| Federal SR laws | 5,519 | live (Fedlex; grows) | all |
+| Federal SR laws | 5,525 | live (Fedlex; grows) | all |
 | Federal articles | 400,405 (across DE/FR/IT) | constant | all |
-| Cantonal laws | 15,589 | `cantonal_laws.db` | all |
+| Cantonal laws | 15,600 | `cantonal_laws.db` | all |
 | Cantonal articles | 353,437 | same | all |
 | Direct portal coverage | **all 26 cantons** (LexWork 18 + SIL 2 + ZH 1 + TI 1) | `cantonal_laws.db.laws.text_source` | paper §3, README, methodology |
 | LexFind PDF supplements | **4 cantons** | same | same |
@@ -162,4 +172,4 @@ Source: `analytics.db::weekly_reach` (after 2026-05-18 cohort-derivation upgrade
 3. Grep this doc + every consumer for the old number; update them.
 4. Bump the "Last verified" line below.
 
-**Last verified:** 2026-06-25 (live-figure sweep vs stats.json + reference_graph.db: decisions ~994k, courts 118, citation edges 8.65M resolved / 9.2M extracted, statute 11.85M, Botschaft 5,989/~410K, commentaries 1,131, scholarship 25,676/23 sources, tools 43/41/2; paper-snapshot rows unchanged).
+**Last verified:** 2026-07-24 (live-figure sweep vs stats.json + reference_graph.db: **~1.05M records / ~909k unique decisions** (cross-identifier dual-count now live), courts 118, citation edges 9.65M resolved / ~10M extracted, statute 12.4M, federal laws 5,525, cantonal 15,600, Botschaft 5,900+/~410K, commentaries ~1,131, tools 43/41/2; paper-snapshot rows unchanged at 971,992). Consumers synced this sweep: README, dataset_card, dataset_card_legislation, methodology.html (6 langs), index.html, mcp_server.py (instructions + tool descriptions), llms.txt, claude-desktop-setup.md, entscheide/ + ueber/ pages, word-addin AppSource listing. Paper (docs/paper/*) intentionally left at its frozen snapshot.

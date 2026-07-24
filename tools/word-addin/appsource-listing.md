@@ -7,7 +7,7 @@ OpenCaseLaw - Swiss Case Law
 Jonas Hertner
 
 ## Short description (100 chars max)
-Search 990,000+ Swiss court decisions and insert correct citations directly in Word.
+Search 1,050,000+ Swiss court decisions and insert correct citations directly in Word.
 
 ## Long description (4000 chars max)
 
@@ -15,10 +15,10 @@ OpenCaseLaw gives lawyers, judges, legal scholars, and students instant access t
 
 **Pricing — disclosed up front (Microsoft Marketplace policy 1100.1.3)**
 
-- **Core features are free**: search across 990,000+ decisions, statute lookup, citation insertion. No account, no card, no trial expiry.
+- **Core features are free**: search across 1,050,000+ decisions, statute lookup, citation insertion. No account, no card, no trial expiry.
 - **Optional Pro subscription — CHF 5/month**, billed via **Stripe**. Cancelable at any time from your Stripe billing portal. Adds AI reference verification, argument search, and document scanning. The first 100 verifications per day are included; no overage charges. No other in-app purchases or hidden fees.
 
-**990,000+ court decisions. 5,519 federal laws. 15,589 cantonal laws. One search.**
+**1,050,000+ court decisions. 5,525 federal laws. 15,600 cantonal laws. One search.**
 
 Search the full text of decisions from the Federal Supreme Court (BGer/TF), Federal Administrative Court (BVGer/TAF), Federal Criminal Court (BStGer/TPF), Federal Patent Court (BPatGer/TFB), FINMA, WEKO/COMCO, and all 26 cantonal courts. The database is updated daily (BGer decisions within 15 minutes of publication) and covers decisions from 1875 to today.
 
@@ -33,7 +33,7 @@ No more manual formatting. No more typos in docket numbers.
 
 **Look up federal and cantonal statutes inline**
 
-Search for "Art. 41 OR" or "Art. 8 BV" — the full article text appears directly in the panel. Covers 5,519 Swiss federal laws (133,359 articles in DE/FR/IT) and 15,589 cantonal laws across all 26 cantons. The current consolidated text is shown alongside the Federal Council Botschaft reference (legislative intent).
+Search for "Art. 41 OR" or "Art. 8 BV" — the full article text appears directly in the panel. Covers 5,525 Swiss federal laws (133,359 articles in DE/FR/IT) and 15,600 cantonal laws across all 26 cantons. The current consolidated text is shown alongside the Federal Council Botschaft reference (legislative intent).
 
 **Find related decisions**
 

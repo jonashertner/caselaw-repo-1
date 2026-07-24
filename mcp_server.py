@@ -58,7 +58,7 @@ Tools exposed:
     get_statistics    — Aggregate statistics by court, canton, year,
                         language.
     find_citations    — Show what a decision cites and what cites it.
-                        Uses the reference graph (8.65M citation edges).
+                        Uses the reference graph (9.65M citation edges).
     find_leading_cases — Find most-cited decisions for a topic or statute.
     analyze_legal_trend — Year-by-year decision counts for jurisprudence
                         evolution analysis.
@@ -561,7 +561,7 @@ def _past_deadline(deadline: float | None) -> bool:
 EXPANSION_SYSTEM_PROMPT = (
     "You are a Swiss legal search assistant. Given a user's search query about "
     "Swiss law, output 3-6 additional search terms that would help find relevant "
-    "court decisions in a full-text search index of 973K Swiss decisions.\n"
+    "court decisions in a full-text search index of 1.05M Swiss decisions.\n"
     "Include:\n"
     "- The precise Swiss legal doctrine name (Rechtsbegriff) in German\n"
     "- The key statute article (e.g. Art. 56 OR, Art. 28 ZGB)\n"
@@ -6690,7 +6690,7 @@ def get_decision_by_id(decision_id: str) -> dict | None:
          SKIPPED when the input looks like a canonical decision_id
          (e.g. starts with "bger_" / "bge_BGE_…") because such IDs
          either hit step 1 or are fabricated; the LIKE scan costs
-         ~2 s on the live 970k-row table and produces nothing
+         ~2 s on the live 1.05M-row table and produces nothing
          meaningful for these inputs.
     """
     decision_id = (decision_id or "").strip()  # trim so a padded id/docket resolves (#44)
@@ -9020,11 +9020,11 @@ def update_from_huggingface() -> str:
 server = Server(
     "swiss-caselaw",
     instructions=(
-        "Swiss legal research platform: 990,000+ published decisions from "
+        "Swiss legal research platform: 1,050,000+ published decisions from "
         "federal + cantonal courts, ~2,800 European Court of Human Rights "
         "decisions concerning Switzerland (BGE-published EGMR translations, "
         "HUDOC.CH, plus ECtHR Chamber / Committee / Grand Chamber direct), "
-        "5,519 federal laws (Fedlex SPARQL), 15,589 cantonal laws (direct "
+        "5,525 federal laws (Fedlex SPARQL), 15,600 cantonal laws (direct "
         "portal scraping for 19 cantons + LexFind fallback for the rest), "
         "1,100+ scholarly commentaries, a verbatim Federal Council Botschaft "
         "corpus (5,900+ documents, ~410K FTS5-indexed paragraphs), "
@@ -9032,8 +9032,8 @@ server = Server(
         "(thousands with full-text — see find_scholarship_citing_decision and "
         "find_scholarship_citing_statute for the bidirectional bridge), "
         "structured federal decisions (Sachverhalt/Erwägungen/Dispositiv), "
-        "and the citation graph (8.65M resolved decision-to-decision edges from "
-        "9.2M extracted citations). Updated daily. "
+        "and the citation graph (9.65M resolved decision-to-decision edges from "
+        "10M extracted citations). Updated daily. "
         "Languages: DE, FR, IT — tools handle cross-language matching "
         "automatically.\n\n"
 
@@ -18477,7 +18477,7 @@ def _list_tools() -> list[Tool]:
             name="find_citations",
             description=(
                 "Given a decision_id, show what it cites and what cites it. "
-                "Uses the reference graph database with 8.65M citation edges. "
+                "Uses the reference graph database with 9.65M citation edges. "
                 "Returns resolved citations with confidence scores and unresolved references."
             ),
             inputSchema={
@@ -21798,8 +21798,8 @@ setInterval(load, 30000);
         title="OpenCaseLaw API",
         description=(
             "Swiss court decisions, statutes, commentaries, scholarship, and citation graph. "
-            "990,000+ published decisions from Swiss federal, cantonal, and regulatory bodies, "
-            "5,519 federal laws, 15,589 cantonal acts, 1,100+ commentaries, 25,000+ OA scholarship records."
+            "1,050,000+ published decisions from Swiss federal, cantonal, and regulatory bodies, "
+            "5,525 federal laws, 15,600 cantonal acts, 1,100+ commentaries, 25,000+ OA scholarship records."
         ),
         version="1.0.0",
         docs_url="/docs",
@@ -22723,7 +22723,7 @@ setInterval(load, 30000);
 
     @rest_api.get("/decisions", tags=["Case Law"],
                   summary="Search court decisions",
-                  description="Full-text search across 956k Swiss court decisions. "
+                  description="Full-text search across 1,050,000+ Swiss court decisions. "
                               "Supports keywords, phrases (in quotes), Boolean operators (AND, OR, NOT), "
                               "and prefix matching (word*). Each result carries citation_string_{de,fr,it} "
                               "+ canonical_url + rule_statement for copy-ready use in LLM responses. "
@@ -23005,7 +23005,7 @@ setInterval(load, 30000);
 
     @rest_api.get("/citations/{decision_id}", tags=["Citation Graph"],
                   summary="Find citations for a decision",
-                  description="Show what a decision cites and what cites it. Uses the reference graph with 8.65M citation edges.")
+                  description="Show what a decision cites and what cites it. Uses the reference graph with 9.65M citation edges.")
     async def api_find_citations(
         decision_id: str = PathParam(description="Decision ID (e.g., bger_6B_1_2025)"),
         direction: str = Query("both", description="Citation direction: both, outgoing, or incoming"),
