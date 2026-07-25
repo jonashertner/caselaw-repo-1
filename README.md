@@ -1,5 +1,7 @@
 # Swiss Case Law Open Dataset
 
+[![MCP Toplist](https://mcptoplist.com/badge/ch.opencaselaw%2Fswiss-caselaw.svg)](https://mcptoplist.com/server/ch.opencaselaw%2Fswiss-caselaw)
+
 **The complete machine-readable archive of Swiss case law and legislation — built for humans, designed for AI agents.**
 
 **1,050,000+ decision records (~909,000 unique decisions after cross-identifier linkage) · 5,525 federal laws · 15,600 cantonal laws · 9.65 M resolved citation edges (10 M extracted) · 12.4 M statute references · 83,958 Botschaft amendment references (5,900+ verbatim Botschaften ingested, scaling) · daily RFC-6962 Merkle root + OpenTimestamps anchor (cryptographic provenance) · cli:ch + ECLI identifiers on every decision**
