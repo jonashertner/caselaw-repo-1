@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/it.xml</link>
     <description>Latest published Swiss court decisions in Italiano.</description>
     <language>de-CH</language>
-    <lastBuildDate>Fri, 24 Jul 2026 10:40:19 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 25 Jul 2026 09:43:18 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/it.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -31,6 +31,14 @@ Seconda Camera di diritto delle assicurazio…</description>
       <pubDate>Thu, 09 Jul 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BStGer:2026:RR.2026.60</guid>
       <category>bstger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht B-4950/2025 vom 2026-07-09</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_B-4950_2025</link>
+      <description>Esame professionale</description>
+      <pubDate>Thu, 09 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:B-4950.2025</guid>
+      <category>bvger</category>
     </item>
     <item>
       <title>Bundesverwaltungsgericht F-4704/2026 vom 2026-07-09</title>
@@ -147,6 +155,36 @@ Partecipanti al procedimento
       <category>bger</category>
     </item>
     <item>
+      <title>Bundesgericht 8C_262/2026 vom 2026-07-08</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_8C_262_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+8C_262/2026
+
+Sentenza dell'8 luglio 2026
+
+IV Corte di diritto pubblico
+
+Composizione
+
+Giudice federale Viscione, Presidente,
+
+Cancelliere Colombi.
+
+Partecipanti al procedimento
+
+A…</description>
+      <pubDate>Wed, 08 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:8C_262.2026</guid>
+      <category>bger</category>
+    </item>
+    <item>
       <title>Bundesverwaltungsgericht F-4710/2026 vom 2026-07-08</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-4710_2026</link>
       <description>Asilo (non entrata nel merito) ed allontanamento (procedura Dublino - art. 31a cpv. 1 lett. b LAsi)</description>
@@ -185,6 +223,36 @@ Camera delle esecuzioni e dei fallimenti…</description>
       <pubDate>Tue, 07 Jul 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-4468.2026</guid>
       <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesgericht 4A_281/2026 vom 2026-07-06</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_4A_281_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+4A_281/2026
+
+Sentenza del 6 luglio 2026
+
+I Corte di diritto civile
+
+Composizione
+
+Giudice federale Hurni, Presidente,
+
+Cancelliere G. Piatti.
+
+Partecipanti al procedimento
+
+A.____…</description>
+      <pubDate>Mon, 06 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:4A_281.2026</guid>
+      <category>bger</category>
     </item>
     <item>
       <title>gr_gerichte SV2 2026 7 vom 2026-07-06</title>
@@ -257,6 +325,36 @@ Seconda Camera di diritto delle assicurazio…</description>
       <pubDate>Tue, 30 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">gr_gerichte_SV2 2025 62</guid>
       <category>gr_gerichte</category>
+    </item>
+    <item>
+      <title>Bundesgericht 4A_179/2026 vom 2026-06-29</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_4A_179_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+4A_179/2026
+
+Sentenza del 29 giugno 2026
+
+I Corte di diritto civile
+
+Composizione
+
+Giudice federale Hurni, Presidente,
+
+Cancelliere G. Piatti.
+
+Partecipanti al procedimento
+
+A.___…</description>
+      <pubDate>Mon, 29 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:4A_179.2026</guid>
+      <category>bger</category>
     </item>
     <item>
       <title>gr_gerichte SV2 2026 4 vom 2026-06-29</title>
@@ -812,58 +910,6 @@ Righetti…</description>
       <pubDate>Fri, 12 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BStGer:2026:SK.2025.32</guid>
       <category>bstger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht B-3309/2026 vom 2026-06-11</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_B-3309_2026</link>
-      <description>Prestazione di lavoro di pubblico interesse (servizio civile)</description>
-      <pubDate>Thu, 11 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:B-3309.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht C-9407/2025 vom 2026-06-11</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-9407_2025</link>
-      <description>Assicurazione per l'invalidità (altro)</description>
-      <pubDate>Thu, 11 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-9407.2025</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 9C_366/2026 vom 2026-06-10</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_9C_366_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-9C_366/2026
-
-Sentenza del 10 giugno 2026
-
-III Corte di diritto pubblico
-
-Composizione
-
-Giudici federali Moser-Szeless, Presidente,
-
-Cancelliere Savoldelli.
-
-Partecipanti al proced…</description>
-      <pubDate>Wed, 10 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:9C_366.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht C-1478/2024 vom 2026-06-10</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-1478_2024</link>
-      <description>Revisione della rendita</description>
-      <pubDate>Wed, 10 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-1478.2024</guid>
-      <category>bvger</category>
     </item>
   </channel>
 </rss>
