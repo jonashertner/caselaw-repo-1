@@ -2384,7 +2384,7 @@
     "2026-06": 2189,
     "2026-07": 515
   },
-  "generated_at": "2026-07-25T14:27:47.704926+00:00",
+  "generated_at": "2026-07-25T21:58:18.422341+00:00",
   "scraper_health": {
     "run_at": "2026-07-25T03:13:11.383575+00:00",
     "run_duration_s": 7930.5,
@@ -2778,7 +2778,7 @@
         "note": null,
         "state_count": 97879,
         "jsonl_size_mb": 1476.9,
-        "jsonl_mtime": "2026-07-25T10:34:56.398188+00:00"
+        "jsonl_mtime": "2026-07-25T20:55:16.422172+00:00"
       },
       "bs_gerichte": {
         "success": true,
@@ -3220,7 +3220,7 @@
         "note": "1972 listed on portal but content not downloadable (empty page or missing PDF)",
         "state_count": 1536,
         "jsonl_size_mb": 93.6,
-        "jsonl_mtime": "2026-07-25T01:55:10.642982+00:00"
+        "jsonl_mtime": "2026-07-25T14:49:31.718648+00:00"
       },
       "ne_gerichte": {
         "success": true,
