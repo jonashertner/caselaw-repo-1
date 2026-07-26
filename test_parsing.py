@@ -201,18 +201,11 @@ def test_metadata_extraction(text):
     else:
         print("  ✗ Title: NOT FOUND")
     
-    # Chamber
-    from scrapers.bger import ABTEILUNG_MAP
-    chamber = None
-    text_lower = text.lower()
-    for _, info in ABTEILUNG_MAP.items():
-        for lang_key in ["de", "fr", "it"]:
-            name = info[lang_key].lower()
-            if name in text_lower:
-                chamber = info["de"]
-                break
-        if chamber:
-            break
+    # Chamber — use the scraper's own resolver rather than a copy of it, so
+    # this diagnostic cannot drift from production (it carried the pre-#57
+    # unanchored substring match, which read "II." as "I.").
+    from scrapers.bger import chamber_from_text
+    chamber = chamber_from_text(text)
     if chamber:
         print(f"  ✓ Chamber: {chamber}")
     else:
@@ -449,7 +442,7 @@ def test_abteilung_mapping():
     test_cases = [
         ("2C", "II. Öffentlich-rechtliche Abteilung"),
         ("5A", "II. Zivilrechtliche Abteilung"),
-        ("7B", "Beschwerdekammer des Bundesstrafgerichts"),
+        ("7B", "II. Strafrechtliche Abteilung"),
         ("1C", "I. Öffentlich-rechtliche Abteilung"),
         ("4A", "I. Zivilrechtliche Abteilung"),
         ("6B", "I. Strafrechtliche Abteilung"),

@@ -256,10 +256,21 @@ ABTEILUNG_MAP: dict[str, dict] = {
         "it": "Corte di diritto penale",
         "prefixes": ["6B", "6D", "6E", "6F", "6G", "6S", "6P", "6X", "6Y"],
     },
+    # The 2023 reorganisation created the II. strafrechtliche Abteilung and
+    # moved criminal-procedure appeals to the 7B/7F dockets (1B stops in
+    # 2023-07; 7B/7F run 2023-10 onward). This slot previously named the
+    # Beschwerdekammer des Bundesstrafgerichts — a *Federal Criminal Court*
+    # body, not a BGer division. That was wrong twice over (GitHub #57):
+    #   - 7B/7F decisions were labelled with a foreign court, and
+    #   - because it was the longest name in the map it was tested FIRST by
+    #     the text scan below, so any BGer decision merely mentioning the
+    #     Beschwerdekammer (usually as the lower instance) inherited it.
+    # Removing the name from the map is what fixes the second problem: a
+    # court that is not a BGer division must not be assignable as one.
     "CH_BGer_007": {
-        "de": "Beschwerdekammer des Bundesstrafgerichts",
-        "fr": "Cour des plaintes du Tribunal pénal fédéral",
-        "it": "Corte dei reclami penali del Tribunale penale federale",
+        "de": "II. Strafrechtliche Abteilung",
+        "fr": "IIe Cour de droit pénal",
+        "it": "II Corte di diritto penale",
         "prefixes": ["7B", "7D", "7E", "7F", "7G", "7X", "7Y"],
     },
     "CH_BGer_008": {
@@ -287,6 +298,36 @@ PREFIX_TO_ABTEILUNG: dict[str, tuple[str, dict]] = {}
 for _sig, _info in ABTEILUNG_MAP.items():
     for _p in _info["prefixes"]:
         PREFIX_TO_ABTEILUNG[_p] = (_sig, _info)
+
+
+# Division names to look for in page text, longest entry first so "II. …" is
+# tested before "I. …". The lookbehind is the real guard: plain substring
+# matching let "I. Strafrechtliche Abteilung" match *inside* "II. straf-
+# rechtliche Abteilung", which is why 7B decisions were filed under the I.
+# division (#57). Order alone is too fragile to rely on for that.
+_ABTEILUNG_NAME_PATTERNS: list[tuple[re.Pattern, str]] = [
+    (re.compile(r"(?<![0-9A-Za-zÀ-ÖØ-öø-ÿ])" + re.escape(_info[_lang]),
+                re.IGNORECASE), _info["de"])
+    for _sig, _info in sorted(
+        ABTEILUNG_MAP.items(),
+        key=lambda kv: max(len(kv[1][lang]) for lang in ("de", "fr", "it")),
+        reverse=True,
+    )
+    for _lang in ("de", "fr", "it")
+]
+
+
+def chamber_from_text(text: str) -> str | None:
+    """First BGer division named in `text`, as its German name, or None.
+
+    Fallback for the ~53 % of BGer dockets the prefix map does not cover
+    (pre-2008 B/C/H/I/K/M/P/U series). Reads the whole document, so it can
+    still pick up a division named in a quoted lower-instance ruling.
+    """
+    for rx, de_name in _ABTEILUNG_NAME_PATTERNS:
+        if rx.search(text):
+            return de_name
+    return None
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -1272,21 +1313,9 @@ class BgerScraper(BaseScraper):
         text = soup.get_text()
 
         # ── Chamber/Abteilung from page text ──
-        # Sort by name length descending to match "II. Öffentlich-" before "I. Öffentlich-"
-        text_lower = text.lower()
-        sorted_abt = sorted(
-            ABTEILUNG_MAP.items(),
-            key=lambda kv: max(len(kv[1][lang]) for lang in ["de", "fr", "it"]),
-            reverse=True,
-        )
-        for _, info in sorted_abt:
-            for lang_key in ["de", "fr", "it"]:
-                name = info[lang_key].lower()
-                if name in text_lower:
-                    meta["chamber"] = info["de"]
-                    break
-            if "chamber" in meta:
-                break
+        _chamber = chamber_from_text(text)
+        if _chamber:
+            meta["chamber"] = _chamber
 
         # ── Judges ──
         judges_m = re.search(
