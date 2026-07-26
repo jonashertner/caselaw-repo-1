@@ -10,6 +10,7 @@ import os
 import sqlite3
 from pathlib import Path
 
+from quality.checks._common import count_statute_edges
 from quality.types import CheckResult, Severity
 
 MODULE_NEVER_CRITICAL = True  # all checks here return WARNING/INFO; runner skips in --critical-only
@@ -76,8 +77,9 @@ def check_top_cited_known_leader(conn: sqlite3.Connection, **_) -> CheckResult:
 
 
 def check_total_edge_count(conn: sqlite3.Connection, **_):
-    """Total citation edges and statute references — both are
-    measured at ~6.4M / 11.3M. >5% drop means graph rebuild is broken."""
+    """Total citation edges and statute edges — measured at 9.98M /
+    12.41M on 2026-07-26. The floors below catch a broken graph
+    rebuild, not ordinary drift."""
     rg = _open_rg()
     if rg is None:
         return
@@ -89,10 +91,7 @@ def check_total_edge_count(conn: sqlite3.Connection, **_):
             rg.execute("SELECT COUNT(*) FROM citation_targets").fetchone()[0]
             if "citation_targets" in tables else 0
         )
-        stat = (
-            rg.execute("SELECT COUNT(*) FROM statute_references").fetchone()[0]
-            if "statute_references" in tables else 0
-        )
+        stat = count_statute_edges(rg)
     finally:
         rg.close()
 
@@ -105,12 +104,12 @@ def check_total_edge_count(conn: sqlite3.Connection, **_):
         message=f"citation_targets: {cit:,} (5% floor: 5.5M)",
     )
     yield CheckResult(
-        name="citation_graph.statute_references_count",
+        name="citation_graph.statute_edges_count",
         severity=Severity.WARNING,
         passed=(stat >= 9_000_000),
         metric_value=stat,
         threshold=9_000_000,
-        message=f"statute_references: {stat:,} (5% floor: 9M)",
+        message=f"decision_statutes: {stat:,} (floor: 9M)",
     )
 
 

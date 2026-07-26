@@ -19,6 +19,7 @@ import os
 import sqlite3
 from pathlib import Path
 
+from quality.checks._common import count_statute_edges
 from quality.types import CheckResult, Severity
 
 
@@ -65,9 +66,10 @@ def check_sidecar_dbs_present(conn: sqlite3.Connection, **_):
 
 
 def check_reference_graph_sanity(conn: sqlite3.Connection, **_) -> CheckResult:
-    """The reference_graph.db should have ~6M citation_targets and
-    ~11M statute edges per the May 2026 measurement. >5% drop is a
-    regression."""
+    """The reference_graph.db held 9.98M citation_targets and 12.41M
+    statute edges at the 2026-07-26 measurement. The floors below sit
+    well under that (5M / 8M) — they catch a failed or truncated graph
+    build, not ordinary drift."""
     rg_path = _resolve("SWISS_CASELAW_REFERENCE_GRAPH",
                        "output/reference_graph.db")
     if not rg_path.exists():
@@ -82,7 +84,7 @@ def check_reference_graph_sanity(conn: sqlite3.Connection, **_) -> CheckResult:
     rg = sqlite3.connect(f"file:{rg_path}?mode=ro&immutable=1", uri=True)
     try:
         # Detect what tables exist; both citation_targets (resolved) and
-        # citation_references (raw) live in this DB.
+        # decision_citations (raw) live in this DB.
         tables = {r[0] for r in rg.execute(
             "SELECT name FROM sqlite_master WHERE type='table'"
         ).fetchall()}
@@ -90,10 +92,7 @@ def check_reference_graph_sanity(conn: sqlite3.Connection, **_) -> CheckResult:
             rg.execute("SELECT COUNT(*) FROM citation_targets").fetchone()[0]
             if "citation_targets" in tables else 0
         )
-        stat = (
-            rg.execute("SELECT COUNT(*) FROM statute_references").fetchone()[0]
-            if "statute_references" in tables else 0
-        )
+        stat = count_statute_edges(rg)
     finally:
         rg.close()
     return CheckResult(
@@ -102,8 +101,8 @@ def check_reference_graph_sanity(conn: sqlite3.Connection, **_) -> CheckResult:
         passed=(cit >= 5_000_000 and stat >= 8_000_000),
         metric_value=cit,
         threshold=5_000_000,
-        message=f"citation_targets: {cit:,}, statute_references: {stat:,}",
-        extra={"citation_targets": cit, "statute_references": stat},
+        message=f"citation_targets: {cit:,}, statute_edges: {stat:,}",
+        extra={"citation_targets": cit, "statute_edges": stat},
         fix_advice="if citation count dropped, search_stack/build_reference_"
                    "graph.py may have failed in publish.py Step 2c",
     )
