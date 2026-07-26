@@ -11,6 +11,7 @@ Spans **1875 to today**, covers every Swiss federal court and all 26 cantonal co
 [![CI](https://github.com/jonashertner/caselaw-repo-1/actions/workflows/ci.yml/badge.svg)](https://github.com/jonashertner/caselaw-repo-1/actions/workflows/ci.yml)
 [![Dashboard](https://img.shields.io/badge/Dashboard-live-d1242f)](https://opencaselaw.ch)
 [![HuggingFace](https://img.shields.io/badge/HuggingFace-dataset-blue)](https://huggingface.co/datasets/voilaj/swiss-caselaw)
+[![MCP Toplist](https://mcptoplist.com/badge/ch.opencaselaw%2Fswiss-caselaw.svg)](https://mcptoplist.com/server/ch.opencaselaw%2Fswiss-caselaw)
 [![Data License: CC0--1.0](https://img.shields.io/badge/Data_License-CC0--1.0-blue.svg)](https://creativecommons.org/publicdomain/zero/1.0/)
 [![Code License: MIT](https://img.shields.io/badge/Code_License-MIT-green.svg)](LICENSE)
 
