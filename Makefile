@@ -12,7 +12,10 @@
 # `make tarball` packages the paper for arXiv submission.
 
 .DEFAULT_GOAL := help
-PYTHON ?= python3
+# Prefer the project venv when it exists (local dev), else the ambient
+# python3 — the reviewer Docker image and CI have no .venv and must be
+# unaffected. An explicit PYTHON=... on the command line still wins.
+PYTHON ?= $(if $(wildcard .venv/bin/python),.venv/bin/python,python3)
 PAPER_DIR := docs/paper/v3
 RELEASE_DATE := $(shell date +%Y-%m-%d)
 STATS_JSON := $(PAPER_DIR)/tables/corpus_graph_stats.json
