@@ -1,7 +1,7 @@
 {
-  "run_at": "2026-07-25T09:53:45+00:00",
+  "run_at": "2026-07-26T10:14:23+00:00",
   "db_path": "/opt/caselaw/repo/output/decisions.db",
-  "duration_seconds": 625.65,
+  "duration_seconds": 771.61,
   "summary": {
     "total": 68,
     "passed": 57,
@@ -29,7 +29,7 @@
       "passed": true,
       "metric_value": 0,
       "threshold": 0,
-      "message": "0 of 1744 sampled rows contain control chars",
+      "message": "0 of 1756 sampled rows contain control chars",
       "sample_rows": [],
       "fix_advice": "build_fts5._clean_text (d0072b2) must strip these at insert — a hit means the build-side guarantee regressed (check recent build_fts5/_clean_text changes)",
       "court": null,
@@ -154,17 +154,17 @@
       "fix_advice": "check INSERT OR IGNORE / INSERT OR REPLACE in scrapers and build_fts5.merge_shards",
       "court": null,
       "extra": {
-        "total": 1050354,
-        "distinct": 1050354
+        "total": 1050360,
+        "distinct": 1050360
       }
     },
     {
       "name": "schema.corpus_total_count",
       "severity": "critical",
       "passed": true,
-      "metric_value": 1050354,
+      "metric_value": 1050360,
       "threshold": 950000,
-      "message": "corpus total: 1,050,354",
+      "message": "corpus total: 1,050,360",
       "sample_rows": [],
       "fix_advice": "check publish.py Step 2 build_fts5 logs; verify .tmp swap completed atomically",
       "court": null,
@@ -231,7 +231,7 @@
       "extra": {
         "distribution": {
           "de": 499717,
-          "fr": 459855,
+          "fr": 459861,
           "it": 90782
         }
       }
@@ -240,7 +240,7 @@
       "name": "languages.distribution_plausible",
       "severity": "critical",
       "passed": true,
-      "metric_value": 47.57605531087614,
+      "metric_value": 47.57578354088122,
       "threshold": 30.0,
       "message": "DE 47.6% / FR 43.8% / IT 8.6% / RM 0.00%",
       "sample_rows": [],
@@ -248,7 +248,7 @@
       "court": null,
       "extra": {
         "de": 499717,
-        "fr": 459855,
+        "fr": 459861,
         "it": 90782
       }
     },
@@ -690,9 +690,9 @@
       "name": "dates.future_window",
       "severity": "quarantine",
       "passed": true,
-      "metric_value": 11,
+      "metric_value": 10,
       "threshold": 50,
-      "message": "11 future-dated rows (within tolerance)",
+      "message": "10 future-dated rows (within tolerance)",
       "sample_rows": [
         {
           "decision_id": "fr_gerichte_602 2025 169",
@@ -742,13 +742,13 @@
       "passed": false,
       "metric_value": 220073,
       "threshold": 50,
-      "message": "220,073 rows still use http:// (http 220,073 / https 830,281)",
+      "message": "220,073 rows still use http:// (http 220,073 / https 830,287)",
       "sample_rows": [],
       "fix_advice": "upgrade scraper to write https://, then run a REPLACE(source_url, 'http://', 'https://') backfill",
       "court": null,
       "extra": {
         "http": 220073,
-        "https": 830281
+        "https": 830287
       }
     },
     {
@@ -767,9 +767,9 @@
       "name": "structure.federal_have_erwaegungen",
       "severity": "warning",
       "passed": false,
-      "metric_value": 87.7,
+      "metric_value": 86.5,
       "threshold": 95.0,
-      "message": "BGer (>5y old): 877/1000 sample have sidecar paragraphs (87.7%)",
+      "message": "BGer (>5y old): 865/1000 sample have sidecar paragraphs (86.5%)",
       "sample_rows": [],
       "fix_advice": null,
       "court": null,
@@ -927,14 +927,14 @@
       "name": "cross_db.reference_graph_sanity",
       "severity": "warning",
       "passed": false,
-      "metric_value": 9979218,
+      "metric_value": 9980833,
       "threshold": 5000000,
-      "message": "citation_targets: 9,979,218, statute_references: 0",
+      "message": "citation_targets: 9,980,833, statute_references: 0",
       "sample_rows": [],
       "fix_advice": "if citation count dropped, search_stack/build_reference_graph.py may have failed in publish.py Step 2c",
       "court": null,
       "extra": {
-        "citation_targets": 9979218,
+        "citation_targets": 9980833,
         "statute_references": 0
       }
     },
@@ -942,9 +942,9 @@
       "name": "cross_db.no_orphan_structure_rows",
       "severity": "warning",
       "passed": false,
-      "metric_value": 9.62,
+      "metric_value": 9.36,
       "threshold": 1.0,
-      "message": "481/5000 (9.62%) sidecar rows orphan",
+      "message": "468/5000 (9.36%) sidecar rows orphan",
       "sample_rows": [],
       "fix_advice": "rerun extract_decision_structure.py against current decisions.db so IDs realign",
       "court": null,
