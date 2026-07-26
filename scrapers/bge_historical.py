@@ -24,7 +24,7 @@ import logging
 import re
 from datetime import date, datetime, timezone
 from typing import Iterator
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlsplit
 
 from bs4 import BeautifulSoup
 
@@ -88,6 +88,17 @@ class BGEHistoricalScraper(BaseScraper):
     # Some DFR pages return 404 or unparseable PDFs — cache those so they
     # don't count as daily "None"s. Re-probed weekly (GAP_TTL_DAYS).
     CACHE_NONE_AS_GAP = True
+
+    # Decisions come from two hosts: HTML from servat.unibe.ch, PDF-only ones
+    # from www.fallrecht.ch. When one host goes dark, every remaining stub on
+    # it costs TIMEOUT x urllib3 retries (~4 min each), so a few hundred dead
+    # stubs exhaust the 7200s systemd budget and the run is reported FAILED
+    # having fetched nothing. www.fallrecht.ch went unreachable on 2026-07-26
+    # and did exactly that. After this many consecutive connection failures,
+    # skip the rest of that host for this run — nothing is written to state,
+    # so the next run re-probes from scratch and recovers by itself.
+    UNREACHABLE_HOST_STREAK = 3
+    _host_failures: dict[str, int] | None = None
 
     @property
     def court_code(self) -> str:
@@ -167,14 +178,40 @@ class BGEHistoricalScraper(BaseScraper):
         docket = stub["docket_number"]
         bge_ref = stub["bge_ref"]
 
+        if self._host_failures is None:
+            self._host_failures = {}
+        host = urlsplit(url).netloc
+        if self._host_failures.get(host, 0) >= self.UNREACHABLE_HOST_STREAK:
+            logger.debug(f"[bge_historical] {docket}: skipped, {host} unreachable")
+            return None
+
         try:
             response = self.get(url)
         except Exception as e:
-            if hasattr(e, "response") and getattr(e.response, "status_code", 0) == 404:
-                logger.debug(f"[bge_historical] {docket}: 404")
+            status = getattr(getattr(e, "response", None), "status_code", None)
+            if status is not None:
+                # The host answered. Whatever the status says, it is reachable,
+                # so this must not count toward the unreachable streak — only
+                # connection-level failures (no response at all) do.
+                self._host_failures[host] = 0
+                if status == 404:
+                    logger.debug(f"[bge_historical] {docket}: 404")
+                else:
+                    logger.warning(
+                        f"[bge_historical] Failed to fetch {docket}: {e}")
                 return None
+            streak = self._host_failures.get(host, 0) + 1
+            self._host_failures[host] = streak
             logger.warning(f"[bge_historical] Failed to fetch {docket}: {e}")
+            if streak == self.UNREACHABLE_HOST_STREAK:
+                logger.error(
+                    f"[bge_historical] {host} unreachable after {streak} "
+                    f"consecutive connection failures — skipping its remaining "
+                    f"stubs this run (nothing marked known; next run re-probes)"
+                )
             return None
+
+        self._host_failures[host] = 0
 
         if stub["is_pdf"]:
             full_text = _extract_pdf_text(response.content)
