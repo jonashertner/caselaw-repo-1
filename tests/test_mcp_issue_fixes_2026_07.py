@@ -179,3 +179,60 @@ def test_parse_bge_ref_text_shapes():
     assert f("bger_6B_1_2025") is None                 # docket, not BGE
     assert f("4A_1/2020") is None
     assert f("") is None
+
+
+# ---- #55: deep-research `fetch` discloses the 200k truncation -------------
+def _fetch_with_full_text(monkeypatch, n_chars):
+    """Run _deep_research_fetch over a decision whose full_text is n_chars long."""
+    dec = {
+        "decision_id": "bger_6B_973_2023",
+        "court": "bger",
+        "decision_date": "2025-12-04",
+        "docket_number": "6B_973/2023",
+        "language": "fr",
+        "title": "Faux dans les titres",
+        "full_text": "A" * n_chars,
+    }
+    monkeypatch.setattr(mcp_server, "_resolve_decision_id", lambda i: i)
+    monkeypatch.setattr(mcp_server, "get_decision_by_id", lambda i: dec)
+    monkeypatch.setattr(mcp_server, "_build_citation_strings", lambda d: {
+        "citation_string_de": "BGer 6B_973/2023",
+        "canonical_url": "https://opencaselaw.ch/d/bger_6B_973_2023",
+    })
+    return mcp_server._deep_research_fetch("bger_6B_973_2023")
+
+
+def test_fetch_marks_truncated_text_and_reports_char_counts(monkeypatch):
+    """Pre-fix the text was cut at exactly 200,000 chars mid-sentence with no
+    marker in the text and no flag in the JSON, so a deep-research client read
+    51% of a judgment as the whole thing."""
+    n = 392_688  # real length of 6B_973/2023
+    out = _fetch_with_full_text(monkeypatch, n)
+
+    md = out["metadata"]
+    assert md["truncated"] is True
+    assert md["total_chars"] == n
+    assert md["returned_chars"] == mcp_server._FETCH_TEXT_CAP
+
+    # The text is self-describing too, the way get_decision already is.
+    assert "Truncated" in out["text"]
+    assert f"{n:,}" in out["text"]
+    # Document content is still capped; only the notice is appended.
+    assert out["text"].count("A") == mcp_server._FETCH_TEXT_CAP
+
+
+def test_fetch_does_not_mark_untruncated_text(monkeypatch):
+    n = 1_000
+    out = _fetch_with_full_text(monkeypatch, n)
+
+    md = out["metadata"]
+    assert md["truncated"] is False
+    assert md["total_chars"] == n and md["returned_chars"] == n
+    assert "Truncated" not in out["text"]
+    assert out["text"] == "A" * n
+
+
+def test_fetch_truncation_notice_carries_the_canonical_url(monkeypatch):
+    """The notice has to tell the client where the rest actually is."""
+    out = _fetch_with_full_text(monkeypatch, 500_000)
+    assert out["url"] in out["text"]

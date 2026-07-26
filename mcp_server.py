@@ -3134,7 +3134,12 @@ def _search_fts5_inner(
         else:
             _exact_total, _exact_capped = _exact_info
             total_out = max(_exact_total, total_candidates)
-            _lower_bound = _exact_capped
+            # When the pool wins the max(), `total` is a candidate-pool size —
+            # and _target_candidate_pool scales with offset+limit, so rendering
+            # it unmarked made `total` a function of the caller's page size
+            # (60 -> 400 -> 2000 for one query, #56). The pool is a lower bound
+            # on the expanded result set, never an exact count; say so.
+            _lower_bound = _exact_capped or total_candidates > _exact_total
         if meta is not None:
             meta["total_is_lower_bound"] = _lower_bound
         return reranked, total_out
@@ -20047,14 +20052,28 @@ def _deep_research_fetch(doc_id: str) -> dict:
     label = (cit.get("citation_string_de")
              or _clean_docket(dec.get("docket_number")) or canonical)
     title = f"{label} — {dec['title']}" if dec.get("title") else label
+    url = cit.get("canonical_url") or _canonical_decision_url(canonical)
     full = dec.get("full_text") or ""
-    if len(full) > _FETCH_TEXT_CAP:
+    total_chars = len(full)
+    truncated = total_chars > _FETCH_TEXT_CAP
+    if truncated:
         full = full[:_FETCH_TEXT_CAP]
+    returned_chars = len(full)
+    if truncated:
+        # Disclose the cap the way get_decision does. A deep-research client
+        # consumes `text` as THE document, so a silent cut reads as a complete
+        # judgment — the missing tail routinely holds the operative part (#55).
+        full += (
+            f"\n\n[Truncated by the fetch tool: this is the first "
+            f"{returned_chars:,} of {total_chars:,} characters of the decision. "
+            f"The remainder — which may include the closing considerations and "
+            f"the operative part — is not shown here. Full text: {url}]"
+        )
     return {
         "id": canonical,
         "title": title,
         "text": full,
-        "url": cit.get("canonical_url") or _canonical_decision_url(canonical),
+        "url": url,
         "metadata": {
             "court": dec.get("court"),
             "decision_date": dec.get("decision_date"),
@@ -20063,6 +20082,11 @@ def _deep_research_fetch(doc_id: str) -> dict:
             "citation_string_de": cit.get("citation_string_de"),
             "citation_string_fr": cit.get("citation_string_fr"),
             "citation_string_it": cit.get("citation_string_it"),
+            # Machine-readable counterpart to the notice above, mirroring the
+            # has_more/next_offset (#49) and total_is_lower_bound (#53) pattern.
+            "truncated": truncated,
+            "total_chars": total_chars,
+            "returned_chars": returned_chars,
         },
     }
 

@@ -89,7 +89,11 @@ def test_fetch_text_capped(monkeypatch):
     monkeypatch.setattr(mcp_server, "_resolve_decision_id", lambda x: "d1")
     monkeypatch.setattr(mcp_server, "get_decision_by_id", lambda x: dec)
     out = mcp_server._deep_research_fetch("d1")
-    assert len(out["text"]) == mcp_server._FETCH_TEXT_CAP
+    # The cap still bounds the *document* content exactly. Since #55 a short
+    # truncation notice follows it, so assert on the content, not on len(text).
+    assert out["text"].count("A") == mcp_server._FETCH_TEXT_CAP
+    assert out["metadata"]["truncated"] is True
+    assert out["metadata"]["returned_chars"] == mcp_server._FETCH_TEXT_CAP
 
 
 def test_fetch_not_found(monkeypatch):

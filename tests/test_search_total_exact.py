@@ -130,3 +130,41 @@ def test_meta_flags_lower_bound_only_when_capped(monkeypatch):
     mcp_server._search_fts5_inner(
         conn, "", "bger", None, None, None, None, None, None, None, 5, meta=meta3)
     assert meta3["total_is_lower_bound"] is False
+
+
+def test_pool_winning_the_max_is_flagged_as_lower_bound(monkeypatch):
+    """#56: when the candidate pool is larger than the exact count, `total`
+    is the pool size — and the pool scales with offset+limit, so it is a
+    lower bound on the expanded result set, never an exact count.
+
+    Pre-fix it was rendered unmarked, which made `total` a function of the
+    caller's page size (one live query reported 60 / 60 / 400 / 2000 for
+    limit 5 / 10 / 100 / 500, all with total_is_lower_bound=false).
+    """
+    conn = _conn_with_n_matches(10)
+    _wire(monkeypatch)
+    # Exact count for the *counted* query is 3; query expansion puts 10 rows
+    # in the pool. That is the production shape: the pool spans strategies
+    # the single counted fts_query does not cover.
+    monkeypatch.setattr(mcp_server, "_exact_fts_total", lambda *a, **k: (3, False))
+
+    meta = {}
+    _, total = mcp_server._search_fts5_inner(
+        conn, "Notwehr", None, None, None, None, None, None, None, None, 5, meta=meta)
+    assert total == 10, f"total must not drop below what the pool holds, got {total}"
+    assert meta["total_is_lower_bound"] is True, (
+        "a pool-derived total is a lower bound and must be marked")
+
+
+def test_exact_count_beating_the_pool_stays_unmarked(monkeypatch):
+    """The converse guard: when the exact count wins the max(), nothing has
+    been estimated, so the #53 contract ('no marker means exact') holds."""
+    conn = _conn_with_n_matches(6)
+    _wire(monkeypatch)
+    monkeypatch.setattr(mcp_server, "MIN_CANDIDATE_POOL", 1)
+    monkeypatch.setattr(mcp_server, "MAX_RERANK_CANDIDATES", 1)
+
+    meta = {}
+    _, total = mcp_server._search_fts5_inner(
+        conn, "Notwehr", None, None, None, None, None, None, None, None, 5, meta=meta)
+    assert total == 6 and meta["total_is_lower_bound"] is False
