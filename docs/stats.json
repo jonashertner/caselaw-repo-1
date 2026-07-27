@@ -1,19 +1,19 @@
 {
-  "total": 1050360,
-  "source_representations": 1050360,
+  "total": 1050382,
+  "source_representations": 1050382,
   "representation_method_version": "2026-07-23.1",
-  "unique_decisions": 909449,
-  "unique_decisions_lower_bound": 909399,
+  "unique_decisions": 909471,
+  "unique_decisions_lower_bound": 909421,
   "duplicate_representations": 140911,
   "unique_decisions_status": "current",
   "by_court": [
     {
       "court": "bger",
       "canton": "CH",
-      "count": 192084,
+      "count": 192106,
       "earliest": "1986-10-06",
-      "latest": "2026-07-15",
-      "last_scraped": "2026-07-24T10:01:23.055718+00:00",
+      "latest": "2026-07-16",
+      "last_scraped": "2026-07-27T10:01:09.178804+00:00",
       "languages": [
         "de",
         "fr",
@@ -1836,9 +1836,9 @@
     }
   ],
   "by_language": {
-    "de": 499717,
-    "fr": 459861,
-    "it": 90782
+    "de": 499727,
+    "fr": 459872,
+    "it": 90783
   },
   "by_year": {
     "1875": 179,
@@ -1992,24 +1992,24 @@
     "2023": 51452,
     "2024": 51407,
     "2025": 48448,
-    "2026": 16914
+    "2026": 16936
   },
   "recent_daily": {
     "2026-06-28": 1,
-    "2026-06-29": 100,
+    "2026-06-29": 102,
     "2026-06-30": 75,
     "2026-07-01": 63,
-    "2026-07-02": 68,
+    "2026-07-02": 69,
     "2026-07-03": 67,
     "2026-07-06": 53,
     "2026-07-07": 56,
-    "2026-07-08": 52,
-    "2026-07-09": 46,
+    "2026-07-08": 53,
+    "2026-07-09": 49,
     "2026-07-10": 25,
-    "2026-07-13": 18,
-    "2026-07-14": 25,
-    "2026-07-15": 12,
-    "2026-07-16": 5,
+    "2026-07-13": 19,
+    "2026-07-14": 29,
+    "2026-07-15": 13,
+    "2026-07-16": 7,
     "2026-07-17": 5,
     "2026-07-20": 6,
     "2026-07-21": 6,
@@ -2026,7 +2026,7 @@
     {
       "court": "bger",
       "canton": "CH",
-      "count": 192084
+      "count": 192106
     },
     {
       "court": "ge_gerichte",
@@ -2225,10 +2225,10 @@
     "2023": -0.2,
     "2024": -0.1,
     "2025": -5.8,
-    "2026": -65.1
+    "2026": -65.0
   },
   "federal_vs_cantonal": {
-    "federal": 395515,
+    "federal": 395537,
     "cantonal": 654845
   },
   "language_by_year": {
@@ -2338,9 +2338,9 @@
       "it": 1548
     },
     "2026": {
-      "de": 8987,
-      "fr": 7219,
-      "it": 708
+      "de": 8997,
+      "fr": 7230,
+      "it": 709
     }
   },
   "by_month": {
@@ -2378,11 +2378,11 @@
     "2026-02": 3366,
     "2026-03": 3118,
     "2026-04": 2613,
-    "2026-05": 2290,
-    "2026-06": 2189,
-    "2026-07": 520
+    "2026-05": 2292,
+    "2026-06": 2196,
+    "2026-07": 533
   },
-  "generated_at": "2026-07-27T09:35:00.850374+00:00",
+  "generated_at": "2026-07-27T14:48:06.812023+00:00",
   "scraper_health": {
     "run_at": "2026-07-27T02:20:37.418033+00:00",
     "run_duration_s": 4776.5,
@@ -2808,9 +2808,9 @@
         "duration_s": 885.0,
         "error": null,
         "note": null,
-        "state_count": 97879,
-        "jsonl_size_mb": 1476.9,
-        "jsonl_mtime": "2026-07-27T01:15:53.836682+00:00"
+        "state_count": 97901,
+        "jsonl_size_mb": 1477.2,
+        "jsonl_mtime": "2026-07-27T10:34:46.220603+00:00"
       },
       "gl_gerichte": {
         "success": true,
@@ -2844,7 +2844,7 @@
         "note": null,
         "state_count": 21321,
         "jsonl_size_mb": 489.7,
-        "jsonl_mtime": "2026-07-27T09:18:26.091694+00:00"
+        "jsonl_mtime": "2026-07-27T10:38:28.308033+00:00"
       },
       "mkg": {
         "success": true,
@@ -2878,7 +2878,7 @@
         "note": null,
         "state_count": 1132,
         "jsonl_size_mb": 39.6,
-        "jsonl_mtime": "2026-07-27T01:20:53.189817+00:00"
+        "jsonl_mtime": "2026-07-27T10:24:59.654992+00:00"
       },
       "ne_jurisprudence_adm": {
         "success": true,
@@ -2895,7 +2895,7 @@
         "note": null,
         "state_count": 1611,
         "jsonl_size_mb": 32.6,
-        "jsonl_mtime": "2026-07-27T01:26:39.928449+00:00"
+        "jsonl_mtime": "2026-07-27T10:24:42.815796+00:00"
       },
       "nw_gerichte": {
         "success": true,
@@ -3303,7 +3303,7 @@
         "note": null,
         "state_count": 7656,
         "jsonl_size_mb": 190.5,
-        "jsonl_mtime": "2026-07-27T01:53:52.634516+00:00"
+        "jsonl_mtime": "2026-07-27T10:54:46.831583+00:00"
       },
       "zg_verwaltungsgericht": {
         "success": true,
@@ -3641,12 +3641,12 @@
       "de_pct": 47.6,
       "fr_pct": 43.8,
       "it_pct": 8.6,
-      "total": 1050360
+      "total": 1050382
     },
     "regeste_coverage": {
       "pct": 38.6,
       "with_regeste": 404995,
-      "total": 1050360
+      "total": 1050382
     },
     "graph_size": {
       "decision_edges": 9980902,
@@ -4070,6 +4070,22 @@
   "recent": {
     "bge": [
       {
+        "decision_id": "bger_5A_675_2026",
+        "docket": "5A_675/2026",
+        "date": "2026-07-16",
+        "court": "bger",
+        "language": "fr",
+        "summary": "annulation de faillite,"
+      },
+      {
+        "decision_id": "bger_4D_93_2026",
+        "docket": "4D_93/2026",
+        "date": "2026-07-16",
+        "court": "bger",
+        "language": "it",
+        "summary": "ricusazione,"
+      },
+      {
         "decision_id": "bger_9C_440_2026",
         "docket": "9C_440/2026",
         "date": "2026-07-15",
@@ -4102,52 +4118,36 @@
         "summary": "saisie de salaire (calcul du minimum vital),"
       },
       {
-        "decision_id": "bger_7B_897_2026",
-        "docket": "7B_897/2026",
-        "date": "2026-07-14",
+        "decision_id": "bger_2C_384_2026",
+        "docket": "2C_384/2026",
+        "date": "2026-07-15",
         "court": "bger",
         "language": "de",
-        "summary": "Verlängerung Untersuchungshaft; Nichteintreten,"
+        "summary": "Staatshaftung,"
       },
       {
-        "decision_id": "bger_7B_851_2026",
-        "docket": "7B_851/2026",
+        "decision_id": "bger_9C_51_2026",
+        "docket": "9C_51/2026",
         "date": "2026-07-14",
         "court": "bger",
         "language": "fr",
-        "summary": "Détention provisoire,"
+        "summary": "Assurance-invalidité,"
       },
       {
-        "decision_id": "bger_5A_390_2026",
-        "docket": "5A_390/2026",
-        "date": "2026-07-14",
-        "court": "bger",
-        "language": "fr",
-        "summary": "mesures superprovisionnelles (divorce),"
-      },
-      {
-        "decision_id": "bger_5A_357_2025",
-        "docket": "5A_357/2025",
-        "date": "2026-07-14",
-        "court": "bger",
-        "language": "fr",
-        "summary": "action réintégrande (art. 927 CC),"
-      },
-      {
-        "decision_id": "bger_4A_255_2026",
-        "docket": "4A_255/2026",
+        "decision_id": "bger_8C_411_2026",
+        "docket": "8C_411/2026",
         "date": "2026-07-14",
         "court": "bger",
         "language": "de",
-        "summary": "Beschwerde wegen Rechtsverweigerung im Anschluss an die Schreiben des Handelsgerichts des Kantons Zürich, Einzelgericht, vom 13. April 2026 und vom 27. April 2026 (HE240198_O/HG)."
+        "summary": "Invalidenversicherung (Prozessvoraussetzung),"
       },
       {
-        "decision_id": "bger_4A_253_2026",
-        "docket": "4A_253/2026",
+        "decision_id": "bger_8C_242_2026",
+        "docket": "8C_242/2026",
         "date": "2026-07-14",
         "court": "bger",
         "language": "de",
-        "summary": "Beschwerde wegen Rechtsverweigerung im Anschluss an die Schreiben des Handelsgerichts des Kantons Zürich, Einzelgericht, vom 13. April 2026 und vom 27. April 2026 (HE240203_O/HG)."
+        "summary": "Ergänzungsleistung zur AHV/IV (Prozessvoraussetzung),"
       }
     ],
     "cantonal": [
@@ -4366,8 +4366,10 @@
     }
   ],
   "delta": {
-    "total": 0,
-    "by_court": {},
+    "total": 22,
+    "by_court": {
+      "bger": 22
+    },
     "by_canton": {},
     "corpus": {},
     "previous_generated_at": "2026-07-26T16:17:19.860344+00:00"
