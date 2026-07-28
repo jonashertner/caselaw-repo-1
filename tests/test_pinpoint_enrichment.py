@@ -164,7 +164,18 @@ def test_pinpoint_enrich_results_attaches_to_top_n(tmp_path, monkeypatch):
         ("d_3", "1", "Mietrecht Kündigung der Familienwohnung."),
         ("d_4", "1", "Anderes Strafrecht Thema hier ohne Match."),
     ])
-    monkeypatch.setattr(mcp_server, "_get_structure_conn", lambda: conn)
+    # Enrichment now parallelises: each worker opens its OWN connection via
+    # _get_structure_conn (sqlite3 conns are thread-affine). A shared-conn
+    # lambda would hand workers a closed handle and silently degrade every
+    # pinpoint to None — the factory keeps the test exercising real lookups.
+    db_file = tmp_path / "structure.db"
+
+    def _fresh_conn():
+        c = sqlite3.connect(str(db_file), check_same_thread=False)
+        c.row_factory = sqlite3.Row
+        return c
+
+    monkeypatch.setattr(mcp_server, "_get_structure_conn", _fresh_conn)
     try:
         results = [
             {"decision_id": "d_1", "court": "bger"},
@@ -182,6 +193,10 @@ def test_pinpoint_enrich_results_attaches_to_top_n(tmp_path, monkeypatch):
         # Entries beyond top_n are untouched
         for r in results[4:]:
             assert "pinpoint" not in r
+        # The parallel path must COMPUTE, not merely decorate: d_1 has two
+        # matching paragraphs and must carry a real pinpoint.
+        assert results[0]["pinpoint"] is not None
+        assert results[0]["pinpoint"]["e_number"] in {"1", "2.1"}
         # d_4 has no good match → pinpoint should be None.
         assert results[3]["pinpoint"] is None
     finally:

@@ -552,6 +552,18 @@ QUERY_CONDENSE_TERMS = 12
 # excerpt is the identity function.
 LLM_INPUT_MAX_CHARS = 500
 
+# ── Pinpoint enrichment bounds ────────────────────────────────────
+# _compute_pinpoint builds its FTS query from the caller's claim; with a
+# pasted document that meant a ~400-term OR chain scanned per result, serial
+# (decision_id is a post-filter, not in the FTS index) — the primary hang
+# behind the 120 s document-query timeouts. Long claims are condensed to the
+# PINPOINT_OR_TOKEN_CAP most informative tokens and the phrase pass is
+# skipped. Enrichment parallelises across results; workers=1 restores the
+# sequential path (kill-switch, no deploy needed).
+PINPOINT_CLAIM_MAX_CHARS = 300
+PINPOINT_OR_TOKEN_CAP = 12
+PINPOINT_MAX_WORKERS = int(os.environ.get("OCL_PINPOINT_WORKERS", "5"))
+
 # Hard server-side cap on a single tool dispatch. Under thread-pool saturation
 # (e.g. a bloated DB or a build hammering the box), a to_thread-dispatched tool
 # can queue for many minutes; without this an adopter saw 10-30min hangs while
@@ -10544,6 +10556,7 @@ def _score_pinpoint_confidence(
     top_text: str,
     *,
     match_kind: str = "or",
+    relaxed_coverage: bool = False,
 ) -> str | None:
     """Return "high" | "medium" | None for the top-1 BM25 row.
 
@@ -10624,6 +10637,15 @@ def _score_pinpoint_confidence(
 
     # Multi-token coverage gates — defence-in-depth against thin OR-fallback
     # matches (one of N tokens hitting the paragraph at all).
+    if relaxed_coverage:
+        # Condensed-document claims only: the claim is a topic SAMPLE drawn
+        # from a whole letter, not a proposition — ratio coverage is the
+        # wrong metric (a 12-token sample spans several topics; German
+        # compounds depress it further). The right bar is absolute: two or
+        # more informative sample tokens anchoring one paragraph is a real
+        # topical hit; one is thin. Never 'high' from this mode — the label
+        # stays honest about the weaker evidentiary basis.
+        return "medium" if matched_n >= 2 else None
     if total_n >= 2:
         if coverage < 0.5:
             return None
@@ -10667,6 +10689,25 @@ def _compute_pinpoint(
     claim = claim.strip()
     if len(claim) < 3 or not decision_id:
         return None
+
+    # A pasted document as claim (BGPartner: whole termination letters) is
+    # useless as a phrase and pathological as an OR chain. Condense long
+    # claims to their most informative tokens; the phrase pass is skipped
+    # for them below (a 300+-char phrase can never match one paragraph).
+    claim_condensed = len(claim) > PINPOINT_CLAIM_MAX_CHARS
+    if claim_condensed:
+        toks = [t for t in re.findall(r"\w+", claim) if len(t) > 2]
+        if toks:
+            scores = _rank_query_tokens([t.lower() for t in toks], claim)
+            first_pos: dict[str, int] = {}
+            for i, t in enumerate(toks):
+                first_pos.setdefault(t.lower(), i)
+            chosen: set[str] = set()
+            for i in sorted(range(len(toks)), key=lambda i: -scores[i]):
+                chosen.add(toks[i].lower())
+                if len(chosen) >= PINPOINT_OR_TOKEN_CAP:
+                    break
+            claim = " ".join(sorted(chosen, key=lambda t: first_pos[t]))
 
     own_conn = False
     if conn is None:
@@ -10720,7 +10761,21 @@ def _compute_pinpoint(
             if t.lower() not in _LEGAL_STOPWORDS
             and t.lower() not in _STATUTE_REFERENCE_NOISE
         ]
+        # Hard operand cap regardless of source: even a condensed claim can
+        # re-expand via multi-word tokens, and find_relevant_erwaegung callers
+        # pass arbitrary text. Ranked selection when over the cap; short claims
+        # (the overwhelming case) pass through byte-identical.
+        if len(or_tokens) > PINPOINT_OR_TOKEN_CAP:
+            _scores = _rank_query_tokens([t.lower() for t in or_tokens], claim)
+            _keep = sorted(
+                sorted(range(len(or_tokens)), key=lambda i: -_scores[i])[:PINPOINT_OR_TOKEN_CAP]
+            )
+            or_tokens = [or_tokens[i] for i in _keep]
         or_query = " OR ".join(or_tokens) if selective_tokens else None
+        if claim_condensed:
+            # A phrase assembled from ranked tokens is not the source text —
+            # it can never match a paragraph verbatim; skip straight to OR.
+            phrase_query = None
 
         sql = """
             SELECT
@@ -10763,7 +10818,8 @@ def _compute_pinpoint(
         top = rows[0]
         scores = [float(r["score"]) for r in rows]
         confidence = _score_pinpoint_confidence(
-            scores, claim, top["text"], match_kind=match_kind
+            scores, claim, top["text"], match_kind=match_kind,
+            relaxed_coverage=claim_condensed,
         )
         if confidence is None:
             # Lexical match too weak to surface — try semantic rescue.
@@ -11024,18 +11080,52 @@ def _pinpoint_enrich_results(
     """
     if not results or not claim or len(claim.strip()) < 3:
         return
+    # Availability probe only — workers open their own connections so
+    # check_same_thread holds (sqlite3 conns are thread-affine by default).
     conn = _get_structure_conn()
     if not conn:
         return
-    try:
-        for r in results[:top_n]:
-            did = r.get("decision_id")
-            if not did:
-                r["pinpoint"] = None
-                continue
-            r["pinpoint"] = _compute_pinpoint(did, claim, conn=conn)
-    finally:
-        conn.close()
+
+    targets = results[:top_n]
+
+    def _one(r: dict) -> None:
+        did = r.get("decision_id")
+        if not did:
+            r["pinpoint"] = None
+            return
+        try:
+            # conn=None → _compute_pinpoint opens/closes its own connection
+            # inside the worker thread (immutable read-only DB, concurrent
+            # readers safe).
+            r["pinpoint"] = _compute_pinpoint(did, claim)
+        except Exception:
+            # Enrichment is decoration — a worker failure must never break
+            # the search result it decorates.
+            r["pinpoint"] = None
+
+    workers = min(PINPOINT_MAX_WORKERS, len(targets))
+    if workers <= 1:
+        # Sequential kill-switch path (OCL_PINPOINT_WORKERS=1): share the
+        # probe connection like the original loop did. Same degrade guard as
+        # the parallel path — enrichment is decoration and must never break
+        # the search result it decorates.
+        try:
+            for r in targets:
+                did = r.get("decision_id")
+                try:
+                    r["pinpoint"] = _compute_pinpoint(did, claim, conn=conn) if did else None
+                except Exception:
+                    r["pinpoint"] = None
+        finally:
+            conn.close()
+        return
+
+    conn.close()
+    from concurrent.futures import ThreadPoolExecutor
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        # executor.map preserves input order; results are mutated in place so
+        # ordering only matters for determinism of side effects.
+        list(pool.map(_one, targets))
 
 
 def _handle_find_relevant_erwaegung(
@@ -18910,7 +19000,8 @@ def _list_tools() -> list[Tool]:
                             "(BM25 over the per-decision Erwägungen FTS5 "
                             "index, gap-confidence ≥ medium). Defaults true; "
                             "set false to skip the per-result lookup "
-                            "(saves ~30–150 ms on the top 5 results)."
+                            "(typically saves 0.2-2 s on the top 5 results; "
+                            "more for long or statute-heavy queries)."
                         ),
                         "default": True,
                     },
