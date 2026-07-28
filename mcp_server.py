@@ -591,6 +591,54 @@ def _past_deadline(deadline: float | None) -> bool:
     """True if a monotonic-clock deadline has passed (None = no deadline set)."""
     return deadline is not None and time.monotonic() > deadline
 
+
+SEARCH_PROGRESS_OPCODES = 100_000
+
+
+class _deadline_abort:
+    """Context manager: make an in-flight SQLite query interruptible.
+
+    The soft deadline (_past_deadline) is checked BETWEEN operations only —
+    once conn.execute enters a pathological FTS5 MATCH, nothing could stop it
+    (BGPartner: whole-letter queries ran to the 120 s dispatch timeout).
+    Installs a progress handler that aborts the statement once the deadline
+    passes; SQLite surfaces that as OperationalError('interrupted'), which the
+    strategy loop already treats as strategy-failed → the cooperative check
+    breaks on the next iteration. Partial results + a note, never an error.
+
+    N=100_000 opcodes: coarse enough not to tax multi-second scans (~µs per
+    callback), fine enough to land within ~tens of ms of the deadline.
+    Precedent for set_progress_handler in this repo: health_metrics.py,
+    quality_report.py. Always cleared on exit — the connection outlives the
+    search call. No-op when deadline is None (OCL_SEARCH_DEADLINE_MS=0).
+    """
+
+    def __init__(self, conn, deadline: float | None,
+                 n_opcodes: int = SEARCH_PROGRESS_OPCODES):
+        self._conn = conn
+        self._deadline = deadline
+        self._n = n_opcodes
+        self._installed = False
+
+    def __enter__(self):
+        if self._deadline is not None:
+            try:
+                d = self._deadline
+                self._conn.set_progress_handler(
+                    lambda: 1 if time.monotonic() > d else 0, self._n)
+                self._installed = True
+            except Exception:
+                pass  # older sqlite3 builds — degrade to the soft deadline
+        return self
+
+    def __exit__(self, *exc):
+        if self._installed:
+            try:
+                self._conn.set_progress_handler(None, 0)
+            except Exception:
+                pass
+        return False
+
 EXPANSION_SYSTEM_PROMPT = (
     "You are a Swiss legal search assistant. Given a user's search query about "
     "Swiss law, output 3-6 additional search terms that would help find relevant "
@@ -2889,6 +2937,7 @@ def _search_fts5_inner(
     )
     query_has_expandable_terms = _query_has_expandable_terms(fts_query)
 
+    _hard_interrupted = False
     for idx, strategy in enumerate(strategies):
         # Soft-deadline: stop launching more FTS strategies once the budget is
         # spent (always run the first, the primary strategy), so a broad query
@@ -2916,12 +2965,21 @@ def _search_fts5_inner(
                     MAX_RERANK_CANDIDATES,
                     max(candidate_limit, target_pool * 4),
                 )
-            rows = conn.execute(
-                sql,
-                [match_query] + params + [candidate_limit],
-            ).fetchall()
+            with _deadline_abort(conn, _deadline):
+                rows = conn.execute(
+                    sql,
+                    [match_query] + params + [candidate_limit],
+                ).fetchall()
             had_success = True
         except sqlite3.OperationalError as e:
+            if _past_deadline(_deadline) and "interrupt" in str(e).lower():
+                # The progress handler aborted an in-flight MATCH — record it;
+                # the cooperative check above ends the loop next iteration and
+                # whatever candidates exist are returned with a partial note.
+                _hard_interrupted = True
+                _trace["deadline_interrupted"] = True
+                if meta is not None:
+                    meta["deadline_partial"] = True
             logger.debug(
                 "FTS query failed, trying next strategy: %s (%s)",
                 _truncate(match_query, 120),
