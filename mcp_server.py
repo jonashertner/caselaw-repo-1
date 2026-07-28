@@ -868,6 +868,13 @@ CORS_ORIGINS: list[str] = [o.strip() for o in _cors_raw.split(",") if o.strip()]
 
 # ── LexFind legislation API ──────────────────────────────────
 LEXFIND_ENABLED = os.environ.get("LEXFIND_ENABLED", "true").lower() in {"1", "true", "yes"}
+
+# Worker pool for cross-worker aggregation (/metrics/all, /metrics/sessions).
+# The pool grew 4 -> 8 on 2026-06-30 (commit 66ad3f6) but these aggregators
+# kept range(8770, 8774), silently undercounting by half. Env-tunable so a
+# future resize is one variable, not a code hunt (precedent:
+# scripts/dispatch_health_alerts.py WORKER_PORTS).
+WORKER_PORTS = tuple(range(8770, 8770 + int(os.environ.get("MCP_WORKER_COUNT", "8"))))
 LEXFIND_BASE_URL = "https://www.lexfind.ch/api/fe"
 LEXFIND_SEARCH_TIMEOUT = float(os.environ.get("LEXFIND_SEARCH_TIMEOUT", "10"))
 # Law-TEXT fetch timeout (the slow systematic-search/pagination uses the separate
@@ -1893,6 +1900,40 @@ _RESEARCH_LOG_DIR = Path(os.environ.get("SWISS_CASELAW_DIR", str(Path.home() / "
 _research_log_lock = threading.Lock()
 _METRICS_HISTORY = _RESEARCH_LOG_DIR / "daily_metrics.jsonl"
 
+# ── Trace retention (/datenschutz/ commitment) ────────────────
+# search_traces_*.jsonl carry the rerank records' query[:200] text; before
+# 2026-07 retention was UNBOUNDED (564 MB / 123 daily files accumulated
+# since April). The page now promises deletion after 30 days — this prune
+# is what makes that promise true. Strict filename regex: the date comes
+# from the NAME, never mtime (backups/rsync touch mtimes), and
+# daily_metrics.jsonl is structurally unreachable.
+_RESEARCH_TRACE_RETENTION_DAYS = int(os.environ.get("RESEARCH_TRACE_RETENTION_DAYS", "30"))
+_TRACE_FILE_RE = re.compile(r"^search_traces_(\d{4}-\d{2}-\d{2})\.jsonl$")
+_last_trace_prune_day: str | None = None
+
+
+def _prune_search_traces(today: str) -> None:
+    """Delete trace files older than the retention window. Once per day per
+    process (module-global guard, GIL-safe); unlink(missing_ok=True) makes
+    the 8 workers' concurrent prunes race-free. Never raises."""
+    global _last_trace_prune_day
+    if _last_trace_prune_day == today:
+        return
+    _last_trace_prune_day = today
+    if _RESEARCH_TRACE_RETENTION_DAYS <= 0:
+        return  # retention disabled → keep everything, prune nothing
+    try:
+        cutoff = (
+            datetime.strptime(today, "%Y-%m-%d")
+            - timedelta(days=_RESEARCH_TRACE_RETENTION_DAYS)
+        ).strftime("%Y-%m-%d")
+        for f in _RESEARCH_LOG_DIR.glob("search_traces_*.jsonl"):
+            mt = _TRACE_FILE_RE.match(f.name)
+            if mt and mt.group(1) < cutoff:
+                f.unlink(missing_ok=True)
+    except Exception:
+        pass  # retention must never break search
+
 # ── Persistent metrics (SQLite) ──────────────────────────────
 # Stores true deltas per day so lifetime totals survive restarts.
 _METRICS_DB_PATH = Path(os.environ.get("SWISS_CASELAW_DIR", str(Path.home() / ".swiss-caselaw"))) / "metrics.db"
@@ -2235,6 +2276,7 @@ def _log_search_trace(trace: dict):
     try:
         _RESEARCH_LOG_DIR.mkdir(parents=True, exist_ok=True)
         day = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        _prune_search_traces(day)
         path = _RESEARCH_LOG_DIR / f"search_traces_{day}.jsonl"
         line = json.dumps(trace, ensure_ascii=False, default=str) + "\n"
         with _research_log_lock:
@@ -22556,7 +22598,7 @@ setInterval(load, 30000);
         import httpx
         combined = {"tools": {}, "clients": {}, "sessions": 0, "calls_per_session": 0, "haiku_rerank": {"fired": 0, "skipped": 0, "changed_top": 0}, "zero_result_queries": []}
         async with httpx.AsyncClient(timeout=2) as client:
-            for port in range(8770, 8774):
+            for port in WORKER_PORTS:
                 try:
                     resp = await client.get(f"http://127.0.0.1:{port}/metrics")
                     d = resp.json()
@@ -22602,7 +22644,7 @@ setInterval(load, 30000);
             qc[tq["query"]] += tq["count"]
         combined["top_queries"] = [{"query": q, "count": n} for q, n in qc.most_common(15)]
         combined["uptime_since"] = _metrics["startup_time"]
-        combined["workers"] = 4
+        combined["workers"] = len(WORKER_PORTS)
         return JSONResponse(combined)
 
     async def handle_sessions(request):
@@ -22615,7 +22657,7 @@ setInterval(load, 30000);
         import httpx
         all_sessions = {}
         async with httpx.AsyncClient(timeout=3) as client:
-            for port in range(8770, 8774):
+            for port in WORKER_PORTS:
                 try:
                     resp = await client.get(f"http://127.0.0.1:{port}/metrics/sessions?token={dev_token}")
                     if resp.status_code == 200:
