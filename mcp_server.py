@@ -70,7 +70,9 @@ Tools exposed:
 from __future__ import annotations
 
 import asyncio
+import collections
 import contextvars
+import hashlib
 import json
 import logging
 import math
@@ -596,7 +598,71 @@ EXPANSION_SYSTEM_PROMPT = (
     "Output ONLY the terms, one per line, no numbering or explanation."
 )
 
-_LLM_EXPANSION_CACHE: dict[str, list[str]] = {}
+def _llm_input_excerpt(text: str, max_chars: int = None) -> str:
+    """Head+tail excerpt of text forwarded to the Anthropic API.
+
+    Identity below the cap; above it, first 350 + ' … ' + last 150 chars.
+    Bounds token spend on pasted documents and limits how much of a possibly
+    privileged letter leaves the box. The tail is kept because German legal
+    letters put the actual question last."""
+    cap = LLM_INPUT_MAX_CHARS if max_chars is None else max_chars
+    t = text or ""
+    if len(t) <= cap:
+        return t
+    head = max(cap - 150, 1)
+    return t[:head] + " … " + t[-150:]
+
+
+class _BoundedTTLCache:
+    """Small thread-safe LRU with TTL for LLM-derived query artifacts.
+
+    Keys are sha256 digests of the (already excerpted) query — raw query text
+    is never retained as a key, mirroring the trace-side privacy contract.
+    Deliberately NOT persisted to disk: the cached values (expansion terms,
+    parsed facets) are derived from possibly privileged query text, and a disk
+    cache would outlive the nFADP posture documented at /datenschutz/. The
+    nightly worker recycle wiping it is accepted cost."""
+
+    def __init__(self, maxsize: int = 512, ttl_s: float = 86_400.0):
+        self._data: "collections.OrderedDict[str, tuple[float, object]]" = collections.OrderedDict()
+        self._lock = threading.Lock()
+        self._maxsize = maxsize
+        self._ttl = ttl_s
+
+    @staticmethod
+    def key_for(text: str) -> str:
+        basis = (text or "").strip().lower()[:1000]
+        return hashlib.sha256(basis.encode("utf-8", "replace")).hexdigest()
+
+    def get(self, key: str):
+        now = time.monotonic()
+        with self._lock:
+            item = self._data.get(key)
+            if item is None:
+                return None
+            ts, value = item
+            if now - ts > self._ttl:
+                del self._data[key]
+                return None
+            self._data.move_to_end(key)
+            return value
+
+    def set(self, key: str, value) -> None:
+        with self._lock:
+            self._data[key] = (time.monotonic(), value)
+            self._data.move_to_end(key)
+            while len(self._data) > self._maxsize:
+                self._data.popitem(last=False)
+
+    def clear(self) -> None:
+        with self._lock:
+            self._data.clear()
+
+    def __len__(self) -> int:
+        return len(self._data)
+
+
+_LLM_EXPANSION_CACHE = _BoundedTTLCache()
 
 # ── Structured LLM query parsing ────────────────────────────────
 # Returns deterministic JSON instead of free-text terms.
@@ -655,7 +721,7 @@ STRUCTURED_PARSE_PROMPT = (
     '"domain":"civil"}\n'
 )
 
-_STRUCTURED_PARSE_CACHE: dict[str, dict] = {}
+_STRUCTURED_PARSE_CACHE = _BoundedTTLCache()
 
 
 def _parse_query_structured(query: str) -> dict:
@@ -667,9 +733,10 @@ def _parse_query_structured(query: str) -> dict:
     if not LLM_EXPANSION_ENABLED or not ANTHROPIC_API_KEY:
         return {}
 
-    cache_key = query.strip().lower()
-    if cache_key in _STRUCTURED_PARSE_CACHE:
-        return _STRUCTURED_PARSE_CACHE[cache_key]
+    query = _llm_input_excerpt(query)
+    cache_key = _BoundedTTLCache.key_for(query)
+    if (cached := _STRUCTURED_PARSE_CACHE.get(cache_key)) is not None:
+        return cached
 
     try:
         import httpx
@@ -712,7 +779,7 @@ def _parse_query_structured(query: str) -> dict:
                 "synonyms": list(parsed.get("synonyms") or []),
                 "domain": str(parsed.get("domain") or ""),
             }
-            _STRUCTURED_PARSE_CACHE[cache_key] = result
+            _STRUCTURED_PARSE_CACHE.set(cache_key, result)
             logger.debug("Structured parse for query(len=%d): %s", len(query or ""), result)
             return result
     except Exception as e:
@@ -1476,9 +1543,11 @@ def _expand_query_with_llm(query: str) -> list[str]:
     if not LLM_EXPANSION_ENABLED or not ANTHROPIC_API_KEY:
         return []
 
-    cache_key = query.strip().lower()
-    if cache_key in _LLM_EXPANSION_CACHE:
-        return _LLM_EXPANSION_CACHE[cache_key]
+    # Excerpt BEFORE caching so the key basis equals what the LLM sees.
+    query = _llm_input_excerpt(query)
+    cache_key = _BoundedTTLCache.key_for(query)
+    if (cached := _LLM_EXPANSION_CACHE.get(cache_key)) is not None:
+        return cached
 
     try:
         import httpx
@@ -1509,7 +1578,7 @@ def _expand_query_with_llm(query: str) -> list[str]:
             text = _resp_json["content"][0]["text"]
             terms = [t.strip() for t in text.strip().split("\n") if t.strip()]
             terms = terms[:6]
-            _LLM_EXPANSION_CACHE[cache_key] = terms
+            _LLM_EXPANSION_CACHE.set(cache_key, terms)
             logger.debug("LLM expansion for query(len=%d): %s", len(query or ""), terms)
             return terms
     except Exception as e:
@@ -1635,6 +1704,11 @@ def _cache_set(key: tuple, value):
 
 def _cache_clear():
     _query_cache.clear()
+    # LLM-derived caches ride the same DB-generation swap hook: expansion
+    # terms and parsed facets can reference decisions that no longer exist
+    # after a rebuild.
+    _LLM_EXPANSION_CACHE.clear()
+    _STRUCTURED_PARSE_CACHE.clear()
     logger.info("Query cache cleared")
 
 
@@ -5561,8 +5635,13 @@ def _rerank_rows(
 
         scored.append((final_score, bm25_score, idx, row))
 
-    scored = _apply_cross_encoder_boosts(scored, raw_query, deadline=deadline)
-    scored = _apply_llm_rerank(scored, raw_query, is_docket_query=is_docket_query, deadline=deadline)
+    # Both rerank passes exist to refine RELEVANCE order. Under an explicit
+    # date sort their entire output is overwritten by the re-sort below, so a
+    # date-sorted search was paying a ~3 s synchronous Haiku round-trip for a
+    # score boost that was provably discarded (BGPartner latency audit).
+    if sort not in ("date_desc", "date_asc"):
+        scored = _apply_cross_encoder_boosts(scored, raw_query, deadline=deadline)
+        scored = _apply_llm_rerank(scored, raw_query, is_docket_query=is_docket_query, deadline=deadline)
     scored.sort(key=lambda x: (-x[0], x[1], x[2]))
 
     # Apply user-requested sort order (overrides relevance ranking)
@@ -6464,7 +6543,7 @@ def _apply_llm_rerank(
         candidates_text.append(f"- {did} ({docket}): {regeste}")
 
     user_msg = (
-        f"Query: {query}\n\nCandidates:\n" + "\n".join(candidates_text)
+        f"Query: {_llm_input_excerpt(query)}\n\nCandidates:\n" + "\n".join(candidates_text)
     )
 
     try:
