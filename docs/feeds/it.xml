@@ -5,9 +5,46 @@
     <link>https://opencaselaw.ch/feeds/it.xml</link>
     <description>Latest published Swiss court decisions in Italiano.</description>
     <language>de-CH</language>
-    <lastBuildDate>Mon, 27 Jul 2026 09:43:47 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 28 Jul 2026 10:18:11 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/it.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Bundesverwaltungsgericht F-4915/2026 vom 2026-07-17</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-4915_2026</link>
+      <description>Asilo (non entrata nel merito) ed allontanamento (procedura Dublino - art. 31a cpv. 1 lett. b LAsi)</description>
+      <pubDate>Fri, 17 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-4915.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesgericht 4D_93/2026 vom 2026-07-16</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_4D_93_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+4D_93/2026
+
+Sentenza del 16 luglio 2026
+
+I Corte di diritto civile
+
+Composizione
+
+Giudice federale Kiss, Giudice presidente,
+
+Cancelliere G. Piatti.
+
+Partecipanti al procedimento
+…</description>
+      <pubDate>Thu, 16 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:4D_93.2026</guid>
+      <category>bger</category>
+    </item>
     <item>
       <title>gr_gerichte SV2 2026 38 vom 2026-07-16</title>
       <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_SV2%202026%2038</link>
@@ -23,6 +60,22 @@ Seconda Camera di diritto delle assicurazio…</description>
       <pubDate>Thu, 16 Jul 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">gr_gerichte_SV2 2026 38</guid>
       <category>gr_gerichte</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht C-8458/2025 vom 2026-07-15</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-8458_2025</link>
+      <description>Diritto alla rendita</description>
+      <pubDate>Wed, 15 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-8458.2025</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesstrafgericht BG.2026.49 vom 2026-07-10</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bstger_BG.2026.49</link>
+      <description>Conflitti in materia di foro (art. 40 cpv. 2 CPP)</description>
+      <pubDate>Fri, 10 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BStGer:2026:BG.2026.49</guid>
+      <category>bstger</category>
     </item>
     <item>
       <title>Bundesstrafgericht RR.2026.60 vom 2026-07-09</title>
@@ -868,48 +921,6 @@ A.___…</description>
       <pubDate>Mon, 15 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-974.2025</guid>
       <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht F-3381/2025 vom 2026-06-15</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-3381_2025</link>
-      <description>Divieto d'entrata</description>
-      <pubDate>Mon, 15 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-3381.2025</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht F-4040/2026 vom 2026-06-15</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-4040_2026</link>
-      <description>Asilo (non entrata nel merito) ed allontanamento (procedura Dublino - art. 31a cpv. 1 lett. b LAsi)</description>
-      <pubDate>Mon, 15 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-4040.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>gr_gerichte SR2 2026 10 vom 2026-06-15</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_SR2%202026%2010</link>
-      <description>Obergericht des Kantons Graubünden
-Dretgira superiura dal chantun Grischun
-Tribunale d'appello del Cantone dei Grigioni
-Decreto del 15 giugno 2026
-comunicato il 17 giugno 2026
-N. d'incarto
-SR2 26 10
-Istanza
-Seconda Camera penale
-Composizione
-Righetti…</description>
-      <pubDate>Mon, 15 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">gr_gerichte_SR2 2026 10</guid>
-      <category>gr_gerichte</category>
-    </item>
-    <item>
-      <title>Bundesstrafgericht SK.2025.32 vom 2026-06-12</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bstger_SK.2025.32</link>
-      <description>Importazione di biglietti di banca, monete o valori di bollo ufficiali senza fine di falsificazione</description>
-      <pubDate>Fri, 12 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BStGer:2026:SK.2025.32</guid>
-      <category>bstger</category>
     </item>
   </channel>
 </rss>

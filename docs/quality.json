@@ -1,7 +1,7 @@
 {
-  "run_at": "2026-07-27T09:55:59+00:00",
+  "run_at": "2026-07-28T10:39:24+00:00",
   "db_path": "/opt/caselaw/repo/output/decisions.db",
-  "duration_seconds": 730.29,
+  "duration_seconds": 1270.35,
   "summary": {
     "total": 68,
     "passed": 57,
@@ -29,7 +29,7 @@
       "passed": true,
       "metric_value": 0,
       "threshold": 0,
-      "message": "0 of 1759 sampled rows contain control chars",
+      "message": "0 of 1744 sampled rows contain control chars",
       "sample_rows": [],
       "fix_advice": "build_fts5._clean_text (d0072b2) must strip these at insert — a hit means the build-side guarantee regressed (check recent build_fts5/_clean_text changes)",
       "court": null,
@@ -154,17 +154,17 @@
       "fix_advice": "check INSERT OR IGNORE / INSERT OR REPLACE in scrapers and build_fts5.merge_shards",
       "court": null,
       "extra": {
-        "total": 1050360,
-        "distinct": 1050360
+        "total": 1050450,
+        "distinct": 1050450
       }
     },
     {
       "name": "schema.corpus_total_count",
       "severity": "critical",
       "passed": true,
-      "metric_value": 1050360,
+      "metric_value": 1050450,
       "threshold": 950000,
-      "message": "corpus total: 1,050,360",
+      "message": "corpus total: 1,050,450",
       "sample_rows": [],
       "fix_advice": "check publish.py Step 2 build_fts5 logs; verify .tmp swap completed atomically",
       "court": null,
@@ -174,9 +174,9 @@
       "name": "mcp_tools.search_fts_returns_hits",
       "severity": "critical",
       "passed": true,
-      "metric_value": 403309,
+      "metric_value": 403369,
       "threshold": 100,
-      "message": "FTS5 'Beschwerde' query: 403,309 hits",
+      "message": "FTS5 'Beschwerde' query: 403,369 hits",
       "sample_rows": [],
       "fix_advice": "if 0, FTS5 build never indexed; rerun build_fts5",
       "court": null,
@@ -230,9 +230,9 @@
       "court": null,
       "extra": {
         "distribution": {
-          "de": 499717,
-          "fr": 459861,
-          "it": 90782
+          "de": 499778,
+          "fr": 459886,
+          "it": 90786
         }
       }
     },
@@ -240,16 +240,16 @@
       "name": "languages.distribution_plausible",
       "severity": "critical",
       "passed": true,
-      "metric_value": 47.57578354088122,
+      "metric_value": 47.57751439859108,
       "threshold": 30.0,
       "message": "DE 47.6% / FR 43.8% / IT 8.6% / RM 0.00%",
       "sample_rows": [],
       "fix_advice": "DE and FR each need ≥30%, IT ≥3%; under-floor means a language-block of scrapers crashed in publish.py Step 1",
       "court": null,
       "extra": {
-        "de": 499717,
-        "fr": 459861,
-        "it": 90782
+        "de": 499778,
+        "fr": 459886,
+        "it": 90786
       }
     },
     {
@@ -580,9 +580,9 @@
       "name": "courts.federal_present.bvger",
       "severity": "critical",
       "passed": true,
-      "metric_value": 108151,
+      "metric_value": 108162,
       "threshold": 1,
-      "message": "bvger: 108,151 decisions",
+      "message": "bvger: 108,162 decisions",
       "sample_rows": [],
       "fix_advice": null,
       "court": "bvger",
@@ -592,9 +592,9 @@
       "name": "courts.federal_present.bstger",
       "severity": "critical",
       "passed": true,
-      "metric_value": 11584,
+      "metric_value": 11589,
       "threshold": 1,
-      "message": "bstger: 11,584 decisions",
+      "message": "bstger: 11,589 decisions",
       "sample_rows": [],
       "fix_advice": null,
       "court": "bstger",
@@ -616,9 +616,9 @@
       "name": "courts.federal_present.bger",
       "severity": "critical",
       "passed": true,
-      "metric_value": 192084,
+      "metric_value": 192106,
       "threshold": 1,
-      "message": "bger: 192,084 decisions",
+      "message": "bger: 192,106 decisions",
       "sample_rows": [],
       "fix_advice": null,
       "court": "bger",
@@ -690,9 +690,9 @@
       "name": "dates.future_window",
       "severity": "quarantine",
       "passed": true,
-      "metric_value": 8,
+      "metric_value": 7,
       "threshold": 50,
-      "message": "8 future-dated rows (within tolerance)",
+      "message": "7 future-dated rows (within tolerance)",
       "sample_rows": [
         {
           "decision_id": "fr_gerichte_602 2025 169",
@@ -740,24 +740,24 @@
       "name": "urls.http_count",
       "severity": "warning",
       "passed": false,
-      "metric_value": 220073,
+      "metric_value": 220095,
       "threshold": 50,
-      "message": "220,073 rows still use http:// (http 220,073 / https 830,287)",
+      "message": "220,095 rows still use http:// (http 220,095 / https 830,355)",
       "sample_rows": [],
       "fix_advice": "upgrade scraper to write https://, then run a REPLACE(source_url, 'http://', 'https://') backfill",
       "court": null,
       "extra": {
-        "http": 220073,
-        "https": 830287
+        "http": 220095,
+        "https": 830355
       }
     },
     {
       "name": "urls.decision_id_whitespace",
       "severity": "warning",
       "passed": false,
-      "metric_value": 58532,
+      "metric_value": 58538,
       "threshold": 50000,
-      "message": "58,532 decision_ids contain whitespace (percent-encoded in URLs; ugly but functional)",
+      "message": "58,538 decision_ids contain whitespace (percent-encoded in URLs; ugly but functional)",
       "sample_rows": [],
       "fix_advice": "if growing >50k, a new scraper started concatenating dockets with spaces; consider underscore separator at scraper time for cleaner URLs",
       "court": null,
@@ -767,9 +767,9 @@
       "name": "structure.federal_have_erwaegungen",
       "severity": "warning",
       "passed": false,
-      "metric_value": 88.0,
+      "metric_value": 86.4,
       "threshold": 95.0,
-      "message": "BGer (>5y old): 880/1000 sample have sidecar paragraphs (88.0%)",
+      "message": "BGer (>5y old): 864/1000 sample have sidecar paragraphs (86.4%)",
       "sample_rows": [],
       "fix_advice": null,
       "court": null,
@@ -939,9 +939,9 @@
       "name": "cross_db.no_orphan_structure_rows",
       "severity": "warning",
       "passed": false,
-      "metric_value": 8.56,
+      "metric_value": 10.38,
       "threshold": 1.0,
-      "message": "428/5000 (8.56%) sidecar rows orphan",
+      "message": "519/5000 (10.38%) sidecar rows orphan",
       "sample_rows": [],
       "fix_advice": "rerun extract_decision_structure.py against current decisions.db so IDs realign",
       "court": null,
