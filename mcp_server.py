@@ -19039,6 +19039,30 @@ def _list_tools() -> list[Tool]:
                 },
                 "required": ["query"],
             },
+            outputSchema={
+                # Declared because this tool returns structuredContent on
+                # EVERY path (incl. errors) — the MCP spec makes
+                # structuredContent mandatory once outputSchema exists, which
+                # is why the text-only tools deliberately do NOT declare one.
+                # Permissive: strict clients (Claude.ai) validate against it.
+                "type": "object",
+                "additionalProperties": True,
+                "properties": {
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": True,
+                            "properties": {
+                                "id": {"type": "string"},
+                                "title": {"type": "string"},
+                                "url": {"type": "string"},
+                                "snippet": {"type": "string"},
+                            },
+                        },
+                    },
+                },
+            },
         ),
         Tool(
             annotations=_READ_ONLY,
@@ -19061,6 +19085,19 @@ def _list_tools() -> list[Tool]:
                     },
                 },
                 "required": ["id"],
+            },
+            outputSchema={
+                # See `search` — declared only because structuredContent is
+                # returned on every path; permissive by design.
+                "type": "object",
+                "additionalProperties": True,
+                "properties": {
+                    "id": {"type": "string"},
+                    "title": {"type": "string"},
+                    "text": {"type": "string"},
+                    "url": {"type": "string"},
+                    "metadata": {"type": "object", "additionalProperties": True},
+                },
             },
         ),
         Tool(
@@ -20164,6 +20201,38 @@ def _list_tools() -> list[Tool]:
                 },
                 "required": ["query"],
             },
+            outputSchema={
+                # Declared because search_laws returns structuredContent on
+                # every path (see _law_hits_structured); permissive by design
+                # — strict clients validate structuredContent against this.
+                "type": "object",
+                "additionalProperties": True,
+                "properties": {
+                    "query": {"type": "string"},
+                    "total": {"type": "integer"},
+                    "federal_hits": {"type": "integer"},
+                    "cantonal_hits": {"type": "integer"},
+                    "hits": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": True,
+                            "properties": {
+                                "level": {"type": "string"},
+                                "canton": {"type": ["string", "null"]},
+                                "sr_number": {"type": ["string", "null"]},
+                                "abbreviation": {"type": ["string", "null"]},
+                                "title": {"type": ["string", "null"]},
+                                "article_num": {"type": ["string", "null"]},
+                                "reference": {"type": ["string", "null"]},
+                                "snippet_text": {"type": ["string", "null"]},
+                                "source_url": {"type": ["string", "null"]},
+                                "source_label": {"type": ["string", "null"]},
+                            },
+                        },
+                    },
+                },
+            },
         ),
         Tool(
             annotations=_READ_ONLY,
@@ -20525,6 +20594,20 @@ def _list_tools() -> list[Tool]:
                         },
                     },
                     "required": ["query"],
+                },
+                outputSchema={
+                    # Same contract as search_laws — structuredContent on
+                    # every path via _legislation_hits_structured.
+                    "type": "object",
+                    "additionalProperties": True,
+                    "properties": {
+                        "query": {"type": "string"},
+                        "total": {"type": "integer"},
+                        "hits": {
+                            "type": "array",
+                            "items": {"type": "object", "additionalProperties": True},
+                        },
+                    },
                 },
             ),
             Tool(
