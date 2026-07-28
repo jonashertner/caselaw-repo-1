@@ -11459,6 +11459,12 @@ def _handle_find_relevant_erwaegung(
                 "citation_string_it": cite.get("citation_string_it"),
                 "url": cite.get("canonical_url"),
                 "display_url": display_url,
+                # Pinpointed citation as a rendered link (deep link with
+                # highlight + anchor). Bare display_url survives for
+                # non-Markdown consumers.
+                "markdown_link": _md_link(
+                    cite.get("citation_string_de") or r["e_number"],
+                    display_url or cite.get("canonical_url") or ""),
             })
 
         if confidence == "low":
@@ -11488,7 +11494,9 @@ def _handle_find_relevant_erwaegung(
                 "highlighted_snippet shows the matched sentence(s) with "
                 "<mark>…</mark> — quote it verbatim, do not paraphrase. Use "
                 "citation_string_{de,fr,it} verbatim instead of constructing "
-                "your own pinpoint."
+                "your own pinpoint. Each match carries markdown_link (the "
+                "pinpoint citation as a deep link with highlight + anchor) — "
+                "embed it verbatim when you cite the passage."
             ),
         }
     finally:
@@ -12301,6 +12309,7 @@ def _handle_cite(
                     "decision_date": r.get("decision_date"),
                     "citation_string_de": cand_citation["citation_string_de"],
                     "canonical_url": cand_citation["canonical_url"],
+                    "markdown_link": _md_link(cand_citation["citation_string_de"], cand_citation["canonical_url"]),
                 }
                 if bge_parsed is not None:
                     # Signal WHY this is suggested: the queried page falls inside
@@ -12352,13 +12361,16 @@ def _handle_cite(
         "citation_string_fr": citation["citation_string_fr"],
         "citation_string_it": citation["citation_string_it"],
         "canonical_url": citation["canonical_url"],
+        "markdown_link": _md_link(primary, citation["canonical_url"]),
         "rule_statement": rule,
         "_note": (
             "Copy citation_string verbatim into your response. Do NOT reconstruct "
-            "or translate the citation format yourself. For a pinpoint E./consid., "
-            "pass the e_number in the `pinpoint` argument. Use rule_statement as "
-            "a ready-to-quote summary (it is a verbatim excerpt — do not paraphrase "
-            "inside quotation marks)."
+            "or translate the citation format yourself. When your client renders "
+            "Markdown, embed markdown_link instead of the bare canonical_url — "
+            "some surfaces (Microsoft Copilot) strip bare URLs. For a pinpoint "
+            "E./consid., pass the e_number in the `pinpoint` argument. Use "
+            "rule_statement as a ready-to-quote summary (it is a verbatim "
+            "excerpt — do not paraphrase inside quotation marks)."
         ),
     }
 
@@ -16050,7 +16062,7 @@ def _format_find_scholarship_citing_statute_response(result: dict) -> str:
         if r.get("authors"):
             text += f"  *{r['authors']}*\n"
         if r.get("url"):
-            text += f"  {r['url']}\n"
+            text += f"  {_md_link('Volltext', r['url'])}\n"
     return text
 
 
@@ -16066,7 +16078,7 @@ def _format_find_scholarship_citing_decision_response(result: dict) -> str:
         if r.get("snippet"):
             text += f"  > {r['snippet']}\n"
         if r.get("url"):
-            text += f"  {r['url']}\n"
+            text += f"  {_md_link('Volltext', r['url'])}\n"
     if result["count"] == 0:
         text += "_No open-access scholarship in our corpus cites this decision._\n"
     return text
@@ -16083,10 +16095,10 @@ def _format_list_scholarship_sources_response(result: dict) -> str:
         if r.get("license"):
             text += f"   License: {r['license']}"
             if r.get("license_url"):
-                text += f" — {r['license_url']}"
+                text += f" — {_md_link(r.get('license') or 'Lizenz', r['license_url'])}"
             text += "\n"
         if r.get("homepage"):
-            text += f"   Homepage: {r['homepage']}\n"
+            text += f"   Homepage: {_md_link('Homepage', r['homepage'])}\n"
         if r.get("attribution"):
             text += f"   {r['attribution']}\n"
     text += "\n## By type\n"
@@ -16130,7 +16142,7 @@ def _format_get_commentary_response(result: dict) -> str:
     if result.get("suggested_citation"):
         text += f"**Citation:** {result['suggested_citation']}\n"
     if result.get("html_link"):
-        text += f"**Link:** {result['html_link']}\n"
+        text += f"**Link:** {_md_link('OnlineKommentar', result['html_link'])}\n"
     text += f"Source: {result.get('source', 'OnlineKommentar.ch')}\n\n"
 
     if result.get("legal_text"):
@@ -16160,7 +16172,7 @@ def _format_search_commentaries_response(result: dict) -> str:
         text += f"**{i}. Art. {r['article_num']} {r['abbreviation']}** — {r['title']}{author_str} [{r['language']}]\n"
         text += f"   {r['snippet']}\n"
         if r.get("html_link"):
-            text += f"   Link: {r['html_link']}\n"
+            text += f"   Link: {_md_link('OnlineKommentar', r['html_link'])}\n"
         text += "\n"
 
     return text
@@ -16353,6 +16365,11 @@ def _get_law_cantonal(
             "version_active_since": cur.get("active_since"),
             "source": leg.get("source", "lexfind"),
         }
+        # Source link at the data layer (mirrors the federal path).
+        _src = _lexfind_url(leg.get("lexfind_id"), language) or leg.get("original_url")
+        if _src:
+            result["source_url"] = _src
+            result["source_label"] = "LexFind"
 
         articles_rows = leg.get("articles") or []
 
@@ -16644,6 +16661,16 @@ def get_law(
             "level": "federal",
             "language": language,
         }
+        # Source link at the data layer: one field serves the MCP text
+        # formatter, the raw-dict REST route (/api/laws/...) and the Copilot
+        # wire schema alike. Before this, get_law returned NO URL of any kind
+        # — 'was sagt Art. 41 OR' yielded text with nothing to verify against
+        # (BGPartner: 'sonst müssen die Quellen … selber nachgeschlagen
+        # werden'). Anchored to the article when one was requested.
+        _src = _fedlex_url(law["sr_number"], article, language)
+        if _src:
+            result["source_url"] = _src
+            result["source_label"] = "Fedlex"
 
         # Issue #22: include the verbatim Akoma Ntoso XML fragment (enumerations,
         # footnotes, sub-paragraphs) alongside the flattened text. The `xml`
@@ -17511,6 +17538,10 @@ def _format_get_law_response(result: dict) -> str:
         text += f"Consolidation date: {result['consolidation_date']}\n"
     if result.get("category"):
         text += f"Category: {result['category']}\n"
+    if result.get("source_url"):
+        # One rendered link per response (the #art_ anchor already targets the
+        # requested article). Bare URLs are what Copilot's sanitiser strips.
+        text += f"Quelle: {_md_link(result.get('source_label') or 'Quelle', result['source_url'])}\n"
     if result.get("article_language_fallback"):
         text += f"Note: {result['article_language_fallback']['note']}\n"
     text += "\n"
@@ -17537,7 +17568,7 @@ def _format_get_law_response(result: dict) -> str:
     return text
 
 
-def _format_search_laws_response(result: dict) -> str:
+def _format_search_laws_response(result: dict, lang: str = "de") -> str:
     if result.get("error"):
         return result["error"]
 
@@ -17562,11 +17593,22 @@ def _format_search_laws_response(result: dict) -> str:
             text += f"**{i}. [{canton}] {marker} {r['article_num']}** — {title}"
             if sr:
                 text += f" (SR {sr})"
-            text += f"{heading}\n"
+            text += f"{heading}"
+            # Per-hit source link (matches the structuredContent payload —
+            # the text surface previously carried ZERO urls, so 'was sagt
+            # §X' answers had nothing to verify against).
+            _lf = _lexfind_url(r.get("lexfind_id"), lang)
+            if _lf:
+                text += f" — {_md_link('LexFind', _lf)}"
+            text += "\n"
         else:
             abbr = r.get("abbreviation") or "?"
             sr = r.get("sr_number") or "?"
-            text += f"**{i}. [CH] Art. {r['article_num']} {abbr}** (SR {sr}){heading}\n"
+            text += f"**{i}. [CH] Art. {r['article_num']} {abbr}** (SR {sr}){heading}"
+            _fx = _fedlex_url(r.get("sr_number"), r.get("article_num"), lang)
+            if _fx:
+                text += f" — {_md_link('Fedlex', _fx)}"
+            text += "\n"
         snippet = _render_highlight(_normalize_law_snippet(r.get("snippet", ""), terms), "text")
         text += f"   {snippet}\n\n"
 
@@ -18705,8 +18747,8 @@ def _format_get_practice_response(result: dict) -> str:
         f"**Document number**: {result['doc_number']}",
         f"**Date**: {result.get('date') or '(unknown)'}",
         f"**Language**: {result['language']}",
-        f"**PDF**: {result['pdf_url']}",
-        f"**Source page**: {result.get('url') or '(n/a)'}",
+        f"**PDF**: {_md_link(result.get('doc_number') or 'PDF', result['pdf_url'])}",
+        f"**Source page**: {_md_link('Quelle', result['url']) if result.get('url') else '(n/a)'}",
     ]
     if result.get("topics"):
         parts.append(f"**Topics**: {', '.join(result['topics'])}")
@@ -18822,7 +18864,7 @@ def _format_search_legislation_response(result: dict) -> str:
             _snip = _render_highlight(_normalize_law_snippet(law["snippet"], terms), "text")
             text += f"   Snippet: {_snip}\n"
         if law.get("original_url"):
-            text += f"   URL: {law['original_url']}\n"
+            text += f"   Quelle: {_md_link('LexFind', law['original_url'])}\n"
         if law.get("lexfind_id"):
             text += f"   LexFind ID: {law['lexfind_id']}\n"
         # Enriched fields from fetch_top_n_texts
@@ -18963,7 +19005,7 @@ def _format_legislation_changes_response(result: dict) -> str:
             text += f" | {ch['category']}"
         text += "\n"
         if ch.get("original_url"):
-            text += f"   URL: {ch['original_url']}\n"
+            text += f"   Quelle: {_md_link('LexFind', ch['original_url'])}\n"
         text += "\n"
 
     return text
@@ -21203,9 +21245,9 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 f"- DE: `{citation['citation_string_de']}`\n"
                 f"- FR: `{citation['citation_string_fr']}`\n"
                 f"- IT: `{citation['citation_string_it']}`\n"
-                f"- URL: <{citation['canonical_url']}>\n"
-                f"- Markdown-link form (use this in your reply to the user): "
-                f"`[{citation['citation_string_de']}]({citation['canonical_url']})`\n"
+                f"- URL: {_md_link(citation['canonical_url'], citation['canonical_url'])}\n"
+                f"- Markdown link — embed this verbatim when citing this decision in your reply: "
+                f"{_md_link(citation['citation_string_de'], citation['canonical_url'])}\n"
             )
             if _fresh_publication:
                 text += (
@@ -21231,13 +21273,20 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 # in excluded-range checks if there are many existing
                 # markdown links, but safe here (decisions don't embed md).
                 if len(ft) > 200000:
-                    text += f"\n## Full Text (first 200,000 of {len(ft)} chars)\n{_auto_link_citations(ft[:200000])}\n..."
+                    text += (
+                        f"\n## Full Text (first 200,000 of {len(ft):,} chars)\n"
+                        f"{_auto_link_citations(ft[:200000])}\n\n"
+                        f"[Truncated: first 200,000 of {len(ft):,} characters. "
+                        f"The remainder — which may include the operative part — is "
+                        f"not shown. Full text: "
+                        f"{_md_link('Volltext', citation['canonical_url'])}]\n"
+                    )
                 else:
                     text += f"\n## Full Text\n{_auto_link_citations(ft)}\n"
             if result.get("source_url"):
-                text += f"\n**Source:** {result['source_url']}\n"
+                text += f"\n**Source:** {_md_link('Originalquelle', result['source_url'])}\n"
             if result.get("pdf_url"):
-                text += f"**PDF:** {result['pdf_url']}\n"
+                text += f"**PDF:** {_md_link('PDF', result['pdf_url'])}\n"
             _cited = _filter_self_citations(result.get("cited_decisions"), result)
             if _cited:
                 text += f"\n**Citations:** {', '.join(_cited)}\n"
@@ -21510,7 +21559,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 limit=int(arguments.get("limit", 10)),
                 jurisdiction=arguments.get("jurisdiction", "all"),
             )
-            _text = _with_open_access_note(_format_search_laws_response(result))
+            _text = _with_open_access_note(_format_search_laws_response(result, arguments.get("language") or "de"))
             return ([TextContent(type="text", text=_text)], _law_hits_structured(result, arguments.get("language") or "de"))
 
         elif name == "get_commentary":
@@ -23029,6 +23078,8 @@ setInterval(load, 30000);
                 "canton":            {"type": "string"},
                 "level":             {"type": "string", "nullable": True},
                 "consolidation_date":{"type": "string", "nullable": True},
+                "source_url":        {"type": "string", "nullable": True},
+                "source_label":      {"type": "string", "nullable": True},
                 "articles": {
                     "type": "array",
                     "items": {
@@ -23146,6 +23197,7 @@ setInterval(load, 30000);
                             "citation_string_de":   {"type": "string"},
                             "url":                  {"type": "string"},
                             "display_url":          {"type": "string"},
+                            "markdown_link":        {"type": "string", "nullable": True},
                         },
                     },
                 },
@@ -23169,6 +23221,7 @@ setInterval(load, 30000);
                 "citation_string_fr":  {"type": "string", "nullable": True},
                 "citation_string_it":  {"type": "string", "nullable": True},
                 "canonical_url":       {"type": "string", "nullable": True},
+                "markdown_link":       {"type": "string", "nullable": True},
                 "rule_statement":      {"type": "string", "nullable": True},
             },
         },
