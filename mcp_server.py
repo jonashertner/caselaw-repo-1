@@ -531,6 +531,25 @@ LLM_EXPANSION_TIMEOUT = float(os.environ.get("LLM_EXPANSION_TIMEOUT", "2.0"))
 # the no-contention MRR benchmark never trips it, so this is not MRR-affecting.
 SEARCH_DEADLINE_MS = int(os.environ.get("OCL_SEARCH_DEADLINE_MS", "20000"))
 
+# ── Query-size policy (BGPartner 2026-07 findings) ────────────────
+# Copilot-style agents paste whole documents into the query argument. The
+# measured failure: a 1,801-char termination letter = 120 s hang, then a
+# client-side timeout with zero bytes. Two bounds, both env-tunable:
+#   * QUERY_CONDENSE_THRESHOLD — above this, the query is auto-condensed to
+#     its citation refs + most informative terms and searched normally
+#     (disclosed via query_condensed; 0 disables condensation).
+#   * QUERY_MAX_CHARS — hard cap; beyond it we refuse with an error that
+#     teaches the agent how to retry. 4,000 keeps well under nginx's 8k
+#     request-line budget for URL-encoded German text on the GET surface.
+QUERY_CONDENSE_THRESHOLD = int(os.environ.get("OCL_QUERY_CONDENSE_CHARS", "500"))
+QUERY_MAX_CHARS = int(os.environ.get("OCL_QUERY_MAX_CHARS", "4000"))
+QUERY_CONDENSE_TERMS = 12
+# Head+tail excerpt cap for text forwarded to the Anthropic API (query parse,
+# expansion, rerank). Bounds token spend and limits how much of a possibly
+# privileged document leaves the box; below the condense threshold the
+# excerpt is the identity function.
+LLM_INPUT_MAX_CHARS = 500
+
 # Hard server-side cap on a single tool dispatch. Under thread-pool saturation
 # (e.g. a bloated DB or a build hammering the box), a to_thread-dispatched tool
 # can queue for many minutes; without this an adopter saw 10-30min hangs while
@@ -2436,6 +2455,26 @@ def _parse_date_param(val: str | None) -> str | None:
             return None
         return f"{y:04d}-{mo:02d}-{d:02d}"
     return None
+
+
+def _query_length_error(query: str | None) -> str | None:
+    """Refusal message for a query beyond QUERY_MAX_CHARS, else None.
+
+    The text must teach the calling agent HOW to retry — Copilot-style
+    clients read tool errors and re-call. A generic 'too long' produces a
+    generic retry; naming the extraction step produces a usable one.
+    (Below the hard cap, long queries are auto-condensed instead — see
+    QUERY_CONDENSE_THRESHOLD.)"""
+    n = len(query or "")
+    if n <= QUERY_MAX_CHARS:
+        return None
+    return (
+        f"Query too long: {n:,} characters (max {QUERY_MAX_CHARS:,}). Do not "
+        "paste entire documents or letters. Extract the legal issue and retry "
+        "with 3-8 precise search terms, e.g. 'missbräuchliche Kündigung "
+        "Art. 336 OR Sperrfrist'. One search per distinct legal issue. "
+        "Statute citations (Art. 336 OR) may be included verbatim in the query."
+    )
 
 
 def _date_arg_error(date_from: str | None, date_to: str | None) -> str | None:
@@ -18509,8 +18548,13 @@ def _list_tools() -> list[Tool]:
                 "properties": {
                     "query": {
                         "type": "string",
+                        "maxLength": 4000,
                         "description": (
-                            "Search query. Examples:\n"
+                            "Search query. Best results: 3-8 precise terms, one "
+                            "search per legal issue — never paste document text. "
+                            "Max 4,000 chars; input over 500 chars is "
+                            "auto-condensed to its citations + key terms. "
+                            "Examples:\n"
                             "- Simple: Mietrecht Kündigung\n"
                             "- Phrase: \"Treu und Glauben\"\n"
                             "- Boolean: Arbeitsrecht AND Kündigung NOT Probezeit\n"
@@ -20441,6 +20485,10 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
 
         if name == "search":
             # ChatGPT deep-research search shim → (content JSON, structuredContent)
+            _qerr = _query_length_error(arguments.get("query"))
+            if _qerr:
+                return ([TextContent(type="text", text=json.dumps({"error": _qerr}, ensure_ascii=False))],
+                        {"error": _qerr})
             structured = await asyncio.to_thread(
                 _deep_research_search,
                 arguments.get("query", ""),
@@ -20486,6 +20534,10 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
             if _derr:
                 return ([TextContent(type="text", text=json.dumps({"error": _derr}, ensure_ascii=False))],
                         {"error": _derr})
+            _qerr = _query_length_error(arguments.get("query"))
+            if _qerr:
+                return ([TextContent(type="text", text=json.dumps({"error": _qerr}, ensure_ascii=False))],
+                        {"error": _qerr})
             req_offset = int(arguments.get("offset", 0))
             sort_arg = arguments.get("sort")
             fields_arg = arguments.get("fields", "full")
@@ -20775,6 +20827,9 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
             return [TextContent(type="text", text=_format_appeal_chain_response(result))]
 
         elif name == "find_leading_cases":
+            _qerr = _query_length_error(arguments.get("query"))
+            if _qerr:
+                return [TextContent(type="text", text=json.dumps({"error": _qerr}, ensure_ascii=False))]
             result = await asyncio.to_thread(
                 _find_leading_cases,
                 query=arguments.get("query"),
@@ -22957,7 +23012,7 @@ setInterval(load, 30000);
                               "until has_more is false to retrieve the complete list.")
     async def api_search_decisions(
         request: Request,
-        query: str = Query(None, description="Search query (FTS5 syntax: keywords, \"phrases\", AND/OR/NOT)"),
+        query: str = Query(None, description="Search query (FTS5 syntax: keywords, \"phrases\", AND/OR/NOT). Max 4,000 chars; input over 500 chars is auto-condensed to citations + key terms — send 3-8 precise terms for best results."),
         q: str = Query(None, description="Alias for `query` (the short name used in the public docs / by most clients). `query` wins if both are given."),
         court: str = Query(None, description="Filter by court code (e.g., bger, bvger, zh_obergericht)"),
         canton: str = Query(None, description="Filter by canton (CH, ZH, BE, GE, etc.)"),
@@ -22978,6 +23033,11 @@ setInterval(load, 30000);
         # `query` takes precedence when both are supplied.
         if not query and q:
             query = q
+        # Manual length guard rather than Query(max_length=...): FastAPI's
+        # built-in 422 says only "String should have at most N characters",
+        # which teaches a retrying agent nothing. Ours names the fix.
+        if (_qerr := _query_length_error(query)):
+            raise HTTPException(status_code=422, detail=_qerr)
         # #46: decision_type / legal_area are no longer supported (too sparse to
         # filter honestly). Reject explicitly rather than silently mislead.
         _unsupported = [p for p in ("decision_type", "legal_area")
@@ -23261,7 +23321,7 @@ setInterval(load, 30000);
                               "based on citation graph. Each result carries citation_string_{de,fr,it} "
                               "+ canonical_url + rule_statement for copy-ready use.")
     async def api_find_leading_cases(
-        query: str = Query(None, description="Text query to filter by topic"),
+        query: str = Query(None, description="Text query to filter by topic (max 4,000 chars)"),
         law_code: str = Query(None, description="Law code (e.g., BV, OR, ZGB, StGB)"),
         article: str = Query(None, description="Article number (requires law_code)"),
         court: str = Query(None, description="Court filter (e.g., bger, bge, bvger)"),
@@ -23269,6 +23329,8 @@ setInterval(load, 30000);
         date_to: str = Query(None, description="End date (YYYY-MM-DD)"),
         limit: int = Query(20, ge=1, le=100, description="Max results"),
     ):
+        if (_qerr := _query_length_error(query)):
+            raise HTTPException(status_code=422, detail=_qerr)
         result = await asyncio.to_thread(
             _find_leading_cases, query=query, law_code=law_code, article=article,
             court=court, date_from=date_from, date_to=date_to, limit=limit,
