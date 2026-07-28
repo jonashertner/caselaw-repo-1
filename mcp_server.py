@@ -2636,6 +2636,23 @@ def _search_fts5_inner(
         "language_filter": language,
         "court_filter": court,
     }
+    # Auto-condense pasted documents (BGPartner: an 1,801-char termination
+    # letter hung 120 s and returned junk). One choke point serves MCP, REST
+    # and every internal search_fts5 caller. Citation refs survive verbatim;
+    # the rest is distilled to the most informative terms. Disclosed via
+    # meta['query_condensed'] so callers can tell the user what was searched.
+    _condensed_info = None
+    if QUERY_CONDENSE_THRESHOLD > 0 and len(query or "") > QUERY_CONDENSE_THRESHOLD:
+        query, _condensed_info = _condense_query(query)
+        if _condensed_info:
+            _trace["condensed"] = True
+            if meta is not None:
+                meta["query_condensed"] = True
+                meta["condensed_terms"] = _condensed_info["refs"] + _condensed_info["terms"]
+                meta["original_query_chars"] = _condensed_info["original_chars"]
+                # Internal: callers reuse the condensed text for pinpoint
+                # enrichment instead of re-feeding the whole document.
+                meta["condensed_query"] = query
     is_filter_only = not query.strip()
     effective_max = FILTER_MAX_LIMIT if is_filter_only else MAX_LIMIT
     limit = max(1, min(limit, effective_max))
@@ -2689,8 +2706,9 @@ def _search_fts5_inner(
     # Explicit-syntax detection runs on the ORIGINAL query: the sanitizer
     # rewrites 'Art. 335 OR' into 'Art 335 "OR"', which defeated the statute
     # mask AND tripped the quote-count branch, cutting every statute-citing
-    # query off from the vector rescue below.
-    has_explicit_syntax = _has_explicit_fts_syntax(query)
+    # query off from the vector rescue below. A condensed document is natural
+    # language by construction — never operator syntax.
+    has_explicit_syntax = False if _condensed_info else _has_explicit_fts_syntax(query)
     inline_docket_candidates = _extract_inline_docket_candidates(fts_query)
     # Try collapsing space-separated queries into docket form
     collapsed = _collapse_spaced_docket(fts_query)
@@ -2769,7 +2787,8 @@ def _search_fts5_inner(
     #    identical results to the prior sequential path) ──
     _trace["parse_start_ms"] = round((time.monotonic() - _trace_t0) * 1000)
     strategies, llm_terms, structured_parse = _analyze_query(
-        fts_query, is_docket_query, original_query=query)
+        fts_query, is_docket_query, original_query=query,
+        force_natural_language=bool(_condensed_info))
     _trace["parse_ms"] = round((time.monotonic() - _trace_t0) * 1000) - _trace.get("parse_start_ms", 0)
     if structured_parse:
         _trace["structured_parse"] = {
@@ -6266,6 +6285,80 @@ def _rank_query_tokens(
         s -= 0.01 * seen_first[tok]
         scores.append(s)
     return scores
+
+
+def _condense_query(query: str) -> tuple[str, dict | None]:
+    """Distill a pasted document into a searchable query.
+
+    Citation references (statute / BGE / docket) are re-emitted VERBATIM
+    first — they keep docket detection and the statute-graph rerank signals
+    alive. The remainder is ranked by _rank_query_tokens with letter
+    boilerplate stripped, top QUERY_CONDENSE_TERMS kept, first-occurrence
+    order. The output is plain natural language (no operators), so callers
+    pair it with force_natural_language=True.
+
+    Returns (condensed_query, info) where info carries refs/terms/
+    original_chars for disclosure, or (query, None) when condensation
+    is impossible (pathological input).
+    """
+    original = query or ""
+    refs: list[str] = []
+    ref_spans: list[tuple[int, int]] = []
+    for pat in (QUERY_STATUTE_PATTERN, QUERY_BGE_PATTERN, *QUERY_DOCKET_PATTERNS):
+        for mt in pat.finditer(original):
+            frag = " ".join(mt.group(0).split())
+            if frag not in refs and len(refs) < 4:
+                refs.append(frag)
+                ref_spans.append(mt.span())
+
+    # Tokenize the remainder (ref spans excluded so 'Art'/'336'/'OR' don't
+    # re-enter as loose terms).
+    remainder_chars = []
+    last = 0
+    for a, b in sorted(ref_spans):
+        remainder_chars.append(original[last:a])
+        last = b
+    remainder_chars.append(original[last:])
+    remainder = " ".join(remainder_chars)
+
+    toks: list[str] = []
+    for tok in re.findall(r"[0-9A-Za-zÀ-ÖØ-öø-ÿ_]+", remainder):
+        low = tok.lower()
+        if low in NL_STOPWORDS or low in LETTER_BOILERPLATE_STOPWORDS:
+            continue
+        if low in {"and", "or", "not", "near"}:
+            continue  # operator homonyms must not survive into the query
+        if not low.isdigit() and len(low) < 3:
+            continue
+        toks.append(tok)
+
+    terms: list[str] = []
+    if toks:
+        lows = [t.lower() for t in toks]
+        scores = _rank_query_tokens(lows, original)
+        first_pos: dict[str, int] = {}
+        for i, t in enumerate(lows):
+            first_pos.setdefault(t, i)
+        chosen: set[str] = set()
+        for i in sorted(range(len(lows)), key=lambda i: -scores[i]):
+            chosen.add(lows[i])
+            if len(chosen) >= QUERY_CONDENSE_TERMS:
+                break
+        terms = sorted(chosen, key=lambda t: first_pos[t])
+
+    if not refs and not terms:
+        # Fallback: first 16 non-stopword tokens; if even that fails, a
+        # bounded prefix — never the whole document.
+        fallback = toks[:16]
+        if fallback:
+            terms = [t.lower() for t in fallback]
+        else:
+            return original[:200], {
+                "refs": [], "terms": [], "original_chars": len(original)}
+
+    condensed = " ".join(refs + terms)
+    return condensed, {
+        "refs": refs, "terms": terms, "original_chars": len(original)}
 
 
 def _extract_query_terms(
@@ -20910,6 +21003,15 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 meta=_search_meta,
             )
             _total_lb = bool(_search_meta.get("total_is_lower_bound"))
+            _condense_note = ""
+            if _search_meta.get("query_condensed"):
+                _condense_note = (
+                    f"Note: your query was {_search_meta.get('original_query_chars', 0):,} "
+                    f"characters and was auto-condensed to: "
+                    f"{', '.join(_search_meta.get('condensed_terms', []))}. "
+                    "For best results send 3-8 precise terms; statute citations "
+                    "like 'Art. 336 OR' may be included verbatim.\n\n"
+                )
             if not results:
                 if _total_lb:
                     # No rows on THIS page but the (capped) total is a lower bound
@@ -20919,6 +21021,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                             f"court/canton/date filters or page back).")
                 else:
                     text = f"No decisions found matching your query (total: {total_count})."
+                text = _condense_note + text
             else:
                 # Strip <mark> tags from snippets (noise for LLM consumers)
                 for r in results:
@@ -20949,7 +21052,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                     await asyncio.to_thread(
                         _pinpoint_enrich_results,
                         results,
-                        arguments.get("query", ""),
+                        _search_meta.get("condensed_query") or arguments.get("query", ""),
                         top_n=5,
                     )
 
@@ -20960,6 +21063,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                              if _total_lb else "")
                 text = (f"Found {total_count}{'+' if _total_lb else ''} decisions"
                         f"{_cap_note} (showing {req_offset + 1}\u2013{end}):\n\n")
+                text = _condense_note + text
 
                 # Each result is rendered as a Markdown link so the LLM
                 # propagates a clickable citation to the user-facing answer.
@@ -23377,6 +23481,10 @@ setInterval(load, 30000);
         offset: int = Query(0, ge=0, description="Skip results for pagination"),
         sort: str = Query(None, description="Sort: relevance (default), date_desc, date_asc"),
         fields: str = Query("full", description="Detail level: full or compact"),
+        include_pinpoint: bool = Query(True, description=(
+            "Attach a pinpoint Erwägung citation to the top 5 full-fields "
+            "results. Set false to skip the per-result lookup (typically "
+            "saves 0.2-2 s; more for long or statute-heavy queries).")),
     ):
         # Accept `q` as a forgiving alias for `query`. The public docs + most HTTP
         # clients use the short name `q`; FastAPI binds by parameter name, so a
@@ -23450,9 +23558,11 @@ setInterval(load, 30000);
             results = [_enrich_with_citation(r) for r in results]
             # Auto-pinpoint top-5 results so the JSON payload carries a
             # paragraph-level citation alongside the decision-level metadata.
-            await asyncio.to_thread(
-                _pinpoint_enrich_results, results, query or "", top_n=5
-            )
+            if include_pinpoint:
+                await asyncio.to_thread(
+                    _pinpoint_enrich_results, results,
+                    _search_meta.get("condensed_query") or query or "", top_n=5
+                )
         returned = len(results)
         # has_more reflects what is RETRIEVABLE, not just the exact total. A
         # relevance-ranked text search returns the top-ranked subset (a bounded
@@ -23470,6 +23580,15 @@ setInterval(load, 30000);
             "has_more": has_more,
             "next_offset": (offset + returned) if has_more else None,
         }
+        if _search_meta.get("query_condensed"):
+            resp["query_condensed"] = True
+            resp["condensed_terms"] = _search_meta.get("condensed_terms", [])
+            _cnote = (
+                f"Your query was {_search_meta.get('original_query_chars', 0):,} characters "
+                "and was auto-condensed to its citations + key terms (see condensed_terms). "
+                "For best results send 3-8 precise terms per legal issue."
+            )
+            note = ((note + " ") if note else "") + _cnote
         if note:
             resp["note"] = note
         return resp
@@ -23680,6 +23799,9 @@ setInterval(load, 30000);
         date_from: str = Query(None, description="Start date (YYYY-MM-DD)"),
         date_to: str = Query(None, description="End date (YYYY-MM-DD)"),
         limit: int = Query(20, ge=1, le=100, description="Max results"),
+        include_pinpoint: bool = Query(True, description=(
+            "Attach a pinpoint Erwägung citation to the top 3 results when a "
+            "free-text query is given. Set false to skip the lookup.")),
     ):
         if (_qerr := _query_length_error(query)):
             raise HTTPException(status_code=422, detail=_qerr)
@@ -23698,7 +23820,7 @@ setInterval(load, 30000);
             # A bare statute reference is too broad to pinpoint an Erwägung and
             # made this path ~18s; statute-only lookups now skip the pinpoint.
             claim = (query or "").strip()
-            if claim:
+            if claim and include_pinpoint:
                 inner = (result.get("results") or result.get("cases")
                          or result.get("leading_cases") or [])
                 if inner:
