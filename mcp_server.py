@@ -19104,25 +19104,20 @@ def _list_tools() -> list[Tool]:
             annotations=_READ_ONLY,
             name="search_decisions",
             description=(
-                "Search Swiss court decisions AND European Court of Human "
-                "Rights decisions concerning Switzerland (~2,800 ECHR docs "
-                "across bge_egmr, hudoc_ch, ecthr_chamber, ecthr_committee, "
-                "ecthr_grand_chamber) using full-text search. "
-                "Supports keywords, phrases (in quotes), Boolean operators "
-                "(AND, OR, NOT), and prefix matching (word*). "
-                "Filter by court, canton, language, date range, and chamber. "
-                "Also handles docket number lookup (e.g., 6B_1234/2025) and "
-                "column-scoped search (regeste:keyword, full_text:keyword). "
-                "Returns relevance-ranked results enriched with:\n"
-                "- court_name (human-readable), court_level, legal_area\n"
-                "- statutes: relevant statute articles (e.g. Art. 41 OR)\n"
-                "- citation_count: how many decisions cite this one\n"
-                "- cited_by_results: how many other results cite this one\n"
-                "- is_leading_case: true for highly-cited authoritative decisions\n"
-                "Use offset for pagination through large result sets.\n\n"
-                "To find the MOST RECENT decisions: omit the query (or set it empty) "
-                "and use sort='date_desc' with optional court/canton filters. "
-                "Example: query='', court='bger', sort='date_desc', limit=5."
+                "Use this tool to find COURT DECISIONS (Rechtsprechung): "
+                "1,050,000+ Swiss federal and cantonal decisions plus "
+                "~2,800 ECtHR decisions concerning Switzerland. Full-text "
+                "search with keywords, phrases (in quotes), Boolean "
+                "operators (AND, OR, NOT), prefix matching (word*), docket "
+                "lookup (6B_1234/2025) and column-scoped search "
+                "(regeste:keyword). Filter by court, canton, language, date "
+                "range, chamber. Results are relevance-ranked and enriched "
+                "with citation counts, statute references and "
+                "is_leading_case. Use offset to page. Most recent decisions: "
+                "empty query + sort='date_desc' + court filter. "
+                "Not for statutes (search_laws), commentary "
+                "(search_scholarship), or administrative guidance "
+                "(search_practice)."
             ),
             inputSchema={
                 "type": "object",
@@ -19712,8 +19707,9 @@ def _list_tools() -> list[Tool]:
             annotations=_READ_ONLY,
             name="search_botschaft",
             description=(
-                "Full-text search across the verbatim Federal Council "
-                "Botschaft corpus. Where get_article_purpose answers "
+                "Use this tool to retrieve and quote the VERBATIM text of "
+                "Federal Council Botschaften (legislative messages). Where "
+                "get_article_purpose answers "
                 "'why does Art. X exist?', this tool answers 'show me "
                 "every Botschaft passage about TOPIC X'. Useful when the "
                 "caller doesn't know which SR/article to ask for — e.g. "
@@ -19867,38 +19863,24 @@ def _list_tools() -> list[Tool]:
             annotations=_READ_ONLY,
             name="attest_response",
             description=(
-                "MANDATORY FINAL-STEP AUDIT covering up to FIVE hallucination "
-                "classes: (1) case citations — verifies every BGE/BGer/"
-                "BVGer/BStGer/BPatGer/MKGE/ATF/TF/TAF/TPF/TFB/ATMC/STMC "
-                "reference exists in the corpus and any pinpoint "
-                "(E. X.Y / consid. X.Y) resolves to a real Erwägung; "
-                "(2) statute citations — verifies every Art. X LAW reference "
-                "resolves in statutes.db (law abbreviation known, article "
-                "number present); (3) direct quotations — verifies every "
-                "\"…\"-quoted substring (≥30 chars) appears verbatim in a "
-                "regeste / Erwägung / full text of one of the cited sources "
-                "(decisions or statutes); (4) decision dates — verifies any "
-                "'vom DD.MM.YYYY' adjacent to a citation matches the stored "
-                "decision date; (5) GROUNDING (opt-in via "
-                "audit_grounding=true) — for each verified citation, the "
-                "claim sentence immediately preceding it is sent to an "
-                "independent Sonnet judge alongside the cited Erwägung / "
-                "Regeste, which decides whether the source supports, "
-                "contradicts, or is unrelated to the claim. Closes the "
-                "'reasoning error' class from Butler & Butler, 'Legal RAG "
-                "Bench' (Isaacus, 2026): the citation is real and the source "
-                "was retrieved, but the proposition is not actually "
-                "supported. Costs one Sonnet call (~3 s) regardless of "
-                "citation count.\n\n"
-                "Returns the draft annotated with ✓ or ⚠️ per case citation "
-                "plus a structured `issues` list with category labels and "
-                "suggestions. CALL THIS BEFORE emitting your final answer "
-                "whenever your response contains ≥1 case citation, statute "
-                "reference, or direct quotation. SET audit_grounding=true "
-                "for any answer with ≥2 citations or where a wrong "
-                "proposition would mislead a Swiss lawyer. If ok=false, "
-                "fix each flagged issue before sending; if ok=true, send "
-                "`linked_text` verbatim to the user."
+                "MANDATORY FINAL-STEP AUDIT of your draft answer. Checks "
+                "five hallucination classes: (1) every case citation "
+                "(BGE/BGer/BVGer/BStGer/BPatGer/MKGE and FR/IT forms) exists "
+                "in the corpus and any pinpoint (E. X.Y / consid. X.Y) "
+                "resolves to a real Erwägung; (2) every 'Art. X LAW' statute "
+                "reference resolves (known abbreviation, existing article); "
+                "(3) every quoted passage of 30+ chars appears verbatim in a "
+                "cited source; (4) decision dates adjacent to citations "
+                "match the stored dates; (5) with audit_grounding=true, an "
+                "independent LLM judge checks that each cited source "
+                "actually supports the claim sentence preceding it (one "
+                "call, ~3 s, regardless of citation count). Returns the "
+                "draft annotated per citation plus a structured issues "
+                "list. CALL THIS BEFORE emitting any answer containing a "
+                "case citation, statute reference or direct quotation; set "
+                "audit_grounding=true for answers with 2+ citations. If "
+                "ok=false, fix each issue; if ok=true, send linked_text "
+                "verbatim."
             ),
             inputSchema={
                 "type": "object",
@@ -20129,9 +20111,12 @@ def _list_tools() -> list[Tool]:
             _meta=_LAW_TOOL_META,
             name="search_laws",
             description=(
-                "UNIFIED full-text search across every Swiss statute article "
-                "indexed locally — federal (Fedlex mirror) AND cantonal (LexFind "
-                "mirror across all 26 cantons). BM25-ranked per corpus, merged "
+                "Use this tool to find STATUTE ARTICLES by topic — "
+                "full-text over every locally indexed article, federal "
+                "(Fedlex mirror) AND cantonal (LexFind mirror, all 26 "
+                "cantons), interleaved. Not for whole laws by name "
+                "(search_legislation) or court decisions (search_decisions). "
+                "BM25-ranked per corpus, merged "
                 "by interleaving so each response surfaces both jurisdictions. "
                 "Returns ranked snippets with article number, heading, law title, "
                 "canton, and level ('federal' | 'cantonal'). "
@@ -20270,7 +20255,10 @@ def _list_tools() -> list[Tool]:
             annotations=_READ_ONLY,
             name="search_commentaries",
             description=(
-                "Full-text search across all OnlineKommentar.ch legal commentaries. "
+                "Use this tool ONLY for article-anchored commentary from "
+                "OnlineKommentar.ch — doctrinal discussion tied to a specific "
+                "statute article. For the full OA scholarship corpus (which "
+                "includes OnlineKommentar) use search_scholarship. "
                 "Searches commentary text, titles, and article numbers. "
                 "Returns ranked results with snippets, authors, and links. "
                 "Useful for finding doctrinal discussion of a legal concept across multiple laws."
@@ -20309,9 +20297,10 @@ def _list_tools() -> list[Tool]:
             annotations=_READ_ONLY,
             name="search_scholarship",
             description=(
-                "Full-text search across Swiss open-access legal scholarship: "
+                "Use this tool for open-access SCHOLARSHIP (Lehre): "
                 "OA journal articles (sui generis et al.), OA legal commentaries "
-                "(OnlineKommentar, OpenLegalCommentary), dissertations and theses "
+                "(OnlineKommentar, OpenLegalCommentary — this tool SUBSUMES "
+                "search_commentaries), dissertations and theses "
                 "from Swiss university repositories, and federal legal-policy "
                 "reports. Returns ranked results with snippets, authors, DOI, "
                 "and direct links. Filters by source, publication type, language, "
@@ -20483,8 +20472,9 @@ def _list_tools() -> list[Tool]:
             annotations=_READ_ONLY,
             name="search_materialien",
             description=(
-                "Full-text search across digested Materialien (legislative intent, key arguments, "
-                "design choices, general context). "
+                "Use this tool for DIGESTED legislative history — per-article "
+                "intent summaries and key arguments, not verbatim text "
+                "(search_botschaft has the verbatim corpus). "
                 "COVERAGE TODAY: BV + BGFA digests + BV parliamentary debate transcripts only. "
                 "Full per-article digested expansion to every federal law is in active build."
             ),
@@ -20514,15 +20504,14 @@ def _list_tools() -> list[Tool]:
                 _meta=_LAW_TOOL_META,
                 name="search_legislation",
                 description=(
-                    "NATURAL-LANGUAGE SEARCH across all Swiss legislation — 33,000+ "
-                    "federal and cantonal legislative texts from LexFind.ch, covering "
-                    "all 26 cantons (ZH, BE, LU, UR, SZ, OW, NW, GL, ZG, FR, SO, BS, "
-                    "BL, SH, AR, AI, SG, GR, AG, TG, TI, VD, VS, NE, GE, JU) and the "
-                    "federal level, in German/French/Italian. Use this as the ENTRY "
-                    "POINT whenever the user asks about cantonal laws, municipal "
-                    "regulations, or federal ordinances outside the core Fedlex mirror "
-                    "(e.g., 'Hundegesetz im Kanton Bern', 'loi sur les épidémies "
-                    "Vaud', 'Baugesetz Zürich'). "
+                    "Use this tool to find WHOLE LAWS by name or subject — "
+                    "33,000+ federal and cantonal enactments from LexFind.ch; the "
+                    "entry point for cantonal questions ('Hundegesetz Bern', 'loi "
+                    "sur l'énergie Vaud'). Not for article-level topic search "
+                    "(search_laws) or the core federal codes (get_law is instant "
+                    "there). All 26 cantons + federal, DE/FR/IT. Also the entry "
+                    "point for municipal regulations and federal ordinances "
+                    "outside the core Fedlex mirror. "
                     "SINGLE-CALL MODE: set fetch_top_n_texts=1..3 and the top results "
                     "are returned with the parsed full text + article list of the law "
                     "itself — no follow-up get_legislation call needed. Ideal for "
@@ -20687,90 +20676,98 @@ def _list_tools() -> list[Tool]:
                     },
                 },
             ),
-            Tool(
-                annotations=_READ_ONLY,
-                name="search_practice",
-                description=(
-                    "Full-text search across Swiss FEDERAL administrative practice "
-                    "(Verwaltungspraxis): Kreisschreiben, MWST-Infos and "
-                    "Branchen-Infos, Weisungen, Rundschreiben, Vollzugshilfen. "
-                    "These are NOT court decisions — they are the interpretive "
-                    "guidance issued by federal agencies: ESTV for tax and VAT "
-                    "(438 documents, DE/FR/IT), BAFU for environment (297, DE), "
-                    "SEM for migration/asylum/citizenship (55, DE). 790 documents "
-                    "in total. Returns ranked excerpts with the source authority, "
-                    "document number, date, and PDF URL. Essential complement to "
-                    "case-law search whenever the question involves administrative "
-                    "practice. NOT covered: BSV/AHV-IV, SECO, FINMA, BAG, and all "
-                    "cantonal administrations — say so rather than implying a gap "
-                    "is an absence of guidance. For federal administrative "
-                    "decisions before 2017 use search_decisions(court='ch_vb') "
-                    "(VPB/JAAC)."
-                ),
-                inputSchema={
-                    "type": "object",
-                    "properties": {
-                        "query": {
-                            "type": "string",
-                            "description": "Search query (FTS5 syntax: quotes for phrases, OR for alternatives, NEAR/N for proximity).",
-                        },
-                        "source": {
-                            "type": "string",
-                            "enum": ["bafu_vollzug", "estv_ks", "estv_mwst", "sem_weisungen"],
-                            "description": "Filter by source key. bafu_vollzug (297), estv_ks (285), estv_mwst (153), sem_weisungen (55).",
-                        },
-                        "issuing_authority": {
-                            "type": "string",
-                            "enum": ["ESTV", "BAFU", "SEM"],
-                            "description": "Filter by authority. ESTV (438), BAFU (297), SEM (55).",
-                        },
-                        "doc_type": {
-                            "type": "string",
-                            "enum": [
-                                "vollzugshilfe", "kreisschreiben", "mwst_branchen_info",
-                                "mwst_info", "weisung", "rundschreiben",
-                            ],
-                            "description": "Filter by document type. vollzugshilfe (297), kreisschreiben (285), mwst_branchen_info (84), mwst_info (69), weisung (39), rundschreiben (16).",
-                        },
-                        "language": {
-                            "type": "string",
-                            "description": (
-                                "OPTIONAL filter (de/fr/it). Omit "
-                                "(recommended default) to search across all "
-                                "languages. Set ONLY when the user "
-                                "explicitly asks for one-language results."
-                            ),
-                        },
-                        "limit": {
-                            "type": "integer",
-                            "description": "Maximum results (1-50, default 10).",
-                            "default": 10,
-                        },
-                    },
-                    "required": ["query"],
-                },
-            ),
-            Tool(
-                annotations=_READ_ONLY,
-                name="get_practice",
-                description=(
-                    "Retrieve a single federal administrative-practice document by "
-                    "its doc_id (e.g. 'estv_ks_ks_nr_28', 'sem_weisungen_weisungen-aug-d'). "
-                    "Returns full body text, title, date, issuing authority, and PDF URL. "
-                    "Use search_practice first to discover the doc_id."
-                ),
-                inputSchema={
-                    "type": "object",
-                    "properties": {
-                        "doc_id": {
-                            "type": "string",
-                            "description": "Document identifier returned by search_practice.",
-                        },
-                    },
-                    "required": ["doc_id"],
-                },
-            ),
         ]),
+        # Practice tools are ALWAYS registered: they read only the local
+        # practice.db and have no LexFind dependency. They previously sat
+        # inside the LEXFIND_ENABLED conditional, so one unrelated env flag
+        # silently removed the entire Verwaltungspraxis corpus from
+        # discovery (dispatch never checked the flag — the tools worked if
+        # called by name, but no client could find them).
+        Tool(
+            annotations=_READ_ONLY,
+            name="search_practice",
+            description=(
+                "Use this tool when the question involves federal "
+                "ADMINISTRATIVE PRACTICE (Verwaltungspraxis): Kreisschreiben, "
+                "MWST-Infos and Branchen-Infos, Weisungen, Rundschreiben, "
+                "Vollzugshilfen — interpretive agency guidance, not court "
+                "decisions. "
+                "These are NOT court decisions — they are the interpretive "
+                "guidance issued by federal agencies: ESTV for tax and VAT "
+                "(438 documents, DE/FR/IT), BAFU for environment (297, DE), "
+                "SEM for migration/asylum/citizenship (55, DE). 790 documents "
+                "in total. Returns ranked excerpts with the source authority, "
+                "document number, date, and PDF URL. Essential complement to "
+                "case-law search whenever the question involves administrative "
+                "practice. NOT covered: BSV/AHV-IV, SECO, FINMA, BAG, and all "
+                "cantonal administrations — say so rather than implying a gap "
+                "is an absence of guidance. For federal administrative "
+                "decisions before 2017 use search_decisions(court='ch_vb') "
+                "(VPB/JAAC)."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": "Search query (FTS5 syntax: quotes for phrases, OR for alternatives, NEAR/N for proximity).",
+                    },
+                    "source": {
+                        "type": "string",
+                        "enum": ["bafu_vollzug", "estv_ks", "estv_mwst", "sem_weisungen"],
+                        "description": "Filter by source key. bafu_vollzug (297), estv_ks (285), estv_mwst (153), sem_weisungen (55).",
+                    },
+                    "issuing_authority": {
+                        "type": "string",
+                        "enum": ["ESTV", "BAFU", "SEM"],
+                        "description": "Filter by authority. ESTV (438), BAFU (297), SEM (55).",
+                    },
+                    "doc_type": {
+                        "type": "string",
+                        "enum": [
+                            "vollzugshilfe", "kreisschreiben", "mwst_branchen_info",
+                            "mwst_info", "weisung", "rundschreiben",
+                        ],
+                        "description": "Filter by document type. vollzugshilfe (297), kreisschreiben (285), mwst_branchen_info (84), mwst_info (69), weisung (39), rundschreiben (16).",
+                    },
+                    "language": {
+                        "type": "string",
+                        "description": (
+                            "OPTIONAL filter (de/fr/it). Omit "
+                            "(recommended default) to search across all "
+                            "languages. Set ONLY when the user "
+                            "explicitly asks for one-language results."
+                        ),
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "description": "Maximum results (1-50, default 10).",
+                        "default": 10,
+                    },
+                },
+                "required": ["query"],
+            },
+        ),
+        Tool(
+            annotations=_READ_ONLY,
+            name="get_practice",
+            description=(
+                "Retrieve a single federal administrative-practice document by "
+                "its doc_id (e.g. 'estv_ks_ks_nr_28', 'sem_weisungen_weisungen-aug-d'). "
+                "Returns full body text, title, date, issuing authority, and PDF URL. "
+                "Use search_practice first to discover the doc_id."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "doc_id": {
+                        "type": "string",
+                        "description": "Document identifier returned by search_practice.",
+                    },
+                },
+                "required": ["doc_id"],
+            },
+        ),
         *([] if REMOTE_MODE else [
             Tool(
                 annotations=_READ_ONLY,
