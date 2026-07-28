@@ -6,7 +6,7 @@ Versioned snapshots of infrastructure configuration that lives **only on the VPS
 
 | file | what it is | path on VPS |
 |---|---|---|
-| `nginx-mcp-server.conf` | nginx site config for `mcp.opencaselaw.ch`: TLS termination, rate-limit zones, proxy to the 4 uvicorn workers (`127.0.0.1:8770-8773`), SSE-friendly headers, SEO redirects | `/etc/nginx/sites-enabled/mcp-server` |
+| `nginx-mcp-server.conf` | nginx site config for `mcp.opencaselaw.ch`: TLS termination, rate-limit zones, proxy to the 8 uvicorn workers (`127.0.0.1:8770-8777`), SSE-friendly headers, SEO redirects | `/etc/nginx/sites-enabled/mcp-server` |
 
 ## Refreshing this snapshot
 

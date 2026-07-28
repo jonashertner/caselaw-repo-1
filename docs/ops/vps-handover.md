@@ -68,7 +68,7 @@ certbot certificates
             ┌──────────┼──────────┐──────────┐
             │          │          │          │
         uvicorn    uvicorn    uvicorn    uvicorn
-        :8770      :8771      :8772      :8773
+        :8770 … :8777 (8 workers)
             │          │          │          │
             └──────────┼──────────┘──────────┘
                        |
@@ -103,7 +103,7 @@ certbot certificates
 ### Systemd Services
 
 ```
-mcp-server@{8770..8773}.service
+mcp-server@{8770..8777}.service
 ```
 
 - **Unit file**: `/etc/systemd/system/mcp-server@.service`
@@ -119,8 +119,11 @@ mcp-server@{8770..8773}.service
 systemctl status mcp-server@8770
 
 # Rolling restart (one at a time, no downtime)
-for p in 8770 8771 8772 8773; do
-  systemctl restart mcp-server@$p && sleep 5
+# rolling restart over ALL workers (discovers instances — pool size lives in systemd, not this doc)
+for u in $(systemctl list-units 'mcp-server@*.service' --state=active --no-legend --plain | awk '{print $1}'); do
+  p="${u#mcp-server@}"; p="${p%.service}"
+  systemctl restart "$u"
+  for i in $(seq 1 15); do curl -fsS "http://127.0.0.1:$p/health" >/dev/null && break; sleep 1; done
 done
 
 # Logs
@@ -214,8 +217,11 @@ The `NE_PROXY` env var in crontab tells the NE scraper to use this tunnel.
 ```bash
 cd /opt/caselaw/repo
 git pull --rebase origin main
-for p in 8770 8771 8772 8773; do
-  systemctl restart mcp-server@$p && sleep 5
+# rolling restart over ALL workers (discovers instances — pool size lives in systemd, not this doc)
+for u in $(systemctl list-units 'mcp-server@*.service' --state=active --no-legend --plain | awk '{print $1}'); do
+  p="${u#mcp-server@}"; p="${p%.service}"
+  systemctl restart "$u"
+  for i in $(seq 1 15); do curl -fsS "http://127.0.0.1:$p/health" >/dev/null && break; sleep 1; done
 done
 curl -s https://mcp.opencaselaw.ch/health
 ```
@@ -230,7 +236,7 @@ curl -s https://mcp.opencaselaw.ch/health
 |-------|---------|----------|
 | Health | `curl -s https://mcp.opencaselaw.ch/health` | `{"status":"ok","decisions":962XXX}` |
 | Dashboard freshness | Check `generated_at` in `opencaselaw.ch/stats.json` | Today's date |
-| Worker status | `systemctl status mcp-server@{8770..8773}` | `active (running)` |
+| Worker status | `systemctl status mcp-server@{8770..8777}` | `active (running)` |
 | Disk space | `df -h /dev/sda1 /dev/sdb` | Root <80%, volume <80% |
 | TLS expiry | `certbot certificates` | >30 days to expiry |
 | Publish success | `tail -10 logs/publish.log \| grep "Step 6"` | `OK` |
