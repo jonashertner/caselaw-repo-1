@@ -236,3 +236,46 @@ def test_fetch_truncation_notice_carries_the_canonical_url(monkeypatch):
     """The notice has to tell the client where the rest actually is."""
     out = _fetch_with_full_text(monkeypatch, 500_000)
     assert out["url"] in out["text"]
+
+
+# ── original_query / force_natural_language plumbing (BGPartner 2026-07) ──
+
+def test_strategy_set_is_nl_when_original_is_statute_citation():
+    """Sanitized text carries the injected '"OR"'; the ORIGINAL statute
+    citation must select the NL strategy ordering (with nl_or_expanded /
+    raw_fallback), not the explicit ordering."""
+    sanitized = 'Kündigung Art 335 "OR"'
+    strategies, _ = mcp_server._build_query_strategies(
+        sanitized, original_query="Kündigung Art. 335 OR")
+    names = {s["name"] for s in strategies}
+    assert "nl_or_expanded" in names or "raw_fallback" in names, names
+
+
+def test_strategy_set_is_explicit_without_original():
+    """Backward-compat: no original_query supplied → sanitized text decides
+    (the pre-change behavior for internal callers)."""
+    strategies, _ = mcp_server._build_query_strategies('Kündigung Art 335 "OR"')
+    names = {s["name"] for s in strategies}
+    assert "nl_or_expanded" not in names
+
+
+def test_force_natural_language_overrides_real_operator_syntax():
+    strategies, _ = mcp_server._build_query_strategies(
+        "Miete OR Pacht", force_natural_language=True)
+    names = {s["name"] for s in strategies}
+    assert "nl_or_expanded" in names or "raw_fallback" in names, names
+
+
+def test_analyze_query_passes_kwargs_through(monkeypatch):
+    captured = {}
+
+    def fake_build(raw_query, *, original_query=None, force_natural_language=False):
+        captured["original"] = original_query
+        captured["force"] = force_natural_language
+        return ([{"name": "raw", "query": raw_query, "weight": 1.0}], [])
+
+    monkeypatch.setattr(mcp_server, "_build_query_strategies", fake_build)
+    mcp_server._analyze_query(
+        "sanitized text", False,
+        original_query="Original Art. 41 OR", force_natural_language=True)
+    assert captured == {"original": "Original Art. 41 OR", "force": True}

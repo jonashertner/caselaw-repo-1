@@ -13,7 +13,7 @@ def test_analyze_query_runs_the_two_haiku_calls_concurrently(monkeypatch):
     # and time out -> BrokenBarrierError -> the call would raise and fail here.
     barrier = threading.Barrier(2, timeout=4)
 
-    def fake_build_strategies(q):
+    def fake_build_strategies(q, **kw):
         barrier.wait()
         return (["strat"], ["term"])
 
@@ -31,7 +31,7 @@ def test_analyze_query_runs_the_two_haiku_calls_concurrently(monkeypatch):
 
 
 def test_analyze_query_skips_parse_for_docket_queries(monkeypatch):
-    monkeypatch.setattr(mcp_server, "_build_query_strategies", lambda q: (["s"], []))
+    monkeypatch.setattr(mcp_server, "_build_query_strategies", lambda q, **kw: (["s"], []))
     parse_calls = []
     monkeypatch.setattr(mcp_server, "_parse_query_structured",
                         lambda q: (parse_calls.append(q), {})[1])
@@ -42,7 +42,7 @@ def test_analyze_query_skips_parse_for_docket_queries(monkeypatch):
 
 
 def test_analyze_query_propagates_strategies_result(monkeypatch):
-    monkeypatch.setattr(mcp_server, "_build_query_strategies", lambda q: (["a", "b"], ["x"]))
+    monkeypatch.setattr(mcp_server, "_build_query_strategies", lambda q, **kw: (["a", "b"], ["x"]))
     monkeypatch.setattr(mcp_server, "_parse_query_structured", lambda q: {"domain": "civil"})
     s, t, p = mcp_server._analyze_query("Verjährung", is_docket_query=False)
     assert s == ["a", "b"] and t == ["x"] and p == {"domain": "civil"}

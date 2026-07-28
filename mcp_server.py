@@ -2674,7 +2674,11 @@ def _search_fts5_inner(
     where = (" AND " + " AND ".join(filters)) if filters else ""
 
     is_docket_query = _looks_like_docket_query(fts_query)
-    has_explicit_syntax = _has_explicit_fts_syntax(fts_query)
+    # Explicit-syntax detection runs on the ORIGINAL query: the sanitizer
+    # rewrites 'Art. 335 OR' into 'Art 335 "OR"', which defeated the statute
+    # mask AND tripped the quote-count branch, cutting every statute-citing
+    # query off from the vector rescue below.
+    has_explicit_syntax = _has_explicit_fts_syntax(query)
     inline_docket_candidates = _extract_inline_docket_candidates(fts_query)
     # Try collapsing space-separated queries into docket form
     collapsed = _collapse_spaced_docket(fts_query)
@@ -2752,7 +2756,8 @@ def _search_fts5_inner(
     # ── Query analysis: expansion + structured parse run CONCURRENTLY (~2s saved,
     #    identical results to the prior sequential path) ──
     _trace["parse_start_ms"] = round((time.monotonic() - _trace_t0) * 1000)
-    strategies, llm_terms, structured_parse = _analyze_query(fts_query, is_docket_query)
+    strategies, llm_terms, structured_parse = _analyze_query(
+        fts_query, is_docket_query, original_query=query)
     _trace["parse_ms"] = round((time.monotonic() - _trace_t0) * 1000) - _trace.get("parse_start_ms", 0)
     if structured_parse:
         _trace["structured_parse"] = {
@@ -5740,7 +5745,13 @@ def _rerank_rows(
     return results
 
 
-def _analyze_query(fts_query: str, is_docket_query: bool) -> tuple[list, list, dict]:
+def _analyze_query(
+    fts_query: str,
+    is_docket_query: bool,
+    *,
+    original_query: str | None = None,
+    force_natural_language: bool = False,
+) -> tuple[list, list, dict]:
     """Run the two independent query-analysis Haiku calls CONCURRENTLY: query
     expansion (inside _build_query_strategies) and the structured parse. Both are
     ~2s round-trips on the same query, so overlapping them saves ~2s — with
@@ -5762,17 +5773,32 @@ def _analyze_query(fts_query: str, is_docket_query: bool) -> tuple[list, list, d
 
     _t = threading.Thread(target=_run_parse, daemon=True)
     _t.start()
-    strategies, llm_terms = _build_query_strategies(fts_query)
+    strategies, llm_terms = _build_query_strategies(
+        fts_query,
+        original_query=original_query,
+        force_natural_language=force_natural_language,
+    )
     _t.join(timeout=LLM_EXPANSION_TIMEOUT + 3.0)
     return strategies, llm_terms, _box.get("parse", {})
 
 
-def _build_query_strategies(raw_query: str) -> tuple[list[dict], list[str]]:
+def _build_query_strategies(
+    raw_query: str,
+    *,
+    original_query: str | None = None,
+    force_natural_language: bool = False,
+) -> tuple[list[dict], list[str]]:
     """
     Build parser-safe FTS query strategies.
 
     For explicit FTS syntax, preserve raw query first.
     For natural language, prefer tokenized OR query first for robustness.
+
+    `raw_query` is the SANITIZED text (executed against FTS5); explicit-syntax
+    detection uses `original_query` when supplied, because sanitisation itself
+    injects operator look-alikes ('Art. 335 OR' → 'Art 335 "OR"').
+    `force_natural_language` pins the NL strategy set — used for auto-condensed
+    document queries, which are NL by construction.
 
     Returns (strategies, llm_terms) where llm_terms are the raw LLM expansion
     terms (for use in vector search augmentation).
@@ -5790,7 +5816,11 @@ def _build_query_strategies(raw_query: str) -> tuple[list[dict], list[str]]:
         # rank regeste/title hits above body-only hits, so no field-focus (which
         # AND-combines tokens and would lose the phrase's adjacency) is needed.
         return ([{"name": "raw", "query": raw, "weight": SCORING_CONFIG["sw_raw"]}], [])
-    has_explicit_syntax = _has_explicit_fts_syntax(raw)
+    if force_natural_language:
+        has_explicit_syntax = False
+    else:
+        has_explicit_syntax = _has_explicit_fts_syntax(
+            original_query if original_query is not None else raw)
     nl_and = _build_nl_and_query(raw)
     nl_or = _build_nl_or_query(raw, include_expansions=False)
     nl_or_expanded = _build_nl_or_query(raw, include_expansions=True)
@@ -5830,6 +5860,22 @@ def _build_query_strategies(raw_query: str) -> tuple[list[dict], list[str]]:
         ]
         if _should_try_raw_fallback(raw):
             candidates.append({"name": "raw_fallback", "query": raw, "weight": 0.65})
+        # Statute-citing NL queries ('Art. 261 OR Veräusserung …') ran as
+        # explicit syntax before the sanitize-then-detect fix — misclassified,
+        # but the raw strategy that ordering runs FIRST was carrying real
+        # ranking signal (all query tokens ANDed, statute tokens included).
+        # Keep that signal as a superset: full NL set above (vector rescue,
+        # expansions) PLUS the raw strategy at explicit weight. RRF fusion
+        # blends both. Not force_natural_language: condensed documents are
+        # too long for a useful implicit-AND raw MATCH.
+        elif (
+            not force_natural_language
+            and original_query is not None
+            and QUERY_STATUTE_PATTERN.search(original_query)
+            and not any(c["name"] == "raw" for c in candidates)
+        ):
+            candidates.insert(
+                0, {"name": "raw", "query": raw, "weight": SCORING_CONFIG["sw_raw"]})
 
     # LLM expansion: fetch additional terms (runs in thread via asyncio.to_thread)
     llm_terms = _expand_query_with_llm(raw)
@@ -5871,11 +5917,24 @@ def _build_query_strategies(raw_query: str) -> tuple[list[dict], list[str]]:
 
 
 def _has_explicit_fts_syntax(query: str) -> bool:
-    """Detect advanced query syntax where raw execution should be prioritized."""
+    """Detect advanced query syntax where raw execution should be prioritized.
+
+    MUST be called on the ORIGINAL user query, never on _sanitize_fts5 output:
+    the sanitizer strips the dot from 'Art.' and quotes bare 'OR' as '"OR"',
+    which (a) defeats the statute mask below and (b) trips the quote-count
+    branch — so every query citing '… OR' was misclassified as operator syntax,
+    which disabled the vector/semantic rescue (BGPartner audit 2026-07).
+    """
     # Mask statute references so "Art. 41 OR" (Obligationenrecht) doesn't
     # trigger FTS-operator detection for "OR".
     masked = QUERY_STATUTE_PATTERN.sub("__STATUTE__", query)
-    if re.search(r"\b(AND|OR|NOT|NEAR)\b", masked, re.IGNORECASE):
+    # OR counts as an operator only with operands on BOTH sides (mirrors the
+    # sanitizer's rule for AND/NOT/NEAR): 'Miete OR Pacht' is syntax, a bare
+    # trailing 'Obligationenrecht OR' is the statute abbreviation. AND/NOT/NEAR
+    # keep the loose word-boundary test — they have no legal-homonym problem.
+    if re.search(r"\b(AND|NOT|NEAR)\b", masked, re.IGNORECASE):
+        return True
+    if re.search(r"(?<![\w\"])\S+\s+OR\s+\S+", masked):
         return True
     if "*" in query:
         return True

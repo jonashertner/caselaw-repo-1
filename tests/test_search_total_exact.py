@@ -53,7 +53,7 @@ def _conn_with_n_matches(n):
 
 def _wire(monkeypatch):
     monkeypatch.setattr(mcp_server, "_analyze_query",
-                        lambda q, d: ([{"query": "Notwehr", "name": "nl_and", "weight": 1.0}], [], {}))
+                        lambda q, d, **kw: ([{"query": "Notwehr", "name": "nl_and", "weight": 1.0}], [], {}))
     monkeypatch.setattr(mcp_server, "_load_graph_signal_map", lambda *a, **k: {})
     monkeypatch.setattr(mcp_server, "_search_vectors_chunks", lambda *a, **k: {})
     monkeypatch.setattr(mcp_server, "_search_statute_graph", lambda *a, **k: [])

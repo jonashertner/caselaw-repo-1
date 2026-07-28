@@ -78,3 +78,38 @@ def test_bare_operator_tokens_quoted():
 
 def test_empty_quoted_phrase_collapses():
     assert mcp_server._sanitize_fts5('""').strip() == ""
+
+
+# ── Explicit-syntax detection on the ORIGINAL query (BGPartner 2026-07) ──
+# _has_explicit_fts_syntax was evaluated on _sanitize_fts5 output. The
+# sanitizer strips the dot from 'Art.' and quotes bare 'OR' as '"OR"', which
+# defeated the statute mask twice AND tripped the quote-count branch — so
+# every query citing '… OR' was misclassified as operator syntax, which
+# disabled the vector/semantic rescue for exactly the archetypal lawyer query.
+
+class TestExplicitSyntaxOnOriginal:
+    def test_statute_citation_is_not_operator_syntax(self):
+        assert mcp_server._has_explicit_fts_syntax("Kündigung Art. 335 OR") is False
+
+    def test_sanitized_form_documents_the_old_trap(self):
+        # what the sanitizer produces for the query above — the old call order
+        # fed THIS to the detector and got True
+        assert mcp_server._has_explicit_fts_syntax('Kündigung Art 335 "OR"') is True
+
+    def test_bare_trailing_or_is_the_abbreviation(self):
+        # documented sanitizer input: 'Obligationenrecht OR' — no right operand
+        assert mcp_server._has_explicit_fts_syntax("Obligationenrecht OR") is False
+
+    def test_infix_or_with_operands_is_syntax(self):
+        assert mcp_server._has_explicit_fts_syntax("Miete OR Pacht") is True
+
+    def test_lowercase_or_is_not_syntax(self):
+        # FTS5 operators are uppercase-only; 'or' mid-sentence is English filler
+        assert mcp_server._has_explicit_fts_syntax("landlord or tenant duties") is False
+
+    def test_quoted_phrase_still_detected(self):
+        assert mcp_server._has_explicit_fts_syntax('"Treu und Glauben"') is True
+
+    def test_and_not_near_still_loose(self):
+        assert mcp_server._has_explicit_fts_syntax("Arbeitsrecht AND Kündigung") is True
+        assert mcp_server._has_explicit_fts_syntax("Miete NOT Pacht") is True
