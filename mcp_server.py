@@ -9597,7 +9597,106 @@ _COURT_CITATION_CODES = {
     "bge_historical":("BGer",   "TF",     "TF",     "E.",     "consid.", "consid."),
     "mkg":          ("MKGE",    "ATMC",   "STMC",   "E.",     "consid.", "consid."),
     "hudoc_ch":     ("EGMR",    "CourEDH","CorteEDU","§",     "§",       "§"),
+    "ecthr_chamber":       ("EGMR", "CourEDH", "CorteEDU", "§", "§", "§"),
+    "ecthr_committee":     ("EGMR", "CourEDH", "CorteEDU", "§", "§", "§"),
+    "ecthr_grand_chamber": ("EGMR", "CourEDH", "CorteEDU", "§", "§", "§"),
 }
+
+# Strasbourg judgments are cited by party name, not by application number
+# alone: 'EGMR 30696/09 vom 21. Januar 2011' identifies nothing to a reader,
+# and under R1 that string is what a caller must copy verbatim. The party
+# clause below is read from the stored HUDOC docname — derived from the
+# record like the date, never constructed.
+_ECTHR_COURTS = {
+    "ecthr_chamber", "ecthr_committee", "ecthr_grand_chamber",
+    "hudoc_ch", "bge_egmr",
+}
+
+# HUDOC docnames carry a collection prefix that is not part of the case name.
+_ECTHR_TITLE_PREFIX = re.compile(r"^\s*(?:AFFAIRE|CASE\s+OF|CAUSA|CASO)\s+", re.I)
+# HUDOC appends third-party apparatus after a spaced dash, e.g.
+# '... v. SWITZERLAND - [German Translation] summary by the Austrian Institute
+# for Human Rights (ÖIM)' (75 rows). Cut from ' - [' specifically, never from
+# a bare ' - ': four case names legitimately contain one
+# ('AFFAIRE FILIPPOS MAVROPOULOS - PAN. ZISIS O.E. c. GRECE').
+_ECTHR_TITLE_APPARATUS = re.compile(r"\s+-\s+\[.*$", re.S)
+# Square-bracket editorial notes ([Extraits], [Extracts], [GC]) are HUDOC
+# apparatus. Parenthesised suffixes are deliberately KEPT: '(N° 2)',
+# '(MERITS)' and '(JUST SATISFACTION)' distinguish separate judgments between
+# the same parties, so dropping them would merge two distinct authorities.
+_ECTHR_TITLE_NOTE = re.compile(r"\s*\[[^\]]*\]\s*$")
+
+# ECtHR application number, e.g. '30696/09'. Multi-application judgments join
+# them with '_' in our docket field.
+_ECTHR_APP_NO = re.compile(r"^\d{1,6}/\d{2}$")
+# bge_egmr dockets are 'YYYYMMDD_<appno>_<yy>' (487/487 conform), not raw
+# application numbers — reconstruct rather than print the internal key.
+_BGE_EGMR_DOCKET = re.compile(r"^(\d{8})_(\d{1,6})_(\d{2})$")
+
+# (label, two-item joiner, 3+ suffix) per language.
+_ECTHR_APP_LABEL = {
+    "de": ("Nr.", " und ", " u.a."),
+    "fr": ("n°", " et ", " et al."),
+    "it": ("n.", " e ", " e al."),
+}
+
+
+def _ecthr_case_name(title: str | None) -> str:
+    """Party clause for a Strasbourg citation, from the stored HUDOC docname.
+
+    Source case is preserved verbatim. str.title() corrupts 'TÜRKİYE' into
+    'Türki̇ye' (U+0130 lowercases to 'i' + combining dot), and a mangled
+    respondent state inside a citable string is worse than a shouty one.
+    """
+    t = (title or "").strip()
+    if not t:
+        return ""
+    t = _ECTHR_TITLE_PREFIX.sub("", t)
+    t = _ECTHR_TITLE_APPARATUS.sub("", t)
+    t = _ECTHR_TITLE_NOTE.sub("", t)
+    return t.strip(" ,;-")
+
+
+def _ecthr_citation_date(court: str, docket: str, decision_date: str) -> str:
+    """Judgment date to print for a Strasbourg citation.
+
+    bge_egmr dockets encode the judgment date as their 'YYYYMMDD_' prefix, and
+    for 68 of 487 rows that prefix disagrees with the stored decision_date —
+    the prefix is the correct one (spot-checked against the Court's own
+    records: Semenya c. Suisse 2023-07-11, Beeler 2020-10-20, D.B. et autres
+    2022-11-22, all of which decision_date gets wrong). Prefer the docket.
+    A right case name printed next to a wrong date is the most damaging
+    failure mode a citation string has, so this does not fall back silently.
+    """
+    m = _BGE_EGMR_DOCKET.match(docket or "")
+    if court == "bge_egmr" and m:
+        d = m.group(1)
+        return f"{d[:4]}-{d[4:6]}-{d[6:8]}"
+    return decision_date or ""
+
+
+def _ecthr_app_numbers(court: str, docket: str, lang: str) -> str:
+    """'Nr. 43868/18 und 25883/21' / 'n° 31429/23 et al.', or '' if unparseable.
+
+    Returns the empty string rather than guessing when the docket is not a
+    recognisable application number (a handful of hudoc_ch rows carry a raw
+    HUDOC itemid such as '001-25894'); the caller then falls back to printing
+    the docket unlabelled instead of passing an itemid off as a case number.
+    """
+    label, join_two, many = _ECTHR_APP_LABEL.get(lang, _ECTHR_APP_LABEL["de"])
+
+    m = _BGE_EGMR_DOCKET.match(docket or "")
+    if m:
+        return f"{label} {m.group(2)}/{m.group(3)}"
+
+    parts = [p for p in (docket or "").split("_") if p]
+    if not parts or not all(_ECTHR_APP_NO.match(p) for p in parts):
+        return ""
+    if len(parts) == 1:
+        return f"{label} {parts[0]}"
+    if len(parts) == 2:
+        return f"{label} {parts[0]}{join_two}{parts[1]}"
+    return f"{label} {parts[0]}{many}"
 
 
 def _format_date_localized(iso_date: str | None, lang: str) -> str:
@@ -9813,7 +9912,43 @@ def _build_citation_strings(decision: dict, pinpoint: str | None = None) -> dict
                 "canonical_url": url,
             }
 
-    # Docketed federal courts (bger / bvger / bstger / bpatger / bge_historical / bge_egmr / hudoc_ch)
+    # Strasbourg — party name carries the citation; the application number
+    # alone is not a recognisable reference in Swiss practice.
+    if court in _ECTHR_COURTS and (docket or decision.get("title")):
+        code_de, code_fr, code_it, pl_de, pl_fr, pl_it = _COURT_CITATION_CODES[court]
+        parties = _ecthr_case_name(decision.get("title"))
+        pde, pfr, pit = _pin_suffix(pl_de, pl_fr, pl_it)
+        cite_date = _ecthr_citation_date(court, docket, decision_date)
+        # Same placeholder/future-date guard as the cantonal branch (M-3/M-1):
+        # omitting a date beats printing a wrong one inside a citable string.
+        reliable = _citation_date_reliable(cite_date)
+
+        def _ecthr_cite(code: str, lang: str, vom_word: str, pin_sfx: str) -> str:
+            apps = _ecthr_app_numbers(court, docket, lang)
+            if not apps and docket:
+                # Unrecognised docket (a few hudoc_ch rows carry a raw HUDOC
+                # itemid): print it bare rather than label it 'Nr.'.
+                apps = docket
+            if not apps:
+                out = f"{code} {parties}".strip() if parties else code
+            elif parties:
+                out = f"{code} {parties}, {apps}"
+            else:
+                # No case name on record — no comma to dangle after the code.
+                out = f"{code} {apps}"
+            date = _format_date_localized(cite_date, lang) if reliable else ""
+            if date:
+                out += f" {vom_word} {date}"
+            return f"{out}{pin_sfx}"
+
+        return {
+            "citation_string_de": _ecthr_cite(code_de, "de", "vom", pde),
+            "citation_string_fr": _ecthr_cite(code_fr, "fr", "du", pfr),
+            "citation_string_it": _ecthr_cite(code_it, "it", "del", pit),
+            "canonical_url": url,
+        }
+
+    # Docketed federal courts (bger / bvger / bstger / bpatger / bge_historical)
     if court in _COURT_CITATION_CODES and docket:
         code_de, code_fr, code_it, pl_de, pl_fr, pl_it = _COURT_CITATION_CODES[court]
         date_de = _format_date_localized(decision_date, "de")
