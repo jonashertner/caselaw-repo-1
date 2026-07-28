@@ -864,6 +864,30 @@ NL_STOPWORDS = {
     # English
     "i", "search", "for", "the", "and", "or", "in", "of", "with", "without",
     "to", "on", "about", "a", "an",
+    # Letter salutations / closings — zero-collision with legal vocabulary
+    # (BGPartner: 'Sehr geehrte Damen und Herren' burned 4 of the 16
+    # NL-token slots before any legal content). Ambiguous letter words
+    # (danke, schreiben, mandant, objet, oggetto…) deliberately NOT here —
+    # they live in LETTER_BOILERPLATE_STOPWORDS, used only when a pasted
+    # document is condensed, so short hand-written queries keep them.
+    "sehr", "geehrte", "geehrter", "geehrten", "damen", "herren",
+    "freundliche", "freundlichen", "gruesse", "grüsse", "gruss",
+    "hochachtungsvoll", "betreff", "anbei", "beiliegend", "hiermit",
+    "monsieur", "madame", "mesdames", "messieurs", "salutations",
+    "cordialement", "veuillez", "agréer",
+    "egregio", "egregi", "gentile", "gentili", "cordiali", "saluti",
+    "distinti",
+}
+
+# Words that are boilerplate INSIDE a pasted letter but meaningful in a short
+# hand-typed query ('Mandat niederlegen', 'Objet du litige'). Only the
+# document-condense path applies these on top of NL_STOPWORDS.
+LETTER_BOILERPLATE_STOPWORDS = {
+    "danke", "dank", "bitte", "gerne", "mitteilen", "schreiben", "brief",
+    "mandant", "mandantin", "klient", "klientin", "kanzlei", "beilage",
+    "bezugnehmend", "beziehen", "vorliegend",
+    "objet", "concerne", "annexe", "maître",
+    "oggetto", "allegato", "ringrazio", "avvocato",
 }
 
 MAX_NL_TOKENS = 16
@@ -6116,6 +6140,63 @@ def _query_has_expandable_terms(query: str) -> bool:
     return any(term in LEGAL_QUERY_EXPANSIONS for term in terms)
 
 
+def _citation_ref_spans(query: str) -> list[tuple[int, int]]:
+    """Character spans of statute / BGE / docket references in the query."""
+    spans: list[tuple[int, int]] = []
+    for pat in (QUERY_STATUTE_PATTERN, QUERY_BGE_PATTERN, *QUERY_DOCKET_PATTERNS):
+        for mt in pat.finditer(query):
+            spans.append(mt.span())
+    return spans
+
+
+def _rank_query_tokens(
+    tokens: list[str],
+    original_query: str,
+) -> list[float]:
+    """Informativeness score per token, aligned with `tokens`.
+
+    No corpus IDF is available offline (an fts5vocab-based document-frequency
+    lookup is the future refinement); this is a static proxy:
+
+      +8  inside a statute / BGE / docket reference span — never dropped
+      +4  contains a digit ('336' in 'Art. 336 OR' is genuinely selective)
+      +3  known to the expansion tables (curated legal vocabulary)
+      +2  decomposable German legal compound
+      +2  appears capitalized mid-text in the original (German noun signal;
+          sentence-initial noise accepted, hence the modest weight)
+      +min(0.5·len, 7)  length
+      +1 per repeat beyond the first, capped at +2 (letter topic words repeat)
+      −0.01·first-position  stable tie-break toward earlier tokens
+    """
+    ref_spans = _citation_ref_spans(original_query)
+    lower = original_query.lower()
+    counts = collections.Counter(tokens)
+    # capitalized-in-original: find each token's occurrences case-insensitively
+    # and check whether any non-sentence-initial occurrence is capitalized.
+    scores: list[float] = []
+    seen_first: dict[str, int] = {}
+    for pos, tok in enumerate(tokens):
+        if tok not in seen_first:
+            seen_first[tok] = pos
+        s = 0.0
+        idx = lower.find(tok)
+        if idx >= 0 and any(a <= idx < b for a, b in ref_spans):
+            s += 8.0
+        if any(ch.isdigit() for ch in tok):
+            s += 4.0
+        if tok in LEGAL_QUERY_EXPANSIONS or _get_query_expansions(tok):
+            s += 3.0
+        if len(_decompose_compound(tok)) > 0:
+            s += 2.0
+        if idx > 0 and idx < len(original_query) and original_query[idx].isupper():
+            s += 2.0
+        s += min(0.5 * len(tok), 7.0)
+        s += min(counts[tok] - 1, 2)
+        s -= 0.01 * seen_first[tok]
+        scores.append(s)
+    return scores
+
+
 def _extract_query_terms(
     query: str,
     *,
@@ -6123,9 +6204,17 @@ def _extract_query_terms(
     include_variants: bool,
     include_expansions: bool,
 ) -> list[str]:
-    """Extract deduplicated FTS-safe terms from a natural-language query."""
-    keep: list[str] = []
-    seen: set[str] = set()
+    """Extract deduplicated FTS-safe terms from a natural-language query.
+
+    Selection is informativeness-ranked when the query carries more base
+    tokens than `limit` — previously the cut was strictly positional, so a
+    pasted letter's salutation consumed the budget and the legal content at
+    char 200+ was never searched (BGPartner: 'kündigen' at position 17 of 16).
+    When the base tokens fit the limit, the original loop runs unchanged and
+    the output is byte-identical.
+    """
+    # First pass: base tokens surviving the existing filters, in order.
+    base: list[str] = []
     for tok in re.findall(r"[0-9A-Za-zÀ-ÖØ-öø-ÿ_]+", query.lower()):
         if tok in NL_STOPWORDS:
             continue
@@ -6134,6 +6223,40 @@ def _extract_query_terms(
             continue
         if not normalized.isdigit() and len(normalized) < 3:
             continue
+        base.append(normalized)
+
+    if len(base) > limit:
+        # Rank, keep the top-`limit` UNIQUE tokens by score, then re-emit in
+        # first-occurrence order so phrase coherence survives for
+        # _clean_for_phrase / anchor-pair adjacency. Selection must happen in
+        # SCORE order — cutting a positional list defeats the ranking.
+        scores = _rank_query_tokens(base, query)
+        first_pos: dict[str, int] = {}
+        for i, t in enumerate(base):
+            first_pos.setdefault(t, i)
+        sel_seen: set[str] = set()
+        for i in sorted(range(len(base)), key=lambda i: -scores[i]):
+            t = base[i]
+            if t in sel_seen:
+                continue
+            sel_seen.add(t)
+            if len(sel_seen) >= limit:
+                break
+        token_stream = sorted(sel_seen, key=lambda t: first_pos[t])
+    else:
+        token_stream = None  # signal: run the original loop verbatim
+
+    keep: list[str] = []
+    seen: set[str] = set()
+    stream = token_stream if token_stream is not None else [
+        t for t in (
+            _normalize_token_for_fts(tok)
+            for tok in re.findall(r"[0-9A-Za-zÀ-ÖØ-öø-ÿ_]+", query.lower())
+            if tok not in NL_STOPWORDS
+        )
+        if t and (t.isdigit() or len(t) >= 3)
+    ]
+    for normalized in stream:
         variants = [normalized]
         if include_variants:
             alt = _collapse_umlaut_variants(normalized)
