@@ -438,3 +438,44 @@ def test_collapse_spaced_docket_basic():
 def test_looks_like_docket_query_accepts_spaced_docket():
     assert mcp_server._looks_like_docket_query("6B 1234 2025") is True
     assert mcp_server._looks_like_docket_query("7W 15 25") is True
+
+
+# ── Date-sort rerank skip (BGPartner latency audit 2026-07) ──────────────
+# Under sort=date_desc/date_asc the date re-sort overwrites every relevance
+# boost, so the ~3s LLM rerank (and the cross-encoder pass) ran for nothing.
+
+def _count_calls(monkeypatch):
+    calls = {"ce": 0, "llm": 0}
+
+    def fake_ce(scored, *a, **k):
+        calls["ce"] += 1
+        return scored
+
+    def fake_llm(scored, *a, **k):
+        calls["llm"] += 1
+        return scored
+
+    monkeypatch.setattr(mcp_server, "_apply_cross_encoder_boosts", fake_ce)
+    monkeypatch.setattr(mcp_server, "_apply_llm_rerank", fake_llm)
+    return calls
+
+
+def test_rerank_skipped_on_date_sorts(monkeypatch):
+    rows = [
+        _row("d_new", bm25=1.0) | {"decision_date": "2024-05-01"},
+        _row("d_old", bm25=2.0) | {"decision_date": "2019-01-01"},
+    ]
+    for sort, first in (("date_desc", "d_new"), ("date_asc", "d_old")):
+        calls = _count_calls(monkeypatch)
+        results = mcp_server._rerank_rows(rows, "Kündigung", limit=2, sort=sort)
+        assert calls == {"ce": 0, "llm": 0}, f"rerank ran under sort={sort}"
+        # the date order itself must still hold
+        assert results[0]["decision_id"] == first
+
+
+def test_rerank_still_runs_on_relevance_sorts(monkeypatch):
+    rows = [_row("d1", bm25=1.0), _row("d2", bm25=2.0)]
+    for sort in (None, "relevance"):
+        calls = _count_calls(monkeypatch)
+        mcp_server._rerank_rows(rows, "Kündigung", limit=2, sort=sort)
+        assert calls["ce"] == 1 and calls["llm"] == 1, f"rerank skipped under sort={sort}"
