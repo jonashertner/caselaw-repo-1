@@ -9033,6 +9033,11 @@ server = Server(
         "portal scraping for 19 cantons + LexFind fallback for the rest), "
         "1,100+ scholarly commentaries, a verbatim Federal Council Botschaft "
         "corpus (5,900+ documents, ~410K FTS5-indexed paragraphs), "
+        "federal administrative practice — Verwaltungspraxis: ESTV "
+        "Kreisschreiben and MWST-Infos (DE/FR/IT), SEM Weisungen and "
+        "Rundschreiben, BAFU Vollzugshilfen — via search_practice / "
+        "get_practice, plus 23,000+ VPB/JAAC decisions (1900–2016) under "
+        "court='ch_vb', "
         "25,000+ open-access scholarship records from 23 Swiss legal sources "
         "(thousands with full-text — see find_scholarship_citing_decision and "
         "find_scholarship_citing_statute for the bidirectional bridge), "
@@ -9265,6 +9270,11 @@ server = Server(
         "• 'Which E. supports [claim] in BGE X?'   → find_relevant_erwaegung\n"
         "• 'Summarise this case'                   → get_case_brief\n"
         "• 'Format this citation for me'           → cite\n"
+        "• 'Kreisschreiben / Weisung / Wegleitung / Rundschreiben / Merkblatt?' → search_practice\n"
+        "• 'Verwaltungspraxis / Praxis der Verwaltung zu [Thema]?' → search_practice (federal authorities:\n"
+        "     ESTV, SEM, BAFU); then get_practice for the verbatim text + source PDF\n"
+        "• 'circulaire / directive / istruzioni / circolare?'      → search_practice\n"
+        "• 'Verwaltungspraxis des Bundes vor 2017 (VPB/JAAC)?'     → search_decisions(court='ch_vb')\n"
         "• 'Has the ECHR ruled against CH on X?'   → search_decisions(court='ecthr_chamber') or court='hudoc_ch'\n"
         "• 'BGE-published EGMR translation?'       → search_decisions(court='bge_egmr')\n\n"
 
@@ -18052,7 +18062,6 @@ def _search_practice(
         where.append("p.doc_type = ?"); params.append(doc_type.lower())
     if language:
         where.append("p.language = ?"); params.append(language.lower())
-    params.append(limit)
 
     sql = f"""
         SELECT p.doc_id, p.source, p.issuing_authority, p.doc_type,
@@ -18065,8 +18074,18 @@ def _search_practice(
         ORDER BY rank
         LIMIT ?
     """
+    count_sql = f"""
+        SELECT COUNT(*)
+        FROM practice_fts
+        JOIN practice p ON p.rowid = practice_fts.rowid
+        WHERE {' AND '.join(where)}
+    """
     try:
-        rows = conn.execute(sql, params).fetchall()
+        rows = conn.execute(sql, [*params, limit]).fetchall()
+        # `total` must be the number of MATCHING documents, not the page size.
+        # It was len(rows), i.e. capped by `limit` — so a client asking how much
+        # guidance exists on a topic was told "10" no matter how much there was.
+        total = conn.execute(count_sql, params).fetchone()[0]
     except sqlite3.OperationalError as e:
         return {"error": "fts5_query_error", "message": str(e), "query": query}
     finally:
@@ -18078,7 +18097,8 @@ def _search_practice(
             "source": source, "issuing_authority": issuing_authority,
             "doc_type": doc_type, "language": language,
         }.items() if v},
-        "total": len(rows),
+        "total": total,
+        "returned": len(rows),
         "results": [dict(r) for r in rows],
     }
 
@@ -18110,7 +18130,11 @@ def _format_search_practice_response(result: dict) -> str:
         return f"Error: {result.get('message', result['error'])}"
     if not result["results"]:
         return f"No practice documents matched: {result['query']}"
-    lines = [f"Found {result['total']} practice document(s) for '{result['query']}'"]
+    total, shown = result["total"], result.get("returned", len(result["results"]))
+    head = f"Found {total} practice document(s) for '{result['query']}'"
+    if total > shown:
+        head += f" — showing the {shown} best-ranked"
+    lines = [head]
     for f, v in result.get("filters", {}).items():
         lines.append(f"  filter: {f} = {v}")
     lines.append("")
@@ -18120,8 +18144,11 @@ def _format_search_practice_response(result: dict) -> str:
         lines.append(f"   doc_id: {r['doc_id']}")
         if r.get("snippet"):
             lines.append(f"   {r['snippet']}")
+        # Markdown link form, matching search_decisions: a bare URL is the form
+        # Microsoft documents as most likely to be stripped by Copilot's
+        # @mention output sanitisation.
         if r.get("pdf_url"):
-            lines.append(f"   PDF: {r['pdf_url']}")
+            lines.append(f"   PDF: [{r['doc_number'] or 'Dokument'}]({r['pdf_url']})")
         lines.append("")
     return "\n".join(lines)
 
@@ -19993,15 +20020,20 @@ def _list_tools() -> list[Tool]:
                 name="search_practice",
                 description=(
                     "Full-text search across Swiss FEDERAL administrative practice "
-                    "(Verwaltungspraxis): Kreisschreiben, Rundschreiben, Weisungen, "
-                    "Vollzugshilfen, Handbücher. These are NOT court decisions — "
-                    "they are the binding interpretive guidance issued by federal "
-                    "agencies (ESTV for tax, SEM for migration/asylum/citizenship, "
-                    "BAFU for environment, ARE for spatial planning, EPA for federal "
-                    "personnel law, SSK for inter-cantonal tax coordination). "
-                    "Returns ranked excerpts with the source authority, document "
-                    "number, date, and PDF URL. Essential complement to case-law "
-                    "search whenever the question involves administrative-law practice."
+                    "(Verwaltungspraxis): Kreisschreiben, MWST-Infos and "
+                    "Branchen-Infos, Weisungen, Rundschreiben, Vollzugshilfen. "
+                    "These are NOT court decisions — they are the interpretive "
+                    "guidance issued by federal agencies: ESTV for tax and VAT "
+                    "(438 documents, DE/FR/IT), BAFU for environment (297, DE), "
+                    "SEM for migration/asylum/citizenship (55, DE). 790 documents "
+                    "in total. Returns ranked excerpts with the source authority, "
+                    "document number, date, and PDF URL. Essential complement to "
+                    "case-law search whenever the question involves administrative "
+                    "practice. NOT covered: BSV/AHV-IV, SECO, FINMA, BAG, and all "
+                    "cantonal administrations — say so rather than implying a gap "
+                    "is an absence of guidance. For federal administrative "
+                    "decisions before 2017 use search_decisions(court='ch_vb') "
+                    "(VPB/JAAC)."
                 ),
                 inputSchema={
                     "type": "object",
@@ -20012,15 +20044,21 @@ def _list_tools() -> list[Tool]:
                         },
                         "source": {
                             "type": "string",
-                            "description": "Filter by source key: estv_ks, ssk_ks, sem_weisungen, bafu_vollzug, are_vollzug, epa_personalrecht.",
+                            "enum": ["bafu_vollzug", "estv_ks", "estv_mwst", "sem_weisungen"],
+                            "description": "Filter by source key. bafu_vollzug (297), estv_ks (285), estv_mwst (153), sem_weisungen (55).",
                         },
                         "issuing_authority": {
                             "type": "string",
-                            "description": "Filter by authority: ESTV, SSK, SEM, BAFU, ARE, EPA.",
+                            "enum": ["ESTV", "BAFU", "SEM"],
+                            "description": "Filter by authority. ESTV (438), BAFU (297), SEM (55).",
                         },
                         "doc_type": {
                             "type": "string",
-                            "description": "Filter by document type: kreisschreiben, weisung, rundschreiben, vollzugshilfe, handbuch, merkblatt.",
+                            "enum": [
+                                "vollzugshilfe", "kreisschreiben", "mwst_branchen_info",
+                                "mwst_info", "weisung", "rundschreiben",
+                            ],
+                            "description": "Filter by document type. vollzugshilfe (297), kreisschreiben (285), mwst_branchen_info (84), mwst_info (69), weisung (39), rundschreiben (16).",
                         },
                         "language": {
                             "type": "string",
