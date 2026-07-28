@@ -10268,9 +10268,20 @@ def _score_pinpoint_confidence(
         gap_medium = gap_ratio > 1.2
     else:
         # Single-row: no rank-2 baseline.
-        if match_kind == "phrase":
+        if match_kind in ("phrase", "or_selective"):
             # Phrase match is itself a strong signal — exact word order
             # filters out chance overlaps. Don't impose an absolute floor.
+            #
+            # "or_selective" earns the same treatment: its OR chain has had
+            # statute-reference noise ("Art", "OR", "ZGB") and legal stopwords
+            # removed, so a single hit means one paragraph matched a genuinely
+            # selective term. The absolute floor below exists to catch
+            # OR-fallback hits at score ~1e-6, and those were caused by exactly
+            # the noise tokens now filtered out. Removing the noise also
+            # removes the rank-2 decoy those tokens used to produce, so without
+            # this branch a noise-filtered claim would score *worse* than the
+            # noisy one it replaced. The coverage gates below still apply and
+            # remain the real guard against thin matches.
             gap_high = True
             gap_medium = True
         else:
@@ -10384,7 +10395,22 @@ def _compute_pinpoint(
             and t.lower() not in _LEGAL_STOPWORDS
             and t.lower() not in _STATUTE_REFERENCE_NOISE
         ]
-        or_query = " OR ".join(tokens) if selective_tokens else None
+        # The noise tokens must be kept OUT OF THE OR CHAIN, not merely used to
+        # gate it. Leaving "Art"/"OR"/"ZGB" as OR operands makes FTS5 walk their
+        # corpus-wide posting lists (decision_id is a post-filter, not part of
+        # the FTS index), which measured 42.8s vs 2.6s on the identical query
+        # with enrichment off — and only for queries that cite a provision, i.e.
+        # the archetypal lawyer query. They are the lowest-IDF terms in the
+        # index, so dropping them costs almost no ranking signal.
+        # Digits are deliberately RETAINED here although selective_tokens drops
+        # them: "336" in "Art. 336 OR" is genuinely selective and a paragraph
+        # citing that provision is exactly what the pinpoint should find.
+        or_tokens = [
+            t for t in tokens
+            if t.lower() not in _LEGAL_STOPWORDS
+            and t.lower() not in _STATUTE_REFERENCE_NOISE
+        ]
+        or_query = " OR ".join(or_tokens) if selective_tokens else None
 
         sql = """
             SELECT
@@ -10402,9 +10428,11 @@ def _compute_pinpoint(
         """
 
         rows: list = []
-        match_kind = "or"  # default; overwritten when phrase pass produces rows
+        # "or_selective": the OR chain is noise-filtered above, so any hit is a
+        # hit on a genuinely selective term.
+        match_kind = "or_selective"
         for did_variant in _decision_id_variants(decision_id) or [decision_id]:
-            for q, kind in ((phrase_query, "phrase"), (or_query, "or")):
+            for q, kind in ((phrase_query, "phrase"), (or_query, "or_selective")):
                 if not q:
                     continue
                 try:
