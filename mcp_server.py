@@ -4375,7 +4375,7 @@ def search_materialien(
                 "article": r["article"],
                 "bbl_ref": r["bbl_ref"],
                 "legislative_intent": (r["legislative_intent"] or "")[:300],
-                "snippet": r["snippet"],
+                "snippet": _render_fts_snippet(r["snippet"]),
             }
             for r in rows
         ]
@@ -4398,7 +4398,7 @@ def search_materialien(
                     "law_code": r["law_code"],
                     "council": r["council"],
                     "page": r["page_num"],
-                    "snippet": r["snippet"],
+                    "snippet": _render_fts_snippet(r["snippet"]),
                     "source": "Amtliches Bulletin",
                 })
         except sqlite3.OperationalError:
@@ -12207,7 +12207,7 @@ def _handle_search_botschaft(
             "page":             r["page_number"],
             "section":          r["section_path"],
             "article_anchor":   r["article_anchor"],
-            "snippet":          r["snippet"],
+            "snippet":          _render_fts_snippet(r["snippet"]),
         }
         for r in rows
     ]
@@ -15701,7 +15701,10 @@ def search_commentaries(
             conditions.append("c.language = ?")
             params.append(language)
 
-        params.append(limit)
+        # Over-fetch: several sections of one commentary can match, and they
+        # are collapsed to one result below, so a bare LIMIT would return
+        # fewer distinct articles than the caller asked for.
+        params.append(limit * 6)
         where = " AND ".join(conditions)
 
         rows = conn.execute(
@@ -15716,8 +15719,19 @@ def search_commentaries(
             params,
         ).fetchall()
 
+        # One commentary is indexed as several sections, so an article that
+        # matches well fills the whole result page with itself: a limit-5
+        # search for "Willensmängel" returned Art. 785 OR three times and
+        # Art. 808c OR twice — two distinct commentaries in five slots.
+        # Keep the best-ranked section per article (rows arrive rank-ordered)
+        # and over-fetch above so `limit` still yields `limit` articles.
         results = []
+        seen: set[tuple] = set()
         for r in rows:
+            key = (r["sr_number"], r["article_num"], r["language"])
+            if key in seen:
+                continue
+            seen.add(key)
             results.append({
                 "abbreviation": r["abbr"],
                 "sr_number": r["sr_number"],
@@ -15728,6 +15742,8 @@ def search_commentaries(
                 "snippet": r["snippet"],
                 "html_link": r["html_link"],
             })
+            if len(results) >= limit:
+                break
 
         return {
             "query": query,
@@ -16319,10 +16335,12 @@ def _format_search_scholarship_response(result: dict) -> str:
         text += f"**{i}.** [{r['source']}/{r.get('year') or '?'}] {r['title']}\n"
         if r.get("authors"):
             text += f"   *{r['authors']}*\n"
+        if r.get("pub_id"):
+            text += f"   pub_id: `{r['pub_id']}`\n"
         if r.get("license"):
             text += f"   License: {r['license']}\n"
         if r.get("snippet"):
-            text += f"   …{r['snippet']}…\n"
+            text += f"   …{_render_fts_snippet(r['snippet'])}…\n"
         if r.get("url"):
             text += f"   {r['url']}\n"
         text += "\n"
@@ -16417,7 +16435,7 @@ def _format_find_scholarship_citing_decision_response(result: dict) -> str:
         if r.get("authors"):
             text += f"  *{r['authors']}*\n"
         if r.get("snippet"):
-            text += f"  > {r['snippet']}\n"
+            text += f"  > {_render_fts_snippet(r['snippet'])}\n"
         if r.get("url"):
             text += f"  {_md_link('Volltext', r['url'])}\n"
     if result["count"] == 0:
@@ -16511,7 +16529,7 @@ def _format_search_commentaries_response(result: dict) -> str:
         authors = ", ".join(r.get("authors", []))
         author_str = f" ({authors})" if authors else ""
         text += f"**{i}. Art. {r['article_num']} {r['abbreviation']}** — {r['title']}{author_str} [{r['language']}]\n"
-        text += f"   {r['snippet']}\n"
+        text += f"   {_render_fts_snippet(r['snippet'])}\n"
         if r.get("html_link"):
             text += f"   Link: {_md_link('OnlineKommentar', r['html_link'])}\n"
         text += "\n"
@@ -17641,6 +17659,21 @@ def _render_highlight(text: str, surface: str = "text") -> str:
     if surface == "html":
         return text.replace(_HL_OPEN, "<mark>").replace(_HL_CLOSE, "</mark>")
     return text.replace(_HL_OPEN, "**").replace(_HL_CLOSE, "**")
+
+
+def _render_fts_snippet(snippet: str) -> str:
+    """FTS5 '>>>...<<<' markers -> Markdown bold, for anything user-facing.
+
+    Several tools handed the raw sentinels straight to the user, who saw
+    '>>>Willensmangel<<<' where a highlight was meant (search_commentaries,
+    search_materialien, search_botschaft, find_scholarship_citing_decision —
+    found 2026-07-29 by reading what the tools actually return). Unbalanced
+    markers are stripped rather than rendered, same rule as _render_highlight.
+    """
+    if not snippet:
+        return snippet or ""
+    return _render_highlight(
+        snippet.replace(">>>", _HL_OPEN).replace("<<<", _HL_CLOSE), "text")
 
 
 def _query_terms(query: str) -> list[str]:
@@ -19196,7 +19229,7 @@ def _format_search_practice_response(result: dict) -> str:
         lines.append(f"{i}. [{r['issuing_authority']}] {r['doc_number']} — {r['title']}{date}")
         lines.append(f"   doc_id: {r['doc_id']}")
         if r.get("snippet"):
-            lines.append(f"   {r['snippet']}")
+            lines.append(f"   {_render_fts_snippet(r['snippet'])}")
         # Markdown link form, matching search_decisions: a bare URL is the form
         # Microsoft documents as most likely to be stripped by Copilot's
         # @mention output sanitisation.
