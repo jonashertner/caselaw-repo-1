@@ -314,6 +314,23 @@ def _write_rows(
     writers[court].write_table(table)
 
 
+# Strasbourg judgment text is © ECHR-CEDH, not CC0. The Court's reuse terms
+# are conditioned on free-of-charge information/education use and carve out
+# commercial use; art. 5 URG (Swiss official texts are not copyrightable) is
+# jurisdiction-specific and cannot reach a body asserting its own copyright.
+# CC0 is a rights WAIVER — we cannot waive rights we do not hold. Until
+# written Registry permission is on file these courts are excluded from the
+# CC0 mirror at the SOURCE of the export, not filtered downstream.
+# See docs/agent-loop/proposals/2026-07-27-ecthr-cc0-redistribution-gate.md
+EXCLUDED_COURTS = frozenset({
+    "ecthr_chamber",
+    "ecthr_committee",
+    "ecthr_grand_chamber",
+    "hudoc_ch",
+    "bge_egmr",
+})
+
+
 def export_from_db(db_path: Path, output_dir: Path) -> dict[str, int]:
     """Export decisions from the deduplicated FTS5 SQLite DB to Parquet.
 
@@ -333,6 +350,13 @@ def export_from_db(db_path: Path, output_dir: Path) -> dict[str, int]:
         courts = [r[0] for r in conn.execute(
             "SELECT DISTINCT court FROM decisions ORDER BY court"
         ).fetchall()]
+        held_back = sorted(c for c in courts if c in EXCLUDED_COURTS)
+        courts = [c for c in courts if c not in EXCLUDED_COURTS]
+        if held_back:
+            logger.warning(
+                "Excluding %d court(s) from the CC0 export (non-CC0 licence): %s",
+                len(held_back), ", ".join(held_back),
+            )
         logger.info(f"Exporting {total} decisions from {len(courts)} courts")
 
         for court in courts:

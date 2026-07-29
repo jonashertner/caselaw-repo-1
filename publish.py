@@ -722,6 +722,20 @@ def step_4_upload_hf(dry_run: bool = False) -> bool:
         logger.error("  No Parquet files to upload")
         return False
 
+    # Defence in depth: DATASET_DIR is never cleaned, so a stale parquet from
+    # before a court joined EXCLUDED_COURTS would still be globbed and pushed.
+    # FAIL the step rather than skip the file — silently uploading non-CC0
+    # material under a CC0 licence tag must not look like a successful publish.
+    from export_parquet import EXCLUDED_COURTS
+    blocked = sorted(p.stem for p in parquet_files if p.stem in EXCLUDED_COURTS)
+    if blocked:
+        logger.error(
+            "  Refusing to upload non-CC0 court(s) to %s: %s. "
+            "Delete the stale file(s) from %s and re-run.",
+            HF_REPO_ID, ", ".join(blocked), DATASET_DIR,
+        )
+        return False
+
     try:
         api = HfApi()
 

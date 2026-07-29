@@ -266,15 +266,19 @@ Full 34-field Parquet export schema: [`export_parquet.py`](https://github.com/jo
 | Federal Criminal Court (BStGer) | `bstger` | ~11,400 | 2004–present |
 | EDÖB (Data Protection) | `edoeb` | ~1,800 | 1994–present |
 | FINMA | `finma` | ~405 | 2008–present |
-| ECHR (Swiss cases, BGer-published) | `bge_egmr` | ~475 | 1974–present |
-| ECHR Switzerland (HUDOC) | `hudoc_ch` | 834 | 1959–present |
-| ECtHR Chamber judgments | `ecthr_chamber` | 193 (growing) | 1959–present |
-| ECtHR Committee judgments | `ecthr_committee` | 30 (growing) | |
-| ECtHR Grand Chamber | `ecthr_grand_chamber` | 13 (growing) | |
 | Militärkassationsgericht (MKG) | `mkg` | 1,244 | 1915–2025 |
 | Federal Patent Court (BPatGer) | `bpatger` | ~189 | 2012–present |
 | Competition Commission (WEKO) | `weko` | ~256 | 2009–present |
 | Sports Tribunal | `ta_sst` | ~49 | 2024–present |
+
+> **Not included: European Court of Human Rights decisions.** The corpus behind
+> `mcp.opencaselaw.ch` also carries ~2,870 ECtHR decisions (`ecthr_chamber`,
+> `ecthr_committee`, `ecthr_grand_chamber`, `hudoc_ch`, `bge_egmr`). That text is
+> © ECHR-CEDH, reproduced from HUDOC under the Court's own reuse terms
+> (<https://www.echr.coe.int/copyright-and-disclaimer>), and is therefore **not
+> part of this CC0 dedication** — CC0 is a rights waiver, and these are not our
+> rights to waive. The material remains freely searchable and retrievable through
+> the public API and MCP server, with attribution.
 
 ### Cantonal Courts (26 cantons, 110 courts)
 
