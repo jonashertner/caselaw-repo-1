@@ -4041,6 +4041,164 @@ def _get_materialien_conn() -> sqlite3.Connection | None:
         return None
 
 
+# Major laws by abbreviation. Only a resolution shortcut — statutes.db is the
+# authority and is consulted for anything not listed here.
+_MATERIALIEN_SR_MAP = {
+    "BV": "101", "ZGB": "210", "OR": "220", "ZPO": "272",
+    "STGB": "311.0", "STPO": "312.0", "SCHKG": "281.1",
+    "VWVG": "172.021", "BGFA": "935.61", "BGG": "173.110",
+    "AVIG": "837.0", "IVG": "831.20", "AHVG": "831.10",
+    "KVG": "832.10", "UVG": "832.20", "DSG": "235.1",
+    "SVG": "741.01", "ATSG": "830.1", "EOG": "834.1",
+    "ARBG": "822.11", "MWSTG": "641.20", "DBG": "642.11",
+}
+
+
+def _resolve_materialien_sr(conn, law: str) -> str:
+    """law_code ('OR') -> SR number ('220'). Map first, then the curated
+    table's own sr_number, then statutes.db by abbreviation."""
+    sr = _MATERIALIEN_SR_MAP.get(law, "")
+    if sr:
+        return sr
+    try:
+        r0 = conn.execute(
+            "SELECT sr_number FROM materialien WHERE law_code = ? AND sr_number IS NOT NULL LIMIT 1",
+            (law,),
+        ).fetchone()
+        if r0 and r0["sr_number"]:
+            return r0["sr_number"]
+    except sqlite3.Error:
+        pass
+    try:
+        st_conn = sqlite3.connect(f"file:{STATUTES_DB_PATH}?mode=ro", uri=True, timeout=0.5)
+        st_conn.row_factory = sqlite3.Row
+        try:
+            r0 = st_conn.execute(
+                "SELECT sr_number FROM laws WHERE UPPER(abbr_de) = ? LIMIT 1", (law,),
+            ).fetchone()
+            return r0["sr_number"] if r0 else ""
+        finally:
+            st_conn.close()
+    except Exception:
+        return ""
+
+
+# A Botschaft's opening paragraph carries its own header, very regularly:
+#   16.077 / Botschaft / zur Änderung des Obligationenrechts (Aktienrecht) /
+#   vom 23. November 2016
+# botschaft_documents.title and .publication_date are empty for all 6,154 rows,
+# so this is where the human-readable title comes from. Measured on 400 linked
+# documents: 69% match. The remainder are recent messages whose first
+# paragraph is the Übersicht itself (no header paragraph at all — scanning
+# further paragraphs does not help, verified); those fall back to an excerpt,
+# which brings the combined coverage to 100%.
+_BOTSCHAFT_HEAD_RE = re.compile(
+    r"^\s*(?:\d{2}\.\d{3,4}\s*\n+)?"
+    r"(?P<kind>Botschaft|Message|Messaggio|Bericht|Rapport)\s*\n+"
+    r"(?P<title>.{3,400}?)\s*\n+"
+    r"(?:vom|du|del|dell')\s+(?P<date>\d{1,2}\.?\s*\w+\s+\d{4})",
+    re.IGNORECASE | re.DOTALL,
+)
+
+
+def _botschaft_header(text: str) -> tuple[str | None, str | None]:
+    """(title, date) from a Botschaft's opening paragraph, or (None, None)."""
+    m = _BOTSCHAFT_HEAD_RE.match(text or "")
+    if not m:
+        return None, None
+    return (f"{m.group('kind')} {' '.join(m.group('title').split())}".strip(),
+            m.group("date").strip())
+
+
+def _linked_botschaft_documents(conn, sr: str, article: str | None,
+                                limit: int = 20) -> list[dict]:
+    """The Federal Council messages linked to an article.
+
+    The curated `materialien` digest covers two laws (BV, BGFA — 167 rows),
+    so for every other statute this is what the tool actually has to offer:
+    19,809 article->Botschaft links across 620 SR numbers and 6,154 documents,
+    all sitting in the same DB. Before this, get_materialien answered
+    "No Materialien found" for OR, ZGB, StGB and everything else, which was
+    false — the material was there, just not the digest.
+
+    The link relation is 'considered' for all 19,809 rows (they are derived
+    from the statute's AS/BBl amendment footnotes), so this says "this message
+    concerns that article", never "this is the enacting message".
+    """
+    if not sr:
+        return []
+    sql = """SELECT d.bbl_citation, d.source_url, d.eli_uri, d.language,
+                    d.bbl_year, d.bbl_page, l.article, l.relation,
+                    p.text AS head_text
+               FROM article_botschaft_links l
+               JOIN botschaft_documents d ON d.botschaft_id = l.botschaft_id
+               LEFT JOIN botschaft_paragraphs p
+                      ON p.botschaft_id = d.botschaft_id AND p.para_order = 1
+              WHERE l.sr_number = ?"""
+    params: list = [sr]
+    if article:
+        sql += " AND l.article = ?"
+        params.append(article)
+    # publication_date is empty for every row; bbl_year is the real ordering.
+    # Fetch extra: one message exists once per language (BBl 2022 2743 and
+    # FF 2022 2743 are the same document), and those are grouped below, so a
+    # bare LIMIT would return half as many distinct messages as asked for.
+    sql += " ORDER BY d.bbl_year DESC, d.bbl_page DESC LIMIT ?"
+    params.append(limit * 3)
+    grouped: dict[tuple, dict] = {}
+    try:
+        rows = list(conn.execute(sql, params))
+    except sqlite3.Error:
+        return []
+    for r in rows:
+        # One entry per MESSAGE, not per (message, article): a law-level
+        # query otherwise lists the same Botschaft twenty times, once for
+        # each article it touches. The articles it covers go in a list.
+        key = (r["bbl_year"], r["bbl_page"])
+        item = grouped.get(key)
+        if item is None:
+            if len(grouped) >= limit:
+                continue
+            title, date = _botschaft_header(r["head_text"] or "")
+            item = {
+                "bbl_citation": r["bbl_citation"],
+                "title": title,
+                "date": date,
+                "year": r["bbl_year"],
+                "url": r["source_url"],
+                "eli_uri": r["eli_uri"],
+                "language": r["language"],
+                "articles": [r["article"]],
+                "relation": r["relation"],
+                "other_languages": [],
+            }
+            if not title:
+                # No header paragraph (recent messages open with the
+                # Übersicht). Give the opening lines verbatim rather than an
+                # untitled citation — labelled as an excerpt so it is never
+                # mistaken for the document's own title.
+                item["excerpt"] = _truncate(
+                    " ".join((r["head_text"] or "").split()), 200) or None
+            grouped[key] = item
+            continue
+        # Same message: either another article it covers, or another
+        # language edition of it.
+        if r["article"] not in item["articles"]:
+            item["articles"].append(r["article"])
+        if r["language"] != item["language"] and not any(
+                o["language"] == r["language"] for o in item["other_languages"]):
+            item["other_languages"].append({
+                "language": r["language"], "bbl_citation": r["bbl_citation"],
+                "url": r["source_url"],
+            })
+        if not item["title"]:
+            t2, d2 = _botschaft_header(r["head_text"] or "")
+            if t2:
+                item["title"], item["date"] = t2, d2
+                item.pop("excerpt", None)
+    return list(grouped.values())
+
+
 def get_materialien(law_code: str, article: str | None = None) -> dict:
     """Fetch preparatory materials (Botschaften, parliamentary data) for a law article.
 
@@ -4099,45 +4257,14 @@ def get_materialien(law_code: str, article: str | None = None) -> dict:
         # Fedlex amendment references (AS/BBl from statute footnotes).
         # The amendment_refs table uses sr_number, not law_code — resolve
         # via the abbreviation lookup in statutes.db or the known SR map.
+        sr = _resolve_materialien_sr(conn, law)
+        # The Botschaft documents linked to this article. For every law
+        # outside the two-law curated digest this is the substance of the
+        # answer, so it is fetched whether or not a digest exists.
+        botschaft_docs = _linked_botschaft_documents(conn, sr, article)
+
         amendment_refs = []
         try:
-            # Try the SR_NUMBERS map first (covers major laws), then
-            # query the materialien table for sr_number if a digest exists.
-            sr = ""
-            _SR_MAP = {
-                "BV": "101", "ZGB": "210", "OR": "220", "ZPO": "272",
-                "STGB": "311.0", "STPO": "312.0", "SCHKG": "281.1",
-                "VWVG": "172.021", "BGFA": "935.61", "BGG": "173.110",
-                "AVIG": "837.0", "IVG": "831.20", "AHVG": "831.10",
-                "KVG": "832.10", "UVG": "832.20", "DSG": "235.1",
-                "SVG": "741.01", "ATSG": "830.1", "EOG": "834.1",
-                "ARBG": "822.11", "MWSTG": "641.20", "DBG": "642.11",
-            }
-            sr = _SR_MAP.get(law, "")
-            if not sr and sources:
-                # Fallback: get sr_number from a digest row
-                r0 = conn.execute(
-                    "SELECT sr_number FROM materialien WHERE law_code = ? LIMIT 1",
-                    (law,),
-                ).fetchone()
-                if r0:
-                    sr = r0["sr_number"]
-            if not sr:
-                # Last resort: look up in statutes.db via abbreviation
-                try:
-                    st_conn = sqlite3.connect(
-                        f"file:{STATUTES_DB_PATH}?mode=ro", uri=True, timeout=0.5,
-                    )
-                    st_conn.row_factory = sqlite3.Row
-                    r0 = st_conn.execute(
-                        "SELECT sr_number FROM laws WHERE UPPER(abbr_de) = ? LIMIT 1",
-                        (law,),
-                    ).fetchone()
-                    if r0:
-                        sr = r0["sr_number"]
-                    st_conn.close()
-                except Exception:
-                    pass
             if sr:
                 ref_sql = "SELECT * FROM amendment_refs WHERE sr_number = ?"
                 ref_params: list = [sr]
@@ -4160,20 +4287,45 @@ def get_materialien(law_code: str, article: str | None = None) -> dict:
         except Exception:
             pass
 
-        if not sources and not amendment_refs:
+        if not sources and not amendment_refs and not botschaft_docs:
             return {
                 "error": f"No Materialien found for {law}"
                          + (f" Art. {article}" if article else "")
-                         + ". Try a different law or check get_statistics."
+                         + ". Try a different law, or search_botschaft for "
+                           "full-text search across all 6,154 Federal Council "
+                           "messages."
             }
 
-        return {
+        out = {
             "law_code": law,
+            "sr_number": sr or None,
             "article": article,
             "sources": sources,
+            "botschaft_documents": botschaft_docs,
             "amendment_refs": amendment_refs,
             "parliamentary_modifications": modifications,
         }
+        # Say plainly which of the two corpora answered, so a caller never
+        # mistakes "no digest" for "no preparatory materials".
+        if not sources:
+            where = f"{law}" + (f" Art. {article}" if article else "")
+            if botschaft_docs:
+                out["note"] = (
+                    f"No curated digest exists for {where} (the digest corpus "
+                    "covers BV and BGFA only). Listed instead are the Federal "
+                    "Council messages that concern this article, from the "
+                    "statute's AS/BBl footnotes. Use search_botschaft to search "
+                    "their full text; quote only verbatim."
+                )
+            else:
+                out["note"] = (
+                    f"No digest and no linked Federal Council message for {where}"
+                    + (" — only the AS/BBl amendment references below."
+                       if amendment_refs else ".")
+                    + " search_botschaft runs full-text over all 6,154 messages "
+                      "and is the better tool when an article has no link."
+                )
+        return out
     except sqlite3.Error as e:
         return {"error": f"Materialien lookup failed: {e}"}
     finally:
@@ -4252,12 +4404,29 @@ def search_materialien(
         except sqlite3.OperationalError:
             pass  # debate_fts may not exist in older DBs
 
-        return {
+        out = {
             "query": query,
             "count": len(results),
             "results": results,
             "debate_results": debate_results,
+            # State the corpus size up front. This index is the curated
+            # digest — 167 entries covering BV and BGFA — not the 6,154
+            # Federal Council messages. A bare count:0 read as "Switzerland
+            # has no preparatory materials on this", which is false and the
+            # opposite of useful.
+            "corpus": ("curated digest of legislative intent: BV and BGFA only "
+                       "(167 article digests, 748 debate pages)"),
         }
+        if not results and not debate_results:
+            out["note"] = (
+                "No hit in the curated digest, which covers only BV and BGFA. "
+                "This is a coverage limit, not an absence of materials: use "
+                "search_botschaft for full-text search across all 6,154 Federal "
+                "Council messages (421,489 indexed paragraphs), or "
+                "get_materialien(law_code) for the messages linked to a "
+                "specific statute."
+            )
+        return out
     except sqlite3.Error as e:
         return {"error": f"Materialien search failed: {e}"}
     finally:
@@ -20796,15 +20965,15 @@ def _list_tools() -> list[Tool]:
             annotations=_READ_ONLY,
             name="get_materialien",
             description=(
-                "Look up Materialien for a Swiss federal law article: Botschaft (legislative "
-                "intent, key arguments, design choices, rejected alternatives) + parliamentary "
-                "modifications. "
-                "COVERAGE TODAY: per-article digests for BV (128 articles) and BGFA (39 articles) "
-                "only; for every other law the response includes BBl/AS publication-locator refs "
-                "(`amendment_refs` field) but `sources=[]`. Full per-article digested expansion to "
-                "all federal laws is in active build — for now, treat empty `sources` as 'no "
-                "digested Materialien yet' and surface the BBl reference to the user instead of "
-                "claiming the law has no legislative history."
+                "Look up Materialien for a Swiss federal law article. Returns up to three "
+                "things: `sources` = per-article digests of legislative intent (BV and BGFA "
+                "only — 167 articles); `botschaft_documents` = the Federal Council messages "
+                "that concern this article, with BBl citation, title and Fedlex link (620 SR "
+                "numbers, 19,809 article links); `amendment_refs` = the AS/BBl publication "
+                "locators from the statute's own footnotes. "
+                "Empty `sources` means no digest exists for that law, NOT that the law has no "
+                "legislative history — read `botschaft_documents` and cite the BBl reference. "
+                "For full text of a message use search_botschaft."
             ),
             inputSchema={
                 "type": "object",
@@ -20826,10 +20995,12 @@ def _list_tools() -> list[Tool]:
             name="search_materialien",
             description=(
                 "Use this tool for DIGESTED legislative history — per-article "
-                "intent summaries and key arguments, not verbatim text "
-                "(search_botschaft has the verbatim corpus). "
-                "COVERAGE TODAY: BV + BGFA digests + BV parliamentary debate transcripts only. "
-                "Full per-article digested expansion to every federal law is in active build."
+                "intent summaries and key arguments, not verbatim text. "
+                "COVERAGE IS NARROW: BV and BGFA digests (167 articles) plus BV debate "
+                "transcripts, and nothing else. For any other law this returns 0 hits, which "
+                "means 'outside this index', not 'no materials exist'. "
+                "Prefer search_botschaft, which covers all 6,154 Federal Council messages "
+                "verbatim, or get_materialien(law_code) for the messages linked to one statute."
             ),
             inputSchema={
                 "type": "object",
