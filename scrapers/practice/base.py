@@ -122,6 +122,21 @@ class PracticeScraper(ABC):
     ISSUING_AUTHORITY: str = ""       # e.g. "ESTV"
     DEFAULT_DOC_TYPE: str = ""        # e.g. "kreisschreiben"
 
+    # Opt-in re-issue detection. Dedup is doc_id-only by default, which is
+    # correct for sources that mint a NEW id per edition — but wrong for
+    # sources that re-publish a revised edition at a STABLE id (SECO
+    # overwrites 'Weisung AVIG ALE.pdf' in place; BSV bumps a version number
+    # behind the same document id). There, a doc_id hit meant "skip forever"
+    # and the corpus silently froze at the first edition ever fetched.
+    #
+    # Set REVISION_FIELD to a stub key whose value changes on re-issue
+    # (e.g. "pdf_url", "date", "version"). When it differs from the stored
+    # record, the document is re-fetched and re-appended;
+    # build_practice_db.py upserts ON CONFLICT(doc_id), so the index keeps
+    # one current row per document. Default None = previous behaviour,
+    # byte-identical for every existing scraper.
+    REVISION_FIELD: str | None = None
+
     # ── Tunables ──
     REQUEST_DELAY = 1.0               # seconds between PDF fetches
     PDF_TIMEOUT = 60
@@ -197,6 +212,9 @@ class PracticeScraper(ABC):
     # ────────────────────────────────────────────────────────────────
 
     def _load_seen_ids(self) -> set[str]:
+        """Populate the dedup set and, when REVISION_FIELD is set, the
+        doc_id -> revision map used to detect re-issued editions."""
+        self._seen_revisions: dict[str, str] = {}
         if not self.output_path.exists():
             return set()
         ids = set()
@@ -206,12 +224,31 @@ class PracticeScraper(ABC):
                     if not line.strip():
                         continue
                     try:
-                        ids.add(json.loads(line)["doc_id"])
+                        rec = json.loads(line)
                     except Exception:
-                        pass
+                        continue
+                    did = rec.get("doc_id")
+                    if not did:
+                        continue
+                    ids.add(did)
+                    if self.REVISION_FIELD:
+                        # Last line wins: the file is append-only, so the most
+                        # recently appended record is the current edition.
+                        self._seen_revisions[did] = str(
+                            rec.get(self.REVISION_FIELD, "") or "")
         except Exception as e:
             logger.warning("Failed to read existing output: %s", e)
         return ids
+
+    def _is_reissue(self, doc_id: str, stub: dict) -> bool:
+        """True when we hold this doc_id but the source now offers a
+        different edition of it."""
+        if not self.REVISION_FIELD:
+            return False
+        stored = self._seen_revisions.get(doc_id)
+        if stored is None:
+            return False
+        return str(stub.get(self.REVISION_FIELD, "") or "") != stored
 
     def _make_doc_id(self, stub: dict) -> str:
         if "doc_number" in stub and stub["doc_number"]:
@@ -253,9 +290,13 @@ class PracticeScraper(ABC):
         for stub in self.discover_documents():
             doc_id = self._make_doc_id(stub)
 
-            if doc_id in self._seen_ids and not force_refresh:
+            reissued = self._is_reissue(doc_id, stub)
+            if doc_id in self._seen_ids and not force_refresh and not reissued:
                 skipped_count += 1
                 continue
+            if reissued:
+                logger.info("[%s] re-issue detected for %s (%s changed)",
+                            self.SOURCE_KEY, doc_id, self.REVISION_FIELD)
 
             pdf_url = stub.get("pdf_url")
             if not pdf_url:
@@ -272,6 +313,9 @@ class PracticeScraper(ABC):
 
             doc = self._normalize(stub, body)
             self._append(doc)
+            if self.REVISION_FIELD:
+                self._seen_revisions[doc_id] = str(
+                    stub.get(self.REVISION_FIELD, "") or "")
             new_count += 1
             logger.info("[%s] +%s '%s'", self.SOURCE_KEY, doc["doc_number"] or "—",
                         doc["title"][:80])

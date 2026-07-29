@@ -19,6 +19,7 @@ from .estv_kreisschreiben import EstvKreisschreibenScraper
 from .estv_mwst import EstvMwstScraper
 from .sem_weisungen import SemWeisungenScraper
 from .bafu_vollzugshilfen import BafuVollzugshilfenScraper
+from .seco_arg import SecoArgScraper
 from .ssk_kreisschreiben import SskKreisschreibenScraper
 from .are_vollzugshilfen import AreVollzugshilfenScraper
 from .epa_personalrecht import EpaPersonalrechtScraper
@@ -31,6 +32,7 @@ ENABLED_SCRAPERS = {
     "estv_mwst":     EstvMwstScraper,
     "sem_weisungen": SemWeisungenScraper,
     "bafu_vollzug":  BafuVollzugshilfenScraper,
+    "seco_arg":      SecoArgScraper,
 }
 
 # Defensive scaffolds — need first-run validation before enabling
