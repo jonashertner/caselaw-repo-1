@@ -105,6 +105,10 @@ _DATE_RE = re.compile(r"(\d{1,2})\.?\s+([A-Za-zÀ-ÿ]+)\s+(\d{4})")
 _ART_FROM_NAME = re.compile(r"Artikel[-_]?(\d{1,3}[a-z]?)", re.IGNORECASE)
 _ART_LEGACY = re.compile(r"art\.?[-_]?(\d{1,3}[a-z]?)", re.IGNORECASE)
 # "ArG Artikel 2:" / "LTr Article 2:" / "LL Articolo 2:" in the anchor text
+# Annex marker in the filename: "ArGV3_Anhang_Artikel-02-…",
+# "ArGV2-Anhang3-2-Einkaufszentren-…", "ArGV3_AnhangArtikel-15-…".
+# The optional capture is the annex's OWN number (3-2 -> 3.2).
+_ANNEX = re.compile(r"Anhang[-_]?(\d+(?:[-_]\d+)?)?", re.IGNORECASE)
 _ART_FROM_TEXT = re.compile(
     r"\b(?:Artikel|Article|Articolo|Art\.)\s*(\d{1,3}[a-z]?)\b", re.IGNORECASE)
 # trailing "PDF 726.59 kB 18. November 2025" noise on the title
@@ -203,7 +207,23 @@ class SecoArgScraper(PracticeScraper):
             if not title:
                 continue
             article = self._article_of(href, raw)
-            if article:
+            annex = _ANNEX.search(href or "")
+            if annex:
+                # Annexes are substantive documents in their own right and
+                # collide with their parent article: ArGV3-Artikel-02-… and
+                # ArGV3_Anhang_Artikel-02-… both yield article "02". Caught in
+                # the first full run — 18 annexes across DE/FR/IT would have
+                # been swallowed by the doc_id upsert. Prefer the annex's own
+                # number (Anhang3-2 -> "Anhang 3.2"); otherwise mark it as the
+                # annex to its article.
+                num = annex.group(1)
+                if num:
+                    doc_number = f"{erlass} Anhang {num.replace('-', '.').replace('_', '.')}"
+                elif article:
+                    doc_number = f"{erlass} Art. {article} Anhang"
+                else:
+                    doc_number = f"{erlass} Anhang"
+            elif article:
                 doc_number = f"{erlass} Art. {article}"
             else:
                 # Gesamtdokument / Änderungsliste: no article to key on. Title

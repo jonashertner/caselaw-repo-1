@@ -128,3 +128,33 @@ def test_no_doc_id_collisions_on_any_fixture_page():
         ids = [SecoArgScraper._make_doc_id(s, st) for st in _parse(fx, lang, erlass)]
         dupes = [k for k, v in collections.Counter(ids).items() if v > 1]
         assert not dupes, (fx, dupes)
+
+
+def test_annexes_do_not_collide_with_their_parent_article():
+    """Caught by the first full 1,103-record run: ArGV3-Artikel-02-... and
+    ArGV3_Anhang_Artikel-02-... both extract article '02', so the annex —
+    a substantive document in its own right — shared a doc_id with its
+    parent and would have been swallowed by the upsert. 18 annexes across
+    DE/FR/IT were affected."""
+    from scrapers.practice.seco_arg import _ANNEX
+    s = SecoArgScraper.__new__(SecoArgScraper)
+
+    def num_for(href, erlass="ArGV 3"):
+        html = f'<a href="{href}">Titel PDF 100 kB 1. Januar 2020</a>'
+        [st] = list(SecoArgScraper._parse_index(s, html, "u", "de", erlass))
+        return st["doc_number"]
+
+    # annex with its own number wins over any article digits in the name
+    assert num_for("/dam/de/sd-web/X/ArGV2-Anhang3-2-Einkaufszentren-SECO-AB-2016-DE.pdf",
+                   "ArGV 2") == "ArGV 2 Anhang 3.2"
+    assert num_for("/dam/de/sd-web/X/ArGV2-Anhang1-Artikel_28-Absatz4-SECO-AB-2015-DE.pdf",
+                   "ArGV 2") == "ArGV 2 Anhang 1"
+    # unnumbered annex is keyed to its parent article, distinctly
+    assert num_for("/dam/de/sd-web/X/ArGV3_Anhang_Artikel-02-SECO-AB-2014-DE.pdf") \
+        == "ArGV 3 Art. 2 Anhang"
+    assert num_for("/dam/de/sd-web/X/ArGV3_AnhangArtikel-15-SECO-AB-2016-IT.pdf") \
+        == "ArGV 3 Art. 15 Anhang"
+    # the parent article itself is untouched
+    assert num_for("/dam/de/sd-web/X/ArGV3-Artikel-02-SECO-AB-2016-DE.pdf") \
+        == "ArGV 3 Art. 2"
+    assert _ANNEX.search("ArGV3-Artikel-02-SECO-AB-2016-DE.pdf") is None
