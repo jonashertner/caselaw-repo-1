@@ -122,8 +122,8 @@ def test_schema_advertises_only_populated_values():
     for phantom in ("ssk_ks", "are_vollzug", "epa_personalrecht",
                     "handbuch", "merkblatt"):
         assert phantom not in block, f"{phantom!r} is advertised but returns nothing"
-    for real in ("estv_ks", "estv_mwst", "bafu_vollzug", "sem_weisungen",
-                 "kreisschreiben", "vollzugshilfe", "mwst_info"):
+    for real in ("seco_arg", "estv_ks", "estv_mwst", "bafu_vollzug", "sem_weisungen",
+                 "wegleitung", "kreisschreiben", "vollzugshilfe", "mwst_info"):
         assert real in block, f"{real!r} exists in the corpus but is not advertised"
 
 
@@ -132,5 +132,5 @@ def test_schema_names_the_uncovered_authorities():
     src = Path(REPO / "mcp_server.py").read_text(encoding="utf-8")
     start = src.index('name="search_practice"')
     block = src[start:start + 4000]
-    for absent in ("BSV", "SECO", "FINMA", "cantonal"):
+    for absent in ("BSV", "FINMA", "BAG", "cantonal"):
         assert absent in block, f"description does not disclose that {absent} is absent"

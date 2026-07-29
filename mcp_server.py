@@ -9538,7 +9538,9 @@ server = Server(
         "portal scraping for 19 cantons + LexFind fallback for the rest), "
         "1,100+ scholarly commentaries, a verbatim Federal Council Botschaft "
         "corpus (5,900+ documents, ~410K FTS5-indexed paragraphs), "
-        "federal administrative practice — Verwaltungspraxis: ESTV "
+        "federal administrative practice — Verwaltungspraxis, 1,892 documents: "
+        "SECO commentary on the Arbeitsgesetz and ArGV 1-5 article by "
+        "article (DE/FR/IT), ESTV "
         "Kreisschreiben and MWST-Infos (DE/FR/IT), SEM Weisungen and "
         "Rundschreiben, BAFU Vollzugshilfen — via search_practice / "
         "get_practice, plus 23,000+ VPB/JAAC decisions (1900–2016) under "
@@ -9779,6 +9781,8 @@ server = Server(
         "• 'Summarise this case'                   → get_case_brief\n"
         "• 'Format this citation for me'           → cite\n"
         "• 'Kreisschreiben / Weisung / Wegleitung / Rundschreiben / Merkblatt?' → search_practice\n"
+        "• 'Was sagt das SECO zu Art. X ArG / ArGV?'  → search_practice (SECO commentary\n"
+        "     is article-by-article — the reference for Arbeitsrecht questions)\n"
         "• 'Verwaltungspraxis / Praxis der Verwaltung zu [Thema]?' → search_practice (federal authorities:\n"
         "     ESTV, SEM, BAFU); then get_practice for the verbatim text + source PDF\n"
         "• 'circulaire / directive / istruzioni / circolare?'      → search_practice\n"
@@ -20936,22 +20940,19 @@ def _list_tools() -> list[Tool]:
             name="search_practice",
             description=(
                 "Use this tool when the question involves federal "
-                "ADMINISTRATIVE PRACTICE (Verwaltungspraxis): Kreisschreiben, "
-                "MWST-Infos and Branchen-Infos, Weisungen, Rundschreiben, "
+                "ADMINISTRATIVE PRACTICE (Verwaltungspraxis): Wegleitungen, "
+                "Kreisschreiben, MWST-Infos, Weisungen, Rundschreiben, "
                 "Vollzugshilfen — interpretive agency guidance, not court "
-                "decisions. "
-                "These are NOT court decisions — they are the interpretive "
-                "guidance issued by federal agencies: ESTV for tax and VAT "
-                "(438 documents, DE/FR/IT), BAFU for environment (297, DE), "
-                "SEM for migration/asylum/citizenship (55, DE). 790 documents "
-                "in total. Returns ranked excerpts with the source authority, "
-                "document number, date, and PDF URL. Essential complement to "
-                "case-law search whenever the question involves administrative "
-                "practice. NOT covered: BSV/AHV-IV, SECO, FINMA, BAG, and all "
-                "cantonal administrations — say so rather than implying a gap "
-                "is an absence of guidance. For federal administrative "
-                "decisions before 2017 use search_decisions(court='ch_vb') "
-                "(VPB/JAAC)."
+                "decisions. 1,892 documents: SECO commentary on the "
+                "Arbeitsgesetz and ArGV 1-5, article by article (1,102, "
+                "DE/FR/IT — the reference for employment-law questions); ESTV "
+                "tax and VAT (438, DE/FR/IT); BAFU environment (297, DE); SEM "
+                "migration/asylum/citizenship (55, DE). Returns ranked excerpts "
+                "with authority, document number, date and a PDF link. NOT "
+                "covered: BSV/AHV-IV, FINMA, BAG and all cantonal "
+                "administrations — say so rather than implying a gap is an "
+                "absence of guidance. For federal administrative decisions "
+                "before 2017 use search_decisions(court='ch_vb') (VPB/JAAC)."
             ),
             inputSchema={
                 "type": "object",
@@ -20962,21 +20963,21 @@ def _list_tools() -> list[Tool]:
                     },
                     "source": {
                         "type": "string",
-                        "enum": ["bafu_vollzug", "estv_ks", "estv_mwst", "sem_weisungen"],
-                        "description": "Filter by source key. bafu_vollzug (297), estv_ks (285), estv_mwst (153), sem_weisungen (55).",
+                        "enum": ["seco_arg", "bafu_vollzug", "estv_ks", "estv_mwst", "sem_weisungen"],
+                        "description": "Filter by source key. seco_arg (1,102), bafu_vollzug (297), estv_ks (285), estv_mwst (153), sem_weisungen (55).",
                     },
                     "issuing_authority": {
                         "type": "string",
-                        "enum": ["ESTV", "BAFU", "SEM"],
-                        "description": "Filter by authority. ESTV (438), BAFU (297), SEM (55).",
+                        "enum": ["SECO", "ESTV", "BAFU", "SEM"],
+                        "description": "Filter by authority. SECO (1,102), ESTV (438), BAFU (297), SEM (55).",
                     },
                     "doc_type": {
                         "type": "string",
                         "enum": [
-                            "vollzugshilfe", "kreisschreiben", "mwst_branchen_info",
+                            "wegleitung", "vollzugshilfe", "kreisschreiben", "mwst_branchen_info",
                             "mwst_info", "weisung", "rundschreiben",
                         ],
-                        "description": "Filter by document type. vollzugshilfe (297), kreisschreiben (285), mwst_branchen_info (84), mwst_info (69), weisung (39), rundschreiben (16).",
+                        "description": "Filter by document type. wegleitung (1,102), vollzugshilfe (297), kreisschreiben (285), mwst_branchen_info (84), mwst_info (69), weisung (39), rundschreiben (16).",
                     },
                     "language": {
                         "type": "string",

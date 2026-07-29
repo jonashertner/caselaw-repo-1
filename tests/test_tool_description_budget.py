@@ -61,9 +61,19 @@ def test_attest_response_keeps_calling_protocol_in_budget():
 
 
 def test_practice_description_constraints_still_hold():
-    """The discoverability test's asserted substrings must survive rewrites
-    (BSV/SECO/FINMA/cantonal disclosure + corpus counts)."""
+    """The description must state the corpus honestly: what is covered, with
+    counts, and what is still missing. Updated 2026-07-29 when SECO shipped
+    (790 -> 1,892 documents) — this assertion is what caught the stale
+    "NOT covered: ... SECO ..." line, which would have told users we lack a
+    corpus we had just ingested."""
     [t] = [t for t in m._list_tools() if t.name == "search_practice"]
     d = t.description or ""
-    for req in ("BSV", "SECO", "FINMA", "cantonal", "790", "ch_vb"):
-        assert req in d, req
+    # still-missing sources must stay disclosed
+    for gap in ("BSV", "FINMA", "BAG", "cantonal"):
+        assert gap in d, gap
+    # shipped sources must be named with their counts
+    for present in ("SECO", "ESTV", "BAFU", "SEM", "1,892", "1,102", "ch_vb"):
+        assert present in d, present
+    # and SECO must no longer be listed as a gap
+    gaps = d.split("NOT covered:", 1)[1] if "NOT covered:" in d else ""
+    assert "SECO" not in gaps, gaps[:120]
