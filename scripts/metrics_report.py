@@ -31,9 +31,25 @@ import os
 import sys
 from pathlib import Path
 
-DEFAULT = Path(os.environ.get("SWISS_CASELAW_DIR",
-                              str(Path.home() / ".swiss-caselaw"))) \
-    / "research_logs" / "daily_metrics.jsonl"
+def _default_path() -> Path:
+    """First existing candidate. SWISS_CASELAW_DIR is set in the worker units
+    but not in an interactive SSH shell, so an ops run on the VPS must also
+    find the repo-relative location on its own."""
+    candidates = []
+    if os.environ.get("SWISS_CASELAW_DIR"):
+        candidates.append(Path(os.environ["SWISS_CASELAW_DIR"])
+                          / "research_logs" / "daily_metrics.jsonl")
+    repo = Path(__file__).resolve().parents[1]
+    candidates.append(repo / "output" / "research_logs" / "daily_metrics.jsonl")
+    candidates.append(Path.home() / ".swiss-caselaw" / "research_logs"
+                      / "daily_metrics.jsonl")
+    for c in candidates:
+        if c.exists():
+            return c
+    return candidates[0]
+
+
+DEFAULT = _default_path()
 
 
 def reconstruct(lines):
