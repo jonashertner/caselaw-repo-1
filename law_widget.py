@@ -79,6 +79,25 @@ LAW_SEARCH_WIDGET_HTML = r"""<!doctype html>
 <body>
 <div id="app"><div class="empty">Lade Resultate...</div></div>
 <script>
+  // Outbound tool call. Hosts disagree on dialect, so emit every shape we
+  // know and let the host recognise its own:
+  //   1. window.openai.callTool  — OpenAI / ChatGPT hosts
+  //   2. JSON-RPC "tools/call"   — official MCP Apps (Claude, VS Code, M365)
+  //   3. {type:"tool"}           — MCP-UI hosts
+  // Verified 2026-07-29 with a Playwright iframe harness: before (2) was
+  // added the widget rendered correctly in an official host but every
+  // button was inert, because only shape (3) was ever sent.
+  // Shapes are mutually unrecognisable (no `type` vs no `jsonrpc`), so a
+  // host acts on exactly one and ignores the rest.
+  var __rpcId = 0;
+  function callServerTool(name, args) {
+    try { if (window.openai && window.openai.callTool) { window.openai.callTool(name, args); return; } } catch (e) {}
+    if (window.parent && window.parent !== window) {
+      try { window.parent.postMessage({ jsonrpc:"2.0", id:(++__rpcId), method:"tools/call", params:{ name:name, arguments:args } }, "*"); } catch (e) {}
+      try { window.parent.postMessage({ type:"tool", payload:{ toolName:name, params:args } }, "*"); } catch (e) {}
+    }
+  }
+
 (function () {
   var DATA = null, UI_LANG = "de";
   var LABELS = {
@@ -123,15 +142,13 @@ LAW_SEARCH_WIDGET_HTML = r"""<!doctype html>
   }
   function onFull(h) {
     var a = fullArgs(h);
-    try { if (window.openai && window.openai.callTool) { window.openai.callTool("get_law", a); return; } } catch (e) {}
-    try { if (window.parent && window.parent !== window) { window.parent.postMessage({ type:"tool", payload:{ toolName:"get_law", params:a } }, "*"); return; } } catch (e) {}
+    callServerTool("get_law", a); return;
     if (h.source_url) window.open(h.source_url, "_blank", "noopener");
   }
   function reSearch(lang) {
     UI_LANG = lang;
     var q = (DATA && DATA.query) || "";
-    try { if (window.openai && window.openai.callTool) window.openai.callTool("search_laws", { query:q, language:lang, limit:8 });
-          else if (window.parent && window.parent !== window) window.parent.postMessage({ type:"tool", payload:{ toolName:"search_laws", params:{ query:q, language:lang, limit:8 } } }, "*"); } catch (e) {}
+    callServerTool("search_laws", { query:q, language:lang, limit:8 });
     render();
   }
 

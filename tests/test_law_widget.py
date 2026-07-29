@@ -27,9 +27,18 @@ def test_widget_module_contract():
     assert law_widget.WIDGET_MIME == "text/html;profile=mcp-app"
     html = law_widget.LAW_SEARCH_WIDGET_HTML
     assert html.lstrip().startswith("<!doctype html>")
-    # data-source robustness + the two host call paths + mark restoration
+    # data-source robustness + the host call paths + mark restoration
     assert "window.openai" in html and "postMessage" in html
-    assert 'callTool("get_law"' in html and "search_laws" in html
+    # Outbound calls route through one multi-dialect helper (2026-07-29)
+    # instead of an inline window.openai.callTool per site: an official MCP
+    # Apps host ignored the old {type:"tool"} shape, so the widget rendered
+    # and every button was inert there. Same guarantee as before, expressed
+    # against the current structure — both tools reachable, all dialects sent.
+    assert 'callServerTool("get_law"' in html
+    assert 'callServerTool("search_laws"' in html
+    assert "window.openai.callTool" in html      # OpenAI / ChatGPT hosts
+    assert 'method:"tools/call"' in html          # official MCP Apps hosts
+    assert 'type:"tool"' in html                  # MCP-UI hosts
     assert "<mark>" in html
     # Fedlex/LexFind two-style cards + source links + DE/FR/IT/EN labels
     assert "federal" in html and "cantonal" in html
