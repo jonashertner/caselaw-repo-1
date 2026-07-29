@@ -9773,6 +9773,9 @@ server = Server(
         "• 'How has Swiss law on Y evolved?'       → analyze_legal_trend\n"
         "• 'What is BGE 140 III 86 E. 2.3?'        → get_erwaegung\n"
         "• 'Which E. supports [claim] in BGE X?'   → find_relevant_erwaegung\n"
+        "• 'Read several decisions from a search'  → get_decisions (1-10 ids in ONE\n"
+        "     call — ALWAYS prefer this over repeated get_decision; clients cap tool\n"
+        "     calls per turn and get_decision is 90% of all calls today)\n"
         "• 'Summarise this case'                   → get_case_brief\n"
         "• 'Format this citation for me'           → cite\n"
         "• 'Kreisschreiben / Weisung / Wegleitung / Rundschreiben / Merkblatt?' → search_practice\n"
@@ -10555,6 +10558,99 @@ def _rule_statement(
             return cut[: last_stop + 1] + " […]"
         return cut + " […]"
     return None
+
+
+def _handle_get_decisions(
+    *,
+    decision_ids: list,
+    full_text: bool = False,
+    max_chars_per_decision: int = 20000,
+) -> str:
+    """Render 1-10 decisions in ONE response.
+
+    Exists because get_decision is 90% of all tool calls (~20 per search in
+    production telemetry): a research answer that reads ten decisions costs
+    ten model turns, and clients cap tool calls per turn. Citation strings
+    come from _build_citation_strings exactly as the single-decision tool
+    does, so R1 discipline is unchanged.
+
+    full_text defaults FALSE: ten 200k-char judgments would blow past
+    connector response limits (Copilot rejects >500 KB). When enabled each
+    text is excerpted and the cut is disclosed per decision, mirroring the
+    fetch-tool pattern.
+    """
+    ids = [str(x).strip() for x in (decision_ids or []) if str(x).strip()]
+    if not ids:
+        return "Provide at least one decision_id."
+    if len(ids) > 10:
+        return (f"Too many ids ({len(ids)}): get_decisions accepts at most 10 "
+                "per call. Split the list across calls.")
+    try:
+        cap = max(1000, min(int(max_chars_per_decision), 50000))
+    except (TypeError, ValueError):
+        cap = 20000
+
+    blocks: list[str] = []
+    missing: list[str] = []
+    found_rows: list[dict] = []
+
+    for raw_id in ids:
+        result = get_decision_by_id(raw_id)
+        if not result and _overlay_enabled():
+            result = _lookup_recent_overlay(raw_id)
+        if not result:
+            missing.append(raw_id)
+            continue
+        found_rows.append(result)
+
+        citation = _build_citation_strings(result)
+        head = _md_link(_clean_docket(result.get("docket_number")) or raw_id,
+                        citation["canonical_url"])
+        parts = [f"## {head}"]
+        meta = []
+        if result.get("court"):
+            meta.append(f"court: {result['court']}")
+        if result.get("decision_date"):
+            meta.append(f"date: {result['decision_date']}")
+        if result.get("language"):
+            meta.append(f"language: {result['language']}")
+        if meta:
+            parts.append(" · ".join(meta))
+        if result.get("title"):
+            parts.append(f"**{result['title']}**")
+        parts.append(
+            "Citation — copy verbatim, do NOT reconstruct:\n"
+            f"- DE: {citation['citation_string_de']}\n"
+            f"- FR: {citation['citation_string_fr']}\n"
+            f"- IT: {citation['citation_string_it']}\n"
+            f"- Markdown link — embed this when citing: "
+            f"{_md_link(citation['citation_string_de'], citation['canonical_url'])}"
+        )
+        if result.get("regeste"):
+            parts.append(f"**Regeste**\n{_auto_link_citations(result['regeste'])}")
+        if full_text and result.get("full_text"):
+            ft = result["full_text"]
+            if len(ft) > cap:
+                parts.append(
+                    f"**Text (first {cap:,} of {len(ft):,} chars)**\n"
+                    f"{_auto_link_citations(ft[:cap])}\n\n"
+                    f"[Excerpted by get_decisions. The remainder — which may "
+                    f"include the operative part — is not shown. Full text: "
+                    f"{_md_link('Volltext', citation['canonical_url'])}]"
+                )
+            else:
+                parts.append(f"**Text**\n{_auto_link_citations(ft)}")
+        blocks.append("\n\n".join(parts))
+
+    header = f"Retrieved {len(blocks)} of {len(ids)} requested decision(s)."
+    if missing:
+        header += ("\n\nNot found: " + ", ".join(missing) +
+                   " — check the id, or use search_decisions to locate them.")
+    if not full_text and blocks:
+        header += ("\n\nRegeste + metadata only. Re-call with full_text=true "
+                   "(short id list) or get_decision for one complete judgment.")
+    out = header + ("\n\n" + "\n\n---\n\n".join(blocks) if blocks else "")
+    return out + _ecthr_attribution_note(found_rows)
 
 
 def _handle_get_decision_structure(*, decision_id: str, paragraph_excerpt_chars: int = 250) -> dict:
@@ -19363,6 +19459,57 @@ def _list_tools() -> list[Tool]:
         ),
         Tool(
             annotations=_READ_ONLY,
+            name="get_decisions",
+            description=(
+                "Use this tool to fetch SEVERAL decisions at once (1-10 ids) "
+                "instead of calling get_decision repeatedly. Same data per "
+                "decision — canonical citation strings, Markdown link, "
+                "Regeste, metadata — in ONE call. Prefer this whenever you "
+                "are about to read more than one decision from a search "
+                "result: it is the difference between one tool call and ten, "
+                "which matters because clients cap tool calls per turn. "
+                "full_text defaults to FALSE here (unlike get_decision) "
+                "because ten full judgments exceed connector response "
+                "limits; set it true only for a short id list, and each text "
+                "is excerpted with the cut disclosed. Ids not found are "
+                "reported individually — the rest of the batch still returns."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "decision_ids": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "minItems": 1,
+                        "maxItems": 10,
+                        "description": (
+                            "Decision ids, docket numbers or BGE references "
+                            "(e.g. ['bge_BGE_140_III_86', '6B_1234/2025'])."
+                        ),
+                    },
+                    "full_text": {
+                        "type": "boolean",
+                        "default": False,
+                        "description": (
+                            "Include an excerpt of each decision's full text "
+                            "(default false — Regeste + metadata only)."
+                        ),
+                    },
+                    "max_chars_per_decision": {
+                        "type": "integer",
+                        "default": 20000,
+                        "description": (
+                            "Per-decision text cap when full_text is true "
+                            "(default 20,000; total response stays under "
+                            "connector limits)."
+                        ),
+                    },
+                },
+                "required": ["decision_ids"],
+            },
+        ),
+        Tool(
+            annotations=_READ_ONLY,
             name="list_courts",
             description=(
                 "List all available courts with decision counts, date ranges, "
@@ -21386,6 +21533,16 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                         text += "\n"
 
             return [TextContent(type="text", text=text + _echr_note)]
+
+        elif name == "get_decisions":
+            _ids = arguments.get("decision_ids") or []
+            text = await asyncio.to_thread(
+                _handle_get_decisions,
+                decision_ids=_ids,
+                full_text=bool(arguments.get("full_text", False)),
+                max_chars_per_decision=int(arguments.get("max_chars_per_decision", 20000)),
+            )
+            return [TextContent(type="text", text=text)]
 
         elif name == "get_decision":
             _did_arg = arguments["decision_id"]
