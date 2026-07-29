@@ -573,9 +573,10 @@ TOOL_DISPATCH_TIMEOUT_S = float(os.environ.get("OCL_TOOL_TIMEOUT_S", "120"))
 
 # ── In-client UI widgets (Tier B, flag-gated, default OFF) ────────
 # When OCL_UI_WIDGETS is on, search_laws/search_legislation advertise an
-# MCP-Apps law-search widget (tool _meta + resource handlers). Off by default
-# so the server's MCP surface stays byte-identical to before. The import is
-# guarded so a missing widget module can never break serving.
+# MCP-Apps law-search widget and search_decisions a decision-search widget
+# (tool _meta + resource handlers). Off by default so the server's MCP surface
+# stays byte-identical to before. The imports are guarded so a missing widget
+# module can never break serving.
 # Spec: docs/superpowers/specs/2026-06-24-cross-provider-law-search-ux-design.md
 OCL_UI_WIDGETS = os.environ.get("OCL_UI_WIDGETS", "").strip().lower() in {"1", "true", "yes", "on"}
 try:
@@ -583,8 +584,15 @@ try:
 except Exception as _widget_err:  # pragma: no cover
     logger.warning("law_widget import failed: %s", _widget_err)
     law_widget = None
-# _meta is set on the law tools only when the widget is enabled.
+try:
+    import decision_widget
+except Exception as _widget_err:  # pragma: no cover
+    logger.warning("decision_widget import failed: %s", _widget_err)
+    decision_widget = None
+# _meta is set on the tools only when the widget is enabled.
 _LAW_TOOL_META = law_widget.tool_ui_meta() if (OCL_UI_WIDGETS and law_widget) else None
+_DECISION_TOOL_META = (
+    decision_widget.tool_ui_meta() if (OCL_UI_WIDGETS and decision_widget) else None)
 
 
 def _past_deadline(deadline: float | None) -> bool:
@@ -17630,6 +17638,98 @@ def _with_open_access_note(text: str) -> str:
     return text
 
 
+def _decision_snippet_html(text: str, terms: list[str], limit: int | None = None) -> str:
+    """Decision text ready for a widget: `<mark>` highlights, nothing else.
+
+    FTS5 already emits literal <mark> in the `snippet` column (see the
+    snippet() call in the search SQL); regeste and pinpoint sentences arrive
+    plain, so query terms are marked inline instead. Unbalanced marks (a
+    snippet cut mid-highlight) are stripped rather than emitted malformed —
+    same rule as _render_highlight."""
+    s = (text or "").strip()
+    if not s:
+        return ""
+    if limit:
+        s = _truncate(s, limit) or ""
+    if "<mark>" in s:
+        if s.count("<mark>") != s.count("</mark>"):
+            return s.replace("<mark>", "").replace("</mark>", "")
+        return s
+    return _render_highlight(_highlight_terms_inline(s, terms), "html")
+
+
+def _widget_level(court: str) -> str:
+    """Collapse the corpus court taxonomy to the three buckets a renderer
+    styles by: 'ecthr', 'cantonal', 'federal' (federal courts, federal
+    regulators and the federal executive all read as federal)."""
+    if _is_ecthr_court(court):
+        return "ecthr"
+    return "cantonal" if _get_court_level(court) == "cantonal" else "federal"
+
+
+def _decision_hits_structured(
+    results: list[dict], query: str, lang: str = "de", *,
+    total: int | None = None, total_is_lower_bound: bool = False,
+) -> dict:
+    """Machine-readable decision-search payload for structured clients and the
+    Tier B decision widget.
+
+    R1 lives here: every citation string is produced by _build_citation_strings
+    from the stored record, so a widget (or any other consumer) renders a
+    citation it never had to assemble. The ECtHR attribution rides along in the
+    payload for the same reason — it is a reuse condition on that material, so
+    it must travel with the text rather than be remembered by the renderer."""
+    lang = lang or "de"
+    terms = _query_terms(query)
+    out = []
+    for r in results:
+        court = (r.get("court") or "").lower()
+        cit = _build_citation_strings(r)
+        pp = r.get("pinpoint") or None
+        out.append({
+            "decision_id": r.get("decision_id"),
+            "court": court,
+            "court_label": _get_court_display_name(court),
+            # Two different things, deliberately both present. `level` is the
+            # renderer's contract and has exactly three values; `court_level`
+            # is the corpus taxonomy (federal_supreme / federal_appellate /
+            # regulatory / …). Collapsing them would be a trap: COURT_LEVELS
+            # has no ECtHR entry, so its default would file Strasbourg under
+            # "cantonal" — and a widget keyed on that would drop the
+            # attribution styling on exactly the material that requires it.
+            "level": _widget_level(court),
+            "court_level": _get_court_level(court),
+            "canton": r.get("canton"),
+            "docket_number": r.get("docket_number"),
+            "decision_date": r.get("decision_date"),
+            "language": r.get("language"),
+            "title": r.get("title"),
+            "snippet_html": _decision_snippet_html(
+                r.get("_snippet_marked") or r.get("snippet") or r.get("regeste") or "",
+                terms, MAX_SNIPPET_LEN),
+            "citation_string_de": cit.get("citation_string_de"),
+            "citation_string_fr": cit.get("citation_string_fr"),
+            "citation_string_it": cit.get("citation_string_it"),
+            "canonical_url": cit.get("canonical_url") or _canonical_decision_url(
+                r.get("decision_id") or ""),
+            "pinpoint": ({
+                "e_number": pp.get("e_number"),
+                "confidence": pp.get("confidence"),
+                "sentence": _decision_snippet_html(pp.get("matched_sentence") or "", terms, 300),
+                "url": pp.get("url"),
+            } if pp and pp.get("e_number") else None),
+        })
+    return {
+        "query": query or "",
+        "query_lang": lang,
+        "total": total if total is not None else len(out),
+        "total_is_lower_bound": bool(total_is_lower_bound),
+        "attribution": _ECHR_ATTRIBUTION if any(
+            d["level"] == "ecthr" for d in out) else None,
+        "decisions": out,
+    }
+
+
 def _law_hits_structured(result: dict, lang: str = "de") -> dict:
     """Machine-readable law-search payload (the canonical LawHit list) for
     structured clients and the Tier B widgets. snippet_html carries <mark>
@@ -19303,6 +19403,7 @@ def _list_tools() -> list[Tool]:
         ),
         Tool(
             annotations=_READ_ONLY,
+            _meta=_DECISION_TOOL_META,
             name="search_decisions",
             description=(
                 "Use this tool to find COURT DECISIONS (Rechtsprechung): "
@@ -21245,13 +21346,15 @@ async def _dispatch_with_timeout(name: str, arguments: dict):
         }, ensure_ascii=False))]
 
 
-if law_widget is not None:
-    # Resource handlers are registered whenever the widget module is importable,
-    # NOT gated on the flag. This way, turning the widget off never leaves a
-    # client that cached the tool's _meta with a hard "failed to load" error:
-    # the resource still reads, returning a benign empty panel. Whether the
+_UI_WIDGETS = [m for m in (law_widget, decision_widget) if m is not None]
+
+if _UI_WIDGETS:
+    # Resource handlers are registered whenever a widget module is importable,
+    # NOT gated on the flag. This way, turning the widgets off never leaves a
+    # client that cached a tool's _meta with a hard "failed to load" error:
+    # the resource still reads, returning a benign empty panel. Whether a
     # widget is advertised (list_resources) or served (read_resource) is
-    # flag-gated; the tool _meta (_LAW_TOOL_META) is the real on/off switch.
+    # flag-gated; the tool _meta is the real on/off switch.
     from mcp.types import Resource as _Resource
     from mcp.server.lowlevel.helper_types import ReadResourceContents as _RRC
 
@@ -21275,17 +21378,19 @@ if law_widget is not None:
         if not OCL_UI_WIDGETS:
             return []
         return [_Resource(
-            uri=law_widget.WIDGET_URI,
-            name=law_widget.WIDGET_NAME,
-            description="Interactive law-search results: highlighted articles, full text on click.",
-            mimeType=law_widget.WIDGET_MIME,
-        )]
+            uri=m.WIDGET_URI,
+            name=m.WIDGET_NAME,
+            description=m.WIDGET_DESCRIPTION,
+            mimeType=m.WIDGET_MIME,
+        ) for m in _UI_WIDGETS]
 
     @server.read_resource()
     async def _read_ui_resource(uri):
-        if str(uri).rstrip("/") == law_widget.WIDGET_URI:
-            html = law_widget.LAW_SEARCH_WIDGET_HTML if OCL_UI_WIDGETS else _EMPTY_WIDGET_HTML
-            return [_RRC(content=html, mime_type=law_widget.WIDGET_MIME)]
+        want = str(uri).rstrip("/")
+        for m in _UI_WIDGETS:
+            if want == m.WIDGET_URI:
+                html = m.widget_html() if OCL_UI_WIDGETS else _EMPTY_WIDGET_HTML
+                return [_RRC(content=html, mime_type=m.WIDGET_MIME)]
         return [_RRC(content="Resource not found", mime_type="text/plain")]
 
 
@@ -21464,9 +21569,13 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                     text = f"No decisions found matching your query (total: {total_count})."
                 text = _condense_note + text
             else:
-                # Strip <mark> tags from snippets (noise for LLM consumers)
+                # Strip <mark> tags from snippets (noise for LLM consumers).
+                # The marked form is kept aside for the structured payload: a
+                # widget renders the highlights FTS5 actually matched, which is
+                # more faithful than re-marking by query term afterwards.
                 for r in results:
                     if r.get("snippet"):
+                        r["_snippet_marked"] = r["snippet"]
                         r["snippet"] = r["snippet"].replace("<mark>", "").replace("</mark>", "")
 
                 # Deduplicate BGE results that appear with two ID formats
@@ -21538,6 +21647,19 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                             )
                         text += "\n"
 
+            if _DECISION_TOOL_META is not None:
+                # Widget on: identical text, plus the machine-readable payload
+                # the decision widget renders from. Tuple returns bypass the
+                # wrapper's open-access note, so apply it here — same parity
+                # fix the law-search branch needed.
+                return (
+                    [TextContent(type="text",
+                                 text=_with_open_access_note(text + _echr_note))],
+                    _decision_hits_structured(
+                        results, arguments.get("query", "") or "",
+                        arguments.get("language") or "de",
+                        total=total_count, total_is_lower_bound=_total_lb),
+                )
             return [TextContent(type="text", text=text + _echr_note)]
 
         elif name == "get_decisions":

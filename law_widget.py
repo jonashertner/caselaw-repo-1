@@ -10,12 +10,24 @@ standalone. Labels are localised DE/FR/IT/EN and a language toggle re-searches.
 
 Flag-gated in mcp_server.py behind OCL_UI_WIDGETS (off by default). No external
 resources (sandbox / CSP safe); snippet HTML is escaped, then only <mark> is
-re-allowed. Spec: docs/superpowers/specs/2026-06-24-cross-provider-law-search-ux-design.md
+re-allowed. Host-facing plumbing lives in widget_runtime.py, shared with the
+decision-search widget. Spec:
+docs/superpowers/specs/2026-06-24-cross-provider-law-search-ux-design.md
 """
+
+from widget_runtime import runtime_js
 
 WIDGET_URI = "ui://opencaselaw/law-search"
 WIDGET_NAME = "OpenCaseLaw law search"
 WIDGET_MIME = "text/html;profile=mcp-app"
+WIDGET_DESCRIPTION = (
+    "Interactive law-search results: highlighted articles, full text on click.")
+
+
+def widget_html() -> str:
+    """The rendered widget document. Uniform accessor across widget modules so
+    the server can register them from one list."""
+    return LAW_SEARCH_WIDGET_HTML
 
 
 def tool_ui_meta() -> dict:
@@ -26,7 +38,7 @@ def tool_ui_meta() -> dict:
     }
 
 
-LAW_SEARCH_WIDGET_HTML = r"""<!doctype html>
+_LAW_SEARCH_WIDGET_TEMPLATE = r"""<!doctype html>
 <html lang="de">
 <head>
 <meta charset="utf-8">
@@ -79,24 +91,7 @@ LAW_SEARCH_WIDGET_HTML = r"""<!doctype html>
 <body>
 <div id="app"><div class="empty">Lade Resultate...</div></div>
 <script>
-  // Outbound tool call. Hosts disagree on dialect, so emit every shape we
-  // know and let the host recognise its own:
-  //   1. window.openai.callTool  — OpenAI / ChatGPT hosts
-  //   2. JSON-RPC "tools/call"   — official MCP Apps (Claude, VS Code, M365)
-  //   3. {type:"tool"}           — MCP-UI hosts
-  // Verified 2026-07-29 with a Playwright iframe harness: before (2) was
-  // added the widget rendered correctly in an official host but every
-  // button was inert, because only shape (3) was ever sent.
-  // Shapes are mutually unrecognisable (no `type` vs no `jsonrpc`), so a
-  // host acts on exactly one and ignores the rest.
-  var __rpcId = 0;
-  function callServerTool(name, args) {
-    try { if (window.openai && window.openai.callTool) { window.openai.callTool(name, args); return; } } catch (e) {}
-    if (window.parent && window.parent !== window) {
-      try { window.parent.postMessage({ jsonrpc:"2.0", id:(++__rpcId), method:"tools/call", params:{ name:name, arguments:args } }, "*"); } catch (e) {}
-      try { window.parent.postMessage({ type:"tool", payload:{ toolName:name, params:args } }, "*"); } catch (e) {}
-    }
-  }
+__RUNTIME__
 
 (function () {
   var DATA = null, UI_LANG = "de";
@@ -108,29 +103,9 @@ LAW_SEARCH_WIDGET_HTML = r"""<!doctype html>
   };
   function L() { return LABELS[UI_LANG] || LABELS.de; }
 
-  // Locate the structuredContent (the object carrying .hits) anywhere inside a
-  // global or a host message, regardless of nesting/wrapper shape.
-  function findHits(o, depth) {
-    if (!o || typeof o !== "object" || depth > 5) return null;
-    if (Array.isArray(o.hits)) return o;
-    for (var k in o) { try { var r = findHits(o[k], depth + 1); if (r) return r; } catch (e) {} }
-    return null;
-  }
   function applyData(out) {
     if (!out || !out.hits) return false;
     DATA = out; if (out.query_lang) UI_LANG = out.query_lang; render(); return true;
-  }
-  function fromGlobals() {
-    var srcs = [];
-    try { if (window.openai && window.openai.toolOutput) srcs.push(window.openai.toolOutput); } catch (e) {}
-    srcs.push(window.__TOOL_OUTPUT__, window.structuredContent, window.toolOutput);
-    for (var i = 0; i < srcs.length; i++) { var h = findHits(srcs[i], 0); if (h) return h; }
-    return null;
-  }
-  function esc(s) { var d = document.createElement("div"); d.textContent = s == null ? "" : String(s); return d.innerHTML; }
-  function safeSnippet(html) {
-    return esc(html == null ? "" : String(html))
-      .replace(/&lt;mark&gt;/g, "<mark>").replace(/&lt;\/mark&gt;/g, "</mark>");
   }
   function fullArgs(h) {
     var a = { language: UI_LANG };
@@ -140,9 +115,10 @@ LAW_SEARCH_WIDGET_HTML = r"""<!doctype html>
     if (h.article_num) a.article = h.article_num;
     return a;
   }
+  // In a host, ask the server for the article. Standalone (no host to answer),
+  // fall back to the source page — otherwise the button does nothing.
   function onFull(h) {
-    var a = fullArgs(h);
-    callServerTool("get_law", a); return;
+    if (callServerTool("get_law", fullArgs(h))) return;
     if (h.source_url) window.open(h.source_url, "_blank", "noopener");
   }
   function reSearch(lang) {
@@ -178,30 +154,12 @@ LAW_SEARCH_WIDGET_HTML = r"""<!doctype html>
     Array.prototype.forEach.call(app.querySelectorAll(".vt"), function (b) { b.onclick = function () { onFull(hits[+b.getAttribute("data-i")]); }; });
   }
 
-  function boot() { return applyData(fromGlobals()); }
-
-  // Inbound data arrives as: a global (window.openai.toolOutput), the
-  // openai:set_globals event, OR a postMessage (MCP-UI / a JSON-RPC
-  // ui/notifications/tool-result notification). findHits handles any shape.
-  window.addEventListener("message", function (e) {
-    var d = e && e.data; if (d == null) return;
-    if (typeof d === "string") { try { d = JSON.parse(d); } catch (x) { return; } }
-    applyData(findHits(d, 0));
-  });
-  window.addEventListener("openai:set_globals", boot);
-  document.addEventListener("DOMContentLoaded", boot);
-
-  // Some MCP-UI hosts only send the render data after the iframe announces it
-  // is ready; post a few common ready signals (harmless if unused).
-  ["ui-lifecycle-iframe-ready", "iframe-ready", "mcp-ui-ready", "ready"].forEach(function (t) {
-    try { if (window.parent && window.parent !== window) window.parent.postMessage({ type: t }, "*"); } catch (e) {}
-  });
-
-  // Poll briefly for late-injected globals (host may set window.openai after load).
-  var _tries = 0;
-  (function poll() { if (boot()) return; if (_tries++ < 40) setTimeout(poll, 200); })();
+  mountWidget(applyData);
 })();
 </script>
 </body>
 </html>
 """
+
+LAW_SEARCH_WIDGET_HTML = _LAW_SEARCH_WIDGET_TEMPLATE.replace(
+    "__RUNTIME__", runtime_js("hits"))
