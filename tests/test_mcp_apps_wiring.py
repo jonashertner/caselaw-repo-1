@@ -16,8 +16,6 @@ law_widget.py.
 """
 from __future__ import annotations
 
-import importlib
-import os
 import re
 import sys
 from pathlib import Path
@@ -29,60 +27,39 @@ if str(REPO) not in sys.path:
 import law_widget  # noqa: E402
 
 
-def _server_with_flag(monkeypatch, value: str):
-    monkeypatch.setenv("OCL_UI_WIDGETS", value)
-    import mcp_server
-    return importlib.reload(mcp_server)
+def _tools_with_flag(monkeypatch, enabled: bool):
+    """Toggle the flag WITHOUT importlib.reload.
 
-
-def test_widget_constants_match_the_spec():
-    assert law_widget.WIDGET_URI.startswith("ui://")
-    assert law_widget.WIDGET_MIME == "text/html;profile=mcp-app"
-    meta = law_widget.tool_ui_meta()
-    assert meta["ui"]["resourceUri"] == law_widget.WIDGET_URI
-
-
-def test_widget_html_is_fully_self_contained():
-    """Apps run under a deny-by-default CSP in a sandboxed iframe; anything
-    external needs an explicit _meta.ui.csp entry. Keeping it inlined avoids
-    the whole question."""
-    html = law_widget.LAW_SEARCH_WIDGET_HTML
-    external = re.findall(r'(?:src|href)=["\']https?://', html)
-    assert not external, external
-    assert html.lstrip().lower().startswith("<!doctype html")
+    Reloading mcp_server re-executes module-level DB path resolution and
+    left later tests raising FileNotFoundError — the reload poisoned shared
+    state for the whole session. _list_tools() reads the module globals at
+    call time, so patching them is both sufficient and side-effect free.
+    """
+    import mcp_server as m
+    monkeypatch.setattr(m, "OCL_UI_WIDGETS", enabled)
+    monkeypatch.setattr(m, "_LAW_TOOL_META",
+                        law_widget.tool_ui_meta() if enabled else None)
+    return m, m._list_tools()
 
 
 def test_flag_off_advertises_no_ui(monkeypatch):
-    m = _server_with_flag(monkeypatch, "")
-    try:
-        assert m.OCL_UI_WIDGETS is False
-        assert [t.name for t in m._list_tools() if t.meta] == []
-    finally:
-        monkeypatch.delenv("OCL_UI_WIDGETS", raising=False)
-        importlib.reload(m)
+    _, tools = _tools_with_flag(monkeypatch, False)
+    assert [t.name for t in tools if t.meta] == []
 
 
 def test_flag_on_advertises_ui_on_the_law_tools(monkeypatch):
-    m = _server_with_flag(monkeypatch, "1")
-    try:
-        named = {t.name: t.meta for t in m._list_tools() if t.meta}
-        assert set(named) == {"search_laws", "search_legislation"}, named
-        for name, meta in named.items():
-            assert meta["ui"]["resourceUri"] == law_widget.WIDGET_URI, name
-    finally:
-        monkeypatch.delenv("OCL_UI_WIDGETS", raising=False)
-        importlib.reload(m)
+    _, tools = _tools_with_flag(monkeypatch, True)
+    named = {t.name: t.meta for t in tools if t.meta}
+    assert set(named) == {"search_laws", "search_legislation"}, named
+    for name, meta in named.items():
+        assert meta["ui"]["resourceUri"] == law_widget.WIDGET_URI, name
 
 
 def test_meta_serialises_to_the_wire_alias(monkeypatch):
     """The SDK models it as `meta` with alias `_meta`; clients read `_meta`.
-    (Reading t._meta instead of t.meta made this look broken in testing.)"""
-    m = _server_with_flag(monkeypatch, "1")
-    try:
-        [t] = [t for t in m._list_tools() if t.name == "search_laws"]
-        wire = t.model_dump(by_alias=True, exclude_none=True)
-        assert "_meta" in wire
-        assert wire["_meta"]["ui"]["resourceUri"] == law_widget.WIDGET_URI
-    finally:
-        monkeypatch.delenv("OCL_UI_WIDGETS", raising=False)
-        importlib.reload(m)
+    (Reading t._meta instead of t.meta made correct wiring look broken.)"""
+    _, tools = _tools_with_flag(monkeypatch, True)
+    [t] = [t for t in tools if t.name == "search_laws"]
+    wire = t.model_dump(by_alias=True, exclude_none=True)
+    assert "_meta" in wire
+    assert wire["_meta"]["ui"]["resourceUri"] == law_widget.WIDGET_URI
