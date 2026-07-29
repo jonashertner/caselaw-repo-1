@@ -82,8 +82,7 @@ def harvest(base: str) -> dict:
 
     r, _ = call(base, "search_scholarship", {"query": "Kündigung", "limit": 3})
     t = body_text(r)
-    m = re.findall(r"pub_id[`'\"\s:]+([A-Za-z0-9_\-.:]+)", t) or \
-        re.findall(r"\b([a-z_]+_\d{3,})\b", t)
+    m = re.findall(r"pub_id: `([^`]+)`", t)
     ids["pub_id"] = m[0] if m else None
 
     r, _ = call(base, "search_practice", {"query": "Arbeitsgesetz", "limit": 3})
@@ -92,10 +91,10 @@ def harvest(base: str) -> dict:
         re.findall(r"\b((?:seco|estv|sem|bafu)_[A-Za-z0-9_\-.]+)\b", t)
     ids["doc_id"] = m[0] if m else None
 
+    # get_commentary takes abbreviation+article, not an opaque id.
     r, _ = call(base, "search_commentaries", {"query": "Kündigung", "limit": 3})
-    t = body_text(r)
-    m = re.findall(r"commentary_id[`'\"\s:]+([A-Za-z0-9_\-.]+)", t)
-    ids["commentary_id"] = m[0] if m else None
+    m = re.findall(r"\*\*\d+\. Art\. (\S+) (\S+)\*\*", body_text(r))
+    ids["commentary_article"] = list(m[0]) if m else None
     return ids
 
 
@@ -165,8 +164,9 @@ def cases(ids: dict) -> list[tuple]:
               ("get_scholarship_full_text", {"pub_id": ids["pub_id"]}, 40)]
     if ids.get("doc_id"):
         c += [("get_practice", {"doc_id": ids["doc_id"]}, 100)]
-    if ids.get("commentary_id"):
-        c += [("get_commentary", {"commentary_id": ids["commentary_id"]}, 60)]
+    if ids.get("commentary_article"):
+        art, abbr = ids["commentary_article"]
+        c += [("get_commentary", {"abbreviation": abbr, "article": art}, 100)]
     return c
 
 
