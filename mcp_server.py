@@ -21448,6 +21448,11 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                     "For best results send 3-8 precise terms; statute citations "
                     "like 'Art. 336 OR' may be included verbatim.\n\n"
                 )
+            # Bound before the branch: the no-results path reaches the same
+            # return, and binding this only where ECtHR hits are possible made
+            # every zero-result search raise NameError in production
+            # (surfaced to callers as a bare "Error: …" with isError=false).
+            _echr_note = ""
             if not results:
                 if _total_lb:
                     # No rows on THIS page but the (capped) total is a lower bound
