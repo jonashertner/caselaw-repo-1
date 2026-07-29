@@ -9783,13 +9783,20 @@ server = Server(
         "• 'Has the ECHR ruled against CH on X?'   → search_decisions(court='ecthr_chamber') or court='hudoc_ch'\n"
         "• 'BGE-published EGMR translation?'       → search_decisions(court='bge_egmr')\n\n"
 
-        "ECHR / EGMR coverage: ~2,800 decisions concerning Switzerland.\n"
-        "  - bge_egmr           — Swiss BGE-published German translations (477 decisions, since 1969)\n"
-        "  - hudoc_ch           — HUDOC ECHR cases tagged Switzerland (835 decisions)\n"
-        "  - ecthr_chamber      — ECtHR Chamber decisions (1,151)\n"
-        "  - ecthr_grand_chamber — Grand Chamber (93, the highest authority)\n"
-        "  - ecthr_committee    — Committee decisions (230)\n"
-        "All searchable via search_decisions with the court= filter.\n\n"
+        "ECHR / EGMR coverage: ~2,870 decisions, Swiss-respondent and beyond.\n"
+        "  - bge_egmr           — Swiss BGE-published translations (487, since 1969)\n"
+        "  - hudoc_ch           — HUDOC cases tagged Switzerland (847)\n"
+        "  - ecthr_chamber      — ECtHR Chamber judgments (1,194)\n"
+        "  - ecthr_grand_chamber — Grand Chamber (98, the highest authority)\n"
+        "  - ecthr_committee    — Committee judgments (245)\n"
+        "All searchable via search_decisions with the court= filter. Note that "
+        "the ECHR is interpreted uniformly, so leading authority on a Convention "
+        "article often arises against ANOTHER contracting state and is no less "
+        "relevant to Swiss practice — search without a court filter to reach it.\n"
+        "COPYRIGHT: Strasbourg text is © ECHR-CEDH, reproduced under the Court's "
+        "reuse terms, and is NOT covered by this project's CC0 dedication. "
+        "Responses carrying ECtHR text include the attribution; keep it with any "
+        "quotation you pass on.\n\n"
 
         "Colloquial terms work: search_laws('Vaterschaftsurlaub') finds "
         "Art. 329g OR even though the statute uses different wording.\n\n"
@@ -10683,6 +10690,8 @@ def _handle_get_erwaegung(*, decision_id: str, e_number: str) -> dict:
         "citation_string_it": citation["citation_string_it"],
         "canonical_url": citation["canonical_url"],
         "markdown_link": _md_link(citation["citation_string_de"], citation["canonical_url"]),
+        **({"copyright": _ECHR_ATTRIBUTION}
+           if _is_ecthr_court(decision_for_citation.get("court")) else {}),
         "rule_statement": _rule_statement(decision_for_citation, pinpoint_text=target["text"]),
         "_citation_format": citation["citation_string_de"],  # kept for backwards compat
     }
@@ -12150,6 +12159,7 @@ def _handle_get_regeste(*, decision_id: str) -> dict:
             "citation_string_it": citation["citation_string_it"],
             "canonical_url": citation["canonical_url"],
             "markdown_link": _md_link(citation["citation_string_de"], citation["canonical_url"]),
+            **({"copyright": _ECHR_ATTRIBUTION} if _is_ecthr_court(decision.get("court")) else {}),
             "rule_statement": _rule_statement(decision),
             "_note": (
                 "Regeste from main decisions DB. The Regeste is the official "
@@ -12187,6 +12197,7 @@ def _handle_get_regeste(*, decision_id: str) -> dict:
         "citation_string_it": citation["citation_string_it"],
         "canonical_url": citation["canonical_url"],
         "markdown_link": _md_link(citation["citation_string_de"], citation["canonical_url"]),
+        **({"copyright": _ECHR_ATTRIBUTION} if _is_ecthr_court(row["court"]) else {}),
         "rule_statement": _rule_statement(decision_for_citation),
         "_note": (
             "The Regeste is the official court-formulated summary of the legal "
@@ -17471,6 +17482,43 @@ def _lexfind_url(lexfind_id, lang: str = "de") -> str | None:
     return f"https://www.lexfind.ch/fe/{lang or 'de'}/tol/{lexfind_id}"
 
 
+# ── ECtHR attribution (© ECHR-CEDH) ──────────────────────────
+# The Court's reuse terms (echr.coe.int/copyright-and-disclaimer) permit
+# reproduction on THREE CUMULATIVE conditions: the source is acknowledged as
+# © ECHR-CEDH, the purpose is private use or information/education in
+# connection with the Court's activities, and the reproduction is free of
+# charge. We met neither the letter nor the spirit of condition 1 until
+# 2026-07-29: not one served response, tool description or dataset card
+# carried the notice. This helper is that acknowledgement, and it must ride
+# along wherever Strasbourg TEXT is reproduced — full text, regeste,
+# snippets — not merely where it is cited.
+_ECHR_ATTRIBUTION = (
+    "© ECHR-CEDH. Text of the European Court of Human Rights, reproduced from "
+    "HUDOC under the Court's reuse terms "
+    "(https://www.echr.coe.int/copyright-and-disclaimer). Not covered by this "
+    "project's CC0 dedication."
+)
+
+
+def _is_ecthr_court(court: str | None) -> bool:
+    return (court or "").lower() in _ECTHR_COURTS
+
+
+def _ecthr_attribution_note(rows) -> str:
+    """Trailing attribution block when any row reproduces Strasbourg text.
+
+    Returns '' when no ECtHR material is present, so Swiss-only responses are
+    byte-identical to before."""
+    try:
+        if isinstance(rows, dict):
+            rows = [rows]
+        if any(_is_ecthr_court((r or {}).get("court")) for r in (rows or [])):
+            return f"\n\n---\n{_ECHR_ATTRIBUTION}\n"
+    except Exception:
+        pass
+    return ""
+
+
 def _with_open_access_note(text: str) -> str:
     """Append the open-access note for commercial clients. The list-return
     path in _handle_call_tool_wrapper does this automatically, but it is
@@ -20992,12 +21040,19 @@ def _deep_research_fetch(doc_id: str) -> dict:
             f"The remainder — which may include the closing considerations and "
             f"the operative part — is not shown here. Full text: {url}]"
         )
+    # Full-text reproduction for deep-research clients: attribution rides in
+    # BOTH the text (which the client consumes as the document) and the
+    # metadata (machine-readable).
+    _echr = _is_ecthr_court(dec.get("court"))
+    if _echr:
+        full += f"\n\n---\n{_ECHR_ATTRIBUTION}\n"
     return {
         "id": canonical,
         "title": title,
         "text": full,
         "url": url,
         "metadata": {
+            **({"copyright": _ECHR_ATTRIBUTION} if _echr else {}),
             "court": dec.get("court"),
             "decision_date": dec.get("decision_date"),
             "docket_number": dec.get("docket_number"),
@@ -21297,6 +21352,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 text = (f"Found {total_count}{'+' if _total_lb else ''} decisions"
                         f"{_cap_note} (showing {req_offset + 1}\u2013{end}):\n\n")
                 text = _condense_note + text
+                _echr_note = _ecthr_attribution_note(results)
 
                 # Each result is rendered as a Markdown link so the LLM
                 # propagates a clickable citation to the user-facing answer.
@@ -21329,7 +21385,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                             )
                         text += "\n"
 
-            return [TextContent(type="text", text=text)]
+            return [TextContent(type="text", text=text + _echr_note)]
 
         elif name == "get_decision":
             _did_arg = arguments["decision_id"]
@@ -21433,6 +21489,8 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 _prep_mats = None
             if _prep_mats:
                 text += _format_materials_section_md(_prep_mats)
+            # Full-text reproduction: attribution is required here above all.
+            text += _ecthr_attribution_note(result)
             return [TextContent(type="text", text=text)]
 
         elif name == "cite":
@@ -22984,6 +23042,13 @@ setInterval(load, 30000);
         try:
             if "rule_statement" not in row:
                 row["rule_statement"] = _rule_statement(row)
+        except Exception:
+            pass
+        # © ECHR-CEDH: a structured field rather than prose, so it survives
+        # client-side sanitisers and is machine-checkable by integrators.
+        try:
+            if _is_ecthr_court(row.get("court")):
+                row.setdefault("copyright", _ECHR_ATTRIBUTION)
         except Exception:
             pass
         return row
