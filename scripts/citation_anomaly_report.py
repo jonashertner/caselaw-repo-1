@@ -165,7 +165,10 @@ def main() -> int:
     if not PRIVATE_REPO.exists():
         print(f"private repo missing: {PRIVATE_REPO}", file=sys.stderr)
         return 1
-    _git(["pull", "--rebase", "-q"])
+    try:
+        _git(["pull", "--rebase", "-q"])
+    except subprocess.CalledProcessError:
+        pass                    # fresh/empty repo: no upstream branch yet
 
     seen_path = PRIVATE_REPO / ".seen.json"
     seen: dict = json.loads(seen_path.read_text()) if seen_path.exists() else {}
@@ -190,7 +193,7 @@ def main() -> int:
     _git(["add", "-A"])
     _git(["commit", "-q", "-m",
           f"Meldung {today}: {len(new_hits)} neue Anomalie(n)"])
-    _git(["push", "-q"])
+    _git(["push", "-q", "-u", "origin", "HEAD"])
     print(f"report {out.name}: {len(new_hits)} new finding(s), pushed")
     if new_hits:
         _ntfy(len(new_hits))
