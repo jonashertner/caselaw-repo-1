@@ -1,5 +1,5 @@
 [Unit]
-Description=Daily OpenCaseLaw tool surface check (18:15 UTC, post-publish)
+Description=Daily OpenCaseLaw tool surface check (18:50 UTC, post-publish)
 
 [Timer]
 # After the nightly rebuild's tail (~17:10 finish, ~18:40 serialised) the
