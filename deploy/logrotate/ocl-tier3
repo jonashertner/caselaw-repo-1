@@ -1,0 +1,24 @@
+# tier3 (classified, no-IP endpoint log) had no rotation — found 2026-07-30 at
+# 3.6GB unbounded while tier1/tier2 rotate daily. Mirrors ocl-tier2 exactly,
+# except rotate 30: tier3 is the long-horizon classified log (no IPs, no UAs),
+# so a longer window is compatible with the privacy posture and useful for
+# trend analysis.
+# Apply: cp deploy/logrotate/ocl-tier3 /etc/logrotate.d/ocl-tier3
+# Verify: logrotate -d /etc/logrotate.d/ocl-tier3
+/var/log/nginx/tier3.log {
+    daily
+    rotate 30
+    maxage 30
+    missingok
+    notifempty
+    compress
+    delaycompress
+    dateext
+    create 0644 www-data adm
+    sharedscripts
+    postrotate
+        if [ -f /run/nginx.pid ]; then
+            kill -USR1 `cat /run/nginx.pid`
+        fi
+    endscript
+}
