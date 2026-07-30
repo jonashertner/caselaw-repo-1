@@ -1,0 +1,12 @@
+[Unit]
+Description=Confidential citation-anomaly report to the private repo
+OnFailure=ntfy-alert@%n.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/caselaw/repo
+Environment=SWISS_CASELAW_DB=/opt/caselaw/repo/output/decisions.db
+ExecStart=/usr/bin/python3 scripts/citation_anomaly_report.py
+StandardOutput=append:/opt/caselaw/repo/logs/citation_anomaly_report.log
+StandardError=append:/opt/caselaw/repo/logs/citation_anomaly_report.log
+TimeoutStartSec=300

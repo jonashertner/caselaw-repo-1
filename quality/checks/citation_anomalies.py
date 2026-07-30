@@ -146,10 +146,19 @@ def _since() -> str:
 
 
 def _write_report(payload: dict) -> None:
+    """Merge-write: each check contributes its keys to one report file, so
+    the confidential alert dispatcher sees every class in a single artifact."""
     try:
         p = _report_path()
         p.parent.mkdir(parents=True, exist_ok=True)
-        p.write_text(json.dumps(payload, ensure_ascii=False, indent=1))
+        existing: dict = {}
+        if p.exists():
+            try:
+                existing = json.loads(p.read_text())
+            except Exception:
+                existing = {}
+        existing.update(payload)
+        p.write_text(json.dumps(existing, ensure_ascii=False, indent=1))
     except Exception:
         pass                            # the report is best-effort
 
@@ -220,6 +229,8 @@ def check_anachronistic_citations(conn: sqlite3.Connection, **_) -> CheckResult:
             if 1875 <= cyear <= 2100 and cyear > syear + 1:
                 hits.append({"decision_id": r["sid"], "decided": sdate,
                              "token": r["ref"], "cited_year": cyear})
+        _write_report({"anachronistic": hits[:200],
+                       "anachronistic_total": len(hits)})
         threshold = 50
         sev = Severity.WARNING if len(hits) > threshold else Severity.INFO
         return CheckResult(
