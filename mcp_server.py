@@ -10512,13 +10512,27 @@ def _parse_mkg_ref(decision: dict) -> dict | None:
 # URLs that sit on separate lines). This is the only reliable path to
 # clickable citations in ChatGPT / Claude.ai / Copilot answers.
 
+def _decision_path(decision_id: str) -> str:
+    """URL-encode a decision id for use as a path segment.
+
+    Issue #59: ~58,500 stored ids (5.6% of the corpus) contain literal
+    spaces — 'bge_152 V 60', 'fr_gerichte_604 2026 30'. Interpolated raw
+    into a Markdown link, the URL breaks at the first space and a client
+    that derives the id from the link (the only place the canonical id
+    appears) gets a truncated, NON-unique value ('bge_152'). Every
+    /entscheid/ URL must go through this helper; a source-scan test
+    enforces it.
+    """
+    return urllib.parse.quote(str(decision_id or ""), safe="")
+
+
 def _canonical_decision_url(decision_id: str, pinpoint: str | None = None) -> str:
     """Build the /entscheid/<id>[#e-N-M] URL for a given decision id."""
     if not decision_id:
         return ""
     pin = _strip_erw_prefix(pinpoint)
     anchor = _pinpoint_anchor(pin) if pin else ""
-    return f"{_CITATION_BASE_URL}/entscheid/{decision_id}{anchor}"
+    return f"{_CITATION_BASE_URL}/entscheid/{_decision_path(decision_id)}{anchor}"
 
 
 def _md_link(label: str, url: str) -> str:
@@ -10598,7 +10612,7 @@ def _build_citation_strings(decision: dict, pinpoint: str | None = None) -> dict
     decision_date = decision.get("decision_date") or ""
     pin = _strip_erw_prefix(pinpoint)
     anchor = _pinpoint_anchor(pin) if pin else ""
-    url = f"{_CITATION_BASE_URL}/entscheid/{decision_id}{anchor}"
+    url = f"{_CITATION_BASE_URL}/entscheid/{_decision_path(decision_id)}{anchor}"
 
     def _pin_suffix(sep_de: str, sep_fr: str, sep_it: str) -> tuple:
         if not pin:
@@ -14067,7 +14081,7 @@ def _handle_strengthen(*, redacted_text: str, lang: str = "de") -> dict:
                     f"({case.get('citation_count', 0)} eingehende Zitationen)"
                 ),
                 "related_statute": f"Art. {article} {law}",
-                "url": case.get("canonical_url") or f"https://mcp.opencaselaw.ch/entscheid/{did}",
+                "url": case.get("canonical_url") or f"https://mcp.opencaselaw.ch/entscheid/{_decision_path(did)}",
             })
             if len(suggested_citations) >= 5:
                 break
@@ -17457,6 +17471,61 @@ def _search_laws_cantonal(
         conn.close()
 
 
+_FTS5_OPERATOR_TOKENS = {"AND", "OR", "NOT", "NEAR"}
+
+
+def _explicit_laws_match(raw_query: str) -> str:
+    """FTS5 MATCH string for search_laws when the user wrote explicit syntax.
+
+    Issue #60: the schema advertises quotes/OR/AND/* — but _expand_law_query
+    re-tokenises with `re.findall(r"[\\w]+", q.lower())`, which lowercases the
+    operators (FTS5 operators are uppercase-only), drops the quotes and drops
+    the star. Every advertised feature was destroyed by the pipeline that
+    followed the sanitiser: `X OR Y` failed closed (0 hits), `X AND junk`
+    failed open (the OR-fill returned hits without `junk`), phrases matched
+    unordered words, prefixes matched nothing.
+
+    Built from the RAW query (the sanitizer quotes even operand-flanked OR to
+    protect the Obligationenrecht abbreviation — right for natural-language
+    queries, wrong once the user is explicitly writing boolean syntax).
+    Rules, mirroring FTS5's own:
+      - balanced double-quoted phrases pass through verbatim;
+      - a trailing `*` on a bare token is kept (prefix search);
+      - AND / OR / NOT / NEAR count as operators only in EXACT uppercase and
+        only with operands on both sides — a stray leading/trailing operator
+        is quoted into a literal;
+      - everything else is reduced to word characters (umlauts included), so
+        stray punctuation cannot produce FTS5 syntax errors. Parentheses and
+        column filters are not supported and degrade to plain terms.
+    """
+    parts = re.findall(r'"[^"]*"|\S+', raw_query or "")
+    cleaned: list[str] = []
+    for p in parts:
+        if len(p) >= 2 and p.startswith('"') and p.endswith('"'):
+            inner = p[1:-1].replace('"', " ").strip()
+            if inner:
+                cleaned.append(f'"{inner}"')
+            continue
+        if p in _FTS5_OPERATOR_TOKENS:
+            cleaned.append(p)
+            continue
+        star = p.endswith("*")
+        body = re.sub(r"[^0-9A-Za-zÀ-ÖØ-öø-ÿ_]+", "", p)
+        if body:
+            cleaned.append(body + ("*" if star else ""))
+    out: list[str] = []
+    for i, t in enumerate(cleaned):
+        if t in _FTS5_OPERATOR_TOKENS:
+            has_left = i > 0 and cleaned[i - 1] not in _FTS5_OPERATOR_TOKENS
+            has_right = (i + 1 < len(cleaned)
+                         and cleaned[i + 1] not in _FTS5_OPERATOR_TOKENS)
+            if not (has_left and has_right):
+                out.append(f'"{t}"')
+                continue
+        out.append(t)
+    return " ".join(out)
+
+
 def _expand_law_query(sanitized_query: str, multi_or: bool = False) -> str:
     """Expand a sanitized query with colloquial→statute-text synonyms.
 
@@ -17574,8 +17643,15 @@ def search_laws(
     if hit_federal and not sr_number:
         federal_abbrev = _abbreviation_lookup_federal(raw_query, language)
 
+    # Issue #60: explicit FTS5 syntax (quotes / uppercase OR-AND-NOT / prefix*)
+    # must reach the index as written. Detected on the ORIGINAL query and
+    # built from it — both the sanitiser (which quotes OR to protect the
+    # Obligationenrecht abbreviation) and _expand_law_query (which lowercases
+    # and re-tokenises) would destroy it.
+    explicit_match = (_explicit_laws_match(raw_query)
+                      if _has_explicit_fts_syntax(raw_query) else "")
     query = _sanitize_fts5(query)
-    if not query:
+    if not query and not explicit_match:
         if federal_abbrev:
             results = federal_abbrev[:limit]
             return {
@@ -17588,8 +17664,14 @@ def search_laws(
         # Echo the user's original input, not the sanitised empty string,
         # so log lines and downstream telemetry record what was searched.
         return {"query": raw_query, "count": 0, "results": []}
-    or_query = _expand_law_query(query, multi_or=True)  # issue #31 broadened form
-    query = _expand_law_query(query)                     # strict (all-terms) form
+    if explicit_match:
+        # No expansion, no OR-fill: the user's operators decide. An AND with
+        # a term the corpus lacks now honestly returns 0 instead of an
+        # OR-filled page that ignores the operand (#60's fails-open case).
+        query, or_query = explicit_match, None
+    else:
+        or_query = _expand_law_query(query, multi_or=True)  # issue #31 broadened form
+        query = _expand_law_query(query)                     # strict (all-terms) form
 
     federal_results: list[dict] = []
     cantonal_results: list[dict] = []
@@ -20692,8 +20774,12 @@ def _list_tools() -> list[Tool]:
                     "query": {
                         "type": "string",
                         "description": (
-                            "Search query (supports FTS5 syntax: quotes for "
-                            "phrases, OR/AND for boolean, wildcards with *)."
+                            "Search query. Explicit syntax is supported and "
+                            "operators must be UPPERCASE: 'Miete OR Pacht', "
+                            "'Kündigung AND Frist' (AND with an absent term "
+                            "returns 0), '\"exakte Wortfolge\"' for phrases, "
+                            "'Verfahr*' for prefixes. Lowercase or/and are "
+                            "treated as ordinary words."
                         ),
                     },
                     "sr_number": {
@@ -26054,7 +26140,7 @@ setInterval(load, 30000);
             return Response(f"cli:ch resolver: could not parse '{cli_ch}'",
                             status_code=400, media_type="text/plain")
         qs = str(request.url.query)
-        target = f"/entscheid/{decision_id}"
+        target = f"/entscheid/{_decision_path(decision_id)}"
         if qs:
             target += f"?{qs}"
         from starlette.responses import RedirectResponse
