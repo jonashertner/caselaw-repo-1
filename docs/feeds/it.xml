@@ -5,9 +5,17 @@
     <link>https://opencaselaw.ch/feeds/it.xml</link>
     <description>Latest published Swiss court decisions in Italiano.</description>
     <language>de-CH</language>
-    <lastBuildDate>Tue, 28 Jul 2026 10:18:11 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 30 Jul 2026 11:08:57 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/it.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Bundesverwaltungsgericht A-598/2024 vom 2026-07-21</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_A-598_2024</link>
+      <description>Imposta preventiva</description>
+      <pubDate>Tue, 21 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:A-598.2024</guid>
+      <category>bvger</category>
+    </item>
     <item>
       <title>Bundesverwaltungsgericht F-4915/2026 vom 2026-07-17</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-4915_2026</link>
@@ -44,6 +52,14 @@ Partecipanti al procedimento
       <pubDate>Thu, 16 Jul 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BGer:2026:4D_93.2026</guid>
       <category>bger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht C-712/2024 vom 2026-07-16</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-712_2024</link>
+      <description>Assicurazione contro gli infortuni (altro)</description>
+      <pubDate>Thu, 16 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-712.2024</guid>
+      <category>bvger</category>
     </item>
     <item>
       <title>gr_gerichte SV2 2026 38 vom 2026-07-16</title>
@@ -883,44 +899,6 @@ Partecipanti …</description>
       <guid isPermaLink="false">ECLI:CH:BGer:2026:1C_204.2026</guid>
       <category>bger</category>
       <category>Cittadinanza e diritto degli stranieri</category>
-    </item>
-    <item>
-      <title>Bundesgericht 5A_446/2026 vom 2026-06-15</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_446_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-5A_446/2026
-
-Sentenza del 15 giugno 2026
-
-II Corte di diritto civile
-
-Composizione
-
-Giudice federale Bovey, Presidente,
-
-Cancelliera Antonini.
-
-Partecipanti al procedimento
-
-A.___…</description>
-      <pubDate>Mon, 15 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_446.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht D-974/2025 vom 2026-06-15</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-974_2025</link>
-      <description>Asilo (senza esecuzione dell'allontanamento)</description>
-      <pubDate>Mon, 15 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-974.2025</guid>
-      <category>bvger</category>
     </item>
   </channel>
 </rss>
