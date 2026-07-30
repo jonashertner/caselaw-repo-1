@@ -2291,6 +2291,27 @@ def build_database(
                     pass
                 logger.warning("canonical date correction skipped (non-fatal): %s", _cd_err)
 
+    # GitHub #57: the scraper-side chamber derivation was fixed (7B/7F ->
+    # II. strafrechtliche Abteilung; foreign-court pickup removed), but
+    # chamber is written at scrape time, so ~4,700 stored bger rows keep the
+    # bad values until re-derived. Same defensive contract as above: can
+    # never fail the build.
+    if total_imported > 0:
+        with _phase_timer("bger chamber correction"):
+            try:
+                import backfill_bger_chambers as _bbc
+                _n_f, _n_r, _n_n = _bbc.apply_to_db(conn)
+                logger.info(
+                    "bger chambers: %d 7B/7F forced to II. Strafrechtliche "
+                    "Abteilung, %d broken values re-derived from full_text, "
+                    "%d cleared to NULL", _n_f, _n_r, _n_n)
+            except Exception as _bc_err:
+                try:
+                    conn.rollback()
+                except Exception:
+                    pass
+                logger.warning("bger chamber correction skipped (non-fatal): %s", _bc_err)
+
     if not no_optimize and total_imported > 0:
         with _phase_timer("FTS5 optimize"):
             # heartbeat-wrapped so the publish stall-watchdog doesn't false-kill this ~4h
