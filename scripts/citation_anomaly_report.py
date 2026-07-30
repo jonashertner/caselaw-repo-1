@@ -55,8 +55,10 @@ REASON_DE = {
 
 
 def _reason_de(reason: str) -> str:
-    parts = [REASON_DE.get(p, p) for p in reason.split()]
-    return "; ".join(parts)
+    parts = reason.split()
+    if parts and all(p in REASON_DE for p in parts):
+        return "; ".join(REASON_DE[p] for p in parts)
+    return reason                       # free-text reason: leave intact
 
 
 def _load_hits() -> list[dict]:
@@ -191,7 +193,9 @@ def main() -> int:
     seen_path.write_text(json.dumps(seen, ensure_ascii=False, indent=1))
 
     _git(["add", "-A"])
-    _git(["commit", "-q", "-m",
+    _git(["-c", "user.name=OpenCaseLaw Anomaly Reporter",
+          "-c", "user.email=noreply@opencaselaw.ch",
+          "commit", "-q", "-m",
           f"Meldung {today}: {len(new_hits)} neue Anomalie(n)"])
     _git(["push", "-q", "-u", "origin", "HEAD"])
     print(f"report {out.name}: {len(new_hits)} new finding(s), pushed")

@@ -51,7 +51,11 @@ _BGE_TOKEN = re.compile(r"^BGE\s+(\d{1,3})\s+([IVX]+[ab]?)\s+(\d{1,4})$")
 _BGE_SERIES = re.compile(r"^(\d{1,3})\s+([IVX]+[ab]?)\s+(\d{1,4})$")
 # Federal-court docket shapes: 4A_123/2019, 9C_55/2024, 7B 1008/2023, 2C-64/2026
 _FED_DOCKET = re.compile(r"^(\d{1,2}[A-Z])[ _\-](\d{1,4})/(\d{4})$")
-_ANY_YEAR = re.compile(r"/(\d{4})\b|_(\d{4})\b")
+# Year extraction for the anachronism check: docket-year positions only
+# (federal shape, or a slash-year suffix). A bare _NNNN match reads
+# file-number serials as years: STA_2026_2069 flagged "2069" because _
+# is a word char, so _2026 has no trailing boundary and _2069 matched.
+_ANY_YEAR = re.compile(r"/((?:19|20)\d\d)$")
 PINCITE_WINDOW = 30
 
 
@@ -222,10 +226,11 @@ def check_anachronistic_citations(conn: sqlite3.Connection, **_) -> CheckResult:
             if len(sdate) < 4 or not sdate[:4].isdigit():
                 continue
             syear = int(sdate[:4])
-            m = _ANY_YEAR.search(r["ref"] or "")
+            ref = (r["ref"] or "").strip()
+            m = _FED_DOCKET.match(ref) or _ANY_YEAR.search(ref)
             if not m:
                 continue
-            cyear = int(m.group(1) or m.group(2))
+            cyear = int(m.group(m.lastindex or 1))
             if 1875 <= cyear <= 2100 and cyear > syear + 1:
                 hits.append({"decision_id": r["sid"], "decided": sdate,
                              "token": r["ref"], "cited_year": cyear})
