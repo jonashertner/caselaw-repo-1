@@ -1,87 +1,106 @@
 {
   "by_match_type": {
     "docket_norm": {
-      "total": 3288460,
-      "date_coverage_pct": 99.96,
-      "date_sanity_pass_pct": 97.2494,
-      "date_violations": 90419,
+      "total": 5701604,
+      "date_coverage_pct": 99.94,
+      "date_sanity_pass_pct": 97.3047,
+      "date_violations": 153583,
       "self_citations": 0,
       "self_cite_violation_pct": 0.0,
-      "missing_source_date": 1246,
-      "missing_target_date": 16,
+      "missing_source_date": 3497,
+      "missing_target_date": 28,
       "confidence_percentiles": {
         "p0": 0.19,
-        "p10": 0.95,
-        "p25": 0.95,
-        "p50": 0.99,
+        "p10": 0.75,
+        "p25": 0.93,
+        "p50": 0.95,
         "p75": 0.99,
         "p90": 0.99,
         "p100": 0.99
       }
     },
     "bge_norm": {
-      "total": 1216702,
-      "date_coverage_pct": 99.99,
-      "date_sanity_pass_pct": 99.2626,
-      "date_violations": 8971,
+      "total": 2140153,
+      "date_coverage_pct": 99.96,
+      "date_sanity_pass_pct": 98.9803,
+      "date_violations": 21815,
       "self_citations": 0,
       "self_cite_violation_pct": 0.0,
-      "missing_source_date": 155,
+      "missing_source_date": 870,
       "missing_target_date": 0,
       "confidence_percentiles": {
         "p0": 0.45,
         "p10": 0.75,
         "p25": 0.75,
         "p50": 0.75,
+        "p75": 0.75,
+        "p90": 0.8,
+        "p100": 0.99
+      }
+    },
+    "bge_bare": {
+      "total": 1183579,
+      "date_coverage_pct": 99.97,
+      "date_sanity_pass_pct": 99.3899,
+      "date_violations": 7219,
+      "self_citations": 0,
+      "self_cite_violation_pct": 0.0,
+      "missing_source_date": 351,
+      "missing_target_date": 0,
+      "confidence_percentiles": {
+        "p0": 0.45,
+        "p10": 0.75,
+        "p25": 0.85,
+        "p50": 0.85,
         "p75": 0.85,
         "p90": 0.93,
         "p100": 0.99
       }
     },
-    "bge_bare": {
-      "total": 2944527,
-      "date_coverage_pct": 99.98,
-      "date_sanity_pass_pct": 99.752,
-      "date_violations": 7302,
-      "self_citations": 0,
-      "self_cite_violation_pct": 0.0,
-      "missing_source_date": 485,
-      "missing_target_date": 0,
-      "confidence_percentiles": {
-        "p0": 0.45,
-        "p10": 0.75,
-        "p25": 0.75,
-        "p50": 0.85,
-        "p75": 0.85,
-        "p90": 0.9,
-        "p100": 0.99
-      }
-    },
     "bge_pincite": {
-      "total": 652547,
+      "total": 934734,
       "date_coverage_pct": 99.92,
-      "date_sanity_pass_pct": 97.3508,
-      "date_violations": 17273,
+      "date_sanity_pass_pct": 97.9868,
+      "date_violations": 18803,
       "self_citations": 0,
       "self_cite_violation_pct": 0.0,
-      "missing_source_date": 530,
+      "missing_source_date": 748,
       "missing_target_date": 0,
       "confidence_percentiles": {
         "p0": 0.5,
-        "p10": 0.65,
+        "p10": 0.75,
         "p25": 0.75,
-        "p50": 0.75,
+        "p50": 0.8,
         "p75": 0.83,
-        "p90": 0.89,
+        "p90": 0.88,
         "p100": 0.89
+      }
+    },
+    "oracle_xref": {
+      "total": 29856,
+      "date_coverage_pct": 99.8,
+      "date_sanity_pass_pct": 93.4891,
+      "date_violations": 1940,
+      "self_citations": 0,
+      "self_cite_violation_pct": 0.0,
+      "missing_source_date": 60,
+      "missing_target_date": 0,
+      "confidence_percentiles": {
+        "p0": 0.85,
+        "p10": 0.85,
+        "p25": 0.85,
+        "p50": 0.85,
+        "p75": 0.85,
+        "p90": 0.85,
+        "p100": 0.85
       }
     }
   },
   "overall": {
-    "total": 8102236,
-    "date_coverage_pct": 99.97,
-    "date_sanity_pass_pct": 98.4695,
-    "date_violations": 123965,
+    "total": 9989926,
+    "date_coverage_pct": 99.94,
+    "date_sanity_pass_pct": 97.9632,
+    "date_violations": 203360,
     "self_citations": 0,
     "self_cite_violation_pct": 0.0
   }

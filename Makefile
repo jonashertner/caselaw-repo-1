@@ -16,7 +16,7 @@
 # python3 — the reviewer Docker image and CI have no .venv and must be
 # unaffected. An explicit PYTHON=... on the command line still wins.
 PYTHON ?= $(if $(wildcard .venv/bin/python),.venv/bin/python,python3)
-PAPER_DIR := docs/paper/v3
+PAPER_DIR := docs/paper/p1-resource
 RELEASE_DATE := $(shell date +%Y-%m-%d)
 STATS_JSON := $(PAPER_DIR)/tables/corpus_graph_stats.json
 
@@ -88,11 +88,11 @@ verify-graph:
 	else \
 		echo "  (no local reference_graph.db with citation_targets — using corpus_graph_stats.json)" ; \
 		$(PYTHON) -c "import json, pathlib; \
-s=json.loads(pathlib.Path('docs/paper/v3/tables/corpus_graph_stats.json').read_text()); \
+s=json.loads(pathlib.Path('$(STATS_JSON)').read_text()); \
 raw=s['rg_citation_edges']; resolved=s['rg_resolved_citations']; pct=100.0*resolved/raw; \
 print(f'  rg_citation_edges = {raw:,}'); \
 print(f'  rg_resolved_citations = {resolved:,}'); \
-print(f'  resolution rate = {pct:.2f}% (paper §4 headline: 93.5%)'); \
+print(f'  resolution rate = {pct:.2f}% (paper §4 headline: 93.8%)'); \
 assert pct > 90.0, f'resolution regressed below 90% floor: {pct}%'; \
 print('  ✓ matches paper §4 within 1pp')" ; \
 	fi
