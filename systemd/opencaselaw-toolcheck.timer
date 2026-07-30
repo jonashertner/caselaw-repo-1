@@ -1,0 +1,12 @@
+[Unit]
+Description=Daily OpenCaseLaw tool surface check (18:15 UTC, post-publish)
+
+[Timer]
+# After the nightly rebuild's tail (~17:10 finish, ~18:40 serialised) the
+# box is quiet; results then reflect steady-state service, not build load.
+OnCalendar=*-*-* 18:50:00 UTC
+RandomizedDelaySec=300
+Persistent=true
+
+[Install]
+WantedBy=timers.target

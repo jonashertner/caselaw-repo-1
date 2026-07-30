@@ -1,0 +1,17 @@
+[Unit]
+Description=OpenCaseLaw daily 42-tool functional check (surface probe)
+# Fires the standard ntfy alert if any tool FAILs (script exits 1).
+OnFailure=ntfy-alert@%n.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/caselaw/repo
+# Realistic arguments, ids harvested from live searches; ~44 calls total.
+# This is the instrument that caught the zero-result NameError, the dead
+# materialien path and the unreachable scholarship chain (2026-07-29) —
+# `make smoke` only checks four endpoints return 200.
+ExecStart=/usr/bin/python3 scripts/tool_surface_check.py --workers 3 \
+  --json /opt/caselaw/repo/logs/tool_surface_last.json
+TimeoutStartSec=900
+StandardOutput=append:/opt/caselaw/repo/logs/tool_surface_check.log
+StandardError=append:/opt/caselaw/repo/logs/tool_surface_check.log
