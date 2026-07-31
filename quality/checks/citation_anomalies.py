@@ -182,29 +182,47 @@ def check_nonexistent_bge_citations(conn: sqlite3.Connection, **_) -> CheckResul
             return CheckResult(name=name, severity=Severity.INFO, passed=True,
                                metric_value=0, threshold=None,
                                message="no BGE series rows — skipped")
+        # Two scopes, deliberately split (measured 2026-07-31): the
+        # corpus-wide scan finds ~2,600 anomalies, but they concentrate in
+        # 19th/early-20th-century citing decisions where the flagged token is
+        # usually OUR OCR of Roman numerals, not the court's error — useful
+        # as a corpus-QA metric, useless for court outreach. The recent
+        # window (default 90d, decision date) is the high-precision alerting
+        # and outreach surface; the corpus-wide total is reported as an INFO
+        # metric so extraction-noise regressions stay visible.
         since = _since()
-        hits: list[dict] = []
-        for r in _iter_window_tokens(rg, since, resolved=False):
+        recent: list[dict] = []
+        all_by_reason: dict[str, int] = {}
+        all_total = 0
+        for r in _iter_window_tokens(rg, "1800-01-01", resolved=False):
             if r["tt"] != "bge":
                 continue
             reason = _classify_bge(r["ref"], idx, max_vol)
-            if reason:
-                hits.append({"decision_id": r["sid"], "decided": r["sdate"],
-                             "token": r["ref"], "reason": reason})
+            if not reason:
+                continue
+            all_total += 1
+            key = reason.split()[0]
+            all_by_reason[key] = all_by_reason.get(key, 0) + 1
+            if (r["sdate"] or "") >= since:
+                recent.append({"decision_id": r["sid"], "decided": r["sdate"],
+                               "token": r["ref"], "reason": reason})
         threshold = 25
         _write_report({
             "generated": datetime.date.today().isoformat(),
             "window_days": _window_days(), "since": since,
-            "nonexistent_bge": hits[:200],
-            "nonexistent_bge_total": len(hits),
+            "nonexistent_bge": recent[:200],
+            "nonexistent_bge_total": len(recent),
+            "nonexistent_bge_corpus_total": all_total,
+            "nonexistent_bge_corpus_by_reason": all_by_reason,
         })
-        sev = Severity.WARNING if len(hits) > threshold else Severity.INFO
+        sev = Severity.WARNING if len(recent) > threshold else Severity.INFO
         return CheckResult(
-            name=name, severity=sev, passed=len(hits) <= threshold,
-            metric_value=len(hits), threshold=threshold,
-            message=(f"{len(hits)} provably-nonexistent BGE citation(s) in "
-                     f"decisions decided since {since} "
-                     f"(detail: {_report_path()})"))
+            name=name, severity=sev, passed=len(recent) <= threshold,
+            metric_value=len(recent), threshold=threshold,
+            message=(f"{len(recent)} provably-nonexistent BGE citation(s) in "
+                     f"decisions decided since {since}; corpus-wide total "
+                     f"{all_total} (mostly historical OCR noise — QA metric, "
+                     f"not outreach; detail: {_report_path()})"))
     finally:
         rg.close()
 

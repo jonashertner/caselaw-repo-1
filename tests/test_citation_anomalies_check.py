@@ -105,7 +105,9 @@ def rg(tmp_path, monkeypatch):
         ("zh_x_1", "WBE_2015_477", "docket"),
         # unresolved recent federal docket — informational only
         ("zh_x_1", "4A_999/2024", "docket"),
-        # nonexistent BGE cited by the OLD decision — outside window, ignored
+        # nonexistent BGE cited by an OLD decision — the BGE class is
+        # corpus-wide (backfills are newly scraped even when decided long
+        # ago), so this one COUNTS
         ("bger_old", "BGE 142 II 650", "bge"),
     ])
     # resolve the plausible pin-cite so only the truly unresolved remain
@@ -121,13 +123,19 @@ def rg(tmp_path, monkeypatch):
     return tmp_path
 
 
-def test_nonexistent_bge_found_and_reported(rg):
+def test_nonexistent_bge_windowed_alert_with_corpus_metric(rg):
+    """Alerting metric = recent window (outreach precision); corpus-wide
+    total rides along as a QA metric (historical hits are mostly OCR noise
+    in OUR scans of 19th-century texts, not court errors)."""
     res = ca.check_nonexistent_bge_citations(None)
-    assert res.metric_value == 1, res.message
-    assert res.passed  # below threshold -> INFO
+    assert res.metric_value == 1, res.message      # only the recent decision
+    assert "corpus-wide total 2" in res.message    # backfill case counted here
+    assert res.passed
     import json
     rep = json.loads((rg / "report.json").read_text())
     assert rep["nonexistent_bge_total"] == 1
+    assert rep["nonexistent_bge_corpus_total"] == 2
+    assert rep["nonexistent_bge_corpus_by_reason"] == {"page_beyond_series": 2}
     hit = rep["nonexistent_bge"][0]
     assert hit["decision_id"] == "bger_1C_1_2026"
     assert hit["token"] == "BGE 142 II 650"
