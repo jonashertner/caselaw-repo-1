@@ -1,0 +1,22 @@
+\begin{table}[H]
+\centering
+\caption{Swiss Legal RAG bench results, both conditions, side-by-side. 30 questions (DE\,{=}\,18, FR\,{=}\,8, IT\,{=}\,4). Generator and judges: Claude Sonnet 4.6. Retriever: live MCP \texttt{/api/decisions}, top-K\,{=}\,5 with annotated statute text injected. Outcome classes follow Butler\,\&\,Butler 2026: \emph{correct} (correctness $\wedge$ groundedness $\wedge$ retrieval); \emph{hallucination} ($\neg$ groundedness); \emph{retrieval} (grounded $\wedge$ $\neg$ retrieval $\wedge$ $\neg$ correctness); \emph{reasoning} (grounded $\wedge$ retrieval $\wedge$ $\neg$ correctness). In prior-only mode the retriever is skipped, so only \emph{correct} / \emph{hallucination} apply.}
+\label{tab:audit_bench_results}
+\small
+\begin{tabular}{l r r}
+\toprule
+\textbf{Metric} & \textbf{Prior-only} & \textbf{RAG-aug} \\
+\midrule
+n questions & 30 & 30 \\
+Correctness (entailment judge) & 86.7\% & 63.3\% \\
+Groundedness (passage-support judge) & --- & 93.3\% \\
+Retrieval accuracy (annotated case in top-5) & --- & 53.3\% \\
+\midrule
+\multicolumn{3}{l}{\emph{Error-class decomposition (n decisions per class)}} \\
+\quad correct          & 26 & 17 \\
+\quad hallucination    & 4 & 2 \\
+\quad retrieval        & ---           & 9 \\
+\quad reasoning        & ---           & 2 \\
+\bottomrule
+\end{tabular}
+\end{table}

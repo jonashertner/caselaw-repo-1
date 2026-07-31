@@ -106,6 +106,16 @@ def main() -> int:
            "WHEN c >= 100 THEN '100-999' WHEN c >= 10 THEN '10-99' "
            "ELSE '1-9' END AS bucket FROM (SELECT COUNT(*) AS c FROM "
            "citation_targets GROUP BY target_decision_id)) GROUP BY 1")
+    # The most-cited decision exists under two stored id variants; the paper
+    # reports the aggregated distinct (source, token) pair count. Freeze it.
+    s["top_cited_canonical"] = {
+        "decision": "BGE 125 V 351",
+        "variants": ["bge_125 V 351", "bge_BGE_125_V_351"],
+        "distinct_citing_pairs": one(
+            g, "SELECT COUNT(DISTINCT source_decision_id || '|' || target_ref) "
+               "FROM citation_targets WHERE target_decision_id IN "
+               "('bge_125 V 351','bge_BGE_125_V_351')"),
+    }
     s["top30_cited"] = rows(
         g, "SELECT target_decision_id, COUNT(*) AS n FROM citation_targets "
            "GROUP BY 1 ORDER BY 2 DESC LIMIT 30")
@@ -154,8 +164,8 @@ def main() -> int:
     sch_tabs = {r[0] for r in sch.execute(
         "SELECT name FROM sqlite_master WHERE type='table'")}
     s["scholarship"] = {"publications": one(sch, "SELECT COUNT(*) FROM publications")}
-    for tab, key in (("publication_cites_decision", "cites_decision_edges"),
-                     ("publication_cites_statute", "cites_statute_edges")):
+    for tab, key in (("pub_citations_decisions", "cites_decision_edges"),
+                     ("pub_citations_statutes", "cites_statute_edges")):
         if tab in sch_tabs:
             s["scholarship"][key] = one(sch, f"SELECT COUNT(*) FROM {tab}")
     s["scholarship"]["sources"] = one(
