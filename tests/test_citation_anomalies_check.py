@@ -1,10 +1,20 @@
 """Citation-integrity anomaly checks (quality/checks/citation_anomalies.py).
 
 The load-bearing property is the classifier: it must flag only citations
-whose nonexistence is PROVABLE from the complete BGE series (respecting the
-30-page pin-cite window), and must not flag coverage gaps — the 2026-07-31
-recon showed 600k unresolved cantonal self-citations (WBE_*) that are
-absences from the corpus, not anomalies in the decisions.
+whose nonexistence is PROVABLE from the BGE series, and must not flag
+coverage gaps — the 2026-07-31 recon showed 600k unresolved cantonal
+self-citations (WBE_*) that are absences from the corpus, not anomalies in
+the decisions. Two hard-won invariants from the same day's verification
+pass (each produced a real-world false positive before):
+
+  1. The series index must parse ALL THREE docket formats ("142 II 590",
+     "1_I_26", "BGE 136 II 120") and match divisions case-insensitively
+     ("120 IA 1" docket vs "BGE 120 Ia 1" citation) — the spaced-only
+     pattern dropped 70% of series rows.
+  2. Volumes are continuously paginated, so any mid-volume page is a
+     plausible deep pin-cite into the case that starts before it
+     ("BGE 141 V 312" = 31 pages into BGE 141 V 281). Only pages beyond
+     the last case start + window are provably outside the series.
 """
 from __future__ import annotations
 
@@ -25,7 +35,7 @@ from quality.types import Severity  # noqa: E402
 # ── classifier unit tests against a synthetic series index ────────────────
 
 IDX = {
-    (142, "II"): [1, 300, 590],
+    (142, "II"): [540, 560, 590],       # dense tail: adaptive window = floor 30
     (127, "I"): [1, 200, 450],
     (96, "V"): [1, 60],
 }
@@ -42,10 +52,55 @@ def test_page_beyond_series_is_flagged():
     assert r and r.startswith("page_beyond_series")
 
 
-def test_gap_between_cases_is_flagged():
-    # 400 sits 100 pages after the case at 300 — no case can cover it
-    r = ca._classify_bge("BGE 142 II 400", IDX, MAX_VOL)
-    assert r and r.startswith("no_case_at_page")
+def test_mid_volume_page_is_a_plausible_deep_pincite():
+    # 400 sits 200 pages after the case at 200 — under continuous
+    # pagination it lies WITHIN that case, however long the gap
+    assert ca._classify_bge("BGE 127 I 400", IDX, MAX_VOL) is None
+
+
+def test_division_letters_match_case_insensitively():
+    # docket side stores "120 IA 1"; citations write "BGE 120 Ia …"
+    idx = {(120, "IA"): [1, 50]}
+    assert ca._classify_bge("BGE 120 Ia 45", idx, MAX_VOL) is None
+    r = ca._classify_bge("BGE 120 Ia 500", idx, MAX_VOL)
+    assert r and r.startswith("page_beyond_series")
+
+
+def test_series_regex_accepts_all_three_docket_formats():
+    for docket in ("142 II 590", "1_I_26", "BGE 136 II 120", "120 IA 1"):
+        assert ca._BGE_SERIES.match(docket), docket
+
+
+def test_next_year_volume_gets_grace():
+    # a court may cite the new year's volume before we ingest any of it
+    assert ca._classify_bge("BGE 153 II 5", IDX, MAX_VOL) is None
+    r = ca._classify_bge("BGE 154 II 5", IDX, MAX_VOL)
+    assert r and r.startswith("volume_out_of_range")
+
+
+def test_open_volumes_are_exempt_from_page_and_division_proofs():
+    # the newest two volumes are still filling — nothing about their pages
+    # or divisions is provable
+    idx = {(152, "II"): [1, 40], (151, "V"): [1]}
+    assert ca._classify_bge("BGE 152 II 900", idx, MAX_VOL) is None
+    assert ca._classify_bge("BGE 151 V 900", idx, MAX_VOL) is None
+    assert ca._classify_bge("BGE 151 III 10", idx, MAX_VOL) is None
+
+
+def test_i_family_is_evaluated_as_a_union():
+    # I vs Ia/Ib casefolds both ways in extraction; a family mismatch
+    # proves nothing — only a page beyond the family's union does
+    idx = {(100, "IA"): [1, 50], (100, "IB"): [1, 80]}
+    assert ca._classify_bge("BGE 100 I 60", idx, MAX_VOL) is None
+    r = ca._classify_bge("BGE 100 I 300", idx, MAX_VOL)
+    assert r and r.startswith("page_beyond_series")
+
+
+def test_last_case_window_adapts_to_the_volumes_longest_case():
+    idx = {(143, "II"): [244, 297, 350]}    # contains a 53-page case
+    assert ca._classify_bge("BGE 143 II 400", idx, MAX_VOL) is None
+    r = ca._classify_bge("BGE 143 II 404", idx, MAX_VOL)
+    assert r and r.startswith("page_beyond_series")
 
 
 def test_future_volume_is_flagged():
@@ -83,11 +138,14 @@ def rg(tmp_path, monkeypatch):
         CREATE TABLE citation_targets (source_decision_id TEXT, target_ref TEXT,
             target_decision_id TEXT, match_type TEXT, confidence_score REAL);
     """)
-    # the BGE series (complete, tiny)
+    # the BGE series (complete, tiny) — deliberately in all three docket
+    # formats so the index build proves format coverage end-to-end
     c.executemany("INSERT INTO decisions VALUES (?,?,?,?,?,?,?)", [
-        ("bge_142 II 1", "142 II 1", "142 II 1", "bge", "CH", "de", "2016-01-01"),
-        ("bge_142 II 300", "142 II 300", "142 II 300", "bge", "CH", "de", "2016-06-01"),
-        ("bge_142 II 590", "142 II 590", "142 II 590", "bge", "CH", "de", "2016-09-01"),
+        ("bge_142 II 540", "142 II 540", "142 II 540", "bge", "CH", "de", "2016-01-01"),
+        ("bge_142_II_560", "142_II_560", "142_II_560", "bge", "CH", "de", "2016-06-01"),
+        ("bge_BGE_142_II_590", "BGE 142 II 590", "BGE 142 II 590", "bge", "CH", "de", "2016-09-01"),
+        # closed-volume anchor: keeps 142 outside the open-volume exemption
+        ("bge_150 II 1", "150 II 1", "150 II 1", "bge", "CH", "de", "2024-01-01"),
         # recent citing decisions
         ("bger_1C_1_2026", "1C_1/2026", "1C_1/2026", "bger", "CH", "de", "2026-07-01"),
         ("zh_x_1", "AB.2026.1", "AB.2026.1", "zh_obergericht", "ZH", "de", "2026-07-02"),

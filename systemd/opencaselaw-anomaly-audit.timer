@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily citation-anomaly audit (11:30 UTC, 45 min before the reporter)
+
+[Timer]
+OnCalendar=*-*-* 11:30:00 UTC
+RandomizedDelaySec=120
+Persistent=true
+
+[Install]
+WantedBy=timers.target

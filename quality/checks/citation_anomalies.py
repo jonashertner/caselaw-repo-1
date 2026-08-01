@@ -3,20 +3,28 @@
 Motivation (2026-07-31): court-confronted AI fabrications are tracked at
 case level worldwide; the first place fabricated citations would surface in
 the Swiss official record is decisions quoting party submissions. The BGE
-series is complete in-corpus since 1875, which makes nonexistence of a
-cited BGE *provable*, not merely "we failed to resolve it".
+series is complete in-corpus since 1875 for CLOSED volumes, which makes
+nonexistence of a cited BGE *provable* there, not merely "we failed to
+resolve it". The newest two volumes are still filling (BGE issues appear
+with up to a year of lag) and are exempt from every page/division proof —
+only a volume number beyond next-year's is flaggable that recently.
 
 Three classes, in descending signal strength, each computed over a rolling
 window of recently DECIDED decisions (default 90 days,
 OCL_CITATION_ANOMALY_WINDOW_DAYS):
 
   nonexistent_bge   an unresolved BGE-form token whose (volume, division,
-                    page) matches nothing in the complete series, even
-                    allowing the 30-page pin-cite window. Sub-reasons:
-                    volume_out_of_range / division_absent_for_volume /
-                    page_beyond_series / no_case_at_page (+ a
+                    page) provably matches nothing in the series.
+                    Sub-reasons: volume_out_of_range /
+                    division_absent_for_volume / page_beyond_series (+ a
                     page_looks_like_year tag for the classic OCR shape
-                    "BGE 127 I 2002").
+                    "BGE 127 I 2002"). A former no_case_at_page class was
+                    retired 2026-07-31: BGE volumes are continuously
+                    paginated, so any page between two consecutive case
+                    starts lies WITHIN the earlier case — mid-volume
+                    nonexistence is not provable ("BGE 141 V 312" sits 31
+                    pages into BGE 141 V 281 and is a legitimate deep
+                    pin-cite the old fixed window flagged wrongly).
   anachronistic     a citation token whose parsed docket year postdates
                     the citing decision's own year (tolerance 1 year for
                     year-boundary drafting).
@@ -48,7 +56,14 @@ from quality.types import CheckResult, Severity
 MODULE_NEVER_CRITICAL = True  # advisory review queue, never blocks a publish
 
 _BGE_TOKEN = re.compile(r"^BGE\s+(\d{1,3})\s+([IVX]+[ab]?)\s+(\d{1,4})$")
-_BGE_SERIES = re.compile(r"^(\d{1,3})\s+([IVX]+[ab]?)\s+(\d{1,4})$")
+# The series appears in three docket formats across scrape eras:
+# "142 II 590" (spaced), "1_I_26" (underscored, historical) and
+# "BGE 136 II 120" (prefixed). Division letters are stored uppercase
+# ("120 IA 1") while citations write "BGE 120 Ia 1" — both sides are
+# normalized via .upper(). (2026-07-31: the previous spaced-only pattern
+# silently dropped 70% of series rows — 35k of 50k — and absence proofs
+# from that partial index were unsafe.)
+_BGE_SERIES = re.compile(r"^(?:BGE[ _])?(\d{1,3})[ _]+([IVX]+[ABab]?)[ _]+(\d{1,4})$")
 # Federal-court docket shapes: 4A_123/2019, 9C_55/2024, 7B 1008/2023, 2C-64/2026
 _FED_DOCKET = re.compile(r"^(\d{1,2}[A-Z])[ _\-](\d{1,4})/(\d{4})$")
 # Year extraction for the anachronism check: docket-year positions only
@@ -93,12 +108,36 @@ def _bge_series_index(rg) -> tuple[dict, int]:
         m = _BGE_SERIES.match((r["docket_number"] or "").strip())
         if not m:
             continue
-        vol, div, page = int(m.group(1)), m.group(2), int(m.group(3))
+        vol, div, page = int(m.group(1)), m.group(2).upper(), int(m.group(3))
         idx.setdefault((vol, div), []).append(page)
         max_vol = max(max_vol, vol)
     for pages in idx.values():
         pages.sort()
     return idx, max_vol
+
+
+_I_FAMILY = ("I", "IA", "IB")
+
+
+def _family_pages(idx: dict, vol: int, div: str) -> list[int]:
+    """Start pages for (vol, div). The I-family (I vs the 1955-1994 Ia/Ib
+    split) is evaluated as a union: citations and dockets casefold the
+    sub-letter in both directions, so an I-vs-Ia mismatch proves nothing."""
+    if div in _I_FAMILY:
+        merged: set[int] = set()
+        for d in _I_FAMILY:
+            merged.update(idx.get((vol, d), []))
+        return sorted(merged)
+    return idx.get((vol, div), [])
+
+
+def _last_case_window(pages: list[int]) -> int:
+    """How far beyond the last case START a page may plausibly lie: the
+    longest case observed in this (vol, div) — no case is likely longer
+    than the volume's own longest — with PINCITE_WINDOW as the floor
+    (BGE 143 II holds the 53-page Gaba; BGE 145 V's longest is 18)."""
+    longest_gap = max((b - a for a, b in zip(pages, pages[1:])), default=0)
+    return max(PINCITE_WINDOW, longest_gap)
 
 
 def _classify_bge(token: str, idx: dict, max_vol: int) -> str | None:
@@ -107,21 +146,22 @@ def _classify_bge(token: str, idx: dict, max_vol: int) -> str | None:
     m = _BGE_TOKEN.match(token.strip())
     if not m:
         return None                     # malformed beyond our grammar: skip
-    vol, div, page = int(m.group(1)), m.group(2), int(m.group(3))
+    vol, div, page = int(m.group(1)), m.group(2).upper(), int(m.group(3))
     year_tag = " page_looks_like_year" if 1875 <= page <= 2100 and page > 700 else ""
-    if vol < 1 or vol > max_vol:
-        return "volume_out_of_range" + year_tag
-    if (vol, div) not in idx:
+    if vol < 1 or vol > max_vol + 1:    # +1: next-year volume may simply
+        return "volume_out_of_range" + year_tag  # not be scraped yet
+    if vol >= max_vol - 1:
+        return None                     # open volumes: still filling, no proof
+    pages = _family_pages(idx, vol, div)
+    if not pages:
         return "division_absent_for_volume" + year_tag
-    pages = idx[(vol, div)]
-    if page > pages[-1] + PINCITE_WINDOW:
+    if page > pages[-1] + _last_case_window(pages):
         return "page_beyond_series" + year_tag
-    # inside range: does any first page sit within the pin-cite window?
-    import bisect
-    i = bisect.bisect_right(pages, page)
-    if i > 0 and page - pages[i - 1] <= PINCITE_WINDOW:
-        return None                     # a case plausibly covers this page
-    return "no_case_at_page" + year_tag
+    # Volumes are continuously paginated: any page at/after the first case
+    # start lies within some case, so a mid-volume page is always a
+    # plausible deep pin-cite. Only pages beyond the last case (plus the
+    # adaptive window for its unknown length) are provably outside.
+    return None
 
 
 def _iter_window_tokens(rg, since: str, resolved: bool | None):
@@ -169,7 +209,8 @@ def _write_report(payload: dict) -> None:
 
 def check_nonexistent_bge_citations(conn: sqlite3.Connection, **_) -> CheckResult:
     """Recently decided decisions citing a BGE that provably does not exist
-    in the complete series (even allowing the 30-page pin-cite window)."""
+    in the series (volume/division absent, or page beyond the volume end
+    allowing the last case's unknown length)."""
     name = "citation_anomalies.nonexistent_bge"
     rg = _open_rg()
     if rg is None:
@@ -297,3 +338,30 @@ def check_unresolved_recent_bger(conn: sqlite3.Connection, **_) -> CheckResult:
                      "not-yet-ingested and non-public decisions)"))
     finally:
         rg.close()
+
+
+def main() -> int:
+    """Standalone daily run (opencaselaw-anomaly-audit.timer, 11:30 UTC).
+
+    Decoupled from the nightly publish on purpose: the publish process
+    imports this module at 03:30, so code deployed during the day only
+    reaches the in-publish audit a build later (observed 2026-07-31, when
+    the report stayed stale for a day). This entry point always runs the
+    code on disk and refreshes the report ~45 min before the 12:15
+    confidential reporter reads it. Always exits 0 — the checks are
+    advisory (MODULE_NEVER_CRITICAL); breakage surfaces via the unit's
+    OnFailure ntfy hook on crash, not via exit codes.
+    """
+    for check in (check_nonexistent_bge_citations,
+                  check_anachronistic_citations,
+                  check_unresolved_recent_bger):
+        try:
+            res = check(None)
+            print(f"{res.name}: {res.message}")
+        except Exception as e:                          # noqa: BLE001
+            print(f"{check.__name__} crashed: {e}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,0 +1,14 @@
+[Unit]
+Description=Daily citation-anomaly audit (refreshes logs/citation_anomalies_latest.json)
+OnFailure=ntfy-alert@%n.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/caselaw/repo
+Environment=SWISS_CASELAW_REFERENCE_GRAPH=/opt/caselaw/repo/output/reference_graph.db
+ExecStart=/usr/bin/python3 -m quality.checks.citation_anomalies
+StandardOutput=append:/opt/caselaw/repo/logs/citation_anomaly_audit.log
+StandardError=append:/opt/caselaw/repo/logs/citation_anomaly_audit.log
+Nice=19
+IOSchedulingClass=idle
+TimeoutStartSec=1800
