@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/it.xml</link>
     <description>Latest published Swiss court decisions in Italiano.</description>
     <language>de-CH</language>
-    <lastBuildDate>Fri, 31 Jul 2026 10:37:56 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 01 Aug 2026 10:01:07 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/it.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -52,6 +52,35 @@ Partecipanti al procedimento
       <pubDate>Thu, 16 Jul 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BGer:2026:4D_93.2026</guid>
       <category>bger</category>
+    </item>
+    <item>
+      <title>Bundesgericht 6B_413/2026 vom 2026-07-16</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_6B_413_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+6B_413/2026
+
+Sentenza del 16 luglio 2026
+
+I Corte di diritto penale
+
+Composizione
+
+Giudice federale Muschietti, Presidente,
+
+Cancelliera Ortolano Ribordy.
+
+Partecipanti al procedi…</description>
+      <pubDate>Thu, 16 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:6B_413.2026</guid>
+      <category>bger</category>
+      <category>Infrazione</category>
     </item>
     <item>
       <title>Bundesverwaltungsgericht C-712/2024 vom 2026-07-16</title>
@@ -868,37 +897,6 @@ A.__…</description>
       <pubDate>Tue, 16 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BGer:2026:7B_560.2026</guid>
       <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 1C_204/2026 vom 2026-06-15</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_1C_204_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-1C_204/2026
-
-Sentenza del 15 giugno 2026
-
-I Corte di diritto pubblico
-
-Composizione
-
-Giudici federali Haag, Presidente,
-
-Kneubühler, Müller,
-
-Cancelliere M. Piatti.
-
-Partecipanti …</description>
-      <pubDate>Mon, 15 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:1C_204.2026</guid>
-      <category>bger</category>
-      <category>Cittadinanza e diritto degli stranieri</category>
     </item>
   </channel>
 </rss>
