@@ -15,22 +15,25 @@
     background:var(--bg); color:var(--fg);
     font:14px/1.5 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
     font-variant-numeric: tabular-nums;
-    padding:2.2rem clamp(1rem, 4vw, 3rem) 4rem;
-    max-width:1080px; margin:0 auto;
+    padding:2rem clamp(1rem, 4vw, 3rem) 4rem;
+    max-width:1120px; margin:0 auto;
   }
   header { display:flex; justify-content:space-between; align-items:baseline;
-           padding-bottom:1.2rem; }
+           padding-bottom:1rem; }
   .mark { letter-spacing:.28em; font-size:12px; }
   .mark b { font-weight:700; } .mark span { color:var(--mut); }
   #stamp { color:var(--mut); font-size:12px; }
-  #stamp .stale { color:var(--fg); border:1px solid var(--fg);
-                  padding:0 .4em; margin-left:.6em; }
-  .head { display:flex; gap:2.4rem; flex-wrap:wrap; border-top:1px solid var(--fg);
-          padding:1.1rem 0 1.4rem; }
+  .tag { border:1px solid var(--fg); padding:0 .45em; margin-left:.6em; }
+  #verdict { border-top:2px solid var(--fg); padding:.9rem 0;
+             font-size:15px; letter-spacing:.06em; }
+  #verdict .why { color:var(--mut); font-size:12.5px; letter-spacing:0;
+                  margin-top:.25rem; }
+  .head { display:flex; gap:2.2rem; flex-wrap:wrap;
+          padding:1rem 0 1.4rem; }
   .head .kpi small { display:block; color:var(--mut); font-size:11px;
                      letter-spacing:.22em; margin-bottom:.15rem; }
-  .head .kpi div { font-size:26px; line-height:1.1; }
-  main { display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));
+  .head .kpi div { font-size:24px; line-height:1.15; }
+  main { display:grid; grid-template-columns:repeat(auto-fit, minmax(310px, 1fr));
          gap:0 3rem; }
   section { border-top:1px solid var(--hair); padding:.9rem 0 1.6rem;
             break-inside:avoid; }
@@ -39,12 +42,17 @@
   .row { display:flex; justify-content:space-between; gap:1rem; padding:.12rem 0; }
   .row .k { color:var(--mut); }
   .row .v { text-align:right; white-space:nowrap; }
-  .row .v.wrap { white-space:normal; word-break:break-word; text-align:right; }
+  .row .v.wrap { white-space:normal; word-break:break-word; }
   .dots { letter-spacing:.35em; }
   .bad { text-decoration:underline; text-underline-offset:3px; }
-  svg.spark { width:100%; height:44px; margin:.4rem 0 .6rem; display:block; }
+  .dim { color:var(--mut); }
+  svg.spark { width:100%; height:38px; margin:.3rem 0 .1rem; display:block; }
   svg.spark polyline { fill:none; stroke:currentColor; stroke-width:1.2; }
-  svg.spark line { stroke:var(--hair); stroke-width:1; }
+  svg.spark line { stroke:var(--hair); }
+  .slabel { color:var(--mut); font-size:11px; letter-spacing:.15em;
+            margin-bottom:.5rem; }
+  .bar { height:2px; background:var(--hair); margin:.5rem 0; }
+  .bar i { display:block; height:2px; background:var(--fg); }
   .phase { color:var(--mut); font-size:12px; margin-top:.5rem;
            word-break:break-all; }
   .err { color:var(--mut); font-style:italic; }
@@ -57,111 +65,175 @@
   <div class="mark"><b>OPS</b> <span>·</span> OPENCASELAW</div>
   <div id="stamp">–</div>
 </header>
+<div id="verdict">–</div>
 <div class="head" id="kpis"></div>
 <main id="main"></main>
-<footer>auto-refresh 30 s · snapshot cadence 60 s · basic-auth, unlinked, noindex</footer>
+<footer>auto-refresh 30 s · snapshot 60 s · tier2 window 1 h · basic-auth · noindex</footer>
 <script>
-const $  = (h) => { const d = document.createElement('div'); d.innerHTML = h; return d.firstElementChild; };
-const nf = (n) => n == null ? '–' : Number(n).toLocaleString('de-CH').replace(/[.,]/g, '’');
-const esc = (s) => String(s ?? '–').replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const nf  = (n) => n == null ? '–' : Number(n).toLocaleString('de-CH').replace(/[.,]/g, '’');
+const esc = (s) => String(s ?? '–').replace(/[&<>"']/g,
+  c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $  = (h) => { const t = document.createElement('template'); t.innerHTML = h.trim(); return t.content.firstElementChild; };
+
+const SYSD_TS = (s) => {                       // "Sun 2026-08-02 16:55:41 UTC"
+  if (!s) return null;
+  const m = String(s).match(/(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2})/);
+  return m ? new Date(m[1] + 'T' + m[2] + 'Z') : null;
+};
+const rel = (d) => {
+  if (!d) return '–';
+  const min = Math.round((Date.now() - d) / 60000);
+  if (min < 1)   return 'just now';
+  if (min < 60)  return min + ' min ago';
+  if (min < 36*60) return (min/60).toFixed(1) + ' h ago';
+  return Math.round(min/1440) + ' d ago';
+};
+const relTs = (s) => { const d = SYSD_TS(s); return d ? `<span title="${esc(s)}">${rel(d)}</span>` : '–'; };
 
 function row(k, v, cls) {
   return `<div class="row"><span class="k">${esc(k)}</span><span class="v ${cls||''}">${v}</span></div>`;
 }
-function sect(title, body) {
-  return `<section><h2>${title}</h2>${body}</section>`;
-}
-function spark(days) {
-  if (!days || days.length < 2) return '';
-  const vals = days.map(d => d.calls), mx = Math.max(...vals), W = 300, H = 44;
+function sect(title, body) { return `<section><h2>${title}</h2>${body}</section>`; }
+function spark(vals, label) {
+  if (!vals || vals.length < 2) return '';
+  const mx = Math.max(...vals), W = 300, H = 38;
   const pts = vals.map((v, i) =>
-    `${(i / (vals.length - 1) * W).toFixed(1)},${(H - 3 - v / mx * (H - 8)).toFixed(1)}`).join(' ');
-  return `<svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+    `${(i/(vals.length-1)*W).toFixed(1)},${(H-3-v/mx*(H-8)).toFixed(1)}`).join(' ');
+  return `<div class="slabel">${label}</div>
+    <svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
     <line x1="0" y1="${H-1}" x2="${W}" y2="${H-1}"/><polyline points="${pts}"/></svg>`;
 }
+const vs = (a, b) => (a == null || b == null || !b) ? '' :
+  ` <span class="dim">(${a >= b ? '+' : ''}${Math.round((a-b)/b*100)}%)</span>`;
 
 function render(d) {
   const g = new Date(d.generated.replace(' UTC', 'Z').replace(' ', 'T'));
-  const ageMin = (Date.now() - g) / 60000;
+  const stale = (Date.now() - g) / 60000 > 5;
   document.getElementById('stamp').innerHTML =
-    `updated ${esc(d.generated)}${ageMin > 5 ? '<span class="stale">STALE</span>' : ''}`;
+    `updated ${rel(g)}${stale ? '<span class="tag">STALE</span>' : ''}`;
 
-  const s = d.serving || {}, u = d.uniques || {}, b = d.build || {};
+  const V = d.verdict || {};
+  const sym = {ok:'●', warn:'◐', fail:'○'}[V.level] || '·';
+  const bad = (V.checks || []).filter(c => c.level !== 'ok');
+  document.getElementById('verdict').innerHTML =
+    V.error ? `<span class="err">${esc(V.error)}</span>` :
+    `${sym} ${V.level === 'ok' ? 'ALL SYSTEMS NORMAL' :
+       V.level === 'warn' ? 'ATTENTION' : 'DEGRADED'}` +
+    (bad.length ? `<div class="why">${bad.map(c =>
+       `${esc(c.name)}: ${esc(c.detail)}`).join(' · ')}</div>`
+     : `<div class="why">${(V.checks||[]).length} checks pass</div>`);
+
+  const s = d.serving || {}, u = d.uniques || {}, b = d.build || {},
+        t = d.traffic_1h || {}, us = d.usage || {};
+  const buildShort = b.state === 'running'
+      ? `running · eta ${esc(b.eta ?? '?')}`
+      : b.state === 'idle' ? `idle · ${b.result_ok === false ? 'FAILED' : 'last OK'}`
+      : esc(b.state ?? '–');
   document.getElementById('kpis').innerHTML = `
+    <div class="kpi"><small>PROBE</small><div>${s.probe?.ms != null ? nf(s.probe.ms)+' ms' : '–'}</div></div>
+    <div class="kpi"><small>HUMAN P95 · 1H</small><div>${t.human_p95_ms != null ? nf(t.human_p95_ms)+' ms' : '–'}</div></div>
     <div class="kpi"><small>WORKERS</small><div>${s.workers_up ?? '–'}/${s.workers_total ?? 8}</div></div>
-    <div class="kpi"><small>CORPUS</small><div>${nf(s.corpus_rows)}</div></div>
+    <div class="kpi"><small>REQ · 1H</small><div>${nf(t.requests)}</div></div>
     <div class="kpi"><small>UNIQUES TODAY</small><div>${nf(u.today?.total)}</div></div>
-    <div class="kpi"><small>BUILD</small><div>${esc(b.state ?? '–')}</div></div>`;
+    <div class="kpi"><small>BUILD</small><div>${buildShort}</div></div>`;
 
   const M = document.getElementById('main');
   M.innerHTML = '';
-
   const err = (o) => o?.error ? `<div class="err">${esc(o.error)}</div>` : null;
 
-  M.append($(sect('SERVING', err(s) ||
+  M.append($(sect('USER EXPERIENCE · LAST HOUR', (err(s) || err(t)) ||
+    row('search probe', s.probe?.ok
+        ? `${nf(s.probe.ms)} ms · ${s.probe.results} results · w${s.probe.worker}`
+        : `<span class="bad">${esc(s.probe?.error ?? 'failed')}</span>`) +
+    row('human p50 / p95', `${nf(t.human_p50_ms)} / ${nf(t.human_p95_ms)} ms`) +
+    row('all p50 / p95', `${nf(t.p50_ms)} / ${nf(t.p95_ms)} ms`) +
+    row('requests · human', `${nf(t.requests)} · ${nf(t.human_requests)}`) +
+    row('5xx', t.r5xx ? `<span class="bad">${nf(t.r5xx)} (${t.err_rate_pct}%)</span>` : '0') +
     row('workers', `<span class="dots">${(s.per_worker||[]).map(w => w.ok ? '●' : '○').join('')}</span>`) +
-    row('latency', `${nf(s.latency_ms_min)}–${nf(s.latency_ms_max)} ms`) +
-    row('corpus rows', nf(s.corpus_rows)))));
+    row('health latency', `${nf(s.latency_ms_min)}–${nf(s.latency_ms_max)} ms`))));
 
+  const prog = (b.state === 'running' && b.elapsed_h && b.last_total_s)
+    ? `<div class="bar"><i style="width:${Math.min(100, b.elapsed_h*3600/b.last_total_s*100).toFixed(0)}%"></i></div>` : '';
   M.append($(sect('BUILD', err(b) ||
-    row('state', esc(b.state)) +
-    row('started', esc(b.started)) +
+    row('state', b.state === 'idle'
+        ? `idle · last run ${b.result_ok === false ? '<span class="bad">FAILED</span>' : 'OK'} · ended ${relTs(b.ended)}`
+        : b.state === 'running'
+        ? `running ${b.elapsed_h ?? '?'} h · eta ~${esc(b.eta ?? '?')}`
+        : `<span class="bad">${esc(b.state)}</span>`) +
+    prog +
+    row('current step', esc(b.step ?? '–'), 'wrap') +
     row('last full run', b.last_total_s ? (b.last_total_s/3600).toFixed(1)+' h' : '–') +
-    row('memory peak', b.mem_peak_g ? b.mem_peak_g+' G' : '–') +
-    `<div class="phase">${esc(b.phase)}</div>`)));
+    row('memory peak', b.mem_peak_g ? b.mem_peak_g + ' G' : '–') +
+    `<div class="phase" title="last log line">${esc(b.phase)}</div>`)));
 
-  const us = d.usage || {};
-  M.append($(sect('USAGE · 14 D', err(us) ||
-    spark(us.days) +
-    row('today calls', nf(us.today?.calls)) +
-    row('today sessions', nf(us.today?.sessions)) +
+  M.append($(sect('USAGE', err(us) ||
+    spark((us.days||[]).map(x => x.calls), 'CALLS · 14 D') +
+    spark((us.days||[]).map(x => x.sessions), 'SESSIONS · 14 D') +
+    row('today calls', nf(us.today?.calls) + vs(us.today?.calls, us.week_median?.calls)) +
+    row('today sessions', nf(us.today?.sessions) + vs(us.today?.sessions, us.week_median?.sessions)) +
     row('· claude.ai', nf(us.today?.claude_ai)) +
     row('· chatgpt', nf(us.today?.chatgpt)) +
     row('· claude-code', nf(us.today?.claude_code)) +
-    row('30 d calls', nf(us.calls_30d)) +
-    row('30 d sessions', nf(us.sessions_30d)))));
+    row('7-day median', `${nf(us.week_median?.calls)} · ${nf(us.week_median?.sessions)}`) +
+    row('30 d', `${nf(us.calls_30d)} calls · ${nf(us.sessions_30d)} sess.`))));
 
   const cls = ['browser','script','claude-code','crawler','anthropic-egress','openai-egress','other'];
   M.append($(sect('UNIQUE CONSUMERS', err(u) ||
-    row('today total', nf(u.today?.total)) +
-    cls.map(c => row('· '+c, nf(u.today?.[c]))).join('') +
+    row('today (' + esc(u.day ?? '–') + ')', nf(u.today?.total)) +
+    cls.map(c => row('· ' + c, nf(u.today?.[c]))).join('') +
     row('month to date', nf(u.month_to_date?.total)))));
 
   const i = d.intake || {};
   M.append($(sect('INTAKE', err(i) ||
-    row('scrapers', nf(i.scrapers)) +
-    row('failed', i.failed?.length ? `<span class="bad">${esc(i.failed.join(', '))}</span>` : 'none') +
-    row('new last round', nf(i.new_last_round)))));
+    row('last round', `${relTs(i.run_at) === '–' ? esc(i.run_at) : relTs(i.run_at)} · ${i.duration_s ? Math.round(i.duration_s/60)+' min' : '–'}`) +
+    row('scrapers', `${nf(i.scrapers)} · failed: ` + (i.failed?.length
+        ? `<span class="bad">${esc(i.failed.join(', '))}</span>` : 'none')) +
+    row('new decisions', nf(i.new_last_round)) +
+    (i.top_new||[]).map(([k,n]) => row('· ' + k, nf(n))).join('') +
+    ((i.errors||[]).length ? (i.errors||[]).map(([k,n]) =>
+        row('errors · ' + k, `<span class="bad">${nf(n)}</span>`)).join('') : ''))));
 
-  const t = d.integrity || {};
-  M.append($(sect('INTEGRITY', err(t) ||
-    row('audit', esc(t.audit_generated)) +
-    row('window findings', nf(t.window_findings)) +
-    row('anachronistic', nf(t.anachronistic)) +
-    row('corpus QA total', nf(t.corpus_qa_total)) +
-    row('toolcheck', t.toolcheck_pass == null ? '–'
-        : t.toolcheck_pass ? '42/42 pass' : '<span class="bad">FAIL</span>') +
-    row('· at', esc(t.toolcheck_when)))));
+  const g2 = d.integrity || {};
+  M.append($(sect('INTEGRITY', err(g2) ||
+    row('audit', `${esc(g2.audit_generated)}${g2.audit_fresh === false ? ' <span class="bad">stale</span>' : ''}`) +
+    row('window findings', nf(g2.window_findings)) +
+    row('anachronistic', nf(g2.anachronistic)) +
+    row('corpus QA total', nf(g2.corpus_qa_total)) +
+    row('reporter', esc(g2.reporter_last ?? '–'), 'wrap') +
+    row('toolcheck', g2.toolcheck_pass == null ? '–' :
+        g2.toolcheck_pass ? `42/42 · ${relTs(g2.toolcheck_when)}`
+                          : '<span class="bad">FAIL</span>'))));
 
-  const o = d.ops || {};
+  const o = d.host || {}, hist = o.history || [];
+  const first = hist[0], last = hist[hist.length-1];
+  const dDisk = (first && last && first.disk_free_g != null && last.disk_free_g != null)
+      ? (last.disk_free_g - first.disk_free_g).toFixed(1) : null;
+  const dRows = (first && last && first.corpus_rows && last.corpus_rows)
+      ? last.corpus_rows - first.corpus_rows : null;
   M.append($(sect('HOST', err(o) ||
-    row('disk', `${o.disk_used_pct ?? '–'} % used · ${nf(o.disk_free_g)} G free`) +
+    row('disk', `${o.disk_used_pct ?? '–'} % · ${nf(o.disk_free_g)} G free` +
+        (dDisk != null ? ` <span class="dim">(${dDisk > 0 ? '+' : ''}${dDisk} G/24h)</span>` : '')) +
     row('mem available', `${o.mem_avail_g ?? '–'} G`) +
     row('page cache', `${o.mem_cache_g ?? '–'} G`) +
-    (o.timers||[]).map(x => row('⏱ '+x.unit, esc(x.next), 'wrap')).join(''))));
+    (dRows != null ? row('corpus Δ 24h', (dRows >= 0 ? '+' : '') + nf(dRows)) : '') +
+    (o.timers||[]).map(x => {
+      const dt = SYSD_TS(x.next);
+      const overdue = dt && dt < Date.now() - 90000;
+      return row('⏱ ' + x.unit,
+        `<span ${overdue ? 'class="bad"' : ''} title="${esc(x.next)}">${dt ? (overdue ? 'overdue' : 'in ' + Math.max(0, Math.round((dt-Date.now())/60000)) + ' min') : esc(x.next)}</span>`);
+    }).join(''))));
 
   const c = d.corpus || {};
   M.append($(sect('CORPUS ARTIFACTS', err(c) ||
-    Object.entries(c).map(([k,v]) => row(k.replace(/_/g,' '), nf(v))).join('') || '–')));
+    Object.entries(c).map(([k, v]) => row(k.replace(/_/g, ' '), nf(v))).join('') || '–')));
 }
 
 async function tick() {
   try {
-    const r = await fetch('ops.json?t=' + Date.now(), {cache:'no-store'});
+    const r = await fetch('ops.json?t=' + Date.now(), {cache: 'no-store'});
     render(await r.json());
   } catch (e) {
-    document.getElementById('stamp').innerHTML =
-      `fetch failed <span class="stale">OFFLINE</span>`;
+    document.getElementById('stamp').innerHTML = `fetch failed <span class="tag">OFFLINE</span>`;
   }
 }
 tick();
