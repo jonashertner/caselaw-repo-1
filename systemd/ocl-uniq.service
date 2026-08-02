@@ -1,0 +1,21 @@
+[Unit]
+Description=Privacy-preserving unique-consumer counter (HLL over salted hashes, RAM-only IPs)
+After=network.target
+OnFailure=ntfy-alert@%n.service
+
+[Service]
+ExecStart=/usr/bin/python3 /opt/caselaw/repo/scripts/unique_users_daemon.py
+StateDirectory=ocl-uniq
+StateDirectoryMode=0700
+Environment=OCL_UNIQ_OUT=/opt/caselaw/repo/output/research_logs/unique_users.jsonl
+Restart=always
+RestartSec=5
+Nice=10
+NoNewPrivileges=yes
+ProtectSystem=strict
+ReadWritePaths=/opt/caselaw/repo/output/research_logs
+ProtectHome=yes
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target

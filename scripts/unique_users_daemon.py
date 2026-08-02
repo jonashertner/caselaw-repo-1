@@ -1,0 +1,262 @@
+"""Privacy-preserving unique-consumer counter (ocl-uniq).
+
+Answers "how many individual direct consumers does the platform have per
+day / per month" without identifying anyone and without ever writing an IP
+address to disk:
+
+  nginx --syslog/UDP(127.0.0.1:5141)--> this daemon --> aggregate JSONL
+
+  - nginx sends "<ip>|<user-agent>" per API/MCP request (loopback only).
+  - The daemon computes sha256(window_salt + ip) IN MEMORY and feeds the
+    64-bit prefix into a HyperLogLog sketch per (window, client class).
+  - Only sketches (no membership queries possible) and aggregate counts
+    are persisted. Window salts live in the systemd StateDirectory with
+    mode 0600 and are deleted when their window closes, so even the
+    sketch inputs become uncomputable after the fact.
+  - Windows: UTC day and UTC calendar month. Rotating per-window salts
+    make cross-window linkage impossible by construction — deliberately:
+    we buy "no tracking" at the price of "no returning-user analysis".
+
+Interpretation note: platform-NAT cohorts (claude.ai / ChatGPT connector
+egress) appear here as a handful of infrastructure IPs — their end users
+are structurally invisible to us and stay estimate-only. The honest
+"direct individual consumers" figure is the browser+script+claude-code
+share; the total is reported alongside per-class splits so the two are
+never conflated.
+
+Daily records append to output/research_logs/unique_users.jsonl.
+State (sketch registers + current window ids) checkpoints every
+CHECKPOINT_S so a restart resumes mid-window with only HLL-level error.
+"""
+from __future__ import annotations
+
+import hashlib
+import json
+import math
+import os
+import secrets
+import socket
+import threading
+import time
+from pathlib import Path
+
+LISTEN_ADDR = ("127.0.0.1", int(os.environ.get("OCL_UNIQ_PORT", "5141")))
+STATE_DIR = Path(os.environ.get("STATE_DIRECTORY",
+                                os.environ.get("OCL_UNIQ_STATE", "/var/lib/ocl-uniq")))
+OUT_PATH = Path(os.environ.get(
+    "OCL_UNIQ_OUT", "/opt/caselaw/repo/output/research_logs/unique_users.jsonl"))
+CHECKPOINT_S = int(os.environ.get("OCL_UNIQ_CHECKPOINT_S", "600"))
+
+HLL_P = 14                              # 2^14 registers -> ~0.8% std error
+HLL_M = 1 << HLL_P
+
+CLASSES = ("browser", "script", "claude-code", "anthropic-egress",
+           "openai-egress", "other")
+
+
+def classify_ua(ua: str) -> str:
+    """Coarse client class from the User-Agent. Data-driven refinements
+    welcome; unknowns land in 'other' rather than polluting a real class."""
+    u = (ua or "").lower()
+    if "claude-code" in u or "claude code" in u:
+        return "claude-code"
+    if "claude-user" in u or "anthropic" in u or "claude.ai" in u:
+        return "anthropic-egress"
+    if "chatgpt" in u or "openai" in u or u.startswith("oai"):
+        return "openai-egress"
+    if u.startswith("mozilla"):
+        return "browser"
+    for tok in ("python", "curl", "httpx", "aiohttp", "requests", "node",
+                "go-http", "okhttp", "java", "wget", "libwww", "axios"):
+        if tok in u:
+            return "script"
+    return "other"
+
+
+def parse_line(payload: str) -> tuple[str, str] | None:
+    """Extract (ip, ua) from a syslog datagram. nginx prepends
+    '<PRI>Mmm dd hh:mm:ss host tag: ' — split on the tag marker; fall back
+    to treating the whole payload as the message."""
+    msg = payload.split("ocluniq: ", 1)[-1].strip()
+    if "|" not in msg:
+        return None
+    ip, _, ua = msg.partition("|")
+    ip = ip.strip()
+    if not ip or " " in ip:
+        return None
+    return ip, ua.strip()
+
+
+class HLL:
+    """Minimal HyperLogLog (p=14) over a 64-bit hash prefix."""
+
+    __slots__ = ("reg",)
+
+    def __init__(self, reg: bytearray | None = None):
+        self.reg = reg if reg is not None else bytearray(HLL_M)
+
+    def add_hash(self, h64: int) -> None:
+        bucket = h64 >> (64 - HLL_P)
+        w = h64 & ((1 << (64 - HLL_P)) - 1)
+        # rho: leading zeros within the (64-p)-bit remainder, +1
+        rho = (64 - HLL_P) - w.bit_length() + 1
+        if rho > self.reg[bucket]:
+            self.reg[bucket] = rho
+
+    def estimate(self) -> int:
+        alpha = 0.7213 / (1 + 1.079 / HLL_M)
+        s = 0.0
+        zeros = 0
+        for r in self.reg:
+            s += 2.0 ** -r
+            if r == 0:
+                zeros += 1
+        e = alpha * HLL_M * HLL_M / s
+        if e <= 2.5 * HLL_M and zeros:
+            e = HLL_M * math.log(HLL_M / zeros)   # linear counting, small range
+        return int(round(e))
+
+
+def salted_h64(salt: bytes, ip: str) -> int:
+    d = hashlib.sha256(salt + ip.encode("utf-8", "surrogateescape")).digest()
+    return int.from_bytes(d[:8], "big")
+
+
+class Windows:
+    """Day + month sketch windows with rotating salts. Clock injectable."""
+
+    def __init__(self, now=None):
+        self.now = now or (lambda: time.time())
+        self.flags: list[str] = []
+        self._roll(force=True)
+
+    def _ids(self):
+        t = time.gmtime(self.now())
+        return (time.strftime("%Y-%m-%d", t), time.strftime("%Y-%m", t))
+
+    def _salt(self, name: str) -> bytes:
+        STATE_DIR.mkdir(parents=True, exist_ok=True)
+        p = STATE_DIR / f"salt-{name}"
+        if p.exists():
+            return p.read_bytes()
+        s = secrets.token_bytes(32)
+        p.touch(mode=0o600, exist_ok=True)
+        p.write_bytes(s)
+        p.chmod(0o600)
+        return s
+
+    def _roll(self, force: bool = False) -> dict | None:
+        """Rotate windows if the UTC day/month changed. Returns the
+        finalized daily record (to append) or None."""
+        day, month = self._ids()
+        record = None
+        if force:
+            self.day, self.month = day, month
+            self.day_salt = self._salt(f"day-{day}")
+            self.month_salt = self._salt(f"month-{month}")
+            self.day_hll = {c: HLL() for c in (*CLASSES, "total")}
+            self.month_hll = {c: HLL() for c in (*CLASSES, "total")}
+            return None
+        if day != self.day:
+            record = self.snapshot(final=True)
+            (STATE_DIR / f"salt-day-{self.day}").unlink(missing_ok=True)
+            self.day = day
+            self.day_salt = self._salt(f"day-{day}")
+            self.day_hll = {c: HLL() for c in (*CLASSES, "total")}
+            self.flags = []
+        if month != self.month:
+            (STATE_DIR / f"salt-month-{self.month}").unlink(missing_ok=True)
+            self.month = month
+            self.month_salt = self._salt(f"month-{month}")
+            self.month_hll = {c: HLL() for c in (*CLASSES, "total")}
+        return record
+
+    def observe(self, ip: str, ua: str) -> dict | None:
+        record = self._roll()
+        cls = classify_ua(ua)
+        hd = salted_h64(self.day_salt, ip)
+        hm = salted_h64(self.month_salt, ip)
+        for key in (cls, "total"):
+            self.day_hll[key].add_hash(hd)
+            self.month_hll[key].add_hash(hm)
+        return record
+
+    def snapshot(self, final: bool = False) -> dict:
+        return {
+            "date": self.day,
+            "final": final,
+            "uniques": {k: h.estimate() for k, h in self.day_hll.items()},
+            "month": self.month,
+            "month_to_date": {k: h.estimate() for k, h in self.month_hll.items()},
+            "flags": list(self.flags),
+        }
+
+    # ── checkpoint / resume ────────────────────────────────────────────
+    def save_state(self) -> None:
+        st = {"day": self.day, "month": self.month,
+              "day_reg": {k: h.reg.hex() for k, h in self.day_hll.items()},
+              "month_reg": {k: h.reg.hex() for k, h in self.month_hll.items()}}
+        tmp = STATE_DIR / "state.json.tmp"
+        tmp.write_text(json.dumps(st))
+        os.replace(tmp, STATE_DIR / "state.json")
+
+    def load_state(self) -> bool:
+        p = STATE_DIR / "state.json"
+        if not p.exists():
+            return False
+        try:
+            st = json.loads(p.read_text())
+        except Exception:
+            return False
+        if st.get("day") != self.day or st.get("month") != self.month:
+            return False                # stale checkpoint: start fresh
+        for k, hexreg in st["day_reg"].items():
+            self.day_hll[k] = HLL(bytearray.fromhex(hexreg))
+        for k, hexreg in st["month_reg"].items():
+            self.month_hll[k] = HLL(bytearray.fromhex(hexreg))
+        self.flags.append("resumed-from-checkpoint")
+        return True
+
+
+def append_record(rec: dict) -> None:
+    OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    with OUT_PATH.open("a") as f:
+        f.write(json.dumps(rec, separators=(",", ":")) + "\n")
+
+
+def main() -> int:
+    win = Windows()
+    win.load_state()
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 4 << 20)
+    sock.bind(LISTEN_ADDR)
+    print(f"ocl-uniq listening on {LISTEN_ADDR[0]}:{LISTEN_ADDR[1]}, "
+          f"state={STATE_DIR}, out={OUT_PATH}")
+
+    lock = threading.Lock()
+
+    def checkpoint_loop():
+        while True:
+            time.sleep(CHECKPOINT_S)
+            with lock:
+                rec = win._roll()          # also finalizes across quiet midnights
+                if rec:
+                    append_record(rec)
+                win.save_state()
+
+    threading.Thread(target=checkpoint_loop, daemon=True).start()
+
+    while True:
+        data, _ = sock.recvfrom(8192)
+        parsed = parse_line(data.decode("utf-8", "replace"))
+        if not parsed:
+            continue
+        with lock:
+            rec = win.observe(*parsed)
+        if rec:
+            append_record(rec)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
