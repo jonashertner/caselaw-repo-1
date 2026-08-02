@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>OPS · opencaselaw</title>
+<style>
+  :root { --fg:#111; --bg:#fff; --mut:#777; --hair:#ddd; }
+  @media (prefers-color-scheme: dark) {
+    :root { --fg:#e8e8e8; --bg:#111; --mut:#8a8a8a; --hair:#2c2c2c; }
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background:var(--bg); color:var(--fg);
+    font:14px/1.5 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-variant-numeric: tabular-nums;
+    padding:2.2rem clamp(1rem, 4vw, 3rem) 4rem;
+    max-width:1080px; margin:0 auto;
+  }
+  header { display:flex; justify-content:space-between; align-items:baseline;
+           padding-bottom:1.2rem; }
+  .mark { letter-spacing:.28em; font-size:12px; }
+  .mark b { font-weight:700; } .mark span { color:var(--mut); }
+  #stamp { color:var(--mut); font-size:12px; }
+  #stamp .stale { color:var(--fg); border:1px solid var(--fg);
+                  padding:0 .4em; margin-left:.6em; }
+  .head { display:flex; gap:2.4rem; flex-wrap:wrap; border-top:1px solid var(--fg);
+          padding:1.1rem 0 1.4rem; }
+  .head .kpi small { display:block; color:var(--mut); font-size:11px;
+                     letter-spacing:.22em; margin-bottom:.15rem; }
+  .head .kpi div { font-size:26px; line-height:1.1; }
+  main { display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));
+         gap:0 3rem; }
+  section { border-top:1px solid var(--hair); padding:.9rem 0 1.6rem;
+            break-inside:avoid; }
+  h2 { font-size:11px; font-weight:400; letter-spacing:.28em; color:var(--mut);
+       margin-bottom:.8rem; }
+  .row { display:flex; justify-content:space-between; gap:1rem; padding:.12rem 0; }
+  .row .k { color:var(--mut); }
+  .row .v { text-align:right; white-space:nowrap; }
+  .row .v.wrap { white-space:normal; word-break:break-word; text-align:right; }
+  .dots { letter-spacing:.35em; }
+  .bad { text-decoration:underline; text-underline-offset:3px; }
+  svg.spark { width:100%; height:44px; margin:.4rem 0 .6rem; display:block; }
+  svg.spark polyline { fill:none; stroke:currentColor; stroke-width:1.2; }
+  svg.spark line { stroke:var(--hair); stroke-width:1; }
+  .phase { color:var(--mut); font-size:12px; margin-top:.5rem;
+           word-break:break-all; }
+  .err { color:var(--mut); font-style:italic; }
+  footer { border-top:1px solid var(--hair); margin-top:.5rem; padding-top:.8rem;
+           color:var(--mut); font-size:11px; letter-spacing:.05em; }
+</style>
+</head>
+<body>
+<header>
+  <div class="mark"><b>OPS</b> <span>·</span> OPENCASELAW</div>
+  <div id="stamp">–</div>
+</header>
+<div class="head" id="kpis"></div>
+<main id="main"></main>
+<footer>auto-refresh 30 s · snapshot cadence 60 s · basic-auth, unlinked, noindex</footer>
+<script>
+const $  = (h) => { const d = document.createElement('div'); d.innerHTML = h; return d.firstElementChild; };
+const nf = (n) => n == null ? '–' : Number(n).toLocaleString('de-CH').replace(/[.,]/g, '’');
+const esc = (s) => String(s ?? '–').replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+
+function row(k, v, cls) {
+  return `<div class="row"><span class="k">${esc(k)}</span><span class="v ${cls||''}">${v}</span></div>`;
+}
+function sect(title, body) {
+  return `<section><h2>${title}</h2>${body}</section>`;
+}
+function spark(days) {
+  if (!days || days.length < 2) return '';
+  const vals = days.map(d => d.calls), mx = Math.max(...vals), W = 300, H = 44;
+  const pts = vals.map((v, i) =>
+    `${(i / (vals.length - 1) * W).toFixed(1)},${(H - 3 - v / mx * (H - 8)).toFixed(1)}`).join(' ');
+  return `<svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+    <line x1="0" y1="${H-1}" x2="${W}" y2="${H-1}"/><polyline points="${pts}"/></svg>`;
+}
+
+function render(d) {
+  const g = new Date(d.generated.replace(' UTC', 'Z').replace(' ', 'T'));
+  const ageMin = (Date.now() - g) / 60000;
+  document.getElementById('stamp').innerHTML =
+    `updated ${esc(d.generated)}${ageMin > 5 ? '<span class="stale">STALE</span>' : ''}`;
+
+  const s = d.serving || {}, u = d.uniques || {}, b = d.build || {};
+  document.getElementById('kpis').innerHTML = `
+    <div class="kpi"><small>WORKERS</small><div>${s.workers_up ?? '–'}/${s.workers_total ?? 8}</div></div>
+    <div class="kpi"><small>CORPUS</small><div>${nf(s.corpus_rows)}</div></div>
+    <div class="kpi"><small>UNIQUES TODAY</small><div>${nf(u.today?.total)}</div></div>
+    <div class="kpi"><small>BUILD</small><div>${esc(b.state ?? '–')}</div></div>`;
+
+  const M = document.getElementById('main');
+  M.innerHTML = '';
+
+  const err = (o) => o?.error ? `<div class="err">${esc(o.error)}</div>` : null;
+
+  M.append($(sect('SERVING', err(s) ||
+    row('workers', `<span class="dots">${(s.per_worker||[]).map(w => w.ok ? '●' : '○').join('')}</span>`) +
+    row('latency', `${nf(s.latency_ms_min)}–${nf(s.latency_ms_max)} ms`) +
+    row('corpus rows', nf(s.corpus_rows)))));
+
+  M.append($(sect('BUILD', err(b) ||
+    row('state', esc(b.state)) +
+    row('started', esc(b.started)) +
+    row('last full run', b.last_total_s ? (b.last_total_s/3600).toFixed(1)+' h' : '–') +
+    row('memory peak', b.mem_peak_g ? b.mem_peak_g+' G' : '–') +
+    `<div class="phase">${esc(b.phase)}</div>`)));
+
+  const us = d.usage || {};
+  M.append($(sect('USAGE · 14 D', err(us) ||
+    spark(us.days) +
+    row('today calls', nf(us.today?.calls)) +
+    row('today sessions', nf(us.today?.sessions)) +
+    row('· claude.ai', nf(us.today?.claude_ai)) +
+    row('· chatgpt', nf(us.today?.chatgpt)) +
+    row('· claude-code', nf(us.today?.claude_code)) +
+    row('30 d calls', nf(us.calls_30d)) +
+    row('30 d sessions', nf(us.sessions_30d)))));
+
+  const cls = ['browser','script','claude-code','crawler','anthropic-egress','openai-egress','other'];
+  M.append($(sect('UNIQUE CONSUMERS', err(u) ||
+    row('today total', nf(u.today?.total)) +
+    cls.map(c => row('· '+c, nf(u.today?.[c]))).join('') +
+    row('month to date', nf(u.month_to_date?.total)))));
+
+  const i = d.intake || {};
+  M.append($(sect('INTAKE', err(i) ||
+    row('scrapers', nf(i.scrapers)) +
+    row('failed', i.failed?.length ? `<span class="bad">${esc(i.failed.join(', '))}</span>` : 'none') +
+    row('new last round', nf(i.new_last_round)))));
+
+  const t = d.integrity || {};
+  M.append($(sect('INTEGRITY', err(t) ||
+    row('audit', esc(t.audit_generated)) +
+    row('window findings', nf(t.window_findings)) +
+    row('anachronistic', nf(t.anachronistic)) +
+    row('corpus QA total', nf(t.corpus_qa_total)) +
+    row('toolcheck', t.toolcheck_pass == null ? '–'
+        : t.toolcheck_pass ? '42/42 pass' : '<span class="bad">FAIL</span>') +
+    row('· at', esc(t.toolcheck_when)))));
+
+  const o = d.ops || {};
+  M.append($(sect('HOST', err(o) ||
+    row('disk', `${o.disk_used_pct ?? '–'} % used · ${nf(o.disk_free_g)} G free`) +
+    row('mem available', `${o.mem_avail_g ?? '–'} G`) +
+    row('page cache', `${o.mem_cache_g ?? '–'} G`) +
+    (o.timers||[]).map(x => row('⏱ '+x.unit, esc(x.next), 'wrap')).join(''))));
+
+  const c = d.corpus || {};
+  M.append($(sect('CORPUS ARTIFACTS', err(c) ||
+    Object.entries(c).map(([k,v]) => row(k.replace(/_/g,' '), nf(v))).join('') || '–')));
+}
+
+async function tick() {
+  try {
+    const r = await fetch('ops.json?t=' + Date.now(), {cache:'no-store'});
+    render(await r.json());
+  } catch (e) {
+    document.getElementById('stamp').innerHTML =
+      `fetch failed <span class="stale">OFFLINE</span>`;
+  }
+}
+tick();
+setInterval(tick, 30000);
+</script>
+</body>
+</html>

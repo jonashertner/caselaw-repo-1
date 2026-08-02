@@ -1,0 +1,10 @@
+[Unit]
+Description=Ops-dashboard snapshot every minute
+
+[Timer]
+OnBootSec=45
+OnUnitActiveSec=60
+Persistent=false
+
+[Install]
+WantedBy=timers.target

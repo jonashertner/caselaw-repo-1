@@ -1,0 +1,10 @@
+[Unit]
+Description=Ops-dashboard snapshot (ops.json for /ops/)
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/caselaw/repo
+ExecStart=/usr/bin/python3 scripts/ops_dashboard_snapshot.py
+Nice=15
+IOSchedulingClass=idle
+TimeoutStartSec=150
