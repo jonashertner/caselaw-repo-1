@@ -55,6 +55,20 @@ def test_classify_ua():
     assert uq.classify_ua("") == "other"
 
 
+def test_vendor_crawlers_are_crawlers_not_egress():
+    # GPTBot/ClaudeBot carry vendor names but are corpus crawlers, and
+    # Googlebot presents as Mozilla — none may pollute the human classes
+    assert uq.classify_ua(
+        "Mozilla/5.0 (compatible; GPTBot/1.1; +https://openai.com/gptbot)"
+    ) == "crawler"
+    assert uq.classify_ua(
+        "Mozilla/5.0 (compatible; ClaudeBot/1.0; +claudebot@anthropic.com)"
+    ) == "crawler"
+    assert uq.classify_ua(
+        "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
+    ) == "crawler"
+
+
 def test_parse_line_strips_syslog_prefix():
     raw = "<190>Aug  2 18:00:00 host ocluniq: 203.0.113.9|python-requests/2.32"
     assert uq.parse_line(raw) == ("203.0.113.9", "python-requests/2.32")

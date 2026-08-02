@@ -51,13 +51,23 @@ HLL_P = 14                              # 2^14 registers -> ~0.8% std error
 HLL_M = 1 << HLL_P
 
 CLASSES = ("browser", "script", "claude-code", "anthropic-egress",
-           "openai-egress", "other")
+           "openai-egress", "crawler", "other")
 
 
 def classify_ua(ua: str) -> str:
     """Coarse client class from the User-Agent. Data-driven refinements
-    welcome; unknowns land in 'other' rather than polluting a real class."""
+    welcome; unknowns land in 'other' rather than polluting a real class.
+
+    Crawler detection runs FIRST: GPTBot ("openai.com/gptbot") and
+    ClaudeBot ("@anthropic.com") carry their vendor's name and would
+    otherwise inflate the egress classes; Googlebot presents as Mozilla
+    and was 97% of the first 20 minutes of 'browser' before this class
+    existed (observed 2026-08-02)."""
     u = (ua or "").lower()
+    for tok in ("bot", "crawler", "spider", "slurp", "bytespider",
+                "facebookexternalhit", "meta-externalagent", "headless"):
+        if tok in u:
+            return "crawler"
     if "claude-code" in u or "claude code" in u:
         return "claude-code"
     if "claude-user" in u or "anthropic" in u or "claude.ai" in u:
