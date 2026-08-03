@@ -24,6 +24,7 @@ so the page can lead with one line and its reasons.
 """
 from __future__ import annotations
 
+import calendar
 import json
 import os
 import re
@@ -61,6 +62,20 @@ def _section(fn):
         return fn()
     except Exception as e:                              # noqa: BLE001
         return {"error": f"{type(e).__name__}: {e}"}
+
+
+def systemd_epoch(ts: str | None) -> float | None:
+    """'Mon 2026-08-03 03:30:13 UTC' -> epoch seconds (UTC), or None.
+    systemd pads with a weekday prefix and a zone suffix; slicing by index
+    left a trailing space that made strptime raise, which blanked the
+    build ETA (2026-08-03)."""
+    if not ts:
+        return None
+    m = re.search(r"(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2})", ts)
+    if not m:
+        return None
+    st = time.strptime(f"{m.group(1)} {m.group(2)}", "%Y-%m-%d %H:%M:%S")
+    return calendar.timegm(st)
 
 
 def _systemd_props(unit: str, *props: str) -> dict:
@@ -192,13 +207,15 @@ def build() -> dict:
     total_s = None
     log = REPO / "logs/publish.log"
     if log.exists():
+        # 4 MB tail: a build step can emit tens of thousands of lines, so a
+        # small window shows the phase but loses the enclosing "Step N" header
         with log.open("rb") as f:
-            f.seek(max(0, log.stat().st_size - 32768))
+            f.seek(max(0, log.stat().st_size - 4 * 2**20))
             tail = f.read().decode("utf-8", "replace")
         lines = [l for l in tail.splitlines() if l.strip()]
         if lines:
             phase = lines[-1][-220:]
-        for m in re.finditer(r"Step ([0-9]+[a-z]?)[: ]([^|]*)", tail):
+        for m in re.finditer(r"Step ([0-9]+[a-z]?):?\s+([^|\n]{0,70})", tail):
             step = f"{m.group(1)} {m.group(2).strip()[:60]}"
         m = None
         for m in re.finditer(r"Total time: ([\d.]+)s", tail):
@@ -220,14 +237,11 @@ def build() -> dict:
 
     started = props.get("ExecMainStartTimestamp") or None
     eta = elapsed_h = None
-    if state == "running" and started:
-        try:
-            st = time.mktime(time.strptime(started[4:24], "%Y-%m-%d %H:%M:%S"))
-            elapsed_h = round((time.time() - st) / 3600, 1)
-            expect = last.get("total_s", DEFAULT_BUILD_S)
-            eta = time.strftime("%H:%M UTC", time.gmtime(st + expect))
-        except ValueError:
-            pass
+    st = systemd_epoch(started)
+    if state == "running" and st:
+        elapsed_h = round((time.time() - st) / 3600, 1)
+        expect = last.get("total_s") or DEFAULT_BUILD_S
+        eta = time.strftime("%H:%M UTC", time.gmtime(st + expect))
     return {"state_raw": raw, "state": state, "result_ok": result_ok,
             "started": started, "ended": ended, "elapsed_h": elapsed_h,
             "eta": eta, "last_total_s": last.get("total_s"),
@@ -384,17 +398,40 @@ def host(serving_d: dict) -> dict:
 
 
 # ── corpus ─────────────────────────────────────────────────────────────
+def shape_corpus(s: dict) -> dict:
+    """Flatten the nightly stats.json (keys: total, unique_decisions,
+    by_court/by_canton/by_language/by_year, court_count, date_range …)."""
+    out: dict = {}
+    for key in ("total", "unique_decisions", "duplicate_representations",
+                "court_count"):
+        if isinstance(s.get(key), (int, float)):
+            out[key] = s[key]
+    dr = s.get("date_range")
+    if isinstance(dr, dict):
+        out["date range"] = f"{dr.get('min', '?')} … {dr.get('max', '?')}"
+    elif isinstance(dr, (list, tuple)) and len(dr) == 2:
+        out["date range"] = f"{dr[0]} … {dr[1]}"
+    for k in ("by_language", "by_canton", "by_court"):
+        v = s.get(k)
+        if isinstance(v, dict) and v:
+            if k == "by_language":
+                for lang, n in sorted(v.items(), key=lambda kv: -kv[1])[:4]:
+                    if isinstance(n, (int, float)):
+                        out[f"lang {lang}"] = n
+            else:
+                out[k.replace("by_", "") + "s"] = len(v)
+    recent = s.get("recent_daily")
+    if isinstance(recent, dict) and recent:
+        day, n = sorted(recent.items())[-1]
+        out[f"added {day}"] = n
+    elif isinstance(recent, list) and recent and isinstance(recent[-1], dict):
+        r = recent[-1]
+        out[f"added {r.get('date', 'latest')}"] = r.get("count")
+    return out or {"note": "stats.json shape unrecognized"}
+
+
 def corpus() -> dict:
-    s = json.loads((REPO / "docs/stats.json").read_text())
-    flat = {}
-    for key in ("decisions", "laws", "citations", "scholarship",
-                "total_decisions", "total_laws", "citation_edges"):
-        v = s.get(key)
-        if isinstance(v, (int, float, str)):
-            flat[key] = v
-        elif isinstance(v, dict) and "total" in v:
-            flat[key] = v["total"]
-    return flat or {"note": "stats.json shape unrecognized"}
+    return shape_corpus(json.loads((REPO / "docs/stats.json").read_text()))
 
 
 # ── verdict ────────────────────────────────────────────────────────────

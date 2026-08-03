@@ -108,3 +108,27 @@ def test_verdict_worst_of_and_details():
     assert v["level"] == "fail"
     names = {c["name"]: c["level"] for c in v["checks"]}
     assert names["disk"] == "fail" and names["search probe"] == "fail"
+
+
+def test_systemd_epoch_handles_weekday_and_zone():
+    # trailing zone + weekday prefix must not reach strptime (the index
+    # slice left a trailing space and blanked the build ETA)
+    assert ods.systemd_epoch("Mon 2026-08-03 03:30:13 UTC") == 1785727813
+    assert ods.systemd_epoch("") is None
+    assert ods.systemd_epoch("n/a") is None
+
+
+def test_shape_corpus_reads_the_real_stats_shape():
+    s = {"total": 1051283, "unique_decisions": 991000, "court_count": 67,
+         "duplicate_representations": 60283,
+         "date_range": {"min": "1875-01-01", "max": "2026-08-02"},
+         "by_language": {"de": 700000, "fr": 250000, "it": 90000},
+         "by_canton": {"ZH": 1, "BE": 2}, "by_court": {"bge": 1, "bger": 2},
+         "recent_daily": {"2026-08-01": 116, "2026-08-02": 20}}
+    c = ods.shape_corpus(s)
+    assert c["total"] == 1051283 and c["court_count"] == 67
+    assert c["date range"] == "1875-01-01 … 2026-08-02"
+    assert c["lang de"] == 700000
+    assert c["cantons"] == 2 and c["courts"] == 2
+    assert c["added 2026-08-02"] == 20
+    assert "note" not in c
