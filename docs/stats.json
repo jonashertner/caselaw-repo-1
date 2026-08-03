@@ -1,19 +1,19 @@
 {
-  "total": 1051291,
-  "source_representations": 1051291,
+  "total": 1051318,
+  "source_representations": 1051318,
   "representation_method_version": "2026-07-23.1",
-  "unique_decisions": 910380,
-  "unique_decisions_lower_bound": 910330,
+  "unique_decisions": 910407,
+  "unique_decisions_lower_bound": 910357,
   "duplicate_representations": 140911,
   "unique_decisions_status": "current",
   "by_court": [
     {
       "court": "bger",
       "canton": "CH",
-      "count": 192245,
+      "count": 192272,
       "earliest": "1986-10-06",
-      "latest": "2026-07-21",
-      "last_scraped": "2026-07-31T10:37:22.377957+00:00",
+      "latest": "2026-07-23",
+      "last_scraped": "2026-08-03T11:00:17.762818+00:00",
       "languages": [
         "de",
         "fr",
@@ -1836,9 +1836,9 @@
     }
   ],
   "by_language": {
-    "de": 500330,
-    "fr": 460170,
-    "it": 90791
+    "de": 500346,
+    "fr": 460178,
+    "it": 90794
   },
   "by_year": {
     "1875": 179,
@@ -1992,23 +1992,23 @@
     "2023": 51461,
     "2024": 51408,
     "2025": 48500,
-    "2026": 17772
+    "2026": 17799
   },
   "recent_daily": {
-    "2026-07-06": 72,
-    "2026-07-07": 75,
-    "2026-07-08": 70,
+    "2026-07-06": 73,
+    "2026-07-07": 76,
+    "2026-07-08": 71,
     "2026-07-09": 67,
     "2026-07-10": 43,
-    "2026-07-13": 39,
-    "2026-07-14": 55,
-    "2026-07-15": 33,
+    "2026-07-13": 40,
+    "2026-07-14": 58,
+    "2026-07-15": 35,
     "2026-07-16": 28,
     "2026-07-17": 35,
-    "2026-07-20": 20,
-    "2026-07-21": 31,
-    "2026-07-22": 10,
-    "2026-07-23": 17,
+    "2026-07-20": 22,
+    "2026-07-21": 36,
+    "2026-07-22": 11,
+    "2026-07-23": 20,
     "2026-07-24": 5,
     "2026-07-27": 2,
     "2026-07-28": 2,
@@ -2026,7 +2026,7 @@
     {
       "court": "bger",
       "canton": "CH",
-      "count": 192245
+      "count": 192272
     },
     {
       "court": "ge_gerichte",
@@ -2225,10 +2225,10 @@
     "2023": -0.1,
     "2024": -0.1,
     "2025": -5.7,
-    "2026": -63.4
+    "2026": -63.3
   },
   "federal_vs_cantonal": {
-    "federal": 395820,
+    "federal": 395847,
     "cantonal": 655471
   },
   "language_by_year": {
@@ -2338,9 +2338,9 @@
       "it": 1548
     },
     "2026": {
-      "de": 9546,
-      "fr": 7511,
-      "it": 715
+      "de": 9562,
+      "fr": 7519,
+      "it": 718
     }
   },
   "by_month": {
@@ -2377,12 +2377,12 @@
     "2026-02": 3400,
     "2026-03": 3206,
     "2026-04": 2681,
-    "2026-05": 2386,
-    "2026-06": 2429,
-    "2026-07": 841,
+    "2026-05": 2387,
+    "2026-06": 2434,
+    "2026-07": 862,
     "2026-08": 1
   },
-  "generated_at": "2026-08-03T10:32:39.268548+00:00",
+  "generated_at": "2026-08-03T17:47:24.476547+00:00",
   "scraper_health": {
     "run_at": "2026-08-03T02:11:11.430818+00:00",
     "run_duration_s": 4210.5,
@@ -2825,9 +2825,9 @@
         "duration_s": 893.6,
         "error": null,
         "note": null,
-        "state_count": 98040,
-        "jsonl_size_mb": 1479.8,
-        "jsonl_mtime": "2026-08-03T10:01:50.240700+00:00"
+        "state_count": 98067,
+        "jsonl_size_mb": 1480.2,
+        "jsonl_mtime": "2026-08-03T11:00:59.942305+00:00"
       },
       "bge": {
         "success": true,
@@ -2844,7 +2844,7 @@
         "note": null,
         "state_count": 21325,
         "jsonl_size_mb": 489.9,
-        "jsonl_mtime": "2026-08-03T09:18:26.094479+00:00"
+        "jsonl_mtime": "2026-08-03T10:38:23.607987+00:00"
       },
       "mkg": {
         "success": true,
@@ -3422,7 +3422,7 @@
         "note": null,
         "state_count": 7656,
         "jsonl_size_mb": 190.5,
-        "jsonl_mtime": "2026-08-03T01:56:22.358220+00:00"
+        "jsonl_mtime": "2026-08-03T10:59:25.981243+00:00"
       },
       "lu_gerichte": {
         "success": true,
@@ -3456,7 +3456,7 @@
         "note": "1979 listed on portal but content not downloadable (empty page or missing PDF)",
         "state_count": 1549,
         "jsonl_size_mb": 95.2,
-        "jsonl_mtime": "2026-08-03T01:59:20.117173+00:00"
+        "jsonl_mtime": "2026-08-03T14:50:48.363105+00:00"
       },
       "zh_verwaltungsgericht": {
         "success": true,
@@ -3617,8 +3617,8 @@
       "reference_article": 40,
       "bachelor_thesis": 3
     },
-    "citation_edges": 9668510,
-    "statute_edges": 12428000
+    "citation_edges": 9668568,
+    "statute_edges": 12428044
   },
   "interesting_stats": {
     "most_cited_decision": {
@@ -3641,17 +3641,17 @@
       "de_pct": 47.6,
       "fr_pct": 43.8,
       "it_pct": 8.6,
-      "total": 1051283
+      "total": 1051318
     },
     "regeste_coverage": {
       "pct": 38.5,
       "with_regeste": 405138,
-      "total": 1051283
+      "total": 1051318
     },
     "graph_size": {
-      "decision_edges": 9994831,
-      "statute_edges": 12428000,
-      "total": 22422831
+      "decision_edges": 9994894,
+      "statute_edges": 12428044,
+      "total": 22422938
     },
     "echr_switzerland": {
       "total": 2883,
@@ -4074,12 +4074,60 @@
   "recent": {
     "bge": [
       {
+        "decision_id": "bger_5A_580_2026",
+        "docket": "5A_580/2026",
+        "date": "2026-07-23",
+        "court": "bger",
+        "language": "fr",
+        "summary": "plainte 17 LP,"
+      },
+      {
+        "decision_id": "bger_5A_532_2026",
+        "docket": "5A_532/2026",
+        "date": "2026-07-23",
+        "court": "bger",
+        "language": "fr",
+        "summary": "notification d'un commandement de payer,"
+      },
+      {
+        "decision_id": "bger_1C_417_2025",
+        "docket": "1C_417/2025",
+        "date": "2026-07-23",
+        "court": "bger",
+        "language": "de",
+        "summary": "Baupolizei; Wiederherstellung des rechtmässigen Zustands bezüglich Umgebungsgestaltung und Absturzvorrichtungen,"
+      },
+      {
+        "decision_id": "bger_5A_593_2026",
+        "docket": "5A_593/2026",
+        "date": "2026-07-22",
+        "court": "bger",
+        "language": "fr",
+        "summary": "placement à des fins d'assistance et obligation de traitement,"
+      },
+      {
+        "decision_id": "bger_9D_10_2026",
+        "docket": "9D_10/2026",
+        "date": "2026-07-21",
+        "court": "bger",
+        "language": "de",
+        "summary": "Verwaltungsgebühren des Kantons St. Gallen, Abgabeperiode 2026,"
+      },
+      {
         "decision_id": "bger_7F_34_2025",
         "docket": "7F_34/2025",
         "date": "2026-07-21",
         "court": "bger",
         "language": "fr",
         "summary": "Requête de révision de l'arrêt 7B_524/2025 du Tribunal fédéral suisse du 12 juin 2025."
+      },
+      {
+        "decision_id": "bger_7B_833_2026",
+        "docket": "7B_833/2026",
+        "date": "2026-07-21",
+        "court": "bger",
+        "language": "de",
+        "summary": "Verlängerung Ersatzmassnahmen,"
       },
       {
         "decision_id": "bger_7B_830_2026",
@@ -4098,60 +4146,12 @@
         "summary": "Irrecevabilité formelle du"
       },
       {
-        "decision_id": "bger_9C_401_2026",
-        "docket": "9C_401/2026",
-        "date": "2026-07-20",
+        "decision_id": "bger_6B_324_2026",
+        "docket": "6B_324/2026",
+        "date": "2026-07-21",
         "court": "bger",
         "language": "fr",
-        "summary": "Assurance-invalidité (condition de recevabilité),"
-      },
-      {
-        "decision_id": "bger_5A_680_2026",
-        "docket": "5A_680/2026",
-        "date": "2026-07-20",
-        "court": "bger",
-        "language": "fr",
-        "summary": "avance de frais (instauration d'une curatelle de représentation et de gestion),"
-      },
-      {
-        "decision_id": "bger_5A_677_2026",
-        "docket": "5A_677/2026",
-        "date": "2026-07-20",
-        "court": "bger",
-        "language": "de",
-        "summary": "Beistandschaft,"
-      },
-      {
-        "decision_id": "bger_9C_610_2025",
-        "docket": "9C_610/2025",
-        "date": "2026-07-17",
-        "court": "bger",
-        "language": "de",
-        "summary": "Berufliche Vorsorge,"
-      },
-      {
-        "decision_id": "bger_5A_520_2026",
-        "docket": "5A_520/2026",
-        "date": "2026-07-17",
-        "court": "bger",
-        "language": "fr",
-        "summary": "calcul minimum vital (plainte 17 LP),"
-      },
-      {
-        "decision_id": "bger_2C_412_2026",
-        "docket": "2C_412/2026",
-        "date": "2026-07-17",
-        "court": "bger",
-        "language": "de",
-        "summary": "Amtshilfe (DBA CH-DE),"
-      },
-      {
-        "decision_id": "bger_8C_545_2025",
-        "docket": "8C_545/2025",
-        "date": "2026-07-16",
-        "court": "bger",
-        "language": "de",
-        "summary": "Invalidenversicherung (Invalidenrente),"
+        "summary": "Irrecevabilité formelle du"
       }
     ],
     "cantonal": [
@@ -4370,14 +4370,18 @@
     }
   ],
   "delta": {
-    "total": 8,
+    "total": 35,
     "by_court": {
+      "bger": 27,
       "ag_regierungsrat": 8
     },
     "by_canton": {
       "AG": 8
     },
-    "corpus": {},
+    "corpus": {
+      "citation_edges": 58,
+      "statute_edges": 44
+    },
     "previous_generated_at": "2026-08-02T18:20:30.103210+00:00"
   }
 }
