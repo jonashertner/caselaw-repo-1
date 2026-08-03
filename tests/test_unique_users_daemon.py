@@ -184,3 +184,13 @@ def test_api_only_consumer_is_machine():
 
 def test_single_visit_stays_unknown():
     assert uq.verdict(_f(n=2, docs=2)) == "unklar"
+
+
+def test_declared_crawler_is_never_human():
+    # a well-behaved crawler reading judgments slowly looks human on
+    # pace and volume alone — its own user-agent settles it
+    f = _f(n=10, docs=10, gaps=9, dt_sum=9 * 45.0, dt2_sum=9 * 2025.0 * 1.7)
+    f["ua_cls"] = "crawler"
+    assert uq.verdict(f) == "maschine"
+    f["ua_cls"] = "browser"
+    assert uq.verdict(f) == "mensch"

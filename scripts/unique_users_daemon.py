@@ -88,7 +88,15 @@ def verdict(f: dict) -> str:
       volume  a practitioner reads tens of decisions a day, not hundreds
       mix     traffic that never touches a document page and only calls
               the API at volume is programmatic by definition
+
+    The user-agent is consulted for one thing only: a client that declares
+    itself a crawler is believed. Without that rule a backtest over one
+    hour of real traffic put 260 of 266 "mensch" verdicts on Googlebot and
+    friends — a well-behaved crawler reading judgments at a civilised pace
+    is behaviourally indistinguishable from a reader.
     """
+    if f.get("ua_cls") == "crawler":
+        return "maschine"                # self-declared: take it at its word
     n = f["n"]
     mean_gap = f["dt_sum"] / f["gaps"] if f["gaps"] else None
     cv = None
@@ -269,7 +277,8 @@ class Windows:
                 return record
             f = self.feat[hd] = {"n": 0, "assets": 0, "docs": 0, "apis": 0,
                                  "mcps": 0, "gaps": 0, "dt_sum": 0.0,
-                                 "dt2_sum": 0.0, "prev": None, "hm": hm}
+                                 "dt2_sum": 0.0, "prev": None, "hm": hm,
+                                 "ua_cls": cls}
         t = self.now()
         f["n"] += 1
         if req_cls == "asset":
