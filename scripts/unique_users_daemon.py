@@ -24,6 +24,23 @@ are structurally invisible to us and stay estimate-only. The honest
 share; the total is reported alongside per-class splits so the two are
 never conflated.
 
+Behavioural classification (2026-08-03). The user-agent alone cannot
+separate a reader from a scraper wearing a Chrome string — measured that
+day: 98k addresses claimed "browser" while declared bots outnumbered
+Chrome requests 3:2 in the same hour. So each address is additionally
+judged by what it *did*:
+
+  assets   did it fetch the CSS/JS/font/image requests a real browser
+           issues alongside a page? (the strongest single discriminator)
+  rate     how many requests in the window
+  rhythm   coefficient of variation of inter-arrival gaps; a metronome
+           (CV < 0.15) is a machine, humans are bursty
+
+Verdicts are 'mensch', 'maschine' or 'unklar' — the third is used rather
+than guessing, e.g. for an address with too few requests to judge. The
+per-address feature records live in RAM only, are capped, and are
+destroyed when the window closes; only the resulting sketches persist.
+
 Daily records append to output/research_logs/unique_users.jsonl.
 State (sketch registers + current window ids) checkpoints every
 CHECKPOINT_S so a restart resumes mid-window with only HLL-level error.
@@ -52,6 +69,32 @@ HLL_M = 1 << HLL_P
 
 CLASSES = ("browser", "script", "claude-code", "anthropic-egress",
            "openai-egress", "crawler", "other")
+VERDICTS = ("mensch", "maschine", "unklar")
+# per-address behaviour records held in RAM; beyond the cap new addresses
+# are still counted in the sketches but not behaviourally judged
+FEATURE_CAP = int(os.environ.get("OCL_UNIQ_FEATURE_CAP", "500000"))
+
+
+def verdict(f: dict) -> str:
+    """Reader or robot, from behaviour alone. Deliberately conservative:
+    anything the evidence does not settle stays 'unklar'."""
+    n = f["n"]
+    assets = f["assets"]
+    # rhythm: coefficient of variation of inter-arrival gaps
+    cv = None
+    if f["gaps"] >= 5:
+        mean = f["dt_sum"] / f["gaps"]
+        if mean > 0:
+            var = max(0.0, f["dt2_sum"] / f["gaps"] - mean * mean)
+            cv = math.sqrt(var) / mean
+    if n >= 20 and cv is not None and cv < 0.15:
+        return "maschine"               # metronomic: no human browses so evenly
+    if assets == 0:
+        # a browser rendering a page always pulls stylesheets/fonts/icons
+        return "maschine" if n >= 8 else "unklar"
+    if n > 400:
+        return "maschine"               # asset-loading crawler / headless browser
+    return "mensch"
 
 
 def classify_ua(ua: str) -> str:
@@ -83,18 +126,21 @@ def classify_ua(ua: str) -> str:
     return "other"
 
 
-def parse_line(payload: str) -> tuple[str, str] | None:
-    """Extract (ip, ua) from a syslog datagram. nginx prepends
-    '<PRI>Mmm dd hh:mm:ss host tag: ' — split on the tag marker; fall back
-    to treating the whole payload as the message."""
+def parse_line(payload: str) -> tuple[str, str, str] | None:
+    """Extract (ip, ua, request-class) from a syslog datagram. nginx
+    prepends '<PRI>Mmm dd hh:mm:ss host tag: ' — split on the tag marker.
+    The third field is optional so the daemon keeps working against the
+    older two-field log_format during a rollout."""
     msg = payload.split("ocluniq: ", 1)[-1].strip()
     if "|" not in msg:
         return None
-    ip, _, ua = msg.partition("|")
-    ip = ip.strip()
+    parts = msg.split("|")
+    ip = parts[0].strip()
     if not ip or " " in ip:
         return None
-    return ip, ua.strip()
+    ua = parts[1].strip() if len(parts) > 1 else ""
+    cls = parts[2].strip() if len(parts) > 2 else "other"
+    return ip, ua, cls
 
 
 class HLL:
@@ -164,24 +210,37 @@ class Windows:
             self.day, self.month = day, month
             self.day_salt = self._salt(f"day-{day}")
             self.month_salt = self._salt(f"month-{month}")
-            self.day_hll = {c: HLL() for c in (*CLASSES, "total")}
-            self.month_hll = {c: HLL() for c in (*CLASSES, "total")}
+            self.day_hll = {c: HLL() for c in (*CLASSES, *VERDICTS, "total")}
+            self.month_hll = {c: HLL() for c in (*CLASSES, *VERDICTS, "total")}
+            self.feat: dict[int, dict] = {}
             return None
         if day != self.day:
+            self._seal_verdicts()
             record = self.snapshot(final=True)
             (STATE_DIR / f"salt-day-{self.day}").unlink(missing_ok=True)
             self.day = day
             self.day_salt = self._salt(f"day-{day}")
-            self.day_hll = {c: HLL() for c in (*CLASSES, "total")}
+            self.day_hll = {c: HLL() for c in (*CLASSES, *VERDICTS, "total")}
+            self.feat = {}                      # behaviour records die with the window
             self.flags = []
         if month != self.month:
             (STATE_DIR / f"salt-month-{self.month}").unlink(missing_ok=True)
             self.month = month
             self.month_salt = self._salt(f"month-{month}")
-            self.month_hll = {c: HLL() for c in (*CLASSES, "total")}
+            self.month_hll = {c: HLL() for c in (*CLASSES, *VERDICTS, "total")}
         return record
 
-    def observe(self, ip: str, ua: str) -> dict | None:
+    def _seal_verdicts(self) -> None:
+        """Judge every tracked address once, at window close, and fold the
+        verdicts into the sketches. Done here rather than per request so a
+        visitor is judged on the whole day, not on their first click."""
+        for h64, f in self.feat.items():
+            v = verdict(f)
+            self.day_hll[v].add_hash(h64)
+            if f.get("hm") is not None:
+                self.month_hll[v].add_hash(f["hm"])
+
+    def observe(self, ip: str, ua: str, req_cls: str = "other") -> dict | None:
         record = self._roll()
         cls = classify_ua(ua)
         hd = salted_h64(self.day_salt, ip)
@@ -189,13 +248,39 @@ class Windows:
         for key in (cls, "total"):
             self.day_hll[key].add_hash(hd)
             self.month_hll[key].add_hash(hm)
+        # behaviour record, RAM only, capped
+        f = self.feat.get(hd)
+        if f is None:
+            if len(self.feat) >= FEATURE_CAP:
+                return record
+            f = self.feat[hd] = {"n": 0, "assets": 0, "gaps": 0, "dt_sum": 0.0,
+                                 "dt2_sum": 0.0, "prev": None, "hm": hm}
+        t = self.now()
+        f["n"] += 1
+        if req_cls == "asset":
+            f["assets"] += 1
+        if f["prev"] is not None:
+            dt = t - f["prev"]
+            if 0 < dt < 1800:               # ignore idle gaps: a new visit
+                f["gaps"] += 1
+                f["dt_sum"] += dt
+                f["dt2_sum"] += dt * dt
+        f["prev"] = t
         return record
 
     def snapshot(self, final: bool = False) -> dict:
+        live = {}
+        if not final:                        # interim view: judge on the fly
+            tmp = {v: HLL() for v in VERDICTS}
+            for h64, f in self.feat.items():
+                tmp[verdict(f)].add_hash(h64)
+            live = {v: h.estimate() for v, h in tmp.items()}
         return {
             "date": self.day,
             "final": final,
             "uniques": {k: h.estimate() for k, h in self.day_hll.items()},
+            "verhalten": live or {v: self.day_hll[v].estimate() for v in VERDICTS},
+            "beobachtete_adressen": len(self.feat),
             "month": self.month,
             "month_to_date": {k: h.estimate() for k, h in self.month_hll.items()},
             "flags": list(self.flags),
@@ -203,6 +288,8 @@ class Windows:
 
     # ── checkpoint / resume ────────────────────────────────────────────
     def save_state(self) -> None:
+        # NB: self.feat (per-address behaviour) is deliberately NOT saved —
+        # it exists only for the lifetime of the window, in memory.
         st = {"day": self.day, "month": self.month,
               "day_reg": {k: h.reg.hex() for k, h in self.day_hll.items()},
               "month_reg": {k: h.reg.hex() for k, h in self.month_hll.items()}}

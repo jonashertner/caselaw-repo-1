@@ -71,9 +71,10 @@ def test_vendor_crawlers_are_crawlers_not_egress():
 
 def test_parse_line_strips_syslog_prefix():
     raw = "<190>Aug  2 18:00:00 host ocluniq: 203.0.113.9|python-requests/2.32"
-    assert uq.parse_line(raw) == ("203.0.113.9", "python-requests/2.32")
+    assert uq.parse_line(raw) == ("203.0.113.9", "python-requests/2.32", "other")
     assert uq.parse_line("garbage without pipe") is None
-    assert uq.parse_line("ocluniq: 2001:db8::1|curl/8.0") == ("2001:db8::1", "curl/8.0")
+    assert uq.parse_line("ocluniq: 2001:db8::1|curl/8.0") == \
+        ("2001:db8::1", "curl/8.0", "other")
 
 
 def test_day_rollover_finalizes_and_resets(state):
@@ -112,3 +113,69 @@ def test_state_files_contain_no_membership_data(state):
     assert "198.51.100.77" not in blob
     rec = json.dumps(win.snapshot())
     assert "198.51.100.77" not in rec
+
+
+# ── behavioural classification ────────────────────────────────────────
+
+def test_parse_line_reads_optional_request_class():
+    assert uq.parse_line("ocluniq: 1.2.3.4|Mozilla/5.0|asset") == \
+        ("1.2.3.4", "Mozilla/5.0", "asset")
+    # older two-field format must keep working during a rollout
+    assert uq.parse_line("ocluniq: 1.2.3.4|curl/8") == ("1.2.3.4", "curl/8", "other")
+
+
+def test_verdict_no_assets_is_a_machine():
+    f = {"n": 40, "assets": 0, "gaps": 0, "dt_sum": 0.0, "dt2_sum": 0.0}
+    assert uq.verdict(f) == "maschine"
+
+
+def test_verdict_too_few_requests_stays_unknown():
+    f = {"n": 3, "assets": 0, "gaps": 0, "dt_sum": 0.0, "dt2_sum": 0.0}
+    assert uq.verdict(f) == "unklar"
+
+
+def test_verdict_metronomic_rhythm_is_a_machine_even_with_assets():
+    # 30 requests, every gap exactly 2.0 s -> CV = 0
+    f = {"n": 30, "assets": 5, "gaps": 29, "dt_sum": 58.0, "dt2_sum": 116.0}
+    assert uq.verdict(f) == "maschine"
+
+
+def test_verdict_bursty_browser_with_assets_is_human():
+    # irregular gaps: 1, 9, 1, 9 ... -> high CV
+    n = 20
+    gaps, dt_sum, dt2 = 0, 0.0, 0.0
+    for i in range(n):
+        dt = 1.0 if i % 2 else 9.0
+        gaps += 1; dt_sum += dt; dt2 += dt * dt
+    f = {"n": n, "assets": 12, "gaps": gaps, "dt_sum": dt_sum, "dt2_sum": dt2}
+    assert uq.verdict(f) == "mensch"
+
+
+def test_verdict_asset_loading_but_huge_volume_is_a_machine():
+    f = {"n": 900, "assets": 50, "gaps": 0, "dt_sum": 0.0, "dt2_sum": 0.0}
+    assert uq.verdict(f) == "maschine"
+
+
+def test_behaviour_records_are_not_persisted(state):
+    t = [1754130000.0]
+    win = uq.Windows(now=lambda: t[0])
+    for i in range(12):
+        t[0] += 3
+        win.observe("203.0.113.5", "Mozilla/5.0", "doc")
+    assert win.feat, "Verhaltensdaten müssen im RAM existieren"
+    win.save_state()
+    blob = (uq.STATE_DIR / "state.json").read_text()
+    assert "feat" not in blob and "203.0.113.5" not in blob
+
+
+def test_day_rollover_seals_verdicts_and_drops_features(state):
+    t = [1754130000.0]
+    win = uq.Windows(now=lambda: t[0])
+    for i in range(15):                      # doc-only, steady -> Maschine
+        t[0] += 4
+        win.observe("198.51.100.9", "Mozilla/5.0", "doc")
+    t[0] += 86_400
+    rec = win.observe("198.51.100.10", "Mozilla/5.0", "asset")
+    assert rec["final"] is True
+    assert rec["verhalten"]["maschine"] >= 1
+    assert win.feat and len(win.feat) == 1    # neues Fenster, frische Daten
