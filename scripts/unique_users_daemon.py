@@ -28,13 +28,9 @@ Behavioural classification (2026-08-03). The user-agent alone cannot
 separate a reader from a scraper wearing a Chrome string — measured that
 day: 98k addresses claimed "browser" while declared bots outnumbered
 Chrome requests 3:2 in the same hour. So each address is additionally
-judged by what it *did*:
-
-  assets   did it fetch the CSS/JS/font/image requests a real browser
-           issues alongside a page? (the strongest single discriminator)
-  rate     how many requests in the window
-  rhythm   coefficient of variation of inter-arrival gaps; a metronome
-           (CV < 0.15) is a machine, humans are bursty
+judged by what it *did* — pace, rhythm, volume and endpoint mix; see
+verdict() for the rules and for why the usual asset-loading test does
+not apply to this site.
 
 Verdicts are 'mensch', 'maschine' or 'unklar' — the third is used rather
 than guessing, e.g. for an address with too few requests to judge. The
@@ -77,24 +73,42 @@ FEATURE_CAP = int(os.environ.get("OCL_UNIQ_FEATURE_CAP", "500000"))
 
 def verdict(f: dict) -> str:
     """Reader or robot, from behaviour alone. Deliberately conservative:
-    anything the evidence does not settle stays 'unklar'."""
+    anything the evidence does not settle stays 'unklar'.
+
+    Note on assets (measured 2026-08-03): decision pages here are
+    self-contained HTML with inline styling and no external stylesheets,
+    scripts or images, so a real browser fetches nothing besides the
+    document. The classic "did it load the assets" test is therefore
+    inapplicable on this site, and using it would brand every genuine
+    reader a machine. The signals that do work:
+
+      pace    a 90 KB judgment cannot be read in a second; sustained
+              sub-2s spacing is mechanical
+      rhythm  metronomic gaps (CV < 0.15) never come from a person
+      volume  a practitioner reads tens of decisions a day, not hundreds
+      mix     traffic that never touches a document page and only calls
+              the API at volume is programmatic by definition
+    """
     n = f["n"]
-    assets = f["assets"]
-    # rhythm: coefficient of variation of inter-arrival gaps
+    mean_gap = f["dt_sum"] / f["gaps"] if f["gaps"] else None
     cv = None
-    if f["gaps"] >= 5:
-        mean = f["dt_sum"] / f["gaps"]
-        if mean > 0:
-            var = max(0.0, f["dt2_sum"] / f["gaps"] - mean * mean)
-            cv = math.sqrt(var) / mean
-    if n >= 20 and cv is not None and cv < 0.15:
-        return "maschine"               # metronomic: no human browses so evenly
-    if assets == 0:
-        # a browser rendering a page always pulls stylesheets/fonts/icons
-        return "maschine" if n >= 8 else "unklar"
-    if n > 400:
-        return "maschine"               # asset-loading crawler / headless browser
-    return "mensch"
+    if f["gaps"] >= 5 and mean_gap and mean_gap > 0:
+        var = max(0.0, f["dt2_sum"] / f["gaps"] - mean_gap * mean_gap)
+        cv = math.sqrt(var) / mean_gap
+
+    if n <= 3:
+        return "unklar"                  # too little evidence to judge
+    if cv is not None and cv < 0.15:
+        return "maschine"                # metronome
+    if f["gaps"] >= 4 and mean_gap is not None and mean_gap < 2.0:
+        return "maschine"                # faster than anyone can read
+    if n > 120:
+        return "maschine"                # volume beyond human reading
+    if f["docs"] == 0 and f["apis"] + f["mcps"] >= 10:
+        return "maschine"                # API-only consumer
+    if f["assets"] > 0 or f["docs"] > 0:
+        return "mensch"
+    return "unklar"
 
 
 def classify_ua(ua: str) -> str:
@@ -253,12 +267,19 @@ class Windows:
         if f is None:
             if len(self.feat) >= FEATURE_CAP:
                 return record
-            f = self.feat[hd] = {"n": 0, "assets": 0, "gaps": 0, "dt_sum": 0.0,
+            f = self.feat[hd] = {"n": 0, "assets": 0, "docs": 0, "apis": 0,
+                                 "mcps": 0, "gaps": 0, "dt_sum": 0.0,
                                  "dt2_sum": 0.0, "prev": None, "hm": hm}
         t = self.now()
         f["n"] += 1
         if req_cls == "asset":
             f["assets"] += 1
+        elif req_cls == "doc":
+            f["docs"] += 1
+        elif req_cls == "api":
+            f["apis"] += 1
+        elif req_cls == "mcp":
+            f["mcps"] += 1
         if f["prev"] is not None:
             dt = t - f["prev"]
             if 0 < dt < 1800:               # ignore idle gaps: a new visit

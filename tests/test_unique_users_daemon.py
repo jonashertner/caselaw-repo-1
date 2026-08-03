@@ -124,38 +124,6 @@ def test_parse_line_reads_optional_request_class():
     assert uq.parse_line("ocluniq: 1.2.3.4|curl/8") == ("1.2.3.4", "curl/8", "other")
 
 
-def test_verdict_no_assets_is_a_machine():
-    f = {"n": 40, "assets": 0, "gaps": 0, "dt_sum": 0.0, "dt2_sum": 0.0}
-    assert uq.verdict(f) == "maschine"
-
-
-def test_verdict_too_few_requests_stays_unknown():
-    f = {"n": 3, "assets": 0, "gaps": 0, "dt_sum": 0.0, "dt2_sum": 0.0}
-    assert uq.verdict(f) == "unklar"
-
-
-def test_verdict_metronomic_rhythm_is_a_machine_even_with_assets():
-    # 30 requests, every gap exactly 2.0 s -> CV = 0
-    f = {"n": 30, "assets": 5, "gaps": 29, "dt_sum": 58.0, "dt2_sum": 116.0}
-    assert uq.verdict(f) == "maschine"
-
-
-def test_verdict_bursty_browser_with_assets_is_human():
-    # irregular gaps: 1, 9, 1, 9 ... -> high CV
-    n = 20
-    gaps, dt_sum, dt2 = 0, 0.0, 0.0
-    for i in range(n):
-        dt = 1.0 if i % 2 else 9.0
-        gaps += 1; dt_sum += dt; dt2 += dt * dt
-    f = {"n": n, "assets": 12, "gaps": gaps, "dt_sum": dt_sum, "dt2_sum": dt2}
-    assert uq.verdict(f) == "mensch"
-
-
-def test_verdict_asset_loading_but_huge_volume_is_a_machine():
-    f = {"n": 900, "assets": 50, "gaps": 0, "dt_sum": 0.0, "dt2_sum": 0.0}
-    assert uq.verdict(f) == "maschine"
-
-
 def test_behaviour_records_are_not_persisted(state):
     t = [1754130000.0]
     win = uq.Windows(now=lambda: t[0])
@@ -179,3 +147,40 @@ def test_day_rollover_seals_verdicts_and_drops_features(state):
     assert rec["final"] is True
     assert rec["verhalten"]["maschine"] >= 1
     assert win.feat and len(win.feat) == 1    # neues Fenster, frische Daten
+
+# ── classifier rewritten 2026-08-03: this site serves no page assets ──
+
+def _f(**kw):
+    base = {"n": 0, "assets": 0, "docs": 0, "apis": 0, "mcps": 0,
+            "gaps": 0, "dt_sum": 0.0, "dt2_sum": 0.0}
+    base.update(kw)
+    return base
+
+
+def test_reader_of_decisions_without_assets_is_human():
+    # the real case: 10 judgments read, ~40 s apart, no assets exist here
+    n, gaps = 10, 9
+    dt = 40.0
+    f = _f(n=n, docs=n, gaps=gaps, dt_sum=dt * gaps,
+           dt2_sum=(dt ** 2) * gaps * 1.6)      # irregular
+    assert uq.verdict(f) == "mensch"
+
+
+def test_faster_than_readable_is_machine():
+    n, gaps, dt = 30, 29, 0.4
+    f = _f(n=n, docs=n, gaps=gaps, dt_sum=dt * gaps, dt2_sum=(dt ** 2) * gaps * 1.5)
+    assert uq.verdict(f) == "maschine"
+
+
+def test_high_volume_is_machine():
+    f = _f(n=500, docs=500, gaps=499, dt_sum=499 * 30.0, dt2_sum=499 * 900.0 * 2)
+    assert uq.verdict(f) == "maschine"
+
+
+def test_api_only_consumer_is_machine():
+    f = _f(n=25, docs=0, apis=25, gaps=24, dt_sum=24 * 60.0, dt2_sum=24 * 3600.0 * 2)
+    assert uq.verdict(f) == "maschine"
+
+
+def test_single_visit_stays_unknown():
+    assert uq.verdict(_f(n=2, docs=2)) == "unklar"
