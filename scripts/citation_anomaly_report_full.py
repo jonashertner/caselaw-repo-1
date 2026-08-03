@@ -176,6 +176,22 @@ def render(hits: list[dict], since: str, verified: dict) -> str:
       "auf Seite 213 enden, und die Datenbank des Bundesgerichts löst "
       "Seite 213 auf, Seite 250 dagegen nicht.")
     A("")
+    A("**Reichweite der zweiten Prüfung.** Eine Kontrollmessung mit "
+      "*bestehenden* Fundstellen ergab, dass die Online-Datenbank des "
+      "Bundesgerichts erst ab Band 80 auflöst: Band 78 und älter liefern "
+      "auch für tatsächlich vorhandene Entscheide keinen Treffer. Für "
+      "Zitate älterer Bände ist ein dortiger Fehlschlag deshalb kein "
+      "Beleg. Diese 18 Befunde wurden stattdessen gegen die "
+      "Entscheidsammlung DFR der Universität Bern geprüft, die die alten "
+      "Bände abdeckt. Ergebnis: In allen vier Fällen, in denen es auf die "
+      "Seitengrenze ankam, stimmt unser Verzeichnis exakt mit DFR überein "
+      "(Band 45 III endet auf S. 253, Band 55 III auf S. 190, Band 72 II "
+      "auf S. 429, Band 28 I auf S. 418). Die übrigen 14 Befunde betreffen "
+      "Abteilungen, die es im betreffenden Band noch gar nicht gab: Die "
+      "Abteilung II erscheint erstmals mit Band 24, die Abteilung III mit "
+      "Band 40, die Abteilung IV mit Band 68 und die Abteilung V mit "
+      "Band 96.")
+    A("")
 
     A("## 4. Wiederkehrende Fehlzitate")
     A("")
