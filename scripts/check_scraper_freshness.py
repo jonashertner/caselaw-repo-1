@@ -196,6 +196,59 @@ def check_es_cron_health() -> tuple[bool, str]:
         return True, f"ES check skipped: {e}"
 
 
+GAP_STATE_PATH = Path("logs/scraper_gap_state.json")
+GAP_MIN = 10          # smaller shortfalls are usually counting differences
+GAP_PERSIST_DAYS = 3  # a gap must survive this long before it is worth waking
+
+
+def check_persistent_gaps(health: dict, today: str,
+                          state_path: Path | None = None) -> list[str]:
+    """Alert on coverage shortfalls that successful runs keep reporting.
+
+    run_all_scrapers.py records `gap` (portal count minus ours) per court,
+    but nothing watched it: sz_gerichte reported "[OK] … gap 51" every
+    night for three weeks while 51 decisions stayed uncollected, because
+    the newest-first scan stops after 200 consecutive known decisions and
+    never reaches them (2026-08-03).
+
+    A single day's gap is not alarmed — portals double-count, withdraw
+    decisions, or publish placeholders. A gap that persists across
+    GAP_PERSIST_DAYS distinct days is a real shortfall and gets one alert
+    naming the catch-up switch.
+    """
+    path = state_path or GAP_STATE_PATH
+    try:
+        prev = json.loads(path.read_text()) if path.exists() else {}
+    except Exception:
+        prev = {}
+
+    scrapers = health.get("scrapers", health) or {}
+    cur: dict[str, dict] = {}
+    alerts: list[str] = []
+    for court, row in scrapers.items():
+        if not isinstance(row, dict):
+            continue
+        gap = row.get("gap")
+        if not isinstance(gap, int) or gap < GAP_MIN:
+            continue                      # closed or never measured: forget it
+        seen = prev.get(court, {})
+        days = sorted(set(seen.get("days", [])) | {today})
+        cur[court] = {"gap": gap, "days": days[-10:]}
+        if len(days) >= GAP_PERSIST_DAYS:
+            ours = row.get("our_count")
+            portal = row.get("portal_count")
+            alerts.append(
+                f"GAP {court}: {gap} Entscheide fehlen seit {len(days)} Tagen "
+                f"(portal={portal}, ours={ours}) — einmaliger Nachlauf mit "
+                f"OCL_SCRAPER_RESCAN_ALL=1 python3 run_scraper.py {court}")
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(cur, indent=1, sort_keys=True))
+    except Exception:
+        pass                              # state is an optimisation, not a gate
+    return alerts
+
+
 def _alert_set_digest(alerts: list[str]) -> str:
     """Stable hash of the alert SET (order-independent). Used to skip
     ntfy when today's alerts are byte-for-byte the same as yesterday's
@@ -494,6 +547,13 @@ def main():
     es_ok, es_msg = check_es_cron_health()
     if not es_ok:
         alerts.append(f"FAIL entscheidsuche cron: {es_msg}")
+
+    # ── 4. persistent coverage gaps ──
+    try:
+        if isinstance(health, dict):
+            alerts.extend(check_persistent_gaps(health, today))
+    except Exception as e:                                  # never gate on this
+        alerts.append(f"WARN gap check failed: {e}")
 
     # ── Output ──
     log_path = Path(args.alert_log)
