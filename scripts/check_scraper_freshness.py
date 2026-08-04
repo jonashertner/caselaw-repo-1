@@ -200,6 +200,22 @@ GAP_STATE_PATH = Path("logs/scraper_gap_state.json")
 GAP_MIN = 10          # smaller shortfalls are usually counting differences
 GAP_PERSIST_DAYS = 3  # a gap must survive this long before it is worth waking
 
+# Structural offsets confirmed by a full rescan: the portal's row count
+# exceeds the number of distinct decisions it will actually hand out, so
+# the difference is not a backlog and must not alarm. Each entry records
+# the date the full scan was run and what it returned, so the claim can be
+# re-tested rather than taken on trust.
+KNOWN_GAP_OFFSETS: dict[str, dict] = {
+    "sz_gerichte": {
+        "gap": 51,
+        "verified": "2026-08-04",
+        "evidence": "OCL_SCRAPER_RESCAN_ALL=1 walked all 3415 portal pages "
+                    "in 85 min with 0 errors and returned 0 new decisions; "
+                    "the offset held at exactly 51 while 35 decisions were "
+                    "added over three weeks, which a real backlog would not do",
+    },
+}
+
 
 def check_persistent_gaps(health: dict, today: str,
                           state_path: Path | None = None) -> list[str]:
@@ -231,6 +247,9 @@ def check_persistent_gaps(health: dict, today: str,
         gap = row.get("gap")
         if not isinstance(gap, int) or gap < GAP_MIN:
             continue                      # closed or never measured: forget it
+        known = KNOWN_GAP_OFFSETS.get(court)
+        if known and gap <= known["gap"]:
+            continue                      # structural offset, not a shortfall
         seen = prev.get(court, {})
         days = sorted(set(seen.get("days", [])) | {today})
         cur[court] = {"gap": gap, "days": days[-10:]}
