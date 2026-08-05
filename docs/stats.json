@@ -1,19 +1,19 @@
 {
-  "total": 1051575,
-  "source_representations": 1051575,
+  "total": 1051605,
+  "source_representations": 1051605,
   "representation_method_version": "2026-07-23.1",
-  "unique_decisions": 910663,
-  "unique_decisions_lower_bound": 910613,
+  "unique_decisions": 910693,
+  "unique_decisions_lower_bound": 910643,
   "duplicate_representations": 140912,
   "unique_decisions_status": "current",
   "by_court": [
     {
       "court": "bger",
       "canton": "CH",
-      "count": 192303,
+      "count": 192330,
       "earliest": "1986-10-06",
-      "latest": "2026-07-23",
-      "last_scraped": "2026-08-04T10:36:41.740148+00:00",
+      "latest": "2026-07-24",
+      "last_scraped": "2026-08-05T10:36:24.678311+00:00",
       "languages": [
         "de",
         "fr",
@@ -605,10 +605,10 @@
     {
       "court": "ecthr_chamber",
       "canton": "CE",
-      "count": 1170,
+      "count": 1173,
       "earliest": "1961-07-01",
       "latest": "2026-07-07",
-      "last_scraped": "2026-08-05T01:06:53.294469+00:00",
+      "last_scraped": "2026-08-05T14:04:10.366935+00:00",
       "languages": [
         "fr"
       ]
@@ -1757,7 +1757,7 @@
     {
       "canton": "CE",
       "name": "CE",
-      "count": 1506,
+      "count": 1509,
       "court_count": 3,
       "earliest": "1961-07-01",
       "latest": "2026-07-09",
@@ -1836,9 +1836,9 @@
     }
   ],
   "by_language": {
-    "de": 500515,
-    "fr": 460257,
-    "it": 90803
+    "de": 500535,
+    "fr": 460266,
+    "it": 90804
   },
   "by_year": {
     "1875": 179,
@@ -1988,28 +1988,28 @@
     "2019": 49581,
     "2020": 50349,
     "2021": 51808,
-    "2022": 51536,
+    "2022": 51537,
     "2023": 51463,
-    "2024": 51410,
+    "2024": 51412,
     "2025": 48511,
-    "2026": 18033
+    "2026": 18060
   },
   "recent_daily": {
-    "2026-07-06": 81,
-    "2026-07-07": 79,
+    "2026-07-06": 88,
+    "2026-07-07": 81,
     "2026-07-08": 79,
     "2026-07-09": 68,
-    "2026-07-10": 47,
-    "2026-07-13": 48,
-    "2026-07-14": 69,
-    "2026-07-15": 43,
-    "2026-07-16": 42,
+    "2026-07-10": 48,
+    "2026-07-13": 49,
+    "2026-07-14": 70,
+    "2026-07-15": 44,
+    "2026-07-16": 43,
     "2026-07-17": 42,
-    "2026-07-20": 28,
+    "2026-07-20": 30,
     "2026-07-21": 41,
-    "2026-07-22": 15,
-    "2026-07-23": 26,
-    "2026-07-24": 10,
+    "2026-07-22": 17,
+    "2026-07-23": 27,
+    "2026-07-24": 11,
     "2026-07-27": 6,
     "2026-07-28": 5,
     "2026-07-29": 3,
@@ -2028,7 +2028,7 @@
     {
       "court": "bger",
       "canton": "CH",
-      "count": 192303
+      "count": 192330
     },
     {
       "court": "ge_gerichte",
@@ -2230,8 +2230,8 @@
     "2026": -62.8
   },
   "federal_vs_cantonal": {
-    "federal": 395935,
-    "cantonal": 655640
+    "federal": 395962,
+    "cantonal": 655643
   },
   "language_by_year": {
     "2005": {
@@ -2321,7 +2321,7 @@
     },
     "2022": {
       "de": 23683,
-      "fr": 25092,
+      "fr": 25093,
       "it": 2761
     },
     "2023": {
@@ -2331,7 +2331,7 @@
     },
     "2024": {
       "de": 23293,
-      "fr": 25895,
+      "fr": 25897,
       "it": 2222
     },
     "2025": {
@@ -2340,9 +2340,9 @@
       "it": 1548
     },
     "2026": {
-      "de": 9719,
-      "fr": 7591,
-      "it": 723
+      "de": 9739,
+      "fr": 7597,
+      "it": 724
     }
   },
   "by_month": {
@@ -2356,11 +2356,11 @@
     "2024-03": 4374,
     "2024-04": 4222,
     "2024-05": 4437,
-    "2024-06": 4779,
+    "2024-06": 4780,
     "2024-07": 3963,
     "2024-08": 3938,
     "2024-09": 4149,
-    "2024-10": 4342,
+    "2024-10": 4343,
     "2024-11": 4465,
     "2024-12": 4279,
     "2025-01": 4236,
@@ -2380,11 +2380,11 @@
     "2026-03": 3214,
     "2026-04": 2687,
     "2026-05": 2410,
-    "2026-06": 2494,
-    "2026-07": 991,
+    "2026-06": 2499,
+    "2026-07": 1013,
     "2026-08": 8
   },
-  "generated_at": "2026-08-05T10:22:49.730219+00:00",
+  "generated_at": "2026-08-05T18:04:08.694724+00:00",
   "scraper_health": {
     "run_at": "2026-08-05T02:15:32.818320+00:00",
     "run_duration_s": 4471.9,
@@ -2793,9 +2793,9 @@
         "duration_s": 876.8,
         "error": null,
         "note": null,
-        "state_count": 98098,
-        "jsonl_size_mb": 1480.6,
-        "jsonl_mtime": "2026-08-05T10:01:50.621538+00:00"
+        "state_count": 98125,
+        "jsonl_size_mb": 1481.1,
+        "jsonl_mtime": "2026-08-05T16:00:56.070493+00:00"
       },
       "bvger": {
         "success": true,
@@ -2880,7 +2880,7 @@
         "note": null,
         "state_count": 21325,
         "jsonl_size_mb": 489.9,
-        "jsonl_mtime": "2026-08-05T09:19:51.718310+00:00"
+        "jsonl_mtime": "2026-08-05T10:38:53.024595+00:00"
       },
       "ju_gerichte": {
         "success": true,
@@ -2897,7 +2897,7 @@
         "note": null,
         "state_count": 1132,
         "jsonl_size_mb": 39.6,
-        "jsonl_mtime": "2026-08-05T01:21:16.201373+00:00"
+        "jsonl_mtime": "2026-08-05T10:24:59.762268+00:00"
       },
       "nw_gerichte": {
         "success": true,
@@ -2931,7 +2931,7 @@
         "note": null,
         "state_count": 1611,
         "jsonl_size_mb": 32.6,
-        "jsonl_mtime": "2026-08-05T01:25:10.753955+00:00"
+        "jsonl_mtime": "2026-08-05T10:24:44.447097+00:00"
       },
       "postcom": {
         "success": true,
@@ -3322,7 +3322,7 @@
         "note": null,
         "state_count": 7656,
         "jsonl_size_mb": 190.5,
-        "jsonl_mtime": "2026-08-05T01:52:43.303555+00:00"
+        "jsonl_mtime": "2026-08-05T10:52:39.568838+00:00"
       },
       "zh_baurekursgericht": {
         "success": true,
@@ -3456,9 +3456,9 @@
         "duration_s": 3612.3,
         "error": null,
         "note": "1766 listed on portal but content not downloadable (empty page or missing PDF)",
-        "state_count": 1552,
-        "jsonl_size_mb": 95.5,
-        "jsonl_mtime": "2026-08-05T02:05:33.513909+00:00"
+        "state_count": 1555,
+        "jsonl_size_mb": 95.8,
+        "jsonl_mtime": "2026-08-05T14:56:00.463313+00:00"
       },
       "emark": {
         "success": true,
@@ -3619,19 +3619,19 @@
       "reference_article": 40,
       "bachelor_thesis": 3
     },
-    "citation_edges": 9671078,
-    "statute_edges": 12430387
+    "citation_edges": 9672750,
+    "statute_edges": 12432089
   },
   "interesting_stats": {
     "most_cited_decision": {
       "docket": "125 V 351",
-      "citation_count": 66324,
+      "citation_count": 66341,
       "url": "https://mcp.opencaselaw.ch/entscheid/bge_125 V 351"
     },
     "most_cited_statute": {
       "law_code": "LTF",
       "article": "100",
-      "ref_count": 183800
+      "ref_count": 183819
     },
     "oldest_decision": {
       "docket": "1_I_26",
@@ -3643,20 +3643,20 @@
       "de_pct": 47.6,
       "fr_pct": 43.8,
       "it_pct": 8.6,
-      "total": 1051490
+      "total": 1051605
     },
     "regeste_coverage": {
       "pct": 38.5,
-      "with_regeste": 405155,
-      "total": 1051490
+      "with_regeste": 405167,
+      "total": 1051605
     },
     "graph_size": {
-      "decision_edges": 9997646,
-      "statute_edges": 12430387,
-      "total": 22428033
+      "decision_edges": 9999420,
+      "statute_edges": 12432089,
+      "total": 22431509
     },
     "echr_switzerland": {
-      "total": 2884,
+      "total": 2889,
       "grand_chamber": 101,
       "in_2026": 141,
       "most_recent": {
@@ -3669,31 +3669,31 @@
     "top_5_decisions": [
       {
         "docket": "125 V 351",
-        "citation_count": 66324,
+        "citation_count": 66341,
         "regeste_excerpt": "Regeste\n Art. 4 BV; Art. 108 Abs. 1 lit. b UVG; Art. 40 BZP in Verbindung mit Art. 19 VwVG; Art. 95 Abs. 2 in Verbindung mit Art. 113 und 132 OG: Beweiswürdigun",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_125 V 351"
       },
       {
         "docket": "BGE 125 V 351",
-        "citation_count": 51970,
+        "citation_count": 51977,
         "regeste_excerpt": "Regeste\n Art. 4 BV; Art. 108 Abs. 1 lit. b UVG; Art. 40 BZP in Verbindung mit Art. 19 VwVG; Art. 95 Abs. 2 in Verbindung mit Art. 113 und 132 OG: Beweiswürdigun",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
       },
       {
         "docket": "BGE 134 V 231",
-        "citation_count": 38431,
+        "citation_count": 38442,
         "regeste_excerpt": "Regeste\n Art. 6 Abs. 1 UVG; Beweiswert diagnostischer Methoden; funktionelle Magnetresonanztomographie; Schleudertrauma. Eine medizinisch-diagnostische Methode ",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_134_V_231"
       },
       {
         "docket": "BGE 115 V 133",
-        "citation_count": 34018,
+        "citation_count": 34020,
         "regeste_excerpt": "Regeste\n Art. 67 und 76 KUVG, Art. 6 und 18 UVG. Präzisierung der in BGE 113 V 307 veröffentlichten Rechtsprechung zum adäquaten Kausalzusammenhang.\nRegeste\n Ar",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_115_V_133"
       },
       {
         "docket": "122 V 157",
-        "citation_count": 30147,
+        "citation_count": 30151,
         "regeste_excerpt": "Regeste\n Art. 4 BV, Art. 6 Ziff. 1 EMRK. - Art. 4 BV und Art. 6 Ziff. 1 EMRK umfassen keinen formellen Anspruch auf Beizug versicherungsexterner medizinischer G",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_122 V 157"
       }
@@ -3702,27 +3702,27 @@
       {
         "law_code": "LTF",
         "article": "100",
-        "ref_count": 183800
+        "ref_count": 183819
       },
       {
         "law_code": "LTF",
         "article": "113",
-        "ref_count": 113318
+        "ref_count": 113324
       },
       {
         "law_code": "LTF",
         "article": "42",
-        "ref_count": 108266
+        "ref_count": 108283
       },
       {
         "law_code": "BGG",
         "article": "42",
-        "ref_count": 95775
+        "ref_count": 95796
       },
       {
         "law_code": "BGG",
         "article": "66",
-        "ref_count": 60212
+        "ref_count": 60227
       }
     ],
     "materialien_coverage": {
@@ -3780,7 +3780,7 @@
         "earliest": "1908-11-08",
         "latest": "2026-07-30",
         "span_years": 118,
-        "decision_count": 169304
+        "decision_count": 169317
       }
     ]
   },
@@ -4076,6 +4076,14 @@
   "recent": {
     "bge": [
       {
+        "decision_id": "bger_5A_679_2026",
+        "docket": "5A_679/2026",
+        "date": "2026-07-24",
+        "court": "bger",
+        "language": "de",
+        "summary": "Rechtsverzögerung,"
+      },
+      {
         "decision_id": "bger_9C_122_2026",
         "docket": "9C_122/2026",
         "date": "2026-07-23",
@@ -4098,6 +4106,14 @@
         "court": "bger",
         "language": "de",
         "summary": "Honorar (vorsorgliche Massnahmen im Scheidungsverfahren)"
+      },
+      {
+        "decision_id": "bger_5A_697_2026",
+        "docket": "5A_697/2026",
+        "date": "2026-07-23",
+        "court": "bger",
+        "language": "de",
+        "summary": "Pfändungsvollzug, Verlustschein,"
       },
       {
         "decision_id": "bger_5A_580_2026",
@@ -4132,28 +4148,12 @@
         "summary": "Unentgeltliche Rechtspflege (Genugtuung wegen angeblicher Persönlichkeitsverletzung),"
       },
       {
-        "decision_id": "bger_5A_593_2026",
-        "docket": "5A_593/2026",
+        "decision_id": "bger_5A_687_2026",
+        "docket": "5A_687/2026",
         "date": "2026-07-22",
         "court": "bger",
-        "language": "fr",
-        "summary": "placement à des fins d'assistance et obligation de traitement,"
-      },
-      {
-        "decision_id": "bger_9D_10_2026",
-        "docket": "9D_10/2026",
-        "date": "2026-07-21",
-        "court": "bger",
         "language": "de",
-        "summary": "Verwaltungsgebühren des Kantons St. Gallen, Abgabeperiode 2026,"
-      },
-      {
-        "decision_id": "bger_9C_175_2026",
-        "docket": "9C_175/2026",
-        "date": "2026-07-21",
-        "court": "bger",
-        "language": "it",
-        "summary": "Imposta cantonale e imposta federale diretta, periodi fiscali 2019-2023, doppia imposizione intercantonale,"
+        "summary": "Öffentliche Bekanntmachung von Pfändungsanzeigen,"
       }
     ],
     "cantonal": [
@@ -4372,8 +4372,9 @@
     }
   ],
   "delta": {
-    "total": 85,
+    "total": 115,
     "by_court": {
+      "bger": 27,
       "ge_gerichte": 13,
       "bvger": 22,
       "ti_gerichte": 3,
@@ -4389,7 +4390,7 @@
       "ag_verwaltungsgericht": 1,
       "edoeb": 1,
       "zg_verwaltungsgericht": 6,
-      "ecthr_chamber": 2,
+      "ecthr_chamber": 5,
       "preisueberwacher": 2
     },
     "by_canton": {
@@ -4403,9 +4404,12 @@
       "BS": 3,
       "SZ": 1,
       "ZG": 6,
-      "CE": 2
+      "CE": 5
     },
-    "corpus": {},
+    "corpus": {
+      "citation_edges": 1672,
+      "statute_edges": 1702
+    },
     "previous_generated_at": "2026-08-04T17:32:55.708510+00:00"
   }
 }
