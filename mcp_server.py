@@ -1829,6 +1829,11 @@ _metrics = {
     "last_tool_was_search": False,             # tracks if previous call was search
     "clients": collections.Counter(),          # client type → call count
     "sessions": 0,
+    # tool_name → Counter({"substantive": n, "empty": n}). Call counts alone
+    # cannot answer "did we actually answer?": an empty search, a cite that
+    # resolves to exists=false and a get_law miss are all HTTP 200 and land
+    # in tool_calls indistinguishable from a hit. See _classify_outcome.
+    "tool_outcomes": collections.defaultdict(collections.Counter),
     "startup_time": datetime.now(timezone.utc).isoformat(),
 }
 
@@ -1882,6 +1887,104 @@ def _record_tool_call(name: str, duration_ms: float, *, error: bool = False):
         _metrics["last_tool_was_search"] = False
     else:
         _metrics["last_tool_was_search"] = False
+
+
+# ── Outcome labelling ────────────────────────────────────────
+# A tool that ran without raising still may not have answered. These
+# markers are the no-result paths the handlers actually emit (grepped from
+# this file, not invented): "No results found." / "No data found." /
+# "No decisions found matching your query" / "No articles found." /
+# "No outgoing|incoming citations found." / "No sufficiently similar
+# decisions found." / "No leading cases found" / "No commentaries found" /
+# "No law found with" / "No suitable case found" / "<X> not found: ...".
+_EMPTY_TEXT_MARKERS = (
+    "no results found",
+    "no data found",
+    "no data available",
+    "no decisions found",
+    "no articles found",
+    "no outgoing citations found",
+    "no incoming citations found",
+    "no sufficiently similar decisions found",
+    "no leading cases found",
+    "no commentaries found",
+    "no law found with",
+    "no suitable case found",
+    "not found:",
+    "unknown tool:",
+)
+# Marker matching applies only to short responses. A 200k-char decision is
+# never "empty" no matter what phrases its text happens to contain, and this
+# single guard removes essentially every false positive without needing the
+# markers to be anchored.
+_EMPTY_MAX_CHARS = 4000
+# A payload carrying nothing but a note/hint is a no-answer dressed politely.
+_NON_ANSWER_KEYS = {"note", "_note", "hint", "_hint", "query", "queried",
+                    "tool", "message"}
+
+
+def _response_text(result) -> str:
+    """Flatten a dispatch result to text. Handles the deep-research
+    (content, structuredContent) tuple and the ordinary TextContent list."""
+    if isinstance(result, tuple):
+        result = result[0] if result else []
+    if isinstance(result, str):
+        return result
+    if not isinstance(result, (list, tuple)):
+        return ""
+    return "\n".join(
+        getattr(item, "text", "") or "" for item in result
+    )
+
+
+def _classify_outcome(result) -> str:
+    """Return "substantive" or "empty" for a successful tool result.
+
+    Errors are not judged here — they are already counted separately from
+    the raised exception, which is the only reliable signal of a server
+    fault. A handled "not found" is deliberately "empty", not "error": the
+    caller asked and we had nothing, which is a coverage question rather
+    than a failure.
+    """
+    text = _response_text(result).strip()
+    if not text:
+        return "empty"
+
+    # Structural signals first — JSON payloads say so explicitly.
+    if text[0] in "{[":
+        try:
+            payload = json.loads(text)
+        except (ValueError, TypeError):
+            payload = None
+        if isinstance(payload, list):
+            return "substantive" if payload else "empty"
+        if isinstance(payload, dict):
+            if payload.get("error"):
+                return "empty"
+            if payload.get("exists") is False:
+                return "empty"
+            informative = {k for k, v in payload.items()
+                           if v not in (None, "", [], {}, False)}
+            if informative and informative <= _NON_ANSWER_KEYS:
+                return "empty"
+            if not informative:
+                return "empty"
+            return "substantive"
+
+    if len(text) <= _EMPTY_MAX_CHARS:
+        low = text.lower()
+        if any(marker in low for marker in _EMPTY_TEXT_MARKERS):
+            return "empty"
+    return "substantive"
+
+
+def _record_tool_outcome(name: str, outcome: str) -> None:
+    """Count one labelled outcome. Never raises: telemetry must not be able
+    to fail a request that already produced a good answer."""
+    try:
+        _metrics["tool_outcomes"][name][outcome] += 1
+    except Exception:                                   # pragma: no cover
+        pass
 
 
 def _record_query(query: str):
@@ -2315,12 +2418,19 @@ def _get_metrics() -> dict:
     for name, count in _metrics["tool_calls"].most_common():
         lats = sorted(_metrics["tool_latency_ms"].get(name, []))
         n = len(lats)
+        outcomes = _metrics["tool_outcomes"].get(name) or {}
         tool_stats[name] = {
             "calls": count,
             "avg_ms": round(sum(lats) / n, 1) if n else 0,
             "p50_ms": round(lats[n // 2], 0) if n else 0,
             "p95_ms": round(lats[int(n * 0.95)], 0) if n else 0,
             "errors": _metrics["tool_errors"].get(name, 0),
+            # Cumulative since boot, same semantics as calls/errors, so the
+            # existing delta reconstruction in scripts/metrics_report.py
+            # handles them without a special case. labelled = the two summed;
+            # calls - labelled is the share no outcome could be attached to.
+            "substantive": outcomes.get("substantive", 0),
+            "empty": outcomes.get("empty", 0),
         }
 
     # Query content never surfaced (privacy contract — see
@@ -21615,10 +21725,16 @@ async def _dispatch_with_timeout(name: str, arguments: dict):
     background, but the request is freed.) Separate from the decorated wrapper so
     it is unit-testable."""
     try:
-        return await asyncio.wait_for(
+        result = await asyncio.wait_for(
             _handle_call_tool_inner(name, arguments),
             timeout=TOOL_DISPATCH_TIMEOUT_S,
         )
+        # Single choke point for every MCP tool: label whether the call
+        # actually answered. _handle_call_tool_inner's own finally has
+        # already counted the call and any exception; it cannot see the
+        # return value, which is why the label is attached here.
+        _record_tool_outcome(name, _classify_outcome(result))
+        return result
     except asyncio.TimeoutError:
         logger.warning(
             "tool dispatch aborted: %s exceeded %ss server-side timeout (load/backlog)",
@@ -23372,6 +23488,18 @@ setInterval(load, 30000);
                 tool, err = _classify_rest_metric(request.url.path, status)
                 if tool:
                     _record_tool_call(tool, (time.monotonic() - t0) * 1000, error=err)
+                    # REST outcomes come from the status code: the body is a
+                    # stream here and reading it to look for no-result markers
+                    # would buffer every export. 404/410/204 is the REST way of
+                    # saying "nothing"; 5xx is already the error flag above.
+                    # Known limit: a search returning an empty list is a 200
+                    # and is labelled substantive. Fixing that needs the route
+                    # to set a header, not the middleware to guess.
+                    if not err and status < 500:
+                        _record_tool_outcome(
+                            tool,
+                            "empty" if status in (204, 404, 410) else "substantive",
+                        )
                     # Track word-addin client
                     if request.headers.get("x-client") == "word-addin":
                         _record_tool_call("word-addin:" + tool, (time.monotonic() - t0) * 1000, error=err)

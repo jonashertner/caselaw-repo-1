@@ -80,6 +80,8 @@ def reconstruct(lines):
     dcli = collections.defaultdict(collections.Counter)
     dtools = collections.defaultdict(collections.Counter)
     derr = collections.defaultdict(collections.Counter)
+    dsub = collections.defaultdict(collections.Counter)   # answered
+    dempty = collections.defaultdict(collections.Counter)  # ran, no answer
 
     for _boot, bydays in boots.items():
         prev_tools: dict = {}
@@ -91,10 +93,17 @@ def reconstruct(lines):
             for name, v in tools.items():
                 pc = (prev_tools.get(name) or {}).get("calls", 0)
                 pe = (prev_tools.get(name) or {}).get("errors", 0)
+                ps = (prev_tools.get(name) or {}).get("substantive", 0)
+                pn = (prev_tools.get(name) or {}).get("empty", 0)
                 delta_c = max(0, v.get("calls", 0) - pc)
                 delta_e = max(0, v.get("errors", 0) - pe)
                 dtools[day][name] += delta_c
                 derr[day][name] += delta_e
+                # Absent on records written before outcome labelling shipped;
+                # those days simply report 0 labelled, which the coverage
+                # line below makes visible rather than hiding.
+                dsub[day][name] += max(0, v.get("substantive", 0) - ps)
+                dempty[day][name] += max(0, v.get("empty", 0) - pn)
                 daily[day] += delta_c
             sess = d.get("sessions", 0) or 0
             dsess[day] += max(0, sess - prev_sess)
@@ -102,7 +111,7 @@ def reconstruct(lines):
                 dcli[day][k] += max(0, v - prev_cli.get(k, 0))
             prev_tools, prev_sess = tools, sess
             prev_cli = dict(d.get("clients") or {})
-    return daily, dsess, dcli, dtools, derr
+    return daily, dsess, dcli, dtools, derr, dsub, dempty
 
 
 def main() -> int:
@@ -111,7 +120,7 @@ def main() -> int:
         print(f"not found: {path}", file=sys.stderr)
         return 1
     with open(path, encoding="utf-8", errors="replace") as f:
-        daily, dsess, dcli, dtools, derr = reconstruct(f)
+        daily, dsess, dcli, dtools, derr, dsub, dempty = reconstruct(f)
     if not daily:
         print("no parseable flush records")
         return 1
@@ -133,13 +142,35 @@ def main() -> int:
 
     tools = collections.Counter()
     errs = collections.Counter()
+    subs = collections.Counter()
+    empt = collections.Counter()
     for d in window:
         tools.update(dtools[d])
         errs.update(derr[d])
+        subs.update(dsub[d])
+        empt.update(dempty[d])
+
     print(f"\ntop tools over {len(window)} days:")
+    print(f"  {'tool':30s} {'calls':>9s}  {'err':>7s}  {'answered':>9s}  "
+          f"{'empty':>8s}  {'labelled':>8s}")
     for name, n in tools.most_common(15):
-        e = errs.get(name, 0)
-        print(f"  {name:30s} {n:9,}  err {e:5d} ({100 * e / max(1, n):.2f}%)")
+        e, s, m = errs.get(name, 0), subs.get(name, 0), empt.get(name, 0)
+        labelled = s + m
+        cov = f"{100 * labelled / max(1, n):.0f}%"
+        ans = f"{100 * s / labelled:.1f}%" if labelled else "-"
+        print(f"  {name:30s} {n:9,}  {100 * e / max(1, n):6.2f}%  {ans:>9s}  "
+              f"{m:8,}  {cov:>8s}")
+
+    tot_calls = sum(tools.values())
+    tot_lab = sum(subs.values()) + sum(empt.values())
+    tot_sub = sum(subs.values())
+    print(f"\nanswered rate: ", end="")
+    if tot_lab:
+        print(f"{tot_sub:,} of {tot_lab:,} labelled calls returned substance "
+              f"({100 * tot_sub / tot_lab:.1f}%); "
+              f"{100 * tot_lab / max(1, tot_calls):.0f}% of all calls carry a label")
+    else:
+        print("no labelled calls yet (outcome labelling ships with the next deploy)")
     return 0
 
 

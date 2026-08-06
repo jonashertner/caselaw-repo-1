@@ -20,10 +20,17 @@ if str(REPO) not in sys.path:
 from scripts.metrics_report import reconstruct  # noqa: E402
 
 
-def _rec(boot, flushed_at, calls, sessions=0, clients=None, errors=0):
+def _rec(boot, flushed_at, calls, sessions=0, clients=None, errors=0,
+         substantive=None, empty=None):
+    tool = {"calls": calls, "errors": errors}
+    # Records written before outcome labelling shipped carry neither key.
+    if substantive is not None:
+        tool["substantive"] = substantive
+    if empty is not None:
+        tool["empty"] = empty
     return json.dumps({
         "uptime_since": boot, "flushed_at": flushed_at, "sessions": sessions,
-        "tools": {"get_decision": {"calls": calls, "errors": errors}},
+        "tools": {"get_decision": tool},
         "clients": clients or {},
     })
 
@@ -38,7 +45,7 @@ def test_cumulative_counters_become_daily_deltas():
         _rec("bootB", "2026-07-02T12:00:00", 12, sessions=2),
         _rec("bootB", "2026-07-02T23:50:00", 30, sessions=5),
     ]
-    daily, dsess, dcli, dtools, derr = reconstruct(lines)
+    daily, dsess, dcli, dtools, derr, dsub, dempty = reconstruct(lines)
     assert daily["2026-07-01"] == 25          # last flush of the day, not the sum
     assert daily["2026-07-02"] == (40 - 25) + 30   # boot A delta + boot B total
     assert dsess["2026-07-01"] == 7
@@ -65,7 +72,7 @@ def test_client_mix_deltas_per_boot():
         _rec("bootA", "2026-07-01T20:00:00", 9, clients={"claude.ai": 6, "chatgpt": 2}),
         _rec("bootB", "2026-07-01T21:00:00", 3, clients={"claude.ai": 3}),
     ]
-    _, _, dcli, _, _ = reconstruct(lines)
+    dcli = reconstruct(lines)[2]
     assert dcli["2026-07-01"]["claude.ai"] == 6 + 3
     assert dcli["2026-07-01"]["chatgpt"] == 2
 
@@ -93,5 +100,41 @@ def test_errors_aggregate_like_calls():
         _rec("bootA", "2026-07-01T08:00:00", 10, errors=1),
         _rec("bootA", "2026-07-01T20:00:00", 30, errors=4),
     ]
-    *_, derr = reconstruct(lines)
+    # Positional, not *_: reconstruct now returns outcome counters after
+    # derr, and a trailing-unpack would have silently bound the wrong one.
+    derr = reconstruct(lines)[4]
     assert derr["2026-07-01"]["get_decision"] == 4
+
+
+def test_outcome_counters_delta_like_calls():
+    lines = [
+        _rec("bootA", "2026-07-01T08:00:00", 10, substantive=8, empty=2),
+        _rec("bootA", "2026-07-01T20:00:00", 30, substantive=25, empty=5),
+        _rec("bootB", "2026-07-01T21:00:00", 6, substantive=4, empty=2),
+    ]
+    _, _, _, _, _, dsub, dempty = reconstruct(lines)
+    assert dsub["2026-07-01"]["get_decision"] == 25 + 4
+    assert dempty["2026-07-01"]["get_decision"] == 5 + 2
+
+
+def test_records_without_outcome_keys_report_zero_labelled():
+    """Days before the feature shipped must read as unlabelled, never as
+    'everything answered'."""
+    lines = [
+        _rec("bootA", "2026-07-01T08:00:00", 10),
+        _rec("bootA", "2026-07-01T20:00:00", 30),
+    ]
+    daily, _, _, _, _, dsub, dempty = reconstruct(lines)
+    assert daily["2026-07-01"] == 30
+    assert dsub["2026-07-01"]["get_decision"] == 0
+    assert dempty["2026-07-01"]["get_decision"] == 0
+
+
+def test_outcome_counters_clamp_on_worker_restart():
+    lines = [
+        _rec("bootA", "2026-07-01T08:00:00", 50, substantive=40, empty=10),
+        _rec("bootA", "2026-07-02T08:00:00", 10, substantive=8, empty=2),
+    ]
+    _, _, _, _, _, dsub, dempty = reconstruct(lines)
+    assert dsub["2026-07-02"]["get_decision"] == 0
+    assert dempty["2026-07-02"]["get_decision"] == 0
