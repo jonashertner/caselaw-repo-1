@@ -110,6 +110,17 @@ SILENT_SKIP_EXEMPT_SOURCES = {
     # BL portal pre-poll bails out fast when we already have the last
     # batch; large catch-up only in long-poll runs.
     "bl_gerichte",
+    # Single-request discovery: one search call returns the entire
+    # listing (~19s), then each new decision is fetched under the rate
+    # limit (~60s). Duration is therefore 20s + 60s x new_count, so a
+    # zero-new day is necessarily a ~30s day and carries no information
+    # about portal health. Verified 2026-08-06 from the scraper log: on
+    # 2026-08-04, the run this heuristic flagged, discovery returned
+    # 34,243 rows against 34,245 known IDs — the portal was fully
+    # reachable and there was simply nothing new. Six false alarms
+    # (14/16/19/20 Jul, 2/4 Aug 2026). Outages are caught instead by
+    # check_stalled_corpus below.
+    "zh_sozialversicherungsgericht",
 }
 
 
@@ -260,6 +271,87 @@ def check_persistent_gaps(health: dict, today: str,
                 f"GAP {court}: {gap} Entscheide fehlen seit {len(days)} Tagen "
                 f"(portal={portal}, ours={ours}) — einmaliger Nachlauf mit "
                 f"OCL_SCRAPER_RESCAN_ALL=1 python3 run_scraper.py {court}")
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(cur, indent=1, sort_keys=True))
+    except Exception:
+        pass                              # state is an optimisation, not a gate
+    return alerts
+
+
+STALL_STATE_PATH = Path("logs/scraper_stall_state.json")
+STALL_MIN_CORPUS = 1000    # small series publish too rarely to judge this way
+
+# Calibrated 2026-08-06 against 113 nightly runs per court (2026-04-14 to
+# 2026-08-06, parsed from the "Done. +N new, <total>" lines in logs/*.log).
+# Publication rhythms span two orders of magnitude, so one threshold cannot
+# serve everyone: bger/bvger/ge_gerichte never stayed flat for more than 3
+# consecutive runs, while be_zivilstraf — a real, growing court — stayed
+# flat for 64 and then published a batch. The default therefore sits above
+# the longest streak any growing court actually showed (64), and courts
+# with a dense rhythm get a tighter bound where one is informative.
+STALL_DEFAULT_DAYS = 90
+STALL_TIGHT_DAYS = {
+    # Longest zero-growth streak observed in 113 runs: 3 (corpus +480 over
+    # the period). 14 days is nearly five times that, and this court needs
+    # the cover: it is exempt from the duration heuristic above.
+    "zh_sozialversicherungsgericht": 14,
+}
+
+
+def check_stalled_corpus(health: dict, today: str,
+                         state_path: Path | None = None) -> list[str]:
+    """Alert when a court that was growing stops growing.
+
+    The silent-skip heuristic infers an outage from a fast run, which only
+    holds for scrapers whose runtime scales with the corpus. Scrapers that
+    discover the whole listing in one request finish fast whenever there is
+    nothing new, so their duration says nothing (2026-08-06:
+    zh_sozialversicherungsgericht produced six false alarms that way).
+
+    Corpus growth is architecture-independent: whatever the portal or the
+    scan strategy, a live court adds decisions. Alert when our_count has not
+    moved across the court's threshold in distinct days.
+
+    Growth must have been observed at least once before a court can alert.
+    Without that, every archival feed that is meant to sit still (mkg, weko,
+    the anwaltsaufsicht series — 112 flat runs and no growth at all) would
+    alarm forever, and "stopped growing" would be claimed about something
+    that was never seen growing.
+    """
+    path = state_path or STALL_STATE_PATH
+    try:
+        prev = json.loads(path.read_text()) if path.exists() else {}
+    except Exception:
+        prev = {}
+
+    scrapers = health.get("scrapers", health) or {}
+    cur: dict[str, dict] = {}
+    alerts: list[str] = []
+    for court, row in scrapers.items():
+        if not isinstance(row, dict) or not row.get("success"):
+            continue
+        if court in KNOWN_DEAD_SOURCES or court in TOLERATED_PARTIAL_SOURCES:
+            continue
+        count = row.get("our_count")
+        if not isinstance(count, int) or count < STALL_MIN_CORPUS:
+            continue
+        seen = prev.get(court, {})
+        grew = bool(seen.get("grew"))
+        if seen.get("count") != count:
+            # grew (or shrank): clock restarts, and the court has now
+            # proved it is live — from here a flat stretch means something
+            cur[court] = {"count": count, "days": [today],
+                          "grew": grew or "count" in seen}
+            continue
+        days = sorted(set(seen.get("days", [])) | {today})
+        cur[court] = {"count": count, "days": days[-120:], "grew": grew}
+        limit = STALL_TIGHT_DAYS.get(court, STALL_DEFAULT_DAYS)
+        if grew and len(days) >= limit:
+            alerts.append(
+                f"STALL {court}: Bestand seit {len(days)} Tagen unveraendert "
+                f"bei {count} Entscheiden trotz erfolgreicher Laeufe — "
+                f"Portal oder Discovery pruefen")
     try:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(cur, indent=1, sort_keys=True))
@@ -573,6 +665,13 @@ def main():
             alerts.extend(check_persistent_gaps(health, today))
     except Exception as e:                                  # never gate on this
         alerts.append(f"WARN gap check failed: {e}")
+
+    # ── 5. corpora that stopped growing ──
+    try:
+        if isinstance(health, dict):
+            alerts.extend(check_stalled_corpus(health, today))
+    except Exception as e:                                  # never gate on this
+        alerts.append(f"WARN stall check failed: {e}")
 
     # ── Output ──
     log_path = Path(args.alert_log)
