@@ -62,8 +62,15 @@ STATUTE_PATTERN = re.compile(
     flags=re.IGNORECASE | re.VERBOSE,
 )
 
+# BGE = German, ATF = French, DTF = Italian — the same series, one prefix
+# per language. Until 2026-08 only the literal "BGE" was recognised, so
+# "ATF 143 III 666" survived solely via the bare-form docket pattern below
+# (target_type='docket', prefix discarded): decisions since 2024 yielded
+# 345,146 bge-typed tokens from DE sources but only 283 from FR. The
+# normalised form stays "BGE vol DIV page" — one canonical key per target,
+# whichever language cited it.
 BGE_PATTERN = re.compile(
-    r"\bBGE\s+(?P<vol>\d{1,3})\s+(?P<div>[IVX]{1,4})\s+(?P<page>\d{1,4})\b",
+    r"\b(?:BGE|ATF|DTF)\s+(?P<vol>\d{1,3})\s+(?P<div>[IVX]{1,4})\s+(?P<page>\d{1,4})\b",
     flags=re.IGNORECASE,
 )
 
@@ -165,9 +172,9 @@ def extract_case_citations(text: str) -> list[CaseCitation]:
         for match in pattern.finditer(text):
             raw = match.group(0).strip()
             if pattern is DOCKET_PATTERNS[-1]:
-                # Avoid double-counting BGE refs as docket-style refs.
+                # Avoid double-counting BGE/ATF/DTF refs as docket-style refs.
                 prefix = text[max(0, match.start() - 8):match.start()]
-                if re.search(r"\bBGE\s*$", prefix, flags=re.IGNORECASE):
+                if re.search(r"\b(?:BGE|ATF|DTF)\s*$", prefix, flags=re.IGNORECASE):
                     continue
             normalized = _normalize_docket(raw)
             if not normalized or normalized in seen:
