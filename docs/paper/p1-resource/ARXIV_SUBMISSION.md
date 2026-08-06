@@ -1,17 +1,20 @@
 # arXiv submission metadata — Paper 1 (Resource)
 
-**Status**: submission-ready on the 2026-07-30 snapshot. Manuscript
-fundamentally revised 2026-07-31; externally reviewed the same day
-(GPT-5.6-Sol xhigh via Codex, all four major findings resolved —
-`REVIEW_GPT56SOL.md`). Tarball verified to build standalone with
-tectonic: `opencaselaw-p1-arxiv-2026-08-06.tar.gz` (paper.tex +
-paper.bbl + bib/refs.bib + tables/*.tex; PDF 17 pp, zero unresolved
-references). Companion evaluation paper (`p2-eval/`) in preparation.
+**Status**: MAJOR REVISION in progress (external review 2026-08-07).
+Wave 0 applied 2026-08-07: title, terminology (decision records /
+court and source collections), PublG correction, unofficial-ECLI
+wording, telemetry demoted to operational lessons, abstract rewritten
+under the 1,920-char metadata limit (currently 1,369 plain chars),
+`adjudication` → `rule_consistent` (schema v2), primary standards
+references added. DO NOT SUBMIT before Wave 1 (post-ATF/DTF re-freeze:
+all graph counts, snapshot date, Merkle root, DOI) and Wave 2 (human
+semantic audits) are complete. Prior GPT-5.6-Sol review reconciled in
+`REVIEW_GPT56SOL.md`.
 
 ## Title
 
 ```
-OpenCaseLaw: A Verifiable Multilingual Research Substrate for Swiss Jurisprudence
+OpenCaseLaw: An Open Multilingual Corpus and Citation Graph for Swiss Jurisprudence
 ```
 
 ## Authors
@@ -22,11 +25,17 @@ Jonas Hertner
 
 Single author. Affiliation: OpenCaseLaw. Contact: jh@jonashertner.com.
 
-## Abstract (plain-text projection of the paper.tex abstract, 2026-07-30 snapshot)
+## Abstract (plain-text projection of the paper.tex abstract; counts are Wave-1 placeholders from the 2026-07-30 snapshot)
 
 ```
-We release OpenCaseLaw, an open, verifiable research substrate for Swiss law: a resolved cross-court citation graph joined to several components of Swiss legal interpretation (statute articles, legislative-history Materialien, administrative practice, scholarly commentary, and open-access scholarship), with a Swiss-native identifier scheme, cryptographic provenance, and a deployed, agent-consumable serving layer. The release contains 1,050,981 court decisions across 118 courts in 28 jurisdictional layers (DE/FR/IT, 1875-2026), 9.06M resolved citation tokens (93.8% coverage of 9.66M extracted) expanded to 9.99M link edges, 12.42M decision-to-statute edges over 298,922 distinct provisions, and four interpretive bridges: 19,809 article-level links to 6,154 Federal Council Botschaften (421,489 full-text paragraphs), 1,146 open-licensed commentaries, 24,363 open-access scholarship records with a bidirectional citation bridge, and 1,892 federal administrative-practice documents. Every decision has a Swiss-native cli:ch identifier with an ECLI projection and a retrievable cryptographic membership proof against a daily RFC-6962/OpenTimestamps integrity root. The substrate is served as deployed infrastructure at mcp.opencaselaw.ch: 42 public Model Context Protocol tools under a citation-integrity serving contract, REST, and daily Parquet. Operator-side telemetry over the 30 days to the snapshot shows use by AI-assistant clients on three platforms and traffic patterns consistent with automated monitoring; the instrumentation recorded ~1.5M MCP transport opens or requests. We report these observations as adoption evidence with stated caveats, not as an evaluation. Quality controls include date-chronology violations on 2.0% of dated link edges (a conditional date-sanity ceiling, not a precision estimate) and a 400-sample rule-consistency audit (400/400 pass) frozen from the 2026-05-21 release. Corpus CC0 on Hugging Face with a documented carve-out for ECtHR-origin texts (© ECHR-CEDH, redistributed under reuse terms, excluded from the CC0 export); code MIT. Snapshot 2026-07-30.
+OpenCaseLaw is an open multilingual corpus and citation graph for Swiss jurisprudence. The frozen [SNAPSHOT] release contains [N-RECORDS] decision records from 118 court and source collections across federal, cantonal, regulatory, and ECtHR layers in German, French, and Italian (1875-2026). A resolved citation graph links [N-RESOLVED] of [N-EXTRACTED] extracted citation tokens ([COVERAGE] coverage), represented as [N-LINKS] source-target link rows, alongside [N-STATUTE-EDGES] decision-to-statute edges over [N-PROVISIONS] distinct provisions. Interpretive bridges connect provisions and decisions to Federal Council dispatches (Botschaften) at article granularity, to open-licensed commentaries, to open-access scholarship with a bidirectional citation bridge, and to federal administrative practice. Every record carries a project-defined cli:ch identifier with an unofficial ECLI-compatible projection, a content hash, and a retrievable inclusion proof against a daily RFC 6962 Merkle root anchored via OpenTimestamps. We describe data acquisition, normalisation, citation and statute resolution, automated error diagnostics, licensing, coverage limits, and access through downloadable tables and REST/MCP interfaces under a citation-integrity serving contract. Project-created database packaging and metadata are dedicated to CC0; ECtHR-origin texts are distributed under their source terms; code is MIT.
 ```
+
+Placeholders map to the LaTeX macros at the top of paper.tex
+(\SnapDate, \NRecords, \NExtracted, \NResolved, \NCoverage, \NLinks,
+\NStatuteEdges, \NProvisions); Wave 1 swaps the macro block against the
+post-ATF/DTF freeze and this plain projection follows. After Wave 2,
+add one sentence with the weighted semantic citation precision and CI.
 
 ## Comments line
 
