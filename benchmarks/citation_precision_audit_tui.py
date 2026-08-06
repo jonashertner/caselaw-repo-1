@@ -122,8 +122,8 @@ def _render(row: dict, idx: int, total: int, n_done: int) -> None:
     head = row.get("target_regeste_head") or "(no regeste available)"
     sys.stdout.write(f"{DIM}target regeste head:{RESET}\n  {head}\n\n")
 
-    # Current state (if any)
-    adj = row.get("adjudication", "") or ""
+    # Current state (if any) — schema v2 name first, v1 fallback
+    adj = row.get("rule_consistent", "") or row.get("adjudication", "") or ""
     notes = row.get("notes", "") or ""
     if adj:
         color = GREEN if adj == "correct" else RED if adj == "wrong" else YELLOW

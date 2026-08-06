@@ -5,6 +5,14 @@ sample against the documented per-stratum canonicalisation rules used by
 the resolver and reports whether the recovered ``target_decision_id`` is
 consistent with the recovered ``target_ref`` under those rules.
 
+Schema v2 (2026-08-07): the verdict field is named ``rule_consistent``.
+The v1 name ``adjudication`` suggested semantic validation this check
+does not perform (see the external review of the resource paper). The
+frozen 2026-05-21 sample file is a published artifact and must NOT be
+rewritten: pass --no-write-back (default when the input is the frozen
+v1 file) so verdicts are reported without mutating the artifact;
+readers accept both names, with ``rule_consistent`` taking precedence.
+
 What this catches:
   - Resolver bugs (target_ref's canonical form does not match
     target_decision_id's canonical form)
@@ -183,8 +191,11 @@ def main(argv: Optional[list[str]] = None) -> int:
         default=Path("benchmarks/citation_precision_audit_results.json"),
     )
     p.add_argument(
-        "--write-back", action="store_true", default=True,
-        help="Write adjudication+notes back into the sample JSONL (default)",
+        "--write-back", action="store_true", default=None,
+        help="Write verdicts+notes back into the sample JSONL. Default: on "
+             "for working files, OFF for the frozen v1 artifact "
+             "citation_precision_sample_400.jsonl (published with the "
+             "2026-05-21 release; must stay byte-identical).",
     )
     p.add_argument(
         "--no-write-back", action="store_false", dest="write_back",
@@ -194,6 +205,8 @@ def main(argv: Optional[list[str]] = None) -> int:
     if not args.sample.exists():
         print(f"error: sample file not found: {args.sample}", file=sys.stderr)
         return 2
+    if args.write_back is None:
+        args.write_back = args.sample.name != "citation_precision_sample_400.jsonl"
 
     rows: list[dict] = []
     meta: Optional[dict] = None
@@ -216,6 +229,10 @@ def main(argv: Optional[list[str]] = None) -> int:
         else:
             verdict, note = adj_fn(r)
         r_out = dict(r)
+        r_out["rule_consistent"] = verdict
+        r_out["schema_version"] = 2
+        # v1 alias kept so downstream readers of enriched output keep
+        # working during the transition; remove after Wave-2 retooling.
         r_out["adjudication"] = verdict
         r_out["notes"] = note
         enriched.append(r_out)

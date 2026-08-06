@@ -205,7 +205,8 @@ def build_sample(
                 "target_regeste_head": _target_head(d, r["target_decision_id"]),
                 "match_type": r["match_type"],
                 "confidence_score": r["confidence_score"],
-                "adjudication": "",
+                "schema_version": 2,
+                "rule_consistent": "",
                 "notes": "",
             })
         # Stable shuffle so the file isn't grouped by match_type when an
