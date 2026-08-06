@@ -6,7 +6,7 @@
 
 *Figures as of 2026-06-21 — corpus refreshed daily; live counts at [opencaselaw.ch](https://opencaselaw.ch).*
 
-Spans **1875 to today**, covers every Swiss federal court and all 26 cantonal court systems (plus regulators: FINMA, ComCo, FDPIC, IndepBC, ElCom, PostCom, ComCom), mirrors federal legislation directly from **Fedlex SPARQL** and cantonal legislation by **direct portal scraping for all 26 cantons** (LexWork: 18 cantons; SIL: NE + JU; ZH OpenData; TI RL — the same publishing systems the cantons operate themselves) with **LexFind PDF as fallback** supplementing 4 cantons for laws missing from their primary portals and as the discovery catalog for 33,000+ legislative texts. Includes **83,958 Botschaft amendment references across 9,139 BBl publications**, a **Phase 2 verbatim Botschaft corpus** (5,900+ documents, ~410K FTS5-indexed paragraphs, scaling via Fedlex SPARQL discovery), per-article Botschaft digests for BV/BGFA, parliamentary debate transcripts for the Bundesverfassung, a **resolved citation graph**, and **43 MCP tools (41 remote in public mode + 2 local-only)** usable from Claude, ChatGPT, Cursor, Gemini, Grok, or any MCP/function-calling client. **CC0 public-domain data, MIT-licensed code, no sign-up, no API keys, no paywall.**
+Spans **1875 to today**, covers every Swiss federal court and all 26 cantonal court systems (plus regulators: FINMA, ComCo, FDPIC, IndepBC, ElCom, PostCom, ComCom), mirrors federal legislation directly from **Fedlex SPARQL** and cantonal legislation by **direct portal scraping for all 26 cantons** (LexWork: 18 cantons; SIL: NE + JU; ZH OpenData; TI RL — the same publishing systems the cantons operate themselves) with **LexFind PDF as fallback** supplementing 4 cantons for laws missing from their primary portals and as the discovery catalog for 33,000+ legislative texts. Includes **83,958 Botschaft amendment references across 9,139 BBl publications**, a **Phase 2 verbatim Botschaft corpus** (5,900+ documents, ~410K FTS5-indexed paragraphs, scaling via Fedlex SPARQL discovery), per-article Botschaft digests for BV/BGFA, parliamentary debate transcripts for the Bundesverfassung, a **resolved citation graph**, and **44 MCP tools (42 remote in public mode + 2 local-only)** usable from Claude, ChatGPT, Cursor, Gemini, Grok, or any MCP/function-calling client. **CC0 public-domain data, MIT-licensed code, no sign-up, no API keys, no paywall.**
 
 [![CI](https://github.com/jonashertner/caselaw-repo-1/actions/workflows/ci.yml/badge.svg)](https://github.com/jonashertner/caselaw-repo-1/actions/workflows/ci.yml)
 [![Dashboard](https://img.shields.io/badge/Dashboard-live-d1242f)](https://opencaselaw.ch)
@@ -21,7 +21,7 @@ Spans **1875 to today**, covers every Swiss federal court and all 26 cantonal co
 
 Swiss legal research today is **fragmented across paywalls, inaccessible to language models, and prohibitively expensive** for the people who need it most — law students, independent researchers, and anyone outside the major firms. Commercial databases (Weblaw, Swisslex, Legalis) charge hundreds of francs per month and still don't expose a clean API. LLMs hallucinate statute text because they have no authoritative source. Small cantons publish decisions in PDF archives nobody indexes.
 
-OpenCaseLaw fixes this. **Every published Swiss court decision, every federal and cantonal law, the resolved citation graph between them, and 43 MCP tools (41 remote in public mode + 2 local-only) that let any modern LLM act as a Swiss legal research assistant — all free, all open, all refreshed automatically.**
+OpenCaseLaw fixes this. **Every published Swiss court decision, every federal and cantonal law, the resolved citation graph between them, and 44 MCP tools (42 remote in public mode + 2 local-only) that let any modern LLM act as a Swiss legal research assistant — all free, all open, all refreshed automatically.**
 
 ## What you get
 
@@ -48,7 +48,7 @@ OpenCaseLaw fixes this. **Every published Swiss court decision, every federal an
 - Bidirectional lookup, appeal-chain resolution (Instanzenzug), leading-case ranking by citation authority
 - Powers `find_leading_cases`, `find_citations`, `find_appeal_chain`, `analyze_legal_trend` (top: BGE 125 V 351 with 85,108 incoming citations)
 
-**43 MCP tools (41 remote in public mode + 2 local-only)** — specialised research tools that run in your LLM of choice:
+**44 MCP tools (42 remote in public mode + 2 local-only)** — specialised research tools that run in your LLM of choice:
 - Natural-language decision search (BM25 + synonym expansion + Haiku reranking, **MRR@10 = 0.647** on a 100-query golden set)
 - Leading-case discovery, citation networks, appeal chains, jurisprudence evolution
 - Federal + cantonal law article lookup, full-text search across both — with **colloquial→legal vocabulary expansion** (searching "Vaterschaftsurlaub" finds the statute even though it says "Urlaub des andern Elternteils") and **cross-language cantonal search** (German query finds French/Italian cantonal laws)
@@ -71,7 +71,7 @@ OpenCaseLaw fixes this. **Every published Swiss court decision, every federal an
 - Live dashboard + browsing UI at [opencaselaw.ch](https://opencaselaw.ch)
 
 *For legal practitioners drafting documents — curated practitioner surface:*
-- [**Word add-in**](https://word.opencaselaw.ch/install.html) — Search decisions and insert **correctly-formatted Swiss legal citations** directly in Word (no copy-paste). Click an Erwägung to insert it with the correct sub-citation; click a law § to insert that alinea. Free **Audit** scans the whole document for fabricated citations and bad pinpoints (deterministic, no LLM). **Pro tier** (Stripe-billed, CHF 5/month, 25 AI calls/day shared, structural PII redaction) adds four AI tools: **Verify** (single citation vs. full-text decision), **Strengthen** (paragraph x-ray with leading-case suggestions ranked by citation-graph centrality + commentary excerpts), **Find Support** (locate decisions that back an unsupported statement, scored 0–100), and **Reflect** (literary mirror on the whole document — one canonical work that frames the same human dilemma + one reflective question). Exposes ~8 of the 43 MCP tools (41 remote in public mode + 2 local-only) through the REST API, tuned for the write-your-brief workflow.
+- [**Word add-in**](https://word.opencaselaw.ch/install.html) — Search decisions and insert **correctly-formatted Swiss legal citations** directly in Word (no copy-paste). Click an Erwägung to insert it with the correct sub-citation; click a law § to insert that alinea. Free **Audit** scans the whole document for fabricated citations and bad pinpoints (deterministic, no LLM). **Pro tier** (Stripe-billed, CHF 5/month, 25 AI calls/day shared, structural PII redaction) adds four AI tools: **Verify** (single citation vs. full-text decision), **Strengthen** (paragraph x-ray with leading-case suggestions ranked by citation-graph centrality + commentary excerpts), **Find Support** (locate decisions that back an unsupported statement, scored 0–100), and **Reflect** (literary mirror on the whole document — one canonical work that frames the same human dilemma + one reflective question). Exposes ~8 of the 44 MCP tools (42 remote in public mode + 2 local-only) through the REST API, tuned for the write-your-brief workflow.
 
 **Performance you can defend in a paper**:
 
@@ -104,7 +104,7 @@ There are eight ways to use it, depending on what you need:
 | [**REST API / Download**](#2-download-the-dataset) | Developers, data scientists, NLP researchers | 30-route REST API, bulk Parquet download via HuggingFace (~7 GB) |
 | [**Web UI**](https://opencaselaw.ch) | Everyone | Live dashboard with corpus stats, daily delta, top movers, multilingual browsing |
 
-> **Not sure where to start?** Connect to the [remote MCP server](#option-a-remote-server-recommended) — works with Claude, ChatGPT, and Gemini CLI. Instant access to all 969K+ decisions, citation analysis, statute lookup, legislation search, and education tools, no download needed.
+> **Not sure where to start?** Connect to the [remote MCP server](#option-a-remote-server-recommended) — works with Claude, ChatGPT, and Gemini CLI. Instant access to all 1,050,000+ decisions, citation analysis, statute lookup, legislation search, and education tools, no download needed.
 
 ---
 
@@ -127,7 +127,7 @@ The dataset comes with an [MCP server](https://modelcontextprotocol.io) whose ex
 
 ### Option A: Remote server (recommended)
 
-Connect directly to the hosted MCP server — no data download, no local database, instant access to 968K+ decisions.
+Connect directly to the hosted MCP server — no data download, no local database, instant access to 1,050,000+ decisions.
 
 **Claude.ai / Claude Desktop** (easiest):
 
@@ -385,7 +385,7 @@ All data stays on your machine. No API calls are made during search — the MCP 
 
 - **`decisions`** — the main table with one row per decision. Holds 24 columns, including the search-facing fields plus `json_data` (full record blob) and `canonical_key` for dedup-aware lookup. Indexed on `court`, `canton`, `decision_date`, `language`, `docket_number`, `chamber`, and `decision_type` for fast filtered queries.
 
-- **`decisions_fts`** — an FTS5 virtual table that mirrors 7 text columns from `decisions`: `court`, `canton`, `docket_number`, `language`, `title`, `regeste`, and `full_text`. FTS5 builds an inverted index over these columns, enabling sub-second full-text search across 968K+ decisions. The tokenizer is `unicode61 remove_diacritics 2`, which handles accented characters across German, French, Italian, and Romansh. Insert/update/delete triggers keep the FTS index in sync with the main table automatically.
+- **`decisions_fts`** — an FTS5 virtual table that mirrors 7 text columns from `decisions`: `court`, `canton`, `docket_number`, `language`, `title`, `regeste`, and `full_text`. FTS5 builds an inverted index over these columns, enabling sub-second full-text search across 1M+ decisions. The tokenizer is `unicode61 remove_diacritics 2`, which handles accented characters across German, French, Italian, and Romansh. Insert/update/delete triggers keep the FTS index in sync with the main table automatically.
 
 **Why ~58 GB.** The full text of 962K+ court decisions averages ~15 KB per decision. The FTS5 inverted index adds overhead for every unique token, its position, and the column it appears in. This is a known trade-off: FTS5 indexes over large text corpora are substantially larger than the source data, but they enable instant ranked search without external infrastructure.
 
