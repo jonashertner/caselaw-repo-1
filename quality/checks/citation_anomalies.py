@@ -56,6 +56,20 @@ from quality.types import CheckResult, Severity
 MODULE_NEVER_CRITICAL = True  # advisory review queue, never blocks a publish
 
 _BGE_TOKEN = re.compile(r"^BGE\s+(\d{1,3})\s+([IVX]+[ab]?)\s+(\d{1,4})$")
+# Bare series form as stored for FR/IT citations. The graph's extractor
+# (search_stack/reference_extraction.py) recognises only the literal "BGE"
+# prefix, so "ATF 143 III 666" / "DTF 143 III 666" survive solely via the
+# bare-form docket pattern: target_type='docket', target_ref='143 III 666'.
+# Measured 2026-08-06: decisions since 2024 yield 345,146 bge-typed tokens
+# from DE sources but only 283 from FR — a thousandfold artefact of that
+# prefix gap, which made FR/IT invisible to this scan. DE continuation
+# citations ("BGE 143 III 666 E. 4; 144 II 5 E. 2") take the same path.
+_BARE_BGE = re.compile(r"^(\d{1,3})\s+([IVX]{1,4}[ABab]?)\s+(\d{1,4})$")
+# Divisions the series has ever used. Prefixed citations may misname a
+# division (that is a reportable error); a bare token with a division
+# outside this set (VI, VIII, ...) is far more likely a non-citation
+# string, so bare tokens are gated to real divisions.
+_REAL_DIVISIONS = {"I", "IA", "IB", "II", "III", "IV", "V"}
 # The series appears in three docket formats across scrape eras:
 # "142 II 590" (spaced), "1_I_26" (underscored, historical) and
 # "BGE 136 II 120" (prefixed). Division letters are stored uppercase
@@ -140,13 +154,28 @@ def _last_case_window(pages: list[int]) -> int:
     return max(PINCITE_WINDOW, longest_gap)
 
 
-def _classify_bge(token: str, idx: dict, max_vol: int) -> str | None:
+def _classify_bge(token: str, idx: dict, max_vol: int,
+                  bare: bool = False) -> str | None:
     """Anomaly sub-reason for an unresolved BGE token, or None if plausibly
-    a resolver gap rather than nonexistence."""
-    m = _BGE_TOKEN.match(token.strip())
+    a resolver gap rather than nonexistence.
+
+    bare=True: the token arrived without a BGE/ATF/DTF prefix (the FR/IT
+    and continuation-citation path). A prefixed token asserts "I am a BGE
+    citation", so even a year-shaped page is a reportable error ("BGE 137
+    V 2010"). A bare token asserts nothing: "31 III 2004" is how older
+    French texts write 31 March 2004, and Roman months I-XII overlap the
+    real divisions, so bare + year-shaped page is treated as a date, not
+    an anomaly, and bare divisions outside the series' own set are
+    treated as non-citations."""
+    m = (_BARE_BGE if bare else _BGE_TOKEN).match(token.strip())
     if not m:
         return None                     # malformed beyond our grammar: skip
     vol, div, page = int(m.group(1)), m.group(2).upper(), int(m.group(3))
+    if bare:
+        if div not in _REAL_DIVISIONS:
+            return None                 # VI+, XII, ...: not a citation
+        if 1875 <= page <= 2100 and page > 700:
+            return None                 # date shape: "31 III 2004"
     year_tag = " page_looks_like_year" if 1875 <= page <= 2100 and page > 700 else ""
     if vol < 1 or vol > max_vol + 1:    # +1: next-year volume may simply
         return "volume_out_of_range" + year_tag  # not be scraped yet
@@ -236,9 +265,13 @@ def check_nonexistent_bge_citations(conn: sqlite3.Connection, **_) -> CheckResul
         all_by_reason: dict[str, int] = {}
         all_total = 0
         for r in _iter_window_tokens(rg, "1800-01-01", resolved=False):
-            if r["tt"] != "bge":
+            if r["tt"] == "bge":
+                bare = False
+            elif r["tt"] == "docket" and _BARE_BGE.match((r["ref"] or "").strip()):
+                bare = True             # FR/IT ATF/DTF + continuation cites
+            else:
                 continue
-            reason = _classify_bge(r["ref"], idx, max_vol)
+            reason = _classify_bge(r["ref"], idx, max_vol, bare=bare)
             if not reason:
                 continue
             all_total += 1
@@ -246,7 +279,8 @@ def check_nonexistent_bge_citations(conn: sqlite3.Connection, **_) -> CheckResul
             all_by_reason[key] = all_by_reason.get(key, 0) + 1
             if (r["sdate"] or "") >= since:
                 recent.append({"decision_id": r["sid"], "decided": r["sdate"],
-                               "token": r["ref"], "reason": reason})
+                               "token": r["ref"], "reason": reason,
+                               "form": "bare" if bare else "prefixed"})
         threshold = 25
         _write_report({
             "generated": datetime.date.today().isoformat(),

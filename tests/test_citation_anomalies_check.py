@@ -222,3 +222,51 @@ def test_absent_graph_skips_gracefully(monkeypatch, tmp_path):
 
 def test_module_is_never_critical():
     assert ca.MODULE_NEVER_CRITICAL is True
+
+
+# ── bare-form tokens: the FR/IT (ATF/DTF) and continuation-citation path ──
+# The graph's extractor recognises only the literal "BGE" prefix, so
+# "ATF 143 III 666" is stored docket-typed as bare "143 III 666". Measured
+# 2026-08-06: 345,146 bge-typed tokens from DE sources since 2024 vs 283
+# from FR — the scan was blind to half the corpus until bare handling.
+
+
+def test_bare_form_page_beyond_series_is_flagged():
+    r = ca._classify_bge("142 II 650", IDX, MAX_VOL, bare=True)
+    assert r is not None and "page_beyond_series" in r
+
+
+def test_bare_form_plausible_pincite_is_not_flagged():
+    assert ca._classify_bge("142 II 612", IDX, MAX_VOL, bare=True) is None
+
+
+def test_bare_form_year_shaped_page_is_a_date_not_an_anomaly():
+    """Older French texts write dates with Roman months: '31 III 2004' is
+    31 March 2004. Prefixed tokens keep flagging ('BGE 137 V 2010' is a
+    real, reported error); bare ones must not."""
+    assert ca._classify_bge("31 III 2004", IDX, MAX_VOL, bare=True) is None
+    assert ca._classify_bge("96 V 1990", IDX, MAX_VOL, bare=True) is None
+    r = ca._classify_bge("BGE 96 V 1990", IDX, MAX_VOL)
+    assert r is not None and "page_looks_like_year" in r
+
+
+def test_bare_form_unreal_division_is_not_a_citation():
+    """Roman months VI-XII overlap the bare shape; the series never had
+    those divisions, so bare VI+ is noise, while a prefixed wrong division
+    stays reportable."""
+    assert ca._classify_bge("127 VII 5", IDX, MAX_VOL, bare=True) is None
+    r = ca._classify_bge("BGE 127 VII 5", IDX, MAX_VOL)
+    assert r is not None and "division_absent_for_volume" in r
+
+
+def test_bare_form_division_absent_for_volume_is_flagged():
+    r = ca._classify_bge("96 II 30", IDX, MAX_VOL, bare=True)
+    assert r is not None and "division_absent_for_volume" in r
+
+
+def test_bare_regex_shape():
+    assert ca._BARE_BGE.match("143 III 666")
+    assert ca._BARE_BGE.match("120 Ia 45")
+    assert not ca._BARE_BGE.match("BGE 143 III 666")
+    assert not ca._BARE_BGE.match("2C_45/2019")
+    assert not ca._BARE_BGE.match("VB.2018.00411")
