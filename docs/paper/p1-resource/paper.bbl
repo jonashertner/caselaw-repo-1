@@ -1,9 +1,30 @@
-\begin{thebibliography}{13}
+\begin{thebibliography}{22}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
   \providecommand{\doi}[1]{doi: #1}\else
   \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Charlotin(2026)]{charlotin2026}
+Damien Charlotin.
+\newblock Ai hallucination cases database.
+\newblock \url{https://www.damiencharlotin.com/hallucinations/}, 2026.
+\newblock Tracker of court and tribunal decisions confronting AI-generated
+  hallucinations in filings; over 1,300 proceedings across 106 countries as of
+  mid-2026. Accessed 2026-07-31.
+
+\bibitem[Dahl et~al.(2024)Dahl, Magesh, Suzgun, and Ho]{dahl2024}
+Matthew Dahl, Varun Magesh, Mirac Suzgun, and Daniel~E. Ho.
+\newblock Large legal fictions: Profiling legal hallucinations in large
+  language models.
+\newblock \emph{Journal of Legal Analysis}, 16\penalty0 (1):\penalty0 64--93,
+  2024.
+\newblock arXiv:2401.01301.
+
+\bibitem[Das et~al.(2026)Das, Abualhaija, and Bianculli]{xu2026claim}
+Souvick Das, Sallam Abualhaija, and Domenico Bianculli.
+\newblock Fine-grained claim-level {RAG} benchmark for law.
+\newblock \emph{arXiv preprint arXiv:2605.21071}, 2026.
 
 \bibitem[Floro et~al.(2026)Floro, Dhorasoo, Pellez, and
   Holzenberger]{floro2026}
@@ -40,6 +61,25 @@ Peter Henderson, Mark Krass, Lucia Zheng, Neel Guha, Christopher~D. Manning,
   256gb open-source legal dataset.
 \newblock \emph{Advances in Neural Information Processing Systems 35, Datasets
   and Benchmarks Track}, 2022.
+
+\bibitem[Hou et~al.(2024)Hou, Weller, Qin, Yang, Lawrie, Holzenberger,
+  Blair-Stanek, and Van~Durme]{hou2024clerc}
+Abe~Bohan Hou, Orion Weller, Guanghui Qin, Eugene Yang, Dawn Lawrie, Nils
+  Holzenberger, Andrew Blair-Stanek, and Benjamin Van~Durme.
+\newblock {CLERC}: A dataset for legal case retrieval and retrieval-augmented
+  analysis generation.
+\newblock \emph{arXiv preprint arXiv:2406.17186}, 2024.
+
+\bibitem[Magesh et~al.(2025)Magesh, Surani, Dahl, Suzgun, Manning, and
+  Ho]{magesh2024}
+Varun Magesh, Faiz Surani, Matthew Dahl, Mirac Suzgun, Christopher~D. Manning,
+  and Daniel~E. Ho.
+\newblock Hallucination-free? assessing the reliability of leading ai legal
+  research tools.
+\newblock \emph{Journal of Empirical Legal Studies}, 22:\penalty0 216--242,
+  2025.
+\newblock \doi{10.1111/jels.12413}.
+\newblock arXiv:2405.20362.
 
 \bibitem[Niklaus et~al.(2021)Niklaus, Chalkidis, and St{\"u}rmer]{niklaus2021}
 Joel Niklaus, Ilias Chalkidis, and Matthias St{\"u}rmer.
@@ -92,6 +132,13 @@ Volodymyr Ovcharov.
 \newblock \emph{arXiv preprint arXiv:2605.15362}, 2026.
 \newblock \doi{10.48550/arXiv.2605.15362}.
 
+\bibitem[Pipitone and Houir~Alami(2024)]{pipitone2024}
+Nicholas Pipitone and Ghita Houir~Alami.
+\newblock Legalbench-rag: A benchmark for retrieval-augmented generation in the
+  legal domain.
+\newblock \emph{arXiv preprint}, 2024.
+\newblock arXiv:2408.10343.
+
 \bibitem[Rolshoven et~al.(2025)Rolshoven, Rasiah, Br{\"u}gger~Bose, Hostettler,
   Burkhalter, St{\"u}rmer, and Niklaus]{rolshoven2025}
 Luca Rolshoven, Vishvaksenan Rasiah, Srinanda Br{\"u}gger~Bose, Sarah
@@ -124,5 +171,32 @@ Ronja Stern, Ken Kawamura, Matthias St{\"u}rmer, Ilias Chalkidis, and Joel
   2025.
 \newblock arXiv:2410.13460; uses BGE citation patterns (frequency, recency) to
   label Swiss decisions for case-prioritisation prediction.
+
+\bibitem[Wendlinger et~al.(2025)Wendlinger, Nonn, Al~Zubaer, and
+  Granitzer]{milz2025missinglink}
+Lorenz Wendlinger, Simon~Alexander Nonn, Abdullah Al~Zubaer, and Michael
+  Granitzer.
+\newblock The missing link: Joint legal citation prediction using heterogeneous
+  graph enrichment.
+\newblock \emph{arXiv preprint arXiv:2506.22165}, 2025.
+
+\bibitem[Yang et~al.(2025)Yang, Chai, Song, Qi, Wen, Li, Liao, Hu, Lin, Chang,
+  Liu, Wen, Yu, and Zhang]{mcpsurvey2025}
+Yingxuan Yang, Huacan Chai, Yuanyi Song, Siyuan Qi, Muning Wen, Ning Li, Junwei
+  Liao, Haoyi Hu, Jianghao Lin, Gaowei Chang, Weiwen Liu, Ying Wen, Yong Yu,
+  and Weinan Zhang.
+\newblock A survey of {AI} agent protocols.
+\newblock \emph{arXiv preprint arXiv:2504.16736}, 2025.
+
+\bibitem[Zheng et~al.(2025)Zheng, Guha, Arifov, Zhang, Skreta, Manning,
+  Henderson, and Ho]{zheng2025}
+Lucia Zheng, Neel Guha, Javokhir Arifov, Sarah Zhang, Michal Skreta,
+  Christopher~D. Manning, Peter Henderson, and Daniel~E. Ho.
+\newblock A reasoning-focused legal retrieval benchmark.
+\newblock In \emph{CS and LAW 2025 - Proceedings of the 2025 Symposium on
+  Computer Science and Law}, pages 169--193. Association for Computing
+  Machinery, 2025.
+\newblock \doi{10.1145/3709025.3712219}.
+\newblock arXiv:2505.03970.
 
 \end{thebibliography}
