@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/it.xml</link>
     <description>Latest published Swiss court decisions in Italiano.</description>
     <language>de-CH</language>
-    <lastBuildDate>Wed, 05 Aug 2026 10:31:07 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 06 Aug 2026 10:20:50 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/it.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -15,6 +15,22 @@
       <pubDate>Fri, 24 Jul 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-5032.2026</guid>
       <category>bvger</category>
+    </item>
+    <item>
+      <title>gr_gerichte SV2 2026 31 vom 2026-07-23</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_SV2%202026%2031</link>
+      <description>Obergericht des Kantons Graubünden
+Dretgira superiura dal chantun Grischun
+Tribunale d'appello del Cantone dei Grigioni
+Sentenza del 23 luglio 2026
+comunicata il 24 luglio 2026
+N. d'incarto
+SV2 26 31
+Istanza
+Seconda Camera di diritto delle assicurazi…</description>
+      <pubDate>Thu, 23 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">gr_gerichte_SV2 2026 31</guid>
+      <category>gr_gerichte</category>
     </item>
     <item>
       <title>Bundesgericht 9C_175/2026 vom 2026-07-21</title>
@@ -916,14 +932,6 @@ Com…</description>
       <pubDate>Tue, 23 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">gr_gerichte_VR3 2025 95</guid>
       <category>gr_gerichte</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht A-1179/2025 vom 2026-06-22</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_A-1179_2025</link>
-      <description>Assistenza amministrativa</description>
-      <pubDate>Mon, 22 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:A-1179.2025</guid>
-      <category>bvger</category>
     </item>
   </channel>
 </rss>

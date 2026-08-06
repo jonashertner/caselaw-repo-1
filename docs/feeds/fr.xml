@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/fr.xml</link>
     <description>Latest published Swiss court decisions in Français.</description>
     <language>de-CH</language>
-    <lastBuildDate>Wed, 05 Aug 2026 10:31:06 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 06 Aug 2026 10:20:50 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/fr.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -469,6 +469,14 @@ CSS ASSURANCE-MALADIE SA …</description>
       <category>bvger</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht F-5110/2026 vom 2026-07-28</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-5110_2026</link>
+      <description>Asile (non-entrée en matière) et renvoi (Etat tiers sûr - art. 31a al. 1 let. a LAsi)</description>
+      <pubDate>Tue, 28 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-5110.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>ge_gerichte ACJC/1287/2026 vom 2026-07-28</title>
       <link>https://mcp.opencaselaw.ch/entscheid/ge_gerichte_ACJC_1287_2026</link>
       <description>Le présent arrêt est communiqué aux parties, par plis recommandés du 28 juillet 2026. 
@@ -498,6 +506,14 @@ Entr…</description>
       <category>bvger</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht F-4932/2026 vom 2026-07-27</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-4932_2026</link>
+      <description>Asile (non-entrée en matière) et renvoi (Etat tiers sûr - art. 31a al. 1 let. a LAsi)</description>
+      <pubDate>Mon, 27 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-4932.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>ge_gerichte ACPR/721/2026 vom 2026-07-27</title>
       <link>https://mcp.opencaselaw.ch/entscheid/ge_gerichte_ACPR_721_2026</link>
       <description>REPUBLIQUE ET 
@@ -516,6 +532,22 @@ rue Général-D…</description>
       <pubDate>Mon, 27 Jul 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ge_gerichte_ACPR_721_2026</guid>
       <category>ge_gerichte</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht D-5047/2026 vom 2026-07-24</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-5047_2026</link>
+      <description>Asile et renvoi (procédure à l'aéroport)</description>
+      <pubDate>Fri, 24 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-5047.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht E-176/2025 vom 2026-07-24</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-176_2025</link>
+      <description>Refus de la protection provisoire</description>
+      <pubDate>Fri, 24 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-176.2025</guid>
+      <category>bvger</category>
     </item>
     <item>
       <title>ge_gerichte ATAS/669/2026 vom 2026-07-24</title>
@@ -947,83 +979,6 @@ Participants à la procédure
       <guid isPermaLink="false">ECLI:CH:BGer:2026:6B_324.2026</guid>
       <category>bger</category>
       <category>Droit pénal (en général)</category>
-    </item>
-    <item>
-      <title>Bundesgericht 6B_475/2026 vom 2026-07-21</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_6B_475_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-6B_475/2026
-
-Arrêt du 21 juillet 2026
-
-Ire Cour de droit pénal
-
-Composition
-
-M. le Juge fédéral
-
-von Felten, Juge présidant.
-
-Greffier : M. Rosselet.
-
-Participants à la procédure
-…</description>
-      <pubDate>Tue, 21 Jul 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:6B_475.2026</guid>
-      <category>bger</category>
-      <category>Procédure pénale</category>
-    </item>
-    <item>
-      <title>Bundesgericht 7F_34/2025 vom 2026-07-21</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_7F_34_2025</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-7F_34/2025
-
-Arrêt du 21 juillet 2026
-
-IIe Cour de droit pénal
-
-Composition
-
-M. et Mmes les Juges fédéraux Abrecht, Président,
-
-van de Graaf et Schär, Juge suppléante.
-
-Greffier : …</description>
-      <pubDate>Tue, 21 Jul 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:7F_34.2025</guid>
-      <category>bger</category>
-      <category>Procédure pénale</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht E-3786/2026 vom 2026-07-21</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-3786_2026</link>
-      <description>Asile (sans exécution du renvoi)</description>
-      <pubDate>Tue, 21 Jul 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-3786.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht E-4501/2026 vom 2026-07-21</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-4501_2026</link>
-      <description>Refus de la protection provisoire</description>
-      <pubDate>Tue, 21 Jul 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-4501.2026</guid>
-      <category>bvger</category>
     </item>
   </channel>
 </rss>
