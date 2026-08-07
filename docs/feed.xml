@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feed.xml</link>
     <description>Latest published decisions across all Swiss courts indexed by OpenCaseLaw.</description>
     <language>de-CH</language>
-    <lastBuildDate>Thu, 06 Aug 2026 10:17:35 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 07 Aug 2026 10:35:41 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feed.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -375,6 +375,23 @@ J…</description>
       <pubDate>Mon, 17 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">fr_gerichte_101 2026 140</guid>
       <category>fr_gerichte</category>
+    </item>
+    <item>
+      <title>gr_gerichte SBK 2026 66 vom 2026-08-06</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_SBK%202026%2066</link>
+      <description>Obergericht des Kantons Graubünden
+Dretgira superiura dal chantun Grischun
+Tribunale d'appello del Cantone dei Grigioni
+Entscheid vom 22. Juli 2026
+mitgeteilt am 31. Juli 2026
+Referenz
+SBK 26 66
+Instanz
+Schuldbetreibungs- und Konkurskammer
+als Aufsic…</description>
+      <pubDate>Thu, 06 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">gr_gerichte_SBK 2026 66</guid>
+      <category>gr_gerichte</category>
     </item>
     <item>
       <title>nw_gerichte BAS 26 2 vom 2026-08-05</title>
@@ -856,41 +873,38 @@ Hubert,…</description>
       <category>gr_gerichte</category>
     </item>
     <item>
-      <title>be_verwaltungsgericht 200 2026 52 vom 2026-07-30</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/be_verwaltungsgericht_200%202026%2052</link>
-      <description>IV 200 2026 52
-KOJ/SAW/SSM
-Verwaltungsgericht des Kantons Bern
-Sozialversicherungsrechtliche Abteilung
-Urteil vom 7. Juli 2026
-Verwaltungsrichter Kölliker, Kammerpräsident
-Verwaltungsrichterin Wiedmer, Verwaltungsrichterin Mauerhofer
-Gerichtsschreibe…</description>
-      <pubDate>Thu, 30 Jul 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">be_verwaltungsgericht_200 2026 52</guid>
-      <category>be_verwaltungsgericht</category>
-    </item>
-    <item>
-      <title>be_zivilstraf SK 2024 169 vom 2026-07-30</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/be_zivilstraf_SK%202024%20169</link>
-      <description>Obergericht
-des Kantons Bern
-1. Strafkammer
-Cour suprême
-du canton de Berne
-1re Chambre pénale
-Urteil
-SK 24 169
-Hochschulstrasse 17
-Postfach
-3001 Bern
-Telefon +41 31 635 48 08
-obergericht-straf.bern@justice.be.ch
-www.justice.be.ch/obergericht
-Bern, 2…</description>
-      <pubDate>Thu, 30 Jul 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">be_zivilstraf_SK 2024 169</guid>
-      <category>be_zivilstraf</category>
+      <title>so_gerichte BKBES.2026.39 vom 2026-07-31</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/so_gerichte_BKBES.2026.39</link>
+      <description>Beschlussvom31. Juli 2026
+
+Es wirken mit:
+
+Präsident Hagmann
+
+Oberrichterin Kofmel
+
+Oberrichter Flückiger
+
+Gerichtsschreiberin Ramseier
+
+In Sachen
+
+A.___,
+
+Beschwerdeführerin
+
+gegen
+
+Beschwerdegegnerin
+
+2.B.___,
+vertreten durchC.___,
+
+3.C.___,
+vert…</description>
+      <pubDate>Fri, 31 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">so_gerichte_BKBES.2026.39</guid>
+      <category>so_gerichte</category>
     </item>
   </channel>
 </rss>

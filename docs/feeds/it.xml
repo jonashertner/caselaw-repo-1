@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/it.xml</link>
     <description>Latest published Swiss court decisions in Italiano.</description>
     <language>de-CH</language>
-    <lastBuildDate>Thu, 06 Aug 2026 10:20:50 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 07 Aug 2026 10:38:44 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/it.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -687,6 +687,37 @@ Seconda Camera di diritto delle assicurazio…</description>
       <category>gr_gerichte</category>
     </item>
     <item>
+      <title>Bundesgericht 1C_130/2026 vom 2026-06-25</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_1C_130_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+1C_130/2026
+
+Sentenza del 25 giugno 2026
+
+I Corte di diritto pubblico
+
+Composizione
+
+Giudici federali Haag, Presidente,
+
+Chaix, Merz,
+
+Cancelliere M. Piatti.
+
+Partecipanti al proc…</description>
+      <pubDate>Thu, 25 Jun 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:1C_130.2026</guid>
+      <category>bger</category>
+      <category>Pubblico amministrazione</category>
+    </item>
+    <item>
       <title>Bundesgericht 1C_331/2026 vom 2026-06-24</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bger_1C_331_2026</link>
       <description>Bundesgericht
@@ -915,23 +946,6 @@ Parte…</description>
       <pubDate>Tue, 23 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-8017.2025</guid>
       <category>bvger</category>
-    </item>
-    <item>
-      <title>gr_gerichte VR3 2025 95 vom 2026-06-23</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_VR3%202025%2095</link>
-      <description>Obergericht des Kantons Graubünden
-Dretgira superiura dal chantun Grischun
-Tribunale d'appello del Cantone dei Grigioni
-Sentenza del 23 giugno 2026
-comunicata il 26 giugno 2026
-N. d'incarto
-VR3 25 95
-Istanza
-Terza Camera di diritto amministrativo
-Com…</description>
-      <pubDate>Tue, 23 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">gr_gerichte_VR3 2025 95</guid>
-      <category>gr_gerichte</category>
     </item>
   </channel>
 </rss>
