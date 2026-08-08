@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/fr.xml</link>
     <description>Latest published Swiss court decisions in Français.</description>
     <language>de-CH</language>
-    <lastBuildDate>Fri, 07 Aug 2026 10:38:44 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 08 Aug 2026 10:09:15 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/fr.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -252,6 +252,38 @@ J…</description>
       <category>fr_gerichte</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht B-4709/2026 vom 2026-07-30</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_B-4709_2026</link>
+      <description>Maturité fédérale</description>
+      <pubDate>Thu, 30 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:B-4709.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht D-5339/2024 vom 2026-07-30</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-5339_2024</link>
+      <description>Asile et renvoi</description>
+      <pubDate>Thu, 30 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-5339.2024</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht D-5432/2020 vom 2026-07-30</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-5432_2020</link>
+      <description>Asile et renvoi</description>
+      <pubDate>Thu, 30 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-5432.2020</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht F-5200/2026 vom 2026-07-30</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-5200_2026</link>
+      <description>Asile (non-entrée en matière) et renvoi (procédure Dublin - art. 31a al. 1 let. b LAsi)</description>
+      <pubDate>Thu, 30 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-5200.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>ge_gerichte ACPR/728/2026 vom 2026-07-30</title>
       <link>https://mcp.opencaselaw.ch/entscheid/ge_gerichte_ACPR_728_2026</link>
       <description>REPUBLIQUE ET 
@@ -461,6 +493,30 @@ CSS ASSURANCE-MALADIE SA …</description>
       <category>ge_gerichte</category>
     </item>
     <item>
+      <title>ge_gerichte ATAS/673/2026 vom 2026-07-30</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ge_gerichte_ATAS_673_2026</link>
+      <description>Siégeant : Valérie MONTANI, présidente. 
+ 
+ 
+ 
+ 
+RÉPUBLIQUE ET 
+ 
+CANTON DE GEN ÈVE 
+POUVOIR JUDICIAIRE 
+ 
+A/2784/2025 
+ATAS/673/2026 
+COUR DE JUSTICE 
+Chambre des assurances sociales 
+Ordonnance d’expertise du 30 juillet 2026 
+Chambre 6 
+En la cause…</description>
+      <pubDate>Thu, 30 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ge_gerichte_ATAS_673_2026</guid>
+      <category>ge_gerichte</category>
+    </item>
+    <item>
       <title>Bundesgericht 5A_688/2026 vom 2026-07-29</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_688_2026</link>
       <description>Bundesgericht
@@ -558,6 +614,14 @@ Entr…</description>
       <description>Taxe sur la valeur ajoutée</description>
       <pubDate>Mon, 27 Jul 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:A-661.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht E-4869/2026 vom 2026-07-27</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-4869_2026</link>
+      <description>Exécution du renvoi (procédure accélérée)</description>
+      <pubDate>Mon, 27 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-4869.2026</guid>
       <category>bvger</category>
     </item>
     <item>
@@ -812,125 +876,6 @@ Ent…</description>
       <pubDate>Thu, 23 Jul 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ge_gerichte_ACJC_1276_2026</guid>
       <category>ge_gerichte</category>
-    </item>
-    <item>
-      <title>ge_gerichte ACJC/1282/2026 vom 2026-07-23</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ge_gerichte_ACJC_1282_2026</link>
-      <description>Le présent arrêt est communiqué aux parties, ainsi qu'à l'Office des faillites, à l'Office 
-des poursuites, au Registre du commerce et au Registre foncier, par plis recommandés 
-du 23 juillet 2026. 
- 
-REPUBLIQUE ET 
- 
-CANTON DE GENEVE 
-POUVOIR JUDICI…</description>
-      <pubDate>Thu, 23 Jul 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ge_gerichte_ACJC_1282_2026</guid>
-      <category>ge_gerichte</category>
-    </item>
-    <item>
-      <title>ge_gerichte ATAS/668/2026 vom 2026-07-23</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ge_gerichte_ATAS_668_2026</link>
-      <description>Siégeant : Blaise PAGAN, président 
- 
- 
- 
- 
-RÉPUBLIQUE ET 
- 
-CANTON DE GEN ÈVE 
-POUVOIR JUDICIAIRE 
- 
-A/302/2026 
-ATAS/668/2026 
-COUR DE JUSTICE 
-Chambre des assurances sociales 
-Arrêt incident du 23 juillet 2026 
-Chambre 2 
- 
-En la cause 
-A______ 
- …</description>
-      <pubDate>Thu, 23 Jul 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ge_gerichte_ATAS_668_2026</guid>
-      <category>ge_gerichte</category>
-    </item>
-    <item>
-      <title>hudoc_ch 15345/20 vom 2026-07-23</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/hudoc_ch_15345_20</link>
-      <description>Violation de l'article 8 - Droit au respect de la vie privée et familiale (Article 8-1 - Respect de la vie familiale;Respect de la vie privée);Préjudice moral - réparation (Article 41 - Préjudice moral;Satisfaction équitable); Violation: 8;8-1</description>
-      <pubDate>Thu, 23 Jul 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">hudoc_ch_15345_20</guid>
-      <category>hudoc_ch</category>
-      <category>EMRK / Menschenrechte</category>
-    </item>
-    <item>
-      <title>Bundesgericht 5A_593/2026 vom 2026-07-22</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_593_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-5A_593/2026
-
-Arrêt du 22 juillet 2026
-
-IIe Cour de droit civil
-
-Composition
-
-Mme la Juge fédérale De Rossa, Juge présidant.
-
-Greffière : Mme Hildbrand.
-
-Participants à la procédur…</description>
-      <pubDate>Wed, 22 Jul 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_593.2026</guid>
-      <category>bger</category>
-      <category>Droit de la famille</category>
-    </item>
-    <item>
-      <title>Bundesgericht 9C_342/2025 vom 2026-07-22</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_9C_342_2025</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-9C_342/2025
-
-Arrêt du 22 juillet 2026
-
-IIIe Cour de droit public
-
-Composition
-
-Mme et MM. les Juges fédéraux
-
-Moser-Szeless, Présidente,
-
-Stadelmann et Parrino.
-
-Greffière : Mme P…</description>
-      <pubDate>Wed, 22 Jul 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:9C_342.2025</guid>
-      <category>bger</category>
-      <category>Assurance-vieillesse et survivants</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht A-8391/2025 vom 2026-07-22</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_A-8391_2025</link>
-      <description>Protection des données</description>
-      <pubDate>Wed, 22 Jul 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:A-8391.2025</guid>
-      <category>bvger</category>
     </item>
   </channel>
 </rss>
