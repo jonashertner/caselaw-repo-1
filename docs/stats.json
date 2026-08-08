@@ -2384,7 +2384,7 @@
     "2026-07": 1217,
     "2026-08": 32
   },
-  "generated_at": "2026-08-08T09:59:18.862727+00:00",
+  "generated_at": "2026-08-08T17:11:14.211980+00:00",
   "scraper_health": {
     "run_at": "2026-08-08T02:44:15.172459+00:00",
     "run_duration_s": 6194.2,
@@ -2846,7 +2846,7 @@
         "note": null,
         "state_count": 98213,
         "jsonl_size_mb": 1482.8,
-        "jsonl_mtime": "2026-08-08T01:30:46.567212+00:00"
+        "jsonl_mtime": "2026-08-08T10:35:01.383976+00:00"
       },
       "mkg": {
         "success": true,
@@ -2880,7 +2880,7 @@
         "note": null,
         "state_count": 1133,
         "jsonl_size_mb": 39.6,
-        "jsonl_mtime": "2026-08-08T01:35:34.644040+00:00"
+        "jsonl_mtime": "2026-08-08T10:24:59.660778+00:00"
       },
       "bge": {
         "success": true,
@@ -2897,7 +2897,7 @@
         "note": null,
         "state_count": 21329,
         "jsonl_size_mb": 490.0,
-        "jsonl_mtime": "2026-08-08T09:18:24.132405+00:00"
+        "jsonl_mtime": "2026-08-08T10:38:23.351070+00:00"
       },
       "ge_gerichte": {
         "success": true,
@@ -3050,7 +3050,7 @@
         "note": null,
         "state_count": 1611,
         "jsonl_size_mb": 32.6,
-        "jsonl_mtime": "2026-08-08T01:41:41.013641+00:00"
+        "jsonl_mtime": "2026-08-08T10:25:35.637146+00:00"
       },
       "sh_gerichte": {
         "success": true,
@@ -3458,7 +3458,7 @@
         "note": null,
         "state_count": 7656,
         "jsonl_size_mb": 190.5,
-        "jsonl_mtime": "2026-08-08T02:09:07.895603+00:00"
+        "jsonl_mtime": "2026-08-08T10:57:18.820273+00:00"
       },
       "lu_gerichte": {
         "success": true,
@@ -3526,7 +3526,7 @@
         "note": "1841 listed on portal but content not downloadable (empty page or missing PDF)",
         "state_count": 1558,
         "jsonl_size_mb": 96.1,
-        "jsonl_mtime": "2026-08-08T02:44:15.098242+00:00"
+        "jsonl_mtime": "2026-08-08T14:50:34.951564+00:00"
       }
     },
     "run_at_daily": "2026-08-08T02:44:15.172459+00:00",
@@ -3619,19 +3619,19 @@
       "reference_article": 40,
       "bachelor_thesis": 3
     },
-    "citation_edges": 9809530,
-    "statute_edges": 12438705
+    "citation_edges": 9811274,
+    "statute_edges": 12440474
   },
   "interesting_stats": {
     "most_cited_decision": {
       "docket": "BGE 125 V 351",
-      "citation_count": 77171,
+      "citation_count": 77174,
       "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
     },
     "most_cited_statute": {
       "law_code": "LTF",
       "article": "100",
-      "ref_count": 183878
+      "ref_count": 183908
     },
     "oldest_decision": {
       "docket": "1_I_26",
@@ -3643,20 +3643,20 @@
       "de_pct": 47.6,
       "fr_pct": 43.8,
       "it_pct": 8.6,
-      "total": 1052038
+      "total": 1052113
     },
     "regeste_coverage": {
       "pct": 38.5,
-      "with_regeste": 405207,
-      "total": 1052038
+      "with_regeste": 405214,
+      "total": 1052113
     },
     "graph_size": {
-      "decision_edges": 11497475,
-      "statute_edges": 12438705,
-      "total": 23936180
+      "decision_edges": 11499482,
+      "statute_edges": 12440474,
+      "total": 23939956
     },
     "echr_switzerland": {
-      "total": 2891,
+      "total": 2892,
       "grand_chamber": 102,
       "in_2026": 141,
       "most_recent": {
@@ -3669,31 +3669,31 @@
     "top_5_decisions": [
       {
         "docket": "BGE 125 V 351",
-        "citation_count": 77171,
+        "citation_count": 77174,
         "regeste_excerpt": "Regeste\n Art. 4 BV; Art. 108 Abs. 1 lit. b UVG; Art. 40 BZP in Verbindung mit Art. 19 VwVG; Art. 95 Abs. 2 in Verbindung mit Art. 113 und 132 OG: Beweiswürdigun",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
       },
       {
         "docket": "125 V 351",
-        "citation_count": 74640,
+        "citation_count": 74650,
         "regeste_excerpt": "Regeste\n Art. 4 BV; Art. 108 Abs. 1 lit. b UVG; Art. 40 BZP in Verbindung mit Art. 19 VwVG; Art. 95 Abs. 2 in Verbindung mit Art. 113 und 132 OG: Beweiswürdigun",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_125 V 351"
       },
       {
         "docket": "BGE 122 V 157",
-        "citation_count": 40259,
+        "citation_count": 40260,
         "regeste_excerpt": "Regeste\n Art. 4 BV, Art. 6 Ziff. 1 EMRK. - Art. 4 BV und Art. 6 Ziff. 1 EMRK umfassen keinen formellen Anspruch auf Beizug versicherungsexterner medizinischer G",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_122_V_157"
       },
       {
         "docket": "BGE 134 V 231",
-        "citation_count": 38510,
+        "citation_count": 38517,
         "regeste_excerpt": "Regeste\n Art. 6 Abs. 1 UVG; Beweiswert diagnostischer Methoden; funktionelle Magnetresonanztomographie; Schleudertrauma. Eine medizinisch-diagnostische Methode ",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_134_V_231"
       },
       {
         "docket": "BGE 115 V 133",
-        "citation_count": 34535,
+        "citation_count": 34537,
         "regeste_excerpt": "Regeste\n Art. 67 und 76 KUVG, Art. 6 und 18 UVG. Präzisierung der in BGE 113 V 307 veröffentlichten Rechtsprechung zum adäquaten Kausalzusammenhang.\nRegeste\n Ar",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_115_V_133"
       }
@@ -3702,27 +3702,27 @@
       {
         "law_code": "LTF",
         "article": "100",
-        "ref_count": 183878
+        "ref_count": 183908
       },
       {
         "law_code": "LTF",
         "article": "113",
-        "ref_count": 113349
+        "ref_count": 113361
       },
       {
         "law_code": "LTF",
         "article": "42",
-        "ref_count": 108328
+        "ref_count": 108334
       },
       {
         "law_code": "BGG",
         "article": "42",
-        "ref_count": 95877
+        "ref_count": 95899
       },
       {
         "law_code": "BGG",
         "article": "66",
-        "ref_count": 60264
+        "ref_count": 60287
       }
     ],
     "materialien_coverage": {
@@ -3780,7 +3780,7 @@
         "earliest": "1908-11-08",
         "latest": "2026-07-30",
         "span_years": 118,
-        "decision_count": 169372
+        "decision_count": 169383
       }
     ]
   },
@@ -4382,7 +4382,10 @@
       "AG": 8,
       "CE": 1
     },
-    "corpus": {},
+    "corpus": {
+      "citation_edges": 1744,
+      "statute_edges": 1769
+    },
     "previous_generated_at": "2026-08-07T17:26:35.592337+00:00"
   }
 }
