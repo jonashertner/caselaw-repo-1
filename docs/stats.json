@@ -2383,7 +2383,7 @@
     "2026-07": 1231,
     "2026-08": 32
   },
-  "generated_at": "2026-08-09T09:46:58.346000+00:00",
+  "generated_at": "2026-08-09T18:17:30.673369+00:00",
   "scraper_health": {
     "run_at": "2026-08-09T02:25:22.486156+00:00",
     "run_duration_s": 5061.6,
@@ -2828,7 +2828,7 @@
         "note": null,
         "state_count": 98213,
         "jsonl_size_mb": 1482.8,
-        "jsonl_mtime": "2026-08-09T01:15:50.388703+00:00"
+        "jsonl_mtime": "2026-08-09T10:34:41.099883+00:00"
       },
       "bge": {
         "success": true,
@@ -2845,7 +2845,7 @@
         "note": null,
         "state_count": 21329,
         "jsonl_size_mb": 490.0,
-        "jsonl_mtime": "2026-08-09T09:18:24.641930+00:00"
+        "jsonl_mtime": "2026-08-09T10:38:23.245276+00:00"
       },
       "mkg": {
         "success": true,
@@ -2879,7 +2879,7 @@
         "note": null,
         "state_count": 1133,
         "jsonl_size_mb": 39.6,
-        "jsonl_mtime": "2026-08-09T01:19:48.390041+00:00"
+        "jsonl_mtime": "2026-08-09T10:24:59.658578+00:00"
       },
       "ne_jurisprudence_adm": {
         "success": true,
@@ -2896,7 +2896,7 @@
         "note": null,
         "state_count": 1611,
         "jsonl_size_mb": 32.6,
-        "jsonl_mtime": "2026-08-09T01:25:13.859243+00:00"
+        "jsonl_mtime": "2026-08-09T10:24:59.964582+00:00"
       },
       "nw_gerichte": {
         "success": true,
@@ -3372,7 +3372,7 @@
         "note": null,
         "state_count": 7656,
         "jsonl_size_mb": 190.5,
-        "jsonl_mtime": "2026-08-09T01:57:41.178031+00:00"
+        "jsonl_mtime": "2026-08-09T10:56:23.957637+00:00"
       },
       "zh_steuerrekursgericht": {
         "success": true,
@@ -3423,7 +3423,7 @@
         "note": "2015 listed on portal but content not downloadable (empty page or missing PDF)",
         "state_count": 1558,
         "jsonl_size_mb": 96.1,
-        "jsonl_mtime": "2026-08-09T02:02:21.393863+00:00"
+        "jsonl_mtime": "2026-08-09T14:50:16.549081+00:00"
       },
       "hudoc_ch": {
         "success": true,
@@ -3581,15 +3581,15 @@
       "ZH": 135
     },
     "commentaries": 1170,
-    "scholarship_publications": 25389,
+    "scholarship_publications": 24474,
     "scholarship_by_source": {
       "boris_law": 7319,
       "e_periodica_polsci": 3088,
       "e_periodica_law": 3041,
       "zhaw_digitalcollection": 3040,
-      "libra_unine": 1992,
       "eth_research_collection": 1760,
-      "unige_law": 1432,
+      "unige_law": 1378,
+      "libra_unine": 1131,
       "e_periodica_pubadmin": 855,
       "fhnw_irf": 496,
       "onlinekommentar": 390,
@@ -3608,29 +3608,29 @@
       "alexandria_law": 13
     },
     "scholarship_by_type": {
-      "article": 19340,
-      "book": 4271,
-      "dissertation": 638,
-      "report": 434,
+      "article": 18799,
+      "book": 3910,
+      "dissertation": 632,
+      "report": 427,
       "commentary": 420,
       "working_paper": 173,
       "guidance": 70,
       "reference_article": 40,
       "bachelor_thesis": 3
     },
-    "citation_edges": 9811274,
-    "statute_edges": 12440474
+    "citation_edges": 9811592,
+    "statute_edges": 12440899
   },
   "interesting_stats": {
     "most_cited_decision": {
       "docket": "BGE 125 V 351",
-      "citation_count": 77174,
+      "citation_count": 77175,
       "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
     },
     "most_cited_statute": {
       "law_code": "LTF",
       "article": "100",
-      "ref_count": 183908
+      "ref_count": 183927
     },
     "oldest_decision": {
       "docket": "1_I_26",
@@ -3642,17 +3642,17 @@
       "de_pct": 47.6,
       "fr_pct": 43.8,
       "it_pct": 8.6,
-      "total": 1052113
+      "total": 1052143
     },
     "regeste_coverage": {
       "pct": 38.5,
       "with_regeste": 405214,
-      "total": 1052113
+      "total": 1052143
     },
     "graph_size": {
-      "decision_edges": 11499482,
-      "statute_edges": 12440474,
-      "total": 23939956
+      "decision_edges": 11499869,
+      "statute_edges": 12440899,
+      "total": 23940768
     },
     "echr_switzerland": {
       "total": 2892,
@@ -3668,13 +3668,13 @@
     "top_5_decisions": [
       {
         "docket": "BGE 125 V 351",
-        "citation_count": 77174,
+        "citation_count": 77175,
         "regeste_excerpt": "Regeste\n Art. 4 BV; Art. 108 Abs. 1 lit. b UVG; Art. 40 BZP in Verbindung mit Art. 19 VwVG; Art. 95 Abs. 2 in Verbindung mit Art. 113 und 132 OG: Beweiswürdigun",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
       },
       {
         "docket": "125 V 351",
-        "citation_count": 74650,
+        "citation_count": 74653,
         "regeste_excerpt": "Regeste\n Art. 4 BV; Art. 108 Abs. 1 lit. b UVG; Art. 40 BZP in Verbindung mit Art. 19 VwVG; Art. 95 Abs. 2 in Verbindung mit Art. 113 und 132 OG: Beweiswürdigun",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_125 V 351"
       },
@@ -3686,7 +3686,7 @@
       },
       {
         "docket": "BGE 134 V 231",
-        "citation_count": 38517,
+        "citation_count": 38519,
         "regeste_excerpt": "Regeste\n Art. 6 Abs. 1 UVG; Beweiswert diagnostischer Methoden; funktionelle Magnetresonanztomographie; Schleudertrauma. Eine medizinisch-diagnostische Methode ",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_134_V_231"
       },
@@ -3701,12 +3701,12 @@
       {
         "law_code": "LTF",
         "article": "100",
-        "ref_count": 183908
+        "ref_count": 183927
       },
       {
         "law_code": "LTF",
         "article": "113",
-        "ref_count": 113361
+        "ref_count": 113371
       },
       {
         "law_code": "LTF",
@@ -3716,7 +3716,7 @@
       {
         "law_code": "BGG",
         "article": "42",
-        "ref_count": 95899
+        "ref_count": 95908
       },
       {
         "law_code": "BGG",
@@ -4367,7 +4367,10 @@
       "VD": 19,
       "BS": 11
     },
-    "corpus": {},
+    "corpus": {
+      "citation_edges": 318,
+      "statute_edges": 425
+    },
     "previous_generated_at": "2026-08-08T22:06:50.084255+00:00"
   }
 }
