@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/fr.xml</link>
     <description>Latest published Swiss court decisions in Français.</description>
     <language>de-CH</language>
-    <lastBuildDate>Sat, 08 Aug 2026 10:09:15 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 09 Aug 2026 09:57:47 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/fr.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -695,6 +695,24 @@ AXA WINTERTHUR…</description>
       <category>ge_gerichte</category>
     </item>
     <item>
+      <title>vd_gerichte PE25.020190 vom 2026-07-24</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/vd_gerichte_PE25.020190</link>
+      <description>TRIBUNAL CANTONAL
+PE25.***-***
+541
+CHAMBRE DE S RECO URS PEN ALE
+__________________________________________
+Arrêt du 24 juillet 2026
+Composition : Mme E L K A I M, présidente
+MM. Maillard et Maytain, juges
+Greffier : M. Ritter
+*****
+Art. 310 al. 1 le…</description>
+      <pubDate>Fri, 24 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">vd_gerichte_PE25.020190</guid>
+      <category>vd_gerichte</category>
+    </item>
+    <item>
       <title>Bundesgericht 5A_532/2026 vom 2026-07-23</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_532_2026</link>
       <description>Bundesgericht
@@ -855,27 +873,6 @@ Président…</description>
       <pubDate>Thu, 23 Jul 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">fr_gerichte_102 2026 163</guid>
       <category>fr_gerichte</category>
-    </item>
-    <item>
-      <title>ge_gerichte ACJC/1276/2026 vom 2026-07-23</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ge_gerichte_ACJC_1276_2026</link>
-      <description>Le présent arrêt est communiqué aux parties par plis recommandés du 23 juillet 2026. 
- 
-REPUBLIQUE ET 
- 
-CANTON DE GENEVE 
-POUVOIR JUDICIAIRE 
-C/12608/2025 
-ACJC/1276/2026 
-ARRÊT 
-DE LA COUR DE JUSTICE 
-Chambre civile 
-DU JEUDI 23 JUILLET 2026 
- 
-Ent…</description>
-      <pubDate>Thu, 23 Jul 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ge_gerichte_ACJC_1276_2026</guid>
-      <category>ge_gerichte</category>
     </item>
   </channel>
 </rss>
