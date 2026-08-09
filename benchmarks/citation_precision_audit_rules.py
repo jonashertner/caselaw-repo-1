@@ -187,8 +187,12 @@ def main(argv: Optional[list[str]] = None) -> int:
         default=Path("benchmarks/citation_precision_sample_400.jsonl"),
     )
     p.add_argument(
-        "--out", type=Path,
-        default=Path("benchmarks/citation_precision_audit_results.json"),
+        "--out", type=Path, default=None,
+        help="Results JSON. Default: the repo artifact when analysing the "
+             "frozen sample, otherwise <sample>.results.json next to the "
+             "sample — so a run over a working copy or a temp file cannot "
+             "overwrite the committed results (it did: a test analysing a "
+             "tmp copy rewrote sample_file to a pytest path, 2026-08-09).",
     )
     p.add_argument(
         "--write-back", action="store_true", default=None,
@@ -205,8 +209,16 @@ def main(argv: Optional[list[str]] = None) -> int:
     if not args.sample.exists():
         print(f"error: sample file not found: {args.sample}", file=sys.stderr)
         return 2
+    _FROZEN = "citation_precision_sample_400.jsonl"
+    is_frozen_repo_artifact = (
+        args.sample.name == _FROZEN
+        and args.sample.resolve() == Path("benchmarks", _FROZEN).resolve())
     if args.write_back is None:
-        args.write_back = args.sample.name != "citation_precision_sample_400.jsonl"
+        args.write_back = args.sample.name != _FROZEN
+    if args.out is None:
+        args.out = (Path("benchmarks/citation_precision_audit_results.json")
+                    if is_frozen_repo_artifact
+                    else args.sample.with_suffix(".results.json"))
 
     rows: list[dict] = []
     meta: Optional[dict] = None
