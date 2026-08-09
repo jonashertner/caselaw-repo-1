@@ -1,0 +1,25 @@
+name: Bug
+description: The API, MCP server, dashboard or code behaves incorrectly
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Where
+      options: [MCP server, REST API, Web dashboard, Word add-in, Local install, Scrapers, Other]
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: How to reproduce
+      description: The exact query, tool call or command. Include the client if relevant.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected versus actual
+    validations:
+      required: true

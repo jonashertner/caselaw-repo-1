@@ -1,0 +1,34 @@
+name: Missing court or source
+description: A court, tribunal or authority that is absent, incomplete or stale
+title: "[source] "
+labels: ["data-source"]
+body:
+  - type: input
+    id: court
+    attributes:
+      label: Court or authority
+      placeholder: e.g. Kantonsgericht Basel-Landschaft, Abteilung Sozialversicherung
+    validations:
+      required: true
+  - type: input
+    id: portal
+    attributes:
+      label: Public portal URL
+    validations:
+      required: true
+  - type: dropdown
+    id: problem
+    attributes:
+      label: Problem
+      options:
+        - Not covered at all
+        - Covered but incomplete (decisions missing)
+        - Was updating, has stopped
+        - Portal changed and the scraper broke
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: A decision that exists on the portal but not here, or a date range that is missing.

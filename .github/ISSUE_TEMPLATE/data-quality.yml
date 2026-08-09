@@ -1,0 +1,39 @@
+name: Data quality defect
+description: A decision, citation, statute link or field that is wrong in the corpus
+title: "[data] "
+labels: ["data-quality"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you — these are the most valuable reports we get. Every one so
+        far has been reproduced, fixed, and pinned with a regression test.
+  - type: input
+    id: identifier
+    attributes:
+      label: Decision identifier or URL
+      description: e.g. `bger_6B_310_2025` or an mcp.opencaselaw.ch link
+      placeholder: https://mcp.opencaselaw.ch/entscheid/...
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What is wrong
+      options:
+        - Text is mangled, truncated or has encoding damage
+        - Wrong metadata (date, court, language, docket)
+        - Citation resolves to the wrong decision
+        - Citation should resolve but does not
+        - Statute reference is wrong or missing
+        - Duplicate record
+        - Something else
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What it should be, and how you know
+      description: The source PDF, the official portal page, or the passage itself.
+    validations:
+      required: true

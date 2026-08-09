@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use OpenCaseLaw, please cite the software and the dataset."
+title: "OpenCaseLaw: an open Swiss legal corpus and citation graph"
+abstract: >-
+  OpenCaseLaw is an open, multilingual corpus of Swiss court decisions with a
+  resolved cross-court citation graph, federal and cantonal legislation, and
+  interpretive links to legislative history, commentary, scholarship and
+  federal administrative practice. It is served as live infrastructure over
+  the Model Context Protocol and REST, and released as CC0 bulk data.
+type: software
+authors:
+  - family-names: Hertner
+    given-names: Jonas
+    email: jh@jonashertner.com
+repository-code: "https://github.com/jonashertner/caselaw-repo-1"
+url: "https://opencaselaw.ch"
+license: MIT
+keywords:
+  - Swiss law
+  - case law
+  - legal research
+  - citation graph
+  - legal NLP
+  - Model Context Protocol
+  - open data
