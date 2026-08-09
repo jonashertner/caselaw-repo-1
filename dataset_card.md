@@ -117,7 +117,7 @@ curl "https://datasets-server.huggingface.co/info?dataset=voilaj/swiss-caselaw"
 
 ### Full-text search via MCP
 
-Connect the dataset to Claude, ChatGPT, Cursor, Gemini, Grok, or any MCP client for natural-language search over all 1,050,000+ decisions, statute lookup, citation graph traversal, legislative history, and more. The MCP server exposes **43 tools total — 41 in remote (public) mode**; the 2 local-only `update_database` / `check_update_status` tools are hidden when REMOTE_MODE=True. Tools include verbatim head-note retrieval (`get_regeste`), structured Erwägung-paragraph access (`get_erwaegung`), full decision-structure decomposition (`get_decision_structure`), and a closed-corpus citation-integrity toolkit (`cite`, `check_claim_support`, `attest_response`) that audits every reference, statute, quotation, decision date, and — opt-in — proposition-grounding before an answer ships. The architecture defends against the two empirically-measured legal-LLM failure classes: **hallucination** (Dahl, Magesh, Suzgun & Ho, *Large Legal Fictions*, Journal of Legal Analysis 16(1) 2024 — 58–88 % of legal queries to general-purpose LLMs produced fabricated authority, range across ChatGPT-4 to Llama-2; the follow-up Magesh et al. *Hallucination-Free?* study, Journal of Empirical Legal Studies 22 (2025), measured 17–33 % on commercial legal-RAG tools) and **reasoning error** (Butler & Butler, *Legal RAG Bench*, arXiv:2603.01710, 2026 — citation real, source retrieved, proposition unsupported).
+Connect the dataset to Claude, ChatGPT, Cursor, Gemini, Grok, or any MCP client for natural-language search over all 1,050,000+ decisions, statute lookup, citation graph traversal, legislative history, and more. The MCP server exposes **44 tools total — 42 in remote (public) mode**; the 2 local-only `update_database` / `check_update_status` tools are hidden when REMOTE_MODE=True. Tools include verbatim head-note retrieval (`get_regeste`), structured Erwägung-paragraph access (`get_erwaegung`), full decision-structure decomposition (`get_decision_structure`), and a closed-corpus citation-integrity toolkit (`cite`, `check_claim_support`, `attest_response`) that audits every reference, statute, quotation, decision date, and — opt-in — proposition-grounding before an answer ships. The architecture defends against the two empirically-measured legal-LLM failure classes: **hallucination** (Dahl, Magesh, Suzgun & Ho, *Large Legal Fictions*, Journal of Legal Analysis 16(1) 2024 — 58–88 % of legal queries to general-purpose LLMs produced fabricated authority, range across ChatGPT-4 to Llama-2; the follow-up Magesh et al. *Hallucination-Free?* study, Journal of Empirical Legal Studies 22 (2025), measured 17–33 % on commercial legal-RAG tools) and **reasoning error** (Butler & Butler, *Legal RAG Bench*, arXiv:2603.01710, 2026 — citation real, source retrieved, proposition unsupported).
 
 **Remote (no download needed):**
 
@@ -175,7 +175,7 @@ This snapshot is intended for local MCP/server bootstrap tools that want to avoi
 | Verbatim Botschaft corpus | 5,900+ documents / ~410K FTS5-indexed paragraphs (Phase 2, scaling) |
 | Legislation texts searchable | 33,000+ (federal + cantonal + intercantonal) |
 | Scholarly commentaries | 1,100+ (OnlineKommentar.ch + OpenLegalCommentary.ch) |
-| MCP tools | 43 total (41 remote in public mode + 2 local-only) |
+| MCP tools | 44 total (42 remote in public mode + 2 local-only) |
 
 > Rows from *Federal laws indexed* downward (laws, Botschaft/Materialien, legislation texts, commentaries) are **platform figures served live via the MCP API**, not contents of this Parquet download. The Parquet dataset comprises `data/` (decisions), `graph/` (citations + statute-decision links), and `structure/`.
 
@@ -339,7 +339,7 @@ See the governance policy for source withdrawals, re-anonymization, and verified
         5,525 federal laws, 15,600 cantonal laws,
         and legislative history (83,958 Botschaft amendment references; 459
         verbatim Botschaften, scaling).
-        Searchable via 43 MCP tools (41 remote in public mode + 2 local-only) from Claude, ChatGPT, Cursor, Gemini, Grok, or any MCP/function-calling client. Updated daily.}
+        Searchable via 44 MCP tools (42 remote in public mode + 2 local-only) from Claude, ChatGPT, Cursor, Gemini, Grok, or any MCP/function-calling client. Updated daily.}
 }
 ```
 

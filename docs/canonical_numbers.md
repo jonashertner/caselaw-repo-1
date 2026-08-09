@@ -96,7 +96,15 @@ the paper snapshot predates this and reports the record count only. See
 | **Local mode** (running on operator's machine with `update_database` + `check_update_status`) | **43** | README internal docs, local dev guides |
 | **Local-only delta** | 2 (`update_database`, `check_update_status`) | technical references |
 
-Standard phrasing: *"43 MCP tools (41 remote in public mode + 2 local-only)"* or simply *"41 tools"* when only the public surface matters. (Verified 2026-06-16: 43 `Tool(` registrations in mcp_server.py; 2 hidden under REMOTE_MODE.)
+Standard phrasing: *"44 MCP tools (42 remote in public mode + 2 local-only)"* or simply *"42 tools"* when only the public surface matters.
+
+**Verified 2026-08-10** by two independent methods that must agree before this
+number is changed: (a) `grep -c "Tool(" mcp_server.py` = 44 registrations;
+(b) a live `tools/list` against https://mcp.opencaselaw.ch/mcp = 42 remote
+tools. The difference is exactly `update_database` + `check_update_status`,
+hidden under REMOTE_MODE. Any file quoting a tool count must cite this
+section; an external review on 2026-08-10 found 24/38/40/41/43/44 in
+circulation simultaneously, which is why the two-method check exists.
 
 **Paper note**: paper v3 (snapshot 2026-05-13) cites 33 tools; that figure is frozen for the snapshot. Public surface has since grown by 6 scholarship tools (`search_scholarship`, `get_scholarship`, `find_scholarship_citing_statute`, `find_scholarship_citing_decision`, `list_scholarship_sources`, `get_scholarship_full_text`) plus the 2 ChatGPT Deep-Research tools (`search`, `fetch`) — bringing the live public count to 41.
 

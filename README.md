@@ -65,7 +65,7 @@ OpenCaseLaw fixes this. **Every published Swiss court decision, every federal an
 *For LLM users, researchers and developers — full 24-tool surface:*
 - Remote MCP server at `mcp.opencaselaw.ch` (SSE + Streamable HTTP) — 30-second setup in any MCP client (Claude, ChatGPT, Cursor, Gemini, Windsurf)
 - [OpenAI-compatible tool definitions](docs/openai-tools.json) for Grok/xAI and any function-calling LLM API
-- Local MCP server — full offline capability, 40 tools (38 remote in public mode + 2 local-only), ~65 GB disk
+- Local MCP server — full offline capability, all 44 tools (the 2 local-only update tools are available offline), ~65 GB disk
 - 30-route REST API with [interactive documentation](https://mcp.opencaselaw.ch/api/docs) (Swagger UI + OpenAPI spec)
 - Bulk Parquet download via the [HuggingFace dataset](https://huggingface.co/datasets/voilaj/swiss-caselaw) (~7 GB)
 - Live dashboard + browsing UI at [opencaselaw.ch](https://opencaselaw.ch)
@@ -110,7 +110,7 @@ There are eight ways to use it, depending on what you need:
 
 ## 1. Search with AI
 
-The dataset comes with an [MCP server](https://modelcontextprotocol.io) whose exact tool surface is deployment-dependent. Local deployments expose all 40 tools; remote mode omits the 2 local-only update tools (`update_database`, `check_update_status`) for 38 remote tools. You ask a question in natural language; the tool runs a full-text search and returns matching decisions with snippets.
+The dataset comes with an [MCP server](https://modelcontextprotocol.io) whose exact tool surface is deployment-dependent. Local deployments expose all 44 tools; remote mode omits the 2 local-only update tools (`update_database`, `check_update_status`) for 42 remote tools. You ask a question in natural language; the tool runs a full-text search and returns matching decisions with snippets.
 
 ### Remote vs. local
 
