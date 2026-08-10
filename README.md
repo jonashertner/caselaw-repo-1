@@ -1,21 +1,97 @@
-# Swiss Case Law Open Dataset
+# OpenCaseLaw
 
-**The complete machine-readable archive of Swiss case law and legislation — built for humans, designed for AI agents.**
+Open Swiss case law and legislation for legal research and AI.
 
-**1,050,000+ decision records (~909,000 unique decisions after cross-identifier linkage) · 5,525 federal laws · 15,600 cantonal laws · 9.65 M resolved citation edges (10 M extracted) · 12.4 M statute references · 83,958 Botschaft amendment references (5,900+ verbatim Botschaften ingested, scaling) · daily RFC-6962 Merkle root + OpenTimestamps anchor (cryptographic provenance) · cli:ch + ECLI identifiers on every decision**
+**1M+ decisions · all 26 cantons · 1875–today · citation graph · MCP + REST + Parquet · CC0 data · MIT code**
 
-*Figures as of 2026-06-21 — corpus refreshed daily; live counts at [opencaselaw.ch](https://opencaselaw.ch).*
+[Try the search](https://opencaselaw.ch) ·
+[Connect an AI client](#connect-in-30-seconds) ·
+[Download the dataset](#2-download-the-dataset) ·
+[API documentation](https://mcp.opencaselaw.ch/api/docs)
 
-Spans **1875 to today**, covers every Swiss federal court and all 26 cantonal court systems (plus regulators: FINMA, ComCo, FDPIC, IndepBC, ElCom, PostCom, ComCom), mirrors federal legislation directly from **Fedlex SPARQL** and cantonal legislation by **direct portal scraping for all 26 cantons** (LexWork: 18 cantons; SIL: NE + JU; ZH OpenData; TI RL — the same publishing systems the cantons operate themselves) with **LexFind PDF as fallback** supplementing 4 cantons for laws missing from their primary portals and as the discovery catalog for 33,000+ legislative texts. Includes **83,958 Botschaft amendment references across 9,139 BBl publications**, a **Phase 2 verbatim Botschaft corpus** (5,900+ documents, ~410K FTS5-indexed paragraphs, scaling via Fedlex SPARQL discovery), per-article Botschaft digests for BV/BGFA, parliamentary debate transcripts for the Bundesverfassung, a **resolved citation graph**, and **44 MCP tools (42 remote in public mode + 2 local-only)** usable from Claude, ChatGPT, Cursor, Gemini, Grok, or any MCP/function-calling client. **CC0 public-domain data, MIT-licensed code, no sign-up, no API keys, no paywall.**
+## What you can do
 
-[![CI](https://github.com/jonashertner/caselaw-repo-1/actions/workflows/ci.yml/badge.svg)](https://github.com/jonashertner/caselaw-repo-1/actions/workflows/ci.yml)
-[![Dashboard](https://img.shields.io/badge/Dashboard-live-d1242f)](https://opencaselaw.ch)
-[![HuggingFace](https://img.shields.io/badge/HuggingFace-dataset-blue)](https://huggingface.co/datasets/voilaj/swiss-caselaw)
-[![MCP Toplist](https://mcptoplist.com/badge/ch.opencaselaw%2Fswiss-caselaw.svg)](https://mcptoplist.com/server/ch.opencaselaw%2Fswiss-caselaw)
-[![Data License: CC0--1.0](https://img.shields.io/badge/Data_License-CC0--1.0-blue.svg)](https://creativecommons.org/publicdomain/zero/1.0/)
-[![Code License: MIT](https://img.shields.io/badge/Code_License-MIT-green.svg)](LICENSE)
+- Find Swiss decisions across federal and cantonal courts, in German, French and Italian.
+- Trace citations between cases and identify the leading decisions on a question.
+- Query case law and legislation from Claude, ChatGPT-compatible clients, or any MCP client.
+- Download the corpus for legal NLP, retrieval and graph research.
+
+## Connect in 30 seconds
+
+```json
+{
+  "mcpServers": {
+    "opencaselaw": {
+      "url": "https://mcp.opencaselaw.ch/mcp"
+    }
+  }
+}
+```
+
+No sign-up, no API key, read-only. 42 tools; setup guides for individual
+clients are at [mcp.opencaselaw.ch](https://opencaselaw.ch/mcp/).
+
+## A real result
+
+**Question.** When is a dismissal in retaliation for an employee asserting a
+claim abusive under Swiss law?
+
+**One call** — `search_decisions("missbräuchliche Kündigung Rachekündigung")`
+returns 129 decisions, the leading one first:
+
+> **BGE 136 III 513** (7 October 2010)
+>
+> *Art. 336 OR; missbräuchliche Kündigung. Der Arbeitnehmer ist vor einer
+> Rachekündigung nur geschützt (Art. 336 Abs. 1 lit. d OR), sofern er nach
+> Treu und Glauben annehmen kann, dass die von ihm geltend gemachten
+> Ansprüche berechtigt sind. Es ist nicht erforderlich, dass sie tatsächlich
+> begründet sind.*
+
+The Regeste is returned verbatim from the stored official head-note, and the
+citation string comes from a stored field — tools never construct citations.
+That contract is what makes the answer checkable rather than plausible.
+
+Reproduce it:
+
+```bash
+curl -sG https://mcp.opencaselaw.ch/api/decisions \
+  --data-urlencode "q=missbräuchliche Kündigung Rachekündigung" \
+  --data-urlencode "limit=3"
+```
+
+## Coverage
+
+| Resource | Coverage |
+|---|---|
+| Court decisions | 1,050,000+ records, 118 court and source collections, 1875–today |
+| Languages | German, French, Italian |
+| Legislation | 5,525 federal laws, 15,600 cantonal laws (all 26 cantons) |
+| Citation graph | ~10M resolved decision-to-decision edges, 12.4M statute references |
+| Interpretive layers | Federal Council dispatches, commentaries, open-access scholarship, federal administrative practice |
+| Access | Web, MCP, REST, daily CC0 Parquet |
+| Licensing | CC0 data, MIT code (ECtHR texts © ECHR-CEDH, see the data card) |
+
+Counts are generated from one source of truth,
+[`docs/canonical_numbers.md`](docs/canonical_numbers.md), with the
+verification method recorded alongside each figure.
+
+**Limitations, stated plainly.** Coverage is not complete where portals
+restrict access; those sources are documented rather than glossed. The
+citation graph reports resolution *coverage* (93.8 %), which is not a
+precision estimate — a human semantic audit is in preparation. Some cantonal
+decisions may be published unredacted by the court; we inherit upstream
+pseudonymisation and do not re-pseudonymise. See
+[governance and removal policy](docs/governance-and-removal-policy.md).
+
+## Contributing
+
+Data-quality reports are the most valuable contribution — every one so far
+has been reproduced, fixed and pinned with a regression test. See
+[CONTRIBUTING.md](CONTRIBUTING.md).
 
 ---
+
+*The remainder of this page is reference detail.*
 
 ## Why this exists
 
@@ -230,7 +306,7 @@ Run the MCP server locally with your own copy of the database (~65 GB disk). Thi
 **Step 1.** Clone this repository:
 
 ```bash
-git clone https://github.com/jonashertner/caselaw-repo-1.git
+git clone https://github.com/jonashertner/opencaselaw.git
 cd caselaw-repo-1
 ```
 
@@ -877,7 +953,7 @@ The Web UI auto-detects Ollama and shows local models as available.
 **Step 1. Clone the repository:**
 
 ```bash
-git clone https://github.com/jonashertner/caselaw-repo-1.git
+git clone https://github.com/jonashertner/opencaselaw.git
 cd caselaw-repo-1
 ```
 
@@ -1120,7 +1196,7 @@ For contributors and developers who want to run scrapers, build the pipeline, or
 ### Install
 
 ```bash
-git clone https://github.com/jonashertner/caselaw-repo-1.git
+git clone https://github.com/jonashertner/opencaselaw.git
 cd caselaw-repo-1
 python3 -m venv .venv
 source .venv/bin/activate   # macOS/Linux — on Windows: .venv\Scripts\Activate.ps1
@@ -1189,7 +1265,7 @@ Court decisions are public records under Swiss law. Article 27 BGG requires the 
 
 ## Governance and removal
 
-Republication changes discoverability, so the project ships a governance policy covering source withdrawals, re-anonymization, and verified correction/removal requests. See [docs/governance-and-removal-policy.md](/Users/jonashertner/caselaw-repo-1/docs/governance-and-removal-policy.md).
+Republication changes discoverability, so the project ships a governance policy covering source withdrawals, re-anonymization, and verified correction/removal requests. See [docs/governance-and-removal-policy.md](/Users/jonashertner/opencaselaw/docs/governance-and-removal-policy.md).
 
 ---
 
@@ -1197,7 +1273,7 @@ Republication changes discoverability, so the project ships a governance policy 
 
 Maintainer: [Jonas Hertner](https://jonashertner.com). A small group of first users, bug reporters, institutional partners, and consumer-side integrators have shaped the tool; see [CONTRIBUTORS.md](CONTRIBUTORS.md) for the full list and how to add yours.
 
-If you're using OpenCaseLaw in production — as a scraper contributor, dataset consumer, law-firm integrator, or research project — we'd like to know. Email **team@jonashertner.com** or open a [discussion](https://github.com/jonashertner/caselaw-repo-1/discussions).
+If you're using OpenCaseLaw in production — as a scraper contributor, dataset consumer, law-firm integrator, or research project — we'd like to know. Email **team@jonashertner.com** or open a [discussion](https://github.com/jonashertner/opencaselaw/discussions).
 
 ---
 
@@ -1213,4 +1289,4 @@ Dataset packaging and added metadata: CC0-1.0 to the extent rights exist. The un
 
 Questions, feedback, or ideas? Reach out at **team@jonashertner.com**.
 
-You can also [open an issue](https://github.com/jonashertner/caselaw-repo-1/issues) on GitHub.
+You can also [open an issue](https://github.com/jonashertner/opencaselaw/issues) on GitHub.
