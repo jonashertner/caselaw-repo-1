@@ -1650,7 +1650,7 @@ function renderSettings() {
   html += '<div class="settings-footer">' +
     '<a href="https://opencaselaw.ch" target="_blank" style="color:var(--blue);">opencaselaw.ch</a> \u00B7 ' +
     '<a href="https://opencaselaw.ch/datenschutz/" target="_blank" style="color:var(--blue);">' + escHtml(t('priv_signal_privacy_link', lang)) + '</a> \u00B7 ' +
-    '<a href="https://github.com/jonashertner/caselaw-repo-1" target="_blank" style="color:var(--blue);">GitHub</a><br>' +
+    '<a href="https://github.com/jonashertner/opencaselaw" target="_blank" style="color:var(--blue);">GitHub</a><br>' +
     'Code: MIT \u00B7 Daten: CC0 1.0</div>';
 
   return html;

@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OpenCaseLaw — Project Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F1ECE1; --panel:#FAF7F0; --ink:#17150F; --ink2:#3A362C;
+  --muted:#756E5C; --red:#C8102E; --line:rgba(23,21,15,.16); --line2:rgba(23,21,15,.35);
+  --ok:#2E6E4E; --warn:#9A6A00;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:"IBM Plex Sans",sans-serif; font-size:16px; line-height:1.5;
+  overflow:hidden;
+  background-image:
+    linear-gradient(rgba(23,21,15,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(23,21,15,.025) 1px,transparent 1px);
+  background-size:34px 34px;
+}
+.mono{font-family:"IBM Plex Mono",monospace}
+.deck{position:fixed;inset:0}
+.slide{
+  position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;
+  padding:clamp(28px,5vw,84px);
+  opacity:0;visibility:hidden;transform:translateY(14px);
+  transition:opacity .5s ease,transform .5s ease;
+  overflow-y:auto;
+}
+.slide.active{opacity:1;visibility:visible;transform:none}
+.wrap{width:100%;max-width:1180px;margin:0 auto}
+/* crop marks */
+.slide::before,.slide::after{content:"";position:absolute;width:16px;height:16px;pointer-events:none;opacity:.5}
+.slide::before{top:22px;left:22px;border-top:1.5px solid var(--ink);border-left:1.5px solid var(--ink)}
+.slide::after{bottom:22px;right:22px;border-bottom:1.5px solid var(--ink);border-right:1.5px solid var(--ink)}
+.kicker{font-family:"IBM Plex Mono",monospace;text-transform:uppercase;letter-spacing:.28em;
+  font-size:12px;color:var(--red);font-weight:600;margin-bottom:18px;display:flex;gap:14px;align-items:center}
+.kicker .sec{color:var(--muted)}
+.kicker::before{content:"";width:38px;height:2px;background:var(--red);display:inline-block}
+h1{font-family:"Fraunces",serif;font-weight:900;line-height:.98;letter-spacing:-.02em;
+  font-size:clamp(40px,7.5vw,108px)}
+h2{font-family:"Fraunces",serif;font-weight:600;line-height:1.02;letter-spacing:-.015em;
+  font-size:clamp(30px,4.6vw,60px);margin-bottom:8px}
+h3{font-family:"Fraunces",serif;font-weight:600;font-size:22px;letter-spacing:-.01em}
+.lede{font-size:clamp(17px,1.7vw,22px);color:var(--ink2);max-width:70ch;margin-top:14px;line-height:1.45}
+p{max-width:74ch;color:var(--ink2)}
+.hr{height:1px;background:var(--line);margin:22px 0}
+.hr.strong{height:2px;background:var(--ink)}
+a{color:var(--red);text-decoration:none;border-bottom:1px solid rgba(200,16,46,.35)}
+
+/* grids */
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+.g5{grid-template-columns:repeat(5,1fr)}
+@media(max-width:820px){.g3,.g4,.g5{grid-template-columns:repeat(2,1fr)}.g2{grid-template-columns:1fr}}
+
+.card{background:var(--panel);border:1px solid var(--line);padding:16px 18px;border-radius:2px}
+.card h3{margin-bottom:6px}
+.card .m{font-size:13.5px;color:var(--muted);line-height:1.45}
+.card.accent{border-left:3px solid var(--red)}
+
+/* stat tiles */
+.stat{background:var(--panel);border:1px solid var(--line);padding:16px 18px;border-radius:2px}
+.stat .n{font-family:"Fraunces",serif;font-weight:900;font-size:clamp(28px,3.4vw,44px);line-height:1;letter-spacing:-.02em}
+.stat .l{font-family:"IBM Plex Mono",monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);margin-top:8px}
+.stat .s{font-size:12.5px;color:var(--ink2);margin-top:6px}
+
+/* data table */
+table{width:100%;border-collapse:collapse;font-family:"IBM Plex Mono",monospace;font-size:13.5px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-weight:600}
+td b{color:var(--ink);font-weight:600}
+tr:hover td{background:rgba(200,16,46,.03)}
+
+.pill{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:11px;padding:3px 8px;border:1px solid var(--line2);border-radius:999px;color:var(--ink2);margin:2px 3px 2px 0;white-space:nowrap}
+.pill.red{border-color:var(--red);color:var(--red)}
+.pill.ok{border-color:var(--ok);color:var(--ok)}
+.pill.local{border-style:dashed;color:var(--muted)}
+
+.toolgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+@media(max-width:900px){.toolgrid{grid-template-columns:repeat(2,1fr)}}
+.toolgroup{background:var(--panel);border:1px solid var(--line);border-radius:2px;padding:12px 14px}
+.toolgroup .gh{font-family:"IBM Plex Mono",monospace;font-size:11px;text-transform:uppercase;letter-spacing:.13em;color:var(--red);margin-bottom:9px;font-weight:600}
+.toolgroup ul{list-style:none;font-family:"IBM Plex Mono",monospace;font-size:12.5px;line-height:1.75;color:var(--ink2)}
+.toolgroup li::before{content:"›";color:var(--red);margin-right:7px}
+
+/* pipeline flow */
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch}
+.step{background:var(--panel);border:1px solid var(--line);border-radius:2px;padding:10px 12px;min-width:120px;flex:1;position:relative}
+.step .sn{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--red);font-weight:600}
+.step .st{font-size:13px;font-weight:500;color:var(--ink);margin-top:3px;line-height:1.25}
+.step.swap{border:2px solid var(--red)}
+.step.par{border-style:dashed}
+.arrow{color:var(--muted);align-self:center;font-family:"IBM Plex Mono",monospace}
+
+/* chrome */
+.chrome{position:fixed;left:0;right:0;pointer-events:none;z-index:50}
+.topbar{top:0;display:flex;justify-content:space-between;align-items:center;padding:18px 26px}
+.brand{font-family:"IBM Plex Mono",monospace;font-weight:600;letter-spacing:.12em;font-size:13px}
+.brand b{color:var(--red)}
+.counter{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--muted);text-align:right}
+.counter b{color:var(--ink)}
+.progress{position:fixed;left:0;bottom:0;height:3px;background:var(--red);width:0;transition:width .4s ease;z-index:60}
+.nav{position:fixed;bottom:16px;right:22px;display:flex;gap:8px;z-index:60;pointer-events:auto}
+.nav button,.menubtn{font-family:"IBM Plex Mono",monospace;font-size:13px;background:var(--panel);border:1px solid var(--line2);
+  color:var(--ink);width:38px;height:38px;border-radius:2px;cursor:pointer;transition:.15s}
+.nav button:hover,.menubtn:hover{background:var(--ink);color:var(--paper)}
+.menubtn{position:fixed;bottom:16px;left:22px;width:auto;padding:0 14px;z-index:60;pointer-events:auto}
+.hint{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);font-family:"IBM Plex Mono",monospace;
+  font-size:11px;color:var(--muted);z-index:55;letter-spacing:.05em}
+
+/* menu overlay */
+.menu{position:fixed;inset:0;background:rgba(20,18,12,.97);z-index:200;display:none;padding:6vh 8vw;overflow-y:auto}
+.menu.open{display:block}
+.menu h2{color:var(--paper);margin-bottom:24px}
+.menu ol{list-style:none;columns:2;column-gap:60px}
+@media(max-width:760px){.menu ol{columns:1}}
+.menu li{font-family:"IBM Plex Mono",monospace;color:#cfc7b6;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.1);cursor:pointer;font-size:14px;break-inside:avoid;display:flex;gap:14px}
+.menu li:hover{color:#fff}.menu li .mn{color:var(--red)}
+.menu .close{position:absolute;top:24px;right:34px;color:#cfc7b6;cursor:pointer;font-family:"IBM Plex Mono",monospace}
+
+.cover-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:44px;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink)}
+.cover-stats div{padding:18px 14px 16px;border-right:1px solid var(--line)}
+.cover-stats div:last-child{border-right:none}
+.cover-stats .n{font-family:"Fraunces",serif;font-weight:900;font-size:clamp(26px,3vw,40px);line-height:1}
+.cover-stats .l{font-family:"IBM Plex Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-top:8px}
+@media(max-width:820px){.cover-stats{grid-template-columns:repeat(2,1fr)}.cover-stats div:nth-child(2){border-right:none}}
+.tag{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--muted)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:34px}
+@media(max-width:820px){.two{grid-template-columns:1fr;gap:18px}}
+.small{font-size:13px}
+ul.clean{list-style:none}
+ul.clean li{padding:6px 0;border-bottom:1px solid var(--line);font-size:14.5px;color:var(--ink2)}
+ul.clean li b{color:var(--ink)}
+.note{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--muted);margin-top:14px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--muted);margin-top:14px}
+.legend span{display:flex;align-items:center;gap:7px}
+.sw{width:22px;height:12px;display:inline-block;border-radius:1px}
+</style>
+</head>
+<body>
+
+<div class="chrome topbar">
+  <div class="brand">OPEN<b>CASE</b>LAW</div>
+  <div class="counter"><b id="cur">01</b> / <span id="tot">18</span> &nbsp; <span id="secname" class="sec"></span></div>
+</div>
+<div class="progress" id="prog"></div>
+<button class="menubtn" onclick="toggleMenu()">☰ INDEX</button>
+<div class="nav"><button onclick="go(-1)">‹</button><button onclick="go(1)">›</button></div>
+<div class="hint">← → to navigate &nbsp;·&nbsp; M for index</div>
+
+<div class="menu" id="menu">
+  <span class="close" onclick="toggleMenu()">✕ CLOSE</span>
+  <h2>Contents</h2>
+  <ol id="menulist"></ol>
+</div>
+
+<div class="deck" id="deck">
+
+<!-- 1 COVER -->
+<section class="slide" data-sec="Cover">
+  <div class="wrap">
+    <div class="kicker">Swiss legal corpus &amp; public API <span class="sec">· mcp.opencaselaw.ch</span></div>
+    <h1>Open<span style="color:var(--red)">Case</span>Law</h1>
+    <p class="lede">A complete, machine-readable corpus of published Swiss court decisions and legislation, with a 43-tool MCP research surface. A precise map of the data, the pipeline, the functions, and the invariants that hold it together.</p>
+    <div class="cover-stats">
+      <div><div class="n mono">995,977</div><div class="l">decisions live</div></div>
+      <div><div class="n mono">21,108</div><div class="l">laws (fed + cantonal)</div></div>
+      <div><div class="n mono">8.65 M</div><div class="l">citation edges</div></div>
+      <div><div class="n mono">43</div><div class="l">MCP tools</div></div>
+    </div>
+    <div class="note">Single-developer maintained · production on Hetzner · CC0 data, MIT code · snapshot 2026-07-08</div>
+  </div>
+</section>
+
+<!-- 2 MISSION -->
+<section class="slide" data-sec="Mission">
+  <div class="wrap">
+    <div class="kicker">§01 Mission &amp; scope</div>
+    <h2>Every published Swiss decision, verifiable and free.</h2>
+    <p class="lede">The mission is completeness: a full dataset of all published Swiss court decisions plus the laws, preparatory materials, and scholarship needed to interpret them. Deduplication must never remove a legitimate distinct decision.</p>
+    <div class="grid g3" style="margin-top:26px">
+      <div class="card accent"><h3>Complete</h3><div class="m">Federal courts (1875 to present), all 26 cantons, federal regulators, the Military Court of Cassation, and ~2,800 ECHR decisions concerning Switzerland.</div></div>
+      <div class="card accent"><h3>Verifiable</h3><div class="m">Every citation and quotation the API emits is sourced verbatim from the corpus, never constructed. An anti-hallucination contract (R1 to R3) is enforced at the tool surface.</div></div>
+      <div class="card accent"><h3>Open</h3><div class="m">CC0 data mirrored to HuggingFace, MIT code, a public dashboard, a REST API, and MCP connectors for Claude and ChatGPT.</div></div>
+    </div>
+    <div class="note">Canonical long-form reference: TECHNICAL_OVERVIEW.txt · project memory: CLAUDE.md</div>
+  </div>
+</section>
+
+<!-- 3 CORPUS -->
+<section class="slide" data-sec="Corpus">
+  <div class="wrap">
+    <div class="kicker">§02 The corpus at a glance</div>
+    <h2>What is inside.</h2>
+    <div class="grid g4" style="margin-top:22px">
+      <div class="stat"><div class="n mono">995,977</div><div class="l">Court decisions</div><div class="s">Federal + 26 cantons + regulators + EGMR, 1875 to present</div></div>
+      <div class="stat"><div class="n mono">5,519</div><div class="l">Federal laws</div><div class="s">Fedlex SPARQL, article-level, DE/FR/IT/RM</div></div>
+      <div class="stat"><div class="n mono">15,589</div><div class="l">Cantonal laws</div><div class="s">19 cantons direct-scraped + 7 via LexFind</div></div>
+      <div class="stat"><div class="n mono">8.65 M</div><div class="l">Resolved citations</div><div class="s">from 9.2 M extracted decision-to-decision references</div></div>
+      <div class="stat"><div class="n mono">~410 K</div><div class="l">Botschaft paragraphs</div><div class="s">5,900+ verbatim Federal Council preparatory docs</div></div>
+      <div class="stat"><div class="n mono">25,000+</div><div class="l">Scholarship records</div><div class="s">23 open-access Swiss legal sources, many full-text</div></div>
+      <div class="stat"><div class="n mono">1,100+</div><div class="l">Commentaries</div><div class="s">Scholarly article-level commentary</div></div>
+      <div class="stat"><div class="n mono">3</div><div class="l">Languages handled</div><div class="s">DE / FR / IT with cross-language matching</div></div>
+    </div>
+    <div class="note">Headline numbers track the deployed docs/stats.json; live decision count from /health at snapshot time.</div>
+  </div>
+</section>
+
+<!-- 4 ACCESS PATHS -->
+<section class="slide" data-sec="Access paths">
+  <div class="wrap">
+    <div class="kicker">§03 How it is used</div>
+    <h2>One corpus, many front doors.</h2>
+    <div class="grid g3" style="margin-top:22px">
+      <div class="card"><h3>LLM connectors</h3><div class="m">MCP servers for Claude and ChatGPT (SSE). The primary channel: ~2,000 to 2,500 real users per week, ChatGPT ~65%.</div></div>
+      <div class="card"><h3>Word add-in</h3><div class="m">word.opencaselaw.ch. Office.js + React. Verify + Strengthen citations, structural PII redaction. Stripe-billed Pro tier.</div></div>
+      <div class="card"><h3>Public dashboard</h3><div class="m">opencaselaw.ch. React UI: cross-provider search over decisions, laws, and scholarship.</div></div>
+      <div class="card"><h3>REST API</h3><div class="m">FastAPI routes under web_api/ : /health, /api/decisions, /api/lookup, scholarship, metrics.</div></div>
+      <div class="card"><h3>HuggingFace</h3><div class="m">voilaj/swiss-caselaw (public Parquet mirror) + voilaj/swiss-legislation (private, article-level).</div></div>
+      <div class="card"><h3>Direct MCP / SSE</h3><div class="m">Third-party adopters (e.g. Lalive Copilot) integrate the tool surface directly via openapi.copilot.json.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 ARCHITECTURE -->
+<section class="slide" data-sec="Architecture">
+  <div class="wrap">
+    <div class="kicker">§04 System architecture</div>
+    <h2>Scrape, build, swap, serve.</h2>
+    <div class="two" style="margin-top:18px">
+      <div>
+        <table>
+          <tr><th>Component</th><th>Role</th></tr>
+          <tr><td><b>scrapers/</b></td><td>59 bespoke scrapers: official-source-first, idempotent append</td></tr>
+          <tr><td><b>base_scraper.py</b></td><td>rate-limit, SOCKS5 egress, gap caching, health</td></tr>
+          <tr><td><b>build_fts5.py</b></td><td>JSONL shards → decisions.db (FTS5), atomic swap</td></tr>
+          <tr><td><b>publish.py</b></td><td>2,011-line nightly rebuild orchestrator (the gate)</td></tr>
+          <tr><td><b>mcp_server.py</b></td><td>MCP + REST server, 44 tools (42 remote)</td></tr>
+          <tr><td><b>web_api/</b></td><td>FastAPI providers + REST routes</td></tr>
+          <tr><td><b>web_ui/</b></td><td>React dashboard</td></tr>
+          <tr><td><b>desktop_extension/</b></td><td>Word add-in (Office.js + React + Stripe)</td></tr>
+          <tr><td><b>search_stack/</b></td><td>graph + structure builders, LLM rerank, query expansion</td></tr>
+        </table>
+      </div>
+      <div>
+        <h3 style="margin-bottom:10px">Data flow</h3>
+        <ul class="clean small">
+          <li><b>1. Scrape</b> official portals → state/{court}.jsonl (append-only)</li>
+          <li><b>2. Build</b> JSONL → decisions.db.tmp (FTS5, dedup, normalize)</li>
+          <li><b>3. Swap</b> os.replace() → zero-downtime inode switch</li>
+          <li><b>4. Enrich</b> reference graph, structure, materialien, tags</li>
+          <li><b>5. Export</b> Parquet → HuggingFace mirror</li>
+          <li><b>6. Serve</b> 8 read-only workers, immutable=1, behind nginx</li>
+        </ul>
+        <div class="note">Scraper writes live only in state/coverage.db, intentionally isolated from the read side so the swap stays atomic.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 DATA STORES -->
+<section class="slide" data-sec="Data stores">
+  <div class="wrap">
+    <div class="kicker">§05 Data stores</div>
+    <h2>Eight SQLite databases, all read-only in production.</h2>
+    <table style="margin-top:14px">
+      <tr><th>Database</th><th>Size</th><th>Built by</th><th>Serves</th></tr>
+      <tr><td><b>decisions.db</b></td><td>~70 GB</td><td>build_fts5 (Step 2)</td><td>search, get_decision, FTS5 full text</td></tr>
+      <tr><td><b>decision_structure.db</b></td><td>~50 GB</td><td>Step 2g sidecar</td><td>get_erwaegung, get_decision_structure</td></tr>
+      <tr><td><b>reference_graph.db</b></td><td>~4.5 GB</td><td>Step 2c</td><td>find_citations, find_leading_cases, trends</td></tr>
+      <tr><td><b>statutes.db</b></td><td>~1.3 GB</td><td>Fedlex SPARQL ingest</td><td>get_law, search_laws (federal)</td></tr>
+      <tr><td><b>cantonal_laws.db</b></td><td>~0.8 GB</td><td>direct + LexFind ingest</td><td>get_law, search_laws (cantonal)</td></tr>
+      <tr><td><b>materialien.db</b></td><td>~1.2 GB</td><td>Step 2f</td><td>search_botschaft, get_materialien, get_article_purpose</td></tr>
+      <tr><td><b>legal_scholarship.db</b></td><td>~0.9 GB</td><td>Step 2h</td><td>search_scholarship, citing bridges</td></tr>
+      <tr><td><b>analytics.db</b></td><td>small</td><td>DP rollup</td><td>get_statistics, active-user counts (HLL / k-anon)</td></tr>
+    </table>
+    <div class="legend">
+      <span><i>invariant</i></span>
+      <span class="mono">every production open uses <b style="color:var(--red)">?mode=ro&amp;immutable=1</b></span>
+    </div>
+  </div>
+</section>
+
+<!-- 7 SCRAPERS -->
+<section class="slide" data-sec="Sources">
+  <div class="wrap">
+    <div class="kicker">§06 Sources &amp; scrapers</div>
+    <h2>Official source first, always.</h2>
+    <p class="lede">Every court scrapes its official portal directly. The entscheidsuche.ch feed is retained only as a frozen historical archive (581k rows); the mirror timer is disabled. A direct scraper retires the es_* feed only after reaching parity.</p>
+    <div class="grid g4" style="margin-top:22px">
+      <div class="stat"><div class="n mono">59</div><div class="l">Bespoke scrapers</div></div>
+      <div class="stat"><div class="n mono">26</div><div class="l">Cantons covered</div></div>
+      <div class="stat"><div class="n mono">19+7</div><div class="l">Laws: direct + LexFind</div></div>
+      <div class="stat"><div class="n mono">581 K</div><div class="l">Frozen es_* archive</div></div>
+    </div>
+    <div class="two" style="margin-top:22px">
+      <div class="card"><h3>Rendering &amp; egress</h3><div class="m">Playwright / playwright-stealth / camoufox for JS portals. NE and JU block Hetzner IPs at TCP, so those route through a reverse-SOCKS5 tunnel from the dev machine. BGer search egresses via a proxy tunnel (Incapsula block).</div></div>
+      <div class="card"><h3>Health as ground truth</h3><div class="m">logs/scraper_health.json. Silent-success detection: discovery_errors ≥ 3 AND new_count == 0 marks FAILED even on a clean exit code. A dead-source re-probe timer resurrects portals that come back.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 PIPELINE FAST -->
+<section class="slide" data-sec="Pipeline: fast tier">
+  <div class="wrap">
+    <div class="kicker">§07 The nightly pipeline · fast tier</div>
+    <h2>Build, swap, publish what users see, first.</h2>
+    <p class="lede">publish.py runs nightly at 03:30 UTC (~6 to 13h). The fast tier builds the FTS5 database, swaps it in, and pushes site-visible artifacts before the heavy enrichment begins.</p>
+    <div class="flow" style="margin-top:22px">
+      <div class="step"><div class="sn">1</div><div class="st">Ingest (opt-in)</div></div>
+      <span class="arrow">→</span>
+      <div class="step swap"><div class="sn">2</div><div class="st">Build FTS5 + atomic swap</div></div>
+      <span class="arrow">→</span>
+      <div class="step"><div class="sn">5a</div><div class="st">Stats (early)</div></div>
+      <span class="arrow">→</span>
+      <div class="step"><div class="sn">5b</div><div class="st">RSS feeds</div></div>
+      <span class="arrow">→</span>
+      <div class="step"><div class="sn">5g</div><div class="st">Coverage table</div></div>
+      <span class="arrow">→</span>
+      <div class="step"><div class="sn">5c</div><div class="st">QC gate (blocking)</div></div>
+      <span class="arrow">→</span>
+      <div class="step"><div class="sn">5d</div><div class="st">Release manifest</div></div>
+      <span class="arrow">→</span>
+      <div class="step"><div class="sn">6a</div><div class="st">Git push (early)</div></div>
+    </div>
+    <div class="note">The publish lock releases the instant build_fts5 prints OCL_SWAP_DONE, so the BGer quick-publish poller is never blocked during the multi-hour post-swap integrity check. Step 5c blocks the git push on any CRITICAL data-quality regression.</div>
+  </div>
+</section>
+
+<!-- 9 PIPELINE SLOW -->
+<section class="slide" data-sec="Pipeline: slow tier">
+  <div class="wrap">
+    <div class="kicker">§08 The nightly pipeline · slow tier</div>
+    <h2>Enrich in parallel, then finalize.</h2>
+    <p class="lede">Steps that read decisions.db but write their own outputs run concurrently (PARALLEL_MAX_WORKERS = 2, because disk I/O on the 60 GB DB is the binding constraint). Stats + git push happen a second time with the fresh graph counts.</p>
+    <div class="flow" style="margin-top:20px">
+      <div class="step par"><div class="sn">2d</div><div class="st">Quality enrichment</div></div>
+      <div class="step par"><div class="sn">2e</div><div class="st">Anwaltsrecht tags</div></div>
+      <div class="step par"><div class="sn">2b</div><div class="st">Quality report</div></div>
+      <div class="step par"><div class="sn">2c</div><div class="st">Reference graph</div></div>
+      <div class="step par"><div class="sn">2f</div><div class="st">Materialien</div></div>
+      <div class="step par"><div class="sn">2g</div><div class="st">Decision structure</div></div>
+      <div class="step par"><div class="sn">2h</div><div class="st">Legal scholarship</div></div>
+      <div class="step par"><div class="sn">3</div><div class="st">Export Parquet</div></div>
+    </div>
+    <div class="flow" style="margin-top:10px">
+      <div class="step"><div class="sn">4</div><div class="st">Upload HuggingFace</div></div>
+      <span class="arrow">→</span>
+      <div class="step"><div class="sn">5f</div><div class="st">Integrity Merkle root</div></div>
+      <span class="arrow">→</span>
+      <div class="step"><div class="sn">7</div><div class="st">Publish delta</div></div>
+      <span class="arrow">→</span>
+      <div class="step"><div class="sn">5e</div><div class="st">Stats (post-graph)</div></div>
+      <span class="arrow">→</span>
+      <div class="step"><div class="sn">6</div><div class="st">Git push (final)</div></div>
+      <span class="arrow">→</span>
+      <div class="step swap"><div class="sn">6b</div><div class="st">Health check</div></div>
+    </div>
+    <div class="legend"><span><i class="sw" style="border:2px solid var(--red)"></i> swap / gate</span><span><i class="sw" style="border:1px dashed var(--line2)"></i> parallel-safe (reads decisions.db, writes own output)</span></div>
+  </div>
+</section>
+
+<!-- 10 SWAP -->
+<section class="slide" data-sec="Atomic swap">
+  <div class="wrap">
+    <div class="kicker">§09 The zero-downtime swap</div>
+    <h2>os.replace(), not restart.</h2>
+    <div class="two" style="margin-top:16px">
+      <div>
+        <p>Step 2 writes <span class="mono">decisions.db.tmp</span> then atomically <span class="mono">os.replace()</span> over the live path. The 8 workers keep serving from the old inode until their next SQLite connection, so there is no restart and no downtime.</p>
+        <ul class="clean small" style="margin-top:14px">
+          <li><b>immutable=1</b> tells SQLite the file never changes: no locks, no WAL check</li>
+          <li><b>DELETE journal</b> build_fts5 switches WAL→DELETE before the swap</li>
+          <li><b>Workers cycle</b> new connections pick up the new inode automatically</li>
+        </ul>
+      </div>
+      <div class="card accent">
+        <h3>Field lesson: 2026-07-08</h3>
+        <div class="m">After a swap, pooled worker connections pin the old (now-unlinked) inode. At 93% disk this starved the aux tier and two builders hit "database or disk is full". Fix shipped: publish.py now rolls the workers after the swap (zero downtime, /health-gated) to release the old inode before the aux tier writes. Manual recovery reclaimed 34 → 164 GB the same way.</div>
+      </div>
+    </div>
+    <div class="note">Serving continues on the old inode even mid-swap, which is exactly why availability never drops during the ~6 to 13h rebuild.</div>
+  </div>
+</section>
+
+<!-- 11 TOOLS -->
+<section class="slide" data-sec="MCP tool surface">
+  <div class="wrap">
+    <div class="kicker">§10 The function surface · 44 MCP tools (42 remote)</div>
+    <h2>41 public, 2 local-only.</h2>
+    <div class="toolgrid" style="margin-top:16px">
+      <div class="toolgroup"><div class="gh">Search &amp; retrieve</div><ul>
+        <li>search</li><li>search_decisions</li><li>fetch</li><li>get_decision</li><li>get_case_brief</li><li>list_courts</li></ul></div>
+      <div class="toolgroup"><div class="gh">Decision internals</div><ul>
+        <li>get_erwaegung</li><li>get_regeste</li><li>get_decision_structure</li><li>find_relevant_erwaegung</li></ul></div>
+      <div class="toolgroup"><div class="gh">Citations &amp; graph</div><ul>
+        <li>cite</li><li>find_citations</li><li>find_leading_cases</li><li>find_appeal_chain</li><li>analyze_legal_trend</li></ul></div>
+      <div class="toolgroup"><div class="gh">Legislation</div><ul>
+        <li>get_law</li><li>search_laws</li><li>get_legislation</li><li>search_legislation</li><li>get_article_history</li><li>browse_legislation_changes</li></ul></div>
+      <div class="toolgroup"><div class="gh">Materials &amp; purpose</div><ul>
+        <li>get_materialien</li><li>search_materialien</li><li>search_botschaft</li><li>get_article_purpose</li><li>get_doctrine</li></ul></div>
+      <div class="toolgroup"><div class="gh">Commentary</div><ul>
+        <li>get_commentary</li><li>search_commentaries</li><li>get_practice</li><li>search_practice</li></ul></div>
+      <div class="toolgroup"><div class="gh">Scholarship</div><ul>
+        <li>search_scholarship</li><li>get_scholarship</li><li>get_scholarship_full_text</li><li>list_scholarship_sources</li><li>find_scholarship_citing_decision</li><li>find_scholarship_citing_statute</li></ul></div>
+      <div class="toolgroup"><div class="gh">Verify · teach · stats</div><ul>
+        <li>check_claim_support</li><li>attest_response</li><li>draft_mock_decision</li><li>generate_exam_question</li><li>get_statistics</li></ul></div>
+    </div>
+    <div style="margin-top:14px"><span class="pill local">update_database (local)</span><span class="pill local">check_update_status (local)</span><span class="pill red">REMOTE_MODE hides the 2 local tools from public connectors</span></div>
+  </div>
+</section>
+
+<!-- 12 R1-R3 -->
+<section class="slide" data-sec="Anti-hallucination">
+  <div class="wrap">
+    <div class="kicker">§11 The anti-hallucination contract</div>
+    <h2>Never construct. Only quote.</h2>
+    <p class="lede">These rules are in the MCP server's own system prompt and are enforced across every tool that returns a citation or a quotation. They exist because practitioners may put this output in front of a court.</p>
+    <div class="grid g3" style="margin-top:22px">
+      <div class="card accent"><h3>R1 · Citations</h3><div class="m">Never build a citation string. Every BGE / BGer / cantonal / EGMR reference is copied verbatim from a citation_string_de/fr/it field or from the cite tool. No source, no cite: describe in prose.</div></div>
+      <div class="card accent"><h3>R2 · Quotations</h3><div class="m">Direct quotes come verbatim only from get_erwaegung, get_regeste, get_law, get_commentary, or get_article_purpose. Nothing paraphrased into quotation marks.</div></div>
+      <div class="card accent"><h3>R3 · Grounding</h3><div class="m">Any new tool surface must reuse cite() and the verbatim getters rather than assembling references, and is validated for R1 to R3 compliance before shipping, not after.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 13 INVARIANTS -->
+<section class="slide" data-sec="Invariants">
+  <div class="wrap">
+    <div class="kicker">§12 Critical invariants · do not break</div>
+    <h2>The rules the system is built on.</h2>
+    <div class="grid g2" style="margin-top:18px">
+      <ul class="clean small">
+        <li><b>1 · immutable=1 everywhere</b> on the read side, or the swap breaks</li>
+        <li><b>2 · Atomic swap</b> decisions.db.tmp → os.replace(), never cp / in-place</li>
+        <li><b>3 · FTS5 sanitisation</b> all input through _sanitize_fts5 (quotes OR/AND/NOT/NEAR, strips Art. dot, empty phrases)</li>
+        <li><b>4 · Citation contract</b> R1 to R3 respected on every new surface</li>
+      </ul>
+      <ul class="clean small">
+        <li><b>5 · Pipeline gate</b> publish.py / schema / scraper edits need explicit approval + test on a copy</li>
+        <li><b>6 · Scraper egress</b> NE / JU require the reverse-SOCKS tunnel</li>
+        <li><b>7 · Health monitoring</b> silent-success detection is ground truth, never silenced</li>
+        <li><b>8 · Tests stay offline</b> make test uses fixtures, no live network (~40 to 50s)</li>
+      </ul>
+    </div>
+    <div class="note">Both-dates requirement: every row needs a decision_date and a publication_date. Dedup keeps the richest-text copy and must never drop a distinct decision.</div>
+  </div>
+</section>
+
+<!-- 14 SERVING -->
+<section class="slide" data-sec="Serving">
+  <div class="wrap">
+    <div class="kicker">§13 The serving stack</div>
+    <h2>Eight workers, one nginx, zero downtime.</h2>
+    <div class="two" style="margin-top:16px">
+      <div>
+        <table>
+          <tr><th>Layer</th><th>Detail</th></tr>
+          <tr><td><b>Host</b></td><td>Hetzner ccx43, 16 vCPU / 64 GB, 450 GB volume</td></tr>
+          <tr><td><b>Workers</b></td><td>mcp_server.py --remote × 8, ports 8770-8777</td></tr>
+          <tr><td><b>Units</b></td><td>systemd template mcp-server@&lt;port&gt;.service</td></tr>
+          <tr><td><b>Proxy</b></td><td>nginx upstream → mcp.opencaselaw.ch (TLS)</td></tr>
+          <tr><td><b>Health</b></td><td>/health = {status, decisions}; /metrics/health alerts</td></tr>
+          <tr><td><b>Build fence</b></td><td>CPUQuota 800% + IOWeight 50 keeps 8 cores for serving</td></tr>
+        </table>
+      </div>
+      <div>
+        <h3 style="margin-bottom:10px">Query path</h3>
+        <ul class="clean small">
+          <li><b>Parse</b> Haiku turns NL into structured filters</li>
+          <li><b>Retrieve</b> FTS5 over decisions.db, then filters</li>
+          <li><b>Rerank</b> optional Haiku rerank (search_stack)</li>
+          <li><b>Ground</b> citations via cite(), quotes via getters</li>
+        </ul>
+        <div class="note">A rolling restart (one worker at a time, /health-gated) is the safe primitive for releasing file handles or reloading config with no serving gap.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 15 EXPORTS -->
+<section class="slide" data-sec="Exports">
+  <div class="wrap">
+    <div class="kicker">§14 Exports &amp; mirrors</div>
+    <h2>Reproducible, redistributable, provenanced.</h2>
+    <div class="two" style="margin-top:16px">
+      <div class="card"><h3>voilaj/swiss-caselaw <span class="pill ok">public</span></h3><div class="m">Parquet mirror of decisions (data/*.parquet) plus the resolved citation graph and section-offset structure. Rebuilt and uploaded nightly (Step 3 + 4). Laws and materials are served live via the API, not shipped in this Parquet download.</div></div>
+      <div class="card"><h3>voilaj/swiss-legislation <span class="pill red">private</span></h3><div class="m">Built 2026-07-08. Article-level: federal/fedlex.parquet (401,313 rows, public domain) + cantonal/&lt;canton&gt;.parquet × 26 (349,704 rows). 751,017 rows total. text_source preserves the direct-scrape vs LexFind provenance per row.</div></div>
+    </div>
+    <div class="grid g4" style="margin-top:18px">
+      <div class="stat"><div class="n mono">751,017</div><div class="l">Legislation rows</div></div>
+      <div class="stat"><div class="n mono">401,313</div><div class="l">Federal articles</div></div>
+      <div class="stat"><div class="n mono">349,704</div><div class="l">Cantonal articles</div></div>
+      <div class="stat"><div class="n mono">/integrity/</div><div class="l">RFC-6962 Merkle root</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 16 FRESHNESS -->
+<section class="slide" data-sec="Freshness">
+  <div class="wrap">
+    <div class="kicker">§15 Freshness between builds</div>
+    <h2>Newest decisions, before tomorrow's rebuild.</h2>
+    <div class="grid g3" style="margin-top:22px">
+      <div class="card"><h3>Quick-publish</h3><div class="m">The BGer poller detects new decisions during the day and quick-publishes them into decisions.db via a mini atomic swap, so "Neueste Bundesgerichtsentscheide" reflects bger.ch fast, without waiting for the nightly.</div></div>
+      <div class="card"><h3>RSS feeds</h3><div class="m">Step 5b writes 7 feeds (global + bger/bvger/bge + de/fr/it). Reads substr(full_text,1,300), not the full blob: 146x less I/O after a July timeout.</div></div>
+      <div class="card"><h3>Delta &amp; alerts</h3><div class="m">Step 7 publishes a daily delta. A 15-minute alert dispatcher watches worker health, output freshness, and (new) TLS cert expiry, posting to ntfy.</div></div>
+    </div>
+    <div class="note">Freshness snapshot_date is a content-change signal, not the last scrape time.</div>
+  </div>
+</section>
+
+<!-- 17 LIVE STATE -->
+<section class="slide" data-sec="Live state">
+  <div class="wrap">
+    <div class="kicker">§16 Live state · 2026-07-08</div>
+    <h2>Where things stand today.</h2>
+    <div class="grid g4" style="margin-top:20px">
+      <div class="stat"><div class="n mono">995,977</div><div class="l">Decisions served</div><div class="s">8/8 workers in sync, gen 1783516496</div></div>
+      <div class="stat"><div class="n mono">8 / 8</div><div class="l">Workers healthy</div><div class="s">ports 8770-8777</div></div>
+      <div class="stat"><div class="n mono">03:30</div><div class="l">Nightly build UTC</div><div class="s">build fence: 8 of 16 cores</div></div>
+      <div class="stat"><div class="n mono">~2.3 K</div><div class="l">Users / week</div><div class="s">ChatGPT ~65%</div></div>
+    </div>
+    <div class="two" style="margin-top:20px">
+      <div class="card accent"><h3>Shipped today</h3><div class="m">RSS feed I/O fix (146x); private swiss-legislation dataset (751,017 rows); post-swap worker-recycle in publish.py (durable ENOSPC fix); TLS cert-expiry monitoring; feed refresh live.</div></div>
+      <div class="card"><h3>Watching</h3><div class="m">Data volume at ~85 to 93% and growing nightly: recycling keeps steady-state at ~1x DB size, but capacity expansion or the deferred offsite-backup cleanup will be needed. Step 2b Quality Report failing build-over-build (separate, pre-existing).</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 18 ROADMAP -->
+<section class="slide" data-sec="Roadmap">
+  <div class="wrap">
+    <div class="kicker">§17 Active threads &amp; governance</div>
+    <h2>What is next.</h2>
+    <div class="two" style="margin-top:16px">
+      <div>
+        <h3 style="margin-bottom:10px">In flight</h3>
+        <ul class="clean small">
+          <li><b>Treatment graph</b> KeyCite / Shepard's-style overrules / confirms / distinguishes</li>
+          <li><b>Statute-version alignment</b> tag each decision with the law version it read</li>
+          <li><b>Bench expansion</b> 100 → 500-1000 stratified queries; rerank tuning</li>
+          <li><b>Search latency</b> LRU cache on Haiku query-parse; possibly drop the rerank hop</li>
+          <li><b>Coverage gaps</b> BL Kantonsgericht (~4,997), be_steuerrekurs recovery</li>
+        </ul>
+      </div>
+      <div>
+        <h3 style="margin-bottom:10px">Governance</h3>
+        <ul class="clean small">
+          <li><b>Privacy</b> 3-tier nginx logs, DP analytics (k-anon k=10, ε=1.0), queries never stored</li>
+          <li><b>Removal</b> re-anonymisation + takedown protocol (docs/governance)</li>
+          <li><b>Integrity</b> daily RFC-6962 Merkle root at /integrity/</li>
+          <li><b>Standards</b> cli:ch + ECLI identifiers</li>
+        </ul>
+      </div>
+    </div>
+    <div class="hr strong" style="margin-top:26px"></div>
+    <div class="tag" style="margin-top:14px">OpenCaseLaw · mcp.opencaselaw.ch · opencaselaw.ch · word.opencaselaw.ch · CC0 data / MIT code · map compiled 2026-07-08</div>
+  </div>
+</section>
+
+</div>
+
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+let i=0;
+const cur=document.getElementById('cur'),tot=document.getElementById('tot'),
+      prog=document.getElementById('prog'),secname=document.getElementById('secname');
+tot.textContent=String(slides.length).padStart(2,'0');
+function render(){
+  slides.forEach((s,n)=>s.classList.toggle('active',n===i));
+  cur.textContent=String(i+1).padStart(2,'0');
+  secname.textContent=slides[i].dataset.sec;
+  prog.style.width=((i+1)/slides.length*100)+'%';
+}
+function go(d){i=Math.max(0,Math.min(slides.length-1,i+d));render();}
+function jump(n){i=n;render();closeMenu();}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '||e.key==='PageDown'){e.preventDefault();go(1);}
+  else if(e.key==='ArrowLeft'||e.key==='ArrowUp'||e.key==='PageUp'){e.preventDefault();go(-1);}
+  else if(e.key==='Home'){i=0;render();}
+  else if(e.key==='End'){i=slides.length-1;render();}
+  else if(e.key.toLowerCase()==='m'){toggleMenu();}
+  else if(e.key==='Escape'){closeMenu();}
+});
+// build menu
+const ml=document.getElementById('menulist');
+slides.forEach((s,n)=>{
+  const li=document.createElement('li');
+  li.innerHTML='<span class="mn">'+String(n+1).padStart(2,'0')+'</span> '+s.dataset.sec;
+  li.onclick=()=>jump(n); ml.appendChild(li);
+});
+const menu=document.getElementById('menu');
+function toggleMenu(){menu.classList.toggle('open');}
+function closeMenu(){menu.classList.remove('open');}
+// swipe (touch)
+let x0=null;
+document.addEventListener('touchstart',e=>x0=e.touches[0].clientX,{passive:true});
+document.addEventListener('touchend',e=>{if(x0===null)return;const dx=e.changedTouches[0].clientX-x0;if(Math.abs(dx)>50)go(dx<0?1:-1);x0=null;},{passive:true});
+render();
+</script>
+</body>
+</html>

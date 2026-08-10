@@ -1197,7 +1197,7 @@ def _render_decision(
         <li><a href="https://opencaselaw.ch/word/">Word add-in</a></li>
         <li><a href="https://opencaselaw.ch/mcp/">MCP server</a></li>
         <li><a href="https://huggingface.co/datasets/voilaj/swiss-caselaw" rel="noopener">HuggingFace</a></li>
-        <li><a href="https://github.com/jonashertner/caselaw-repo-1" rel="noopener">GitHub</a></li>
+        <li><a href="https://github.com/jonashertner/opencaselaw" rel="noopener">GitHub</a></li>
       </ul>
     </div>
     <div>

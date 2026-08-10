@@ -861,7 +861,7 @@ FEDLEX_CACHE_PATH = Path(
 FEDLEX_TIMEOUT_SECONDS = float(os.environ.get("SWISS_CASELAW_FEDLEX_TIMEOUT", "5"))
 FEDLEX_USER_AGENT = os.environ.get(
     "SWISS_CASELAW_FEDLEX_USER_AGENT",
-    "swiss-caselaw-mcp/1.0 (+https://github.com/jonashertner/caselaw-repo-1)",
+    "swiss-caselaw-mcp/1.0 (+https://github.com/jonashertner/opencaselaw)",
 )
 
 # ── Remote transport security ────────────────────────────────
@@ -10264,7 +10264,7 @@ server = Server(
         "══════════════════════════════════════════════════════════════\n"
         "LICENSE & TRANSPARENCY\n"
         "══════════════════════════════════════════════════════════════\n"
-        "Code: MIT (github.com/jonashertner/caselaw-repo-1). Data: CC0 1.0 "
+        "Code: MIT (github.com/jonashertner/opencaselaw). Data: CC0 1.0 "
         "(public domain). Attribution appreciated: \"Source: "
         "OpenCaseLaw.ch\". Nonprofit, open-access, no cookies, no user "
         "accounts, no query logging. Privacy policy: "
@@ -23199,7 +23199,7 @@ footer a{color:var(--mute);text-decoration:none}
 </style></head><body>
 <div class="brand">open<b>caselaw</b> · health</div>
 <h1>Pipeline + freshness</h1>
-<div class="banner">Alerts are in dry-run. No external notifications fire — see <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/docs/observability.md">docs/observability.md</a>.</div>
+<div class="banner">Alerts are in dry-run. No external notifications fire — see <a href="https://github.com/jonashertner/opencaselaw/blob/main/docs/observability.md">docs/observability.md</a>.</div>
 <div class="kpi" id="kpi"></div>
 <div class="panel"><div class="panel-h">Synthetic alerts (would-fire)</div><div id="alerts"></div></div>
 <div class="panel"><div class="panel-h">Freshness by court</div><table><thead><tr><th>court</th><th class="r">most recent</th></tr></thead><tbody id="freshness-body"><tr><td colspan="2" class="empty">loading...</td></tr></tbody></table></div>

@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "OpenCaseLaw Agent Assessment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "generated_at",
+    "repo",
+    "public",
+    "local",
+    "risk",
+    "recommended_next_actions"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "generated_at": { "type": "string" },
+    "repo": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["root", "branch", "head", "dirty"],
+      "properties": {
+        "root": { "type": "string" },
+        "branch": { "type": "string" },
+        "head": { "type": "string" },
+        "dirty": { "type": "boolean" },
+        "changed_files": { "type": "array", "items": { "type": "string" } },
+        "untracked_count": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "public": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "health": { "type": "object" },
+        "quality": { "type": "object" }
+      }
+    },
+    "local": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "scraper_health": { "type": "object" },
+        "last_publish_success": { "type": "object" },
+        "agent_loop_log": { "type": "object" },
+        "open_proposals": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "risk": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["blocking", "warnings"],
+      "properties": {
+        "blocking": { "type": "array", "items": { "type": "string" } },
+        "warnings": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "recommended_next_actions": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}
+

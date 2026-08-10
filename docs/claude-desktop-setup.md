@@ -191,7 +191,7 @@ Open **Terminal** (press `Cmd + Space`, type "Terminal", press Enter). Then run:
 
 ```bash
 cd ~
-git clone https://github.com/jonashertner/caselaw-repo-1.git
+git clone https://github.com/jonashertner/opencaselaw.git
 ```
 
 This creates a folder at `/Users/YOUR_USERNAME/caselaw-repo-1`.
@@ -304,7 +304,7 @@ Open **PowerShell** (press `Win + X`, select "Terminal" or "PowerShell"). Then r
 
 ```powershell
 cd $HOME
-git clone https://github.com/jonashertner/caselaw-repo-1.git
+git clone https://github.com/jonashertner/opencaselaw.git
 ```
 
 This creates a folder at `C:\Users\YOUR_USERNAME\caselaw-repo-1`.

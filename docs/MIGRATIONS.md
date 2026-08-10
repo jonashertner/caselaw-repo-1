@@ -265,7 +265,7 @@ nightly rebuild pipeline so future scraper regressions auto-correct:
 - **EGMR duplicates** (König 2026-04-29 #1): 474 bge-with-cedh-URL duplicates
   removed; canonical entries preserved in bge_egmr.
 
-Each codified as a post-import pass in `build_fts5.py`. See [post_publish_health_check.py](https://github.com/jonashertner/caselaw-repo-1/blob/main/scripts/post_publish_health_check.py)
+Each codified as a post-import pass in `build_fts5.py`. See [post_publish_health_check.py](https://github.com/jonashertner/opencaselaw/blob/main/scripts/post_publish_health_check.py)
 for the 8-assertion health check that fails the pipeline + alerts on regression.
 
 ---

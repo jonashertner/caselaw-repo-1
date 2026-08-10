@@ -39,10 +39,10 @@ configs:
 Full text, structured metadata, extracted case-citation references, and daily updates. The dataset contains German, French, and Italian decisions; the export schema also reserves `rm` for Romansh.
 
 [![Dashboard](https://img.shields.io/badge/Dashboard-live-d1242f)](https://opencaselaw.ch)
-[![GitHub](https://img.shields.io/badge/GitHub-source-black)](https://github.com/jonashertner/caselaw-repo-1)
+[![GitHub](https://img.shields.io/badge/GitHub-source-black)](https://github.com/jonashertner/opencaselaw)
 [![MCP Server](https://img.shields.io/badge/MCP-live-blue)](https://mcp.opencaselaw.ch/health)
 [![Data License: CC0--1.0](https://img.shields.io/badge/Data_License-CC0--1.0-blue.svg)](https://creativecommons.org/publicdomain/zero/1.0/)
-[![Code License: MIT](https://img.shields.io/badge/Code_License-MIT-green.svg)](https://github.com/jonashertner/caselaw-repo-1/blob/main/LICENSE)
+[![Code License: MIT](https://img.shields.io/badge/Code_License-MIT-green.svg)](https://github.com/jonashertner/opencaselaw/blob/main/LICENSE)
 
 ## Dataset Summary
 
@@ -139,7 +139,7 @@ Search results include enriched metadata: court name (human-readable), court lev
 **Local (offline access, ~65 GB disk):**
 
 ```bash
-git clone https://github.com/jonashertner/caselaw-repo-1.git
+git clone https://github.com/jonashertner/opencaselaw.git
 cd caselaw-repo-1
 python3 -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\Activate.ps1
@@ -250,7 +250,7 @@ The Parquet files use a 34-field schema. The 24 columns available in the FTS5 se
 | 23 | `json_data` | string | Complete 34-field record as JSON |
 | 24 | `canonical_key` | string | Normalized key for cross-source deduplication |
 
-Full 34-field Parquet export schema: [`export_parquet.py`](https://github.com/jonashertner/caselaw-repo-1/blob/main/export_parquet.py)
+Full 34-field Parquet export schema: [`export_parquet.py`](https://github.com/jonashertner/opencaselaw/blob/main/export_parquet.py)
 
 ## Court Coverage
 
@@ -324,7 +324,7 @@ The **code** for OpenCaseLaw is released under the MIT license.
 
 The **dataset packaging and added metadata** are dedicated under **CC0-1.0**, to the extent any copyright or database rights exist in those additions. The underlying decision texts remain official published court decisions sourced from the originating courts or public bodies.
 
-See the governance policy for source withdrawals, re-anonymization, and verified correction/removal requests: [`docs/governance-and-removal-policy.md`](https://github.com/jonashertner/caselaw-repo-1/blob/main/docs/governance-and-removal-policy.md).
+See the governance policy for source withdrawals, re-anonymization, and verified correction/removal requests: [`docs/governance-and-removal-policy.md`](https://github.com/jonashertner/opencaselaw/blob/main/docs/governance-and-removal-policy.md).
 
 ## Citation
 
@@ -346,5 +346,5 @@ See the governance policy for source withdrawals, re-anonymization, and verified
 ## Links
 
 - **Website**: [opencaselaw.ch](https://opencaselaw.ch) — live coverage statistics and dashboard
-- **GitHub**: [github.com/jonashertner/caselaw-repo-1](https://github.com/jonashertner/caselaw-repo-1) — source code, scrapers, pipeline
-- **MCP Server**: [setup guide](https://github.com/jonashertner/caselaw-repo-1#1-search-with-ai) — full-text search for Claude Code, Claude Desktop, ChatGPT, and Gemini
+- **GitHub**: [github.com/jonashertner/opencaselaw](https://github.com/jonashertner/opencaselaw) — source code, scrapers, pipeline
+- **MCP Server**: [setup guide](https://github.com/jonashertner/opencaselaw#1-search-with-ai) — full-text search for Claude Code, Claude Desktop, ChatGPT, and Gemini

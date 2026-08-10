@@ -44,7 +44,7 @@ names here when someone's work lands in the project.*
 Small contributions welcome and credited here:
 
 - **Bug reports** — open a GitHub issue at
-  [jonashertner/caselaw-repo-1/issues](https://github.com/jonashertner/caselaw-repo-1/issues).
+  [jonashertner/opencaselaw/issues](https://github.com/jonashertner/opencaselaw/issues).
   Scraper breakages are especially valuable because Swiss court portals change
   their URL structures without notice. Include the court code and a date range
   that breaks.

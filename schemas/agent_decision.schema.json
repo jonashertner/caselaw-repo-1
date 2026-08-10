@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "OpenCaseLaw Agent Decision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "action_type",
+    "mission_priority",
+    "chosen_action",
+    "rationale",
+    "files_to_touch",
+    "verification_commands",
+    "deploy_allowed",
+    "human_escalation"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "action_type": {
+      "enum": ["observe_only", "safe_fix", "proposal_only", "human_required"]
+    },
+    "mission_priority": {
+      "enum": ["completeness", "accuracy", "reliability", "user_value"]
+    },
+    "chosen_action": { "type": "string", "minLength": 1 },
+    "rationale": { "type": "string", "minLength": 1 },
+    "files_to_touch": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "verification_commands": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "deploy_allowed": { "type": "boolean" },
+    "human_escalation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "reason"],
+      "properties": {
+        "required": { "type": "boolean" },
+        "reason": { "type": "string" }
+      }
+    },
+    "stop_condition": { "type": "string" }
+  }
+}
+

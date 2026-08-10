@@ -53,7 +53,7 @@ what was hard — friction you hit is a bug report about the interface.
 ## Setting up
 
 ```bash
-git clone https://github.com/jonashertner/caselaw-repo-1
+git clone https://github.com/jonashertner/opencaselaw
 cd caselaw-repo-1
 python3 -m venv .venv && .venv/bin/pip install -e .
 make test

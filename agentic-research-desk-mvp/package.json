@@ -1,0 +1,15 @@
+{
+  "name": "opencaselaw-agentic-research-desk-mvp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Standalone agentic legal research workbench MVP built on the public OpenCaseLaw API.",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

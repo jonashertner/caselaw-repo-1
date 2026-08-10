@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>OpenCaseLaw Agentic Access MVP</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand-block">
+          <div class="brand-mark">OC</div>
+          <div>
+            <h1>Agentic Access</h1>
+            <p>Swiss legal source packets</p>
+          </div>
+        </div>
+
+        <form id="job-form" class="job-form">
+          <label>
+            Matter
+            <input name="matterId" value="Pilot matter" autocomplete="off">
+          </label>
+          <label>
+            Agent
+            <select name="agentType">
+              <option value="source_packet">Source Packet Agent</option>
+              <option value="authority_map">Authority Map Agent</option>
+              <option value="legislation_trace">Legislation Trace Agent</option>
+              <option value="counter_authority">Counter-Authority Agent</option>
+              <option value="draft_verification">Draft Verification Agent</option>
+            </select>
+          </label>
+          <label>
+            Objective
+            <textarea name="objective" rows="5" required>Prepare a Swiss law research memo on employer termination during illness and identify controlling statutes, leading cases, and counter-authority.</textarea>
+          </label>
+          <label>
+            Local facts
+            <textarea name="facts" rows="5" placeholder="Optional. Used locally for planning context. Remote retrieval receives extracted issue terms, not the full fact text."></textarea>
+          </label>
+          <div class="form-grid">
+            <label>
+              Jurisdiction
+              <select name="jurisdiction">
+                <option value="federal">Federal</option>
+                <option value="all">All</option>
+                <option value="ZH">ZH</option>
+                <option value="BE">BE</option>
+                <option value="GE">GE</option>
+                <option value="VD">VD</option>
+                <option value="TI">TI</option>
+              </select>
+            </label>
+            <label>
+              Language
+              <select name="language">
+                <option value="de">DE</option>
+                <option value="fr">FR</option>
+                <option value="it">IT</option>
+                <option value="en">EN</option>
+              </select>
+            </label>
+          </div>
+          <div class="form-grid">
+            <label>
+              Output
+              <select name="outputType">
+                <option value="research_memo">Research memo</option>
+                <option value="source_map">Source map</option>
+                <option value="draft_verification">Draft verification</option>
+              </select>
+            </label>
+            <label>
+              Risk
+              <select name="riskLevel">
+                <option value="standard">Standard</option>
+                <option value="high">High</option>
+              </select>
+            </label>
+          </div>
+          <label>
+            Known statute references
+            <input name="statuteReferences" placeholder="Art. 336c OR, Art. 8 BV">
+          </label>
+          <button type="submit" class="primary-button">Create Source Packet</button>
+        </form>
+
+        <div class="job-list-header">
+          <h2>Jobs</h2>
+          <button id="refresh-jobs" class="quiet-button" title="Refresh jobs">Refresh</button>
+        </div>
+        <div id="job-list" class="job-list"></div>
+      </aside>
+
+      <main class="workspace">
+        <section class="topbar">
+          <div>
+            <p class="eyebrow">Agentic access to Swiss case law and legislation</p>
+            <h2 id="job-title">Create a job to begin</h2>
+          </div>
+          <div class="topbar-actions">
+            <button id="approve-plan" class="primary-button" disabled>Approve Plan</button>
+            <a id="export-json-link" class="secondary-button disabled" href="#" aria-disabled="true">Packet JSON</a>
+            <a id="export-link" class="secondary-button disabled" href="#" aria-disabled="true">Export MD</a>
+          </div>
+        </section>
+
+        <section class="status-strip" id="status-strip"></section>
+
+        <div class="work-grid">
+          <section class="panel plan-panel">
+            <div class="panel-header">
+              <h3>Plan</h3>
+              <span id="privacy-badge" class="badge">Waiting</span>
+            </div>
+            <div id="plan-view" class="empty-state">The planner will create a task graph and wait for approval before retrieval.</div>
+          </section>
+
+          <section class="panel trace-panel">
+            <div class="panel-header">
+              <h3>Run Trace</h3>
+              <span id="job-status" class="badge">Idle</span>
+            </div>
+            <div id="trace-view" class="trace-list"></div>
+          </section>
+
+          <section class="panel evidence-panel">
+            <div class="panel-header">
+              <h3>Evidence Ledger</h3>
+              <span id="evidence-count" class="badge">0</span>
+            </div>
+            <div id="evidence-view" class="evidence-list"></div>
+          </section>
+
+          <section class="panel packet-panel">
+            <div class="panel-header">
+              <h3>Source Packet</h3>
+              <span id="packet-badge" class="badge">Not ready</span>
+            </div>
+            <div id="packet-view" class="packet-view">
+              <div class="empty-state">The packet JSON becomes available after retrieval, drafting, and audit.</div>
+            </div>
+          </section>
+
+          <section class="panel memo-panel">
+            <div class="panel-header">
+              <h3>Memo Packet</h3>
+              <span id="audit-badge" class="badge">Not audited</span>
+            </div>
+            <pre id="memo-view" class="memo-view">Final packet will appear here after the critic pass.</pre>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

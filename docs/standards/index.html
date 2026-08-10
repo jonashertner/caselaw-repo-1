@@ -251,7 +251,7 @@ Die zentrale Aussage steht hier...
         <p data-t="ref_p2"></p>
       </div>
       <div class="page-actions">
-        <a class="btn btn-primary" href="https://github.com/jonashertner/caselaw-repo-1" data-t="cta_code">Code (GitHub)</a>
+        <a class="btn btn-primary" href="https://github.com/jonashertner/opencaselaw" data-t="cta_code">Code (GitHub)</a>
         <a class="btn btn-ghost" href="https://huggingface.co/datasets/voilaj/swiss-caselaw" data-t="cta_dataset">Dataset (CC0)</a>
         <a class="btn btn-ghost" href="/mcp/" data-t="cta_mcp">MCP-Server</a>
         <a class="btn btn-ghost" href="https://openlawstandards.ch" data-t="cta_ols">openlawstandards.ch (in Entwicklung)</a>
@@ -295,7 +295,7 @@ OCL.init({
       s1_p4:'<strong>ECLI als Projektion</strong> für europäische Resolver: aus jedem cli:ch wird ein ECLI deterministisch abgeleitet (reine Funktion <code>cli_ch_to_ecli</code>). Die Projektion ist many-to-one — Sprache, Pinpoint, Version und Kammer-Detail gehen verloren.',
       s1_p5:'Warum primär eine eigene Schweizer Form? Weil die Schweizer Rechtsprechung Eigenschaften hat — Dreisprachigkeit als gleichwertige authentische Texte, 26 souveräne kantonale Justizsysteme, Pinpoint-Zitation auf Erwägungs-Ebene — die in einem allgemeinen europäischen Schema zwangsläufig auf eine flache Achse zusammenfallen. cli:ch macht sie erstklassig; ECLI sorgt für europäische Anschlussfähigkeit. Beides zusammen ist mehr als die Wahl zwischen einem.',
       s1_p6:'Bestehende interne Identifier (Geschäftsnummern, Dossier-Nummern) bleiben unverändert — cli:ch und ECLI sind zusätzliche, standardisierte Schichten.',
-      s1_p7:'<em>Referenz-Implementierung</em>: <code>cli_ch.py</code> mintet cli:ch-URIs deterministisch; <code>cli_ch_to_ecli()</code> projiziert auf ECLI. <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/cli_ch.py">cli_ch.py auf GitHub</a> · <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/ecli.py">ecli.py auf GitHub</a>.',
+      s1_p7:'<em>Referenz-Implementierung</em>: <code>cli_ch.py</code> mintet cli:ch-URIs deterministisch; <code>cli_ch_to_ecli()</code> projiziert auf ECLI. <a href="https://github.com/jonashertner/opencaselaw/blob/main/cli_ch.py">cli_ch.py auf GitHub</a> · <a href="https://github.com/jonashertner/opencaselaw/blob/main/ecli.py">ecli.py auf GitHub</a>.',
       s2_h3:'Metadaten',
       s2_label:'Schema.org / LegalCase (JSON-LD)',
       s2_p1:'Jede Entscheid-Webseite trägt im <code>&lt;head&gt;</code> einen <strong>Schema.org-/LegalCase-Block als JSON-LD</strong> mit beiden Identifikatoren (cli:ch + ECLI), Gericht, Datum, Sprache, Regeste, ausgehenden Fall- und Gesetzeszitaten.',
@@ -346,7 +346,7 @@ OCL.init({
       fwd_li2:'<strong>Q3 2026</strong>: Provenienz-Pilot (Bestimmung 06) produktiv in OpenCaseLaw, inkl. erstem OpenTimestamps-verifiziertem Merkle-Anker.',
       fwd_li3:'<strong>Q4 2026</strong>: Outreach an Verein Entscheidsuche.ch, Bundesgericht, Universität Bern Institute for Legal Informatics, ETH AI Center, andere Schweizer Rechtsdaten-Anbieter. Ziel: gemeinsame Adoption ausgewählter Bestimmungen.',
       fwd_li4:'<strong>2027</strong>: Erweiterung auf Liechtenstein, Österreich, Deutschland sofern Interesse besteht — die Standards sind nicht Schweiz-spezifisch.',
-      fwd_p3:'Mitarbeit und Kritik sind ausdrücklich gewünscht. Direkter Kontakt: <a href="mailto:jonashertner@protonmail.ch">jonashertner@protonmail.ch</a>. Diskussion auch via GitHub-Issues auf dem <a href="https://github.com/jonashertner/caselaw-repo-1">OpenCaseLaw-Repository</a>.',
+      fwd_p3:'Mitarbeit und Kritik sind ausdrücklich gewünscht. Direkter Kontakt: <a href="mailto:jonashertner@protonmail.ch">jonashertner@protonmail.ch</a>. Diskussion auch via GitHub-Issues auf dem <a href="https://github.com/jonashertner/opencaselaw">OpenCaseLaw-Repository</a>.',
       fwd_p4:'Wenn ein Schweizer Gericht oder Datenanbieter eine der Bestimmungen ganz oder teilweise übernimmt, ist die Welt der Schweizer Rechtsdaten besser. Wenn nicht, behält OpenCaseLaw die Referenzimplementierung — und die Spezifikation steht der nächsten Generation offen.'
     },
     fr:{
@@ -377,7 +377,7 @@ OCL.init({
       s1_p4:'<strong>ECLI comme projection</strong> pour les résolveurs européens : à partir de chaque cli:ch, un ECLI est dérivé de manière déterministe (fonction pure <code>cli_ch_to_ecli</code>). La projection est many-to-one — langue, pinpoint, version et détail de chambre sont perdus.',
       s1_p5:'Pourquoi une forme suisse propre en priorité ? Parce que la jurisprudence suisse possède des propriétés — trilinguisme comme textes authentiques équivalents, 26 systèmes judiciaires cantonaux souverains, citation pinpoint au niveau du considérant — qui, dans un schéma européen général, retombent nécessairement sur un axe plat. cli:ch les rend de premier ordre ; ECLI assure la connectivité européenne. Les deux ensemble valent mieux que le choix de l\'un.',
       s1_p6:'Les identifiants internes existants (numéros de procédure, numéros de dossier) restent inchangés — cli:ch et ECLI sont des couches supplémentaires et standardisées.',
-      s1_p7:'<em>Implémentation de référence</em> : <code>cli_ch.py</code> frappe les URI cli:ch de manière déterministe ; <code>cli_ch_to_ecli()</code> projette sur ECLI. <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/cli_ch.py">cli_ch.py sur GitHub</a> · <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/ecli.py">ecli.py sur GitHub</a>.',
+      s1_p7:'<em>Implémentation de référence</em> : <code>cli_ch.py</code> frappe les URI cli:ch de manière déterministe ; <code>cli_ch_to_ecli()</code> projette sur ECLI. <a href="https://github.com/jonashertner/opencaselaw/blob/main/cli_ch.py">cli_ch.py sur GitHub</a> · <a href="https://github.com/jonashertner/opencaselaw/blob/main/ecli.py">ecli.py sur GitHub</a>.',
       s2_h3:'Métadonnées',
       s2_label:'Schema.org / LegalCase (JSON-LD)',
       s2_p1:'Chaque page web de décision porte dans le <code>&lt;head&gt;</code> un <strong>bloc Schema.org/LegalCase en JSON-LD</strong> avec les deux identifiants (cli:ch + ECLI), le tribunal, la date, la langue, le regeste, les citations sortantes de jurisprudence et de législation.',
@@ -428,7 +428,7 @@ OCL.init({
       fwd_li2:'<strong>Q3 2026</strong> : pilote de provenance (disposition 06) en production dans OpenCaseLaw, y compris la première ancre de Merkle vérifiée par OpenTimestamps.',
       fwd_li3:'<strong>Q4 2026</strong> : démarche auprès de l\'Association Entscheidsuche.ch, du Tribunal fédéral, de l\'Institute for Legal Informatics de l\'Université de Berne, de l\'ETH AI Center, d\'autres fournisseurs suisses de données juridiques. Objectif : adoption commune de dispositions choisies.',
       fwd_li4:'<strong>2027</strong> : extension au Liechtenstein, à l\'Autriche, à l\'Allemagne si l\'intérêt existe — les standards ne sont pas spécifiques à la Suisse.',
-      fwd_p3:'Collaboration et critique sont expressément souhaitées. Contact direct : <a href="mailto:jonashertner@protonmail.ch">jonashertner@protonmail.ch</a>. Discussion aussi via les issues GitHub sur le <a href="https://github.com/jonashertner/caselaw-repo-1">dépôt OpenCaseLaw</a>.',
+      fwd_p3:'Collaboration et critique sont expressément souhaitées. Contact direct : <a href="mailto:jonashertner@protonmail.ch">jonashertner@protonmail.ch</a>. Discussion aussi via les issues GitHub sur le <a href="https://github.com/jonashertner/opencaselaw">dépôt OpenCaseLaw</a>.',
       fwd_p4:'Si un tribunal ou un fournisseur de données suisse adopte l\'une des dispositions en tout ou en partie, le monde des données juridiques suisses s\'en trouve amélioré. Sinon, OpenCaseLaw conserve l\'implémentation de référence — et la spécification reste ouverte à la prochaine génération.'
     },
     it:{
@@ -459,7 +459,7 @@ OCL.init({
       s1_p4:'<strong>ECLI come proiezione</strong> per i resolver europei: da ogni cli:ch si deriva un ECLI in modo deterministico (funzione pura <code>cli_ch_to_ecli</code>). La proiezione è many-to-one — lingua, pinpoint, versione e dettaglio della camera vanno persi.',
       s1_p5:'Perché una forma svizzera propria in via prioritaria? Perché la giurisprudenza svizzera possiede proprietà — trilinguismo come testi autentici equivalenti, 26 sistemi giudiziari cantonali sovrani, citazione pinpoint a livello di considerando — che in uno schema europeo generale ricadono necessariamente su un asse piatto. cli:ch le rende di prima classe; ECLI garantisce la connettività europea. Entrambi insieme valgono più della scelta di uno solo.',
       s1_p6:'Gli identificatori interni esistenti (numeri di procedura, numeri di incarto) restano invariati — cli:ch ed ECLI sono livelli aggiuntivi e standardizzati.',
-      s1_p7:'<em>Implementazione di riferimento</em>: <code>cli_ch.py</code> conia gli URI cli:ch in modo deterministico; <code>cli_ch_to_ecli()</code> proietta su ECLI. <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/cli_ch.py">cli_ch.py su GitHub</a> · <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/ecli.py">ecli.py su GitHub</a>.',
+      s1_p7:'<em>Implementazione di riferimento</em>: <code>cli_ch.py</code> conia gli URI cli:ch in modo deterministico; <code>cli_ch_to_ecli()</code> proietta su ECLI. <a href="https://github.com/jonashertner/opencaselaw/blob/main/cli_ch.py">cli_ch.py su GitHub</a> · <a href="https://github.com/jonashertner/opencaselaw/blob/main/ecli.py">ecli.py su GitHub</a>.',
       s2_h3:'Metadati',
       s2_label:'Schema.org / LegalCase (JSON-LD)',
       s2_p1:'Ogni pagina web di decisione porta nel <code>&lt;head&gt;</code> un <strong>blocco Schema.org/LegalCase come JSON-LD</strong> con entrambi gli identificatori (cli:ch + ECLI), tribunale, data, lingua, regesto, citazioni uscenti di giurisprudenza e di legislazione.',
@@ -510,7 +510,7 @@ OCL.init({
       fwd_li2:'<strong>Q3 2026</strong>: pilota di provenienza (disposizione 06) in produzione in OpenCaseLaw, inclusa la prima ancora di Merkle verificata con OpenTimestamps.',
       fwd_li3:'<strong>Q4 2026</strong>: contatti con l\'Associazione Entscheidsuche.ch, il Tribunale federale, l\'Institute for Legal Informatics dell\'Università di Berna, l\'ETH AI Center, altri fornitori svizzeri di dati giuridici. Obiettivo: adozione comune di disposizioni selezionate.',
       fwd_li4:'<strong>2027</strong>: estensione al Liechtenstein, all\'Austria, alla Germania se vi è interesse — gli standard non sono specifici per la Svizzera.',
-      fwd_p3:'Collaborazione e critica sono espressamente auspicate. Contatto diretto: <a href="mailto:jonashertner@protonmail.ch">jonashertner@protonmail.ch</a>. Discussione anche tramite le issue GitHub sul <a href="https://github.com/jonashertner/caselaw-repo-1">repository OpenCaseLaw</a>.',
+      fwd_p3:'Collaborazione e critica sono espressamente auspicate. Contatto diretto: <a href="mailto:jonashertner@protonmail.ch">jonashertner@protonmail.ch</a>. Discussione anche tramite le issue GitHub sul <a href="https://github.com/jonashertner/opencaselaw">repository OpenCaseLaw</a>.',
       fwd_p4:'Se un tribunale o un fornitore di dati svizzero adotta una delle disposizioni in tutto o in parte, il mondo dei dati giuridici svizzeri ne risulta migliorato. In caso contrario, OpenCaseLaw mantiene l\'implementazione di riferimento — e la specifica resta aperta alla prossima generazione.'
     },
     rm:{
@@ -541,7 +541,7 @@ OCL.init({
       s1_p4:'<strong>ECLI sco prochecziun</strong> per resolvers europeics: dad mintga cli:ch vegn deriva in ECLI en moda deterministica (funcziun pira <code>cli_ch_to_ecli</code>). La prochecziun è many-to-one — lingua, pinpoint, versiun e detagl da la chombra van persas.',
       s1_p5:'Pertge en emprima lingia ina atgna furma svizra? Perquai che la giurisprudenza svizra ha caracteristicas — trilinguitad sco texts autentics equivalents, 26 sistems giudizials chantunals suverans, citaziun pinpoint sin nivel da consideraziun — che crodan en in schema europeic general necessariamain sin ina axa plana. cli:ch las renda da primnigna classa; ECLI procura per la connectivitad europeica. Tuts dus ensemen valan dapli che la tscherna d\'in sulet.',
       s1_p6:'Ils identificaturs intern existents (numers da fatschenta, numers da dossier) restan nunmidads — cli:ch ed ECLI èn nivels supplementars e standardisads.',
-      s1_p7:'<em>Implementaziun da referenza</em>: <code>cli_ch.py</code> coina las URI cli:ch en moda deterministica; <code>cli_ch_to_ecli()</code> projectescha sin ECLI. <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/cli_ch.py">cli_ch.py sin GitHub</a> · <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/ecli.py">ecli.py sin GitHub</a>.',
+      s1_p7:'<em>Implementaziun da referenza</em>: <code>cli_ch.py</code> coina las URI cli:ch en moda deterministica; <code>cli_ch_to_ecli()</code> projectescha sin ECLI. <a href="https://github.com/jonashertner/opencaselaw/blob/main/cli_ch.py">cli_ch.py sin GitHub</a> · <a href="https://github.com/jonashertner/opencaselaw/blob/main/ecli.py">ecli.py sin GitHub</a>.',
       s2_h3:'Metadatas',
       s2_label:'Schema.org / LegalCase (JSON-LD)',
       s2_p1:'Mintga pagina web d\'ina decisiun porta en il <code>&lt;head&gt;</code> in <strong>bloc Schema.org/LegalCase sco JSON-LD</strong> cun tuts dus identificaturs (cli:ch + ECLI), tribunal, data, lingua, regest, citaziuns sortentas da chaussas e da leschas.',
@@ -592,7 +592,7 @@ OCL.init({
       fwd_li2:'<strong>Q3 2026</strong>: pilot da provegnientscha (disposiziun 06) en producziun en OpenCaseLaw, inclusiv l\'emprima ancura da Merkle verifitgada cun OpenTimestamps.',
       fwd_li3:'<strong>Q4 2026</strong>: contact cun l\'Associaziun Entscheidsuche.ch, il Tribunal federal, l\'Institute for Legal Informatics da l\'Universitad da Berna, l\'ETH AI Center, auters purschiders svizzers da datas giuridicas. Finamira: adopziun cuminaivla da disposiziuns tschernidas.',
       fwd_li4:'<strong>2027</strong>: extensiun al Liechtenstein, a l\'Austria, a la Germania sche i exista interess — ils standards n\'èn betg specifics per la Svizra.',
-      fwd_p3:'Collavuraziun e critica èn expressivamain giavischadas. Contact direct: <a href="mailto:jonashertner@protonmail.ch">jonashertner@protonmail.ch</a>. Discussiun era via las issues GitHub sin il <a href="https://github.com/jonashertner/caselaw-repo-1">repositori OpenCaseLaw</a>.',
+      fwd_p3:'Collavuraziun e critica èn expressivamain giavischadas. Contact direct: <a href="mailto:jonashertner@protonmail.ch">jonashertner@protonmail.ch</a>. Discussiun era via las issues GitHub sin il <a href="https://github.com/jonashertner/opencaselaw">repositori OpenCaseLaw</a>.',
       fwd_p4:'Sch\'in tribunal u in purschider da datas svizzer adoptescha ina da las disposiziuns dal tut u per part, vegn il mund da las datas giuridicas svizras meglierà. Uschiglio mantegna OpenCaseLaw l\'implementaziun da referenza — e la specificaziun resta averta a la proxima generaziun.'
     },
     en:{
@@ -623,7 +623,7 @@ OCL.init({
       s1_p4:'<strong>ECLI as projection</strong> for European resolvers: from every cli:ch an ECLI is derived deterministically (pure function <code>cli_ch_to_ecli</code>). The projection is many-to-one — language, pinpoint, version and chamber detail are lost.',
       s1_p5:'Why a Swiss form of its own in the first place? Because Swiss case law has properties — trilingualism as equivalent authentic texts, 26 sovereign cantonal judicial systems, pinpoint citation at consideration level — that, in a general European scheme, necessarily collapse onto a flat axis. cli:ch makes them first-class; ECLI ensures European connectivity. The two together are more than the choice of one.',
       s1_p6:'Existing internal identifiers (case numbers, file numbers) remain unchanged — cli:ch and ECLI are additional, standardised layers.',
-      s1_p7:'<em>Reference implementation</em>: <code>cli_ch.py</code> mints cli:ch URIs deterministically; <code>cli_ch_to_ecli()</code> projects onto ECLI. <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/cli_ch.py">cli_ch.py on GitHub</a> · <a href="https://github.com/jonashertner/caselaw-repo-1/blob/main/ecli.py">ecli.py on GitHub</a>.',
+      s1_p7:'<em>Reference implementation</em>: <code>cli_ch.py</code> mints cli:ch URIs deterministically; <code>cli_ch_to_ecli()</code> projects onto ECLI. <a href="https://github.com/jonashertner/opencaselaw/blob/main/cli_ch.py">cli_ch.py on GitHub</a> · <a href="https://github.com/jonashertner/opencaselaw/blob/main/ecli.py">ecli.py on GitHub</a>.',
       s2_h3:'Metadata',
       s2_label:'Schema.org / LegalCase (JSON-LD)',
       s2_p1:'Every decision web page carries in the <code>&lt;head&gt;</code> a <strong>Schema.org/LegalCase block as JSON-LD</strong> with both identifiers (cli:ch + ECLI), court, date, language, regeste, outgoing case and legislation citations.',
@@ -674,7 +674,7 @@ OCL.init({
       fwd_li2:'<strong>Q3 2026</strong>: provenance pilot (provision 06) in production in OpenCaseLaw, including the first OpenTimestamps-verified Merkle anchor.',
       fwd_li3:'<strong>Q4 2026</strong>: outreach to the Entscheidsuche.ch association, the Federal Supreme Court, the University of Bern Institute for Legal Informatics, the ETH AI Center, other Swiss legal-data providers. Goal: joint adoption of selected provisions.',
       fwd_li4:'<strong>2027</strong>: extension to Liechtenstein, Austria, Germany if interest exists — the standards are not Switzerland-specific.',
-      fwd_p3:'Collaboration and criticism are expressly welcome. Direct contact: <a href="mailto:jonashertner@protonmail.ch">jonashertner@protonmail.ch</a>. Discussion also via GitHub issues on the <a href="https://github.com/jonashertner/caselaw-repo-1">OpenCaseLaw repository</a>.',
+      fwd_p3:'Collaboration and criticism are expressly welcome. Direct contact: <a href="mailto:jonashertner@protonmail.ch">jonashertner@protonmail.ch</a>. Discussion also via GitHub issues on the <a href="https://github.com/jonashertner/opencaselaw">OpenCaseLaw repository</a>.',
       fwd_p4:'If a Swiss court or data provider adopts one of the provisions in whole or in part, the world of Swiss legal data is better off. If not, OpenCaseLaw keeps the reference implementation — and the specification stays open to the next generation.'
     }
   }
