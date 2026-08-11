@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/it.xml</link>
     <description>Latest published Swiss court decisions in Italiano.</description>
     <language>de-CH</language>
-    <lastBuildDate>Mon, 10 Aug 2026 10:04:05 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 11 Aug 2026 10:02:16 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/it.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -221,6 +221,22 @@ Istanza
 Seconda Camera di diritto delle assicurazio…</description>
       <pubDate>Thu, 16 Jul 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">gr_gerichte_SV2 2026 38</guid>
+      <category>gr_gerichte</category>
+    </item>
+    <item>
+      <title>gr_gerichte VR1 2026 17 vom 2026-07-16</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_VR1%202026%2017</link>
+      <description>Obergericht des Kantons Graubünden
+Dretgira superiura dal chantun Grischun
+Tribunale d'appello del Cantone dei Grigioni
+Sentenza del 16 luglio 2026
+comunicata il 20 luglio 2026
+N. d'incarto
+VR1 26 17
+Istanza
+Prima Camera di diritto costituzionale e a…</description>
+      <pubDate>Thu, 16 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">gr_gerichte_VR1 2026 17</guid>
       <category>gr_gerichte</category>
     </item>
     <item>
@@ -580,6 +596,14 @@ A…</description>
       <pubDate>Wed, 08 Jul 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BGer:2026:8C_262.2026</guid>
       <category>bger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht D-5402/2024 vom 2026-07-08</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-5402_2024</link>
+      <description>Asilo e allontanamento (procedura celere)</description>
+      <pubDate>Wed, 08 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-5402.2024</guid>
+      <category>bvger</category>
     </item>
     <item>
       <title>Bundesverwaltungsgericht F-4710/2026 vom 2026-07-08</title>
@@ -954,64 +978,6 @@ Cancelliera Ortolano Ribordy.
 Parteci…</description>
       <pubDate>Wed, 24 Jun 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BGer:2026:6B_497.2025</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 8C_254/2025 vom 2026-06-23</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_8C_254_2025</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-8C_254/2025
-
-Sentenza del 23 giugno 2026
-
-IV Corte di diritto pubblico
-
-Composizione
-
-Giudici federali Viscione, Presidente,
-
-Maillard, Heine, Scherrer Reber, Métral,
-
-Cancelliere…</description>
-      <pubDate>Tue, 23 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:8C_254.2025</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 8C_78/2026 vom 2026-06-23</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_8C_78_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-8C_78/2026
-
-Sentenza del 23 giugno 2026
-
-IV Corte di diritto pubblico
-
-Composizione
-
-Giudici federali Viscione, Presidente,
-
-Maillard, Scherrer Reber,
-
-Cancelliere Colombi.
-
-Parte…</description>
-      <pubDate>Tue, 23 Jun 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:8C_78.2026</guid>
       <category>bger</category>
     </item>
   </channel>

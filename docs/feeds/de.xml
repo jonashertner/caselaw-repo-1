@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/de.xml</link>
     <description>Latest published Swiss court decisions in Deutsch.</description>
     <language>de-CH</language>
-    <lastBuildDate>Mon, 10 Aug 2026 10:04:03 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 11 Aug 2026 10:02:15 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/de.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -132,6 +132,57 @@ Präsiden…</description>
       <pubDate>Tue, 25 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">fr_gerichte_605 2026 7</guid>
       <category>fr_gerichte</category>
+    </item>
+    <item>
+      <title>be_verwaltungsgericht 200 2025 430 vom 2026-08-10</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/be_verwaltungsgericht_200%202025%20430</link>
+      <description>ALV 200 2025 430
+WIS/GET/SSM
+Verwaltungsgericht des Kantons Bern
+Sozialversicherungsrechtliche Abteilung
+Urteil der Einzelrichterin vom 27. Juli 2026
+Verwaltungsrichterin Wiedmer
+Gerichtsschreiber Germann
+A.________
+Beschwerdeführer
+gegen
+Amt für Arb…</description>
+      <pubDate>Mon, 10 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">be_verwaltungsgericht_200 2025 430</guid>
+      <category>be_verwaltungsgericht</category>
+    </item>
+    <item>
+      <title>be_verwaltungsgericht 200 2026 284 vom 2026-08-10</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/be_verwaltungsgericht_200%202026%20284</link>
+      <description>IV 200 2026 284
+JAP/COC/SSM
+Verwaltungsgericht des Kantons Bern
+Sozialversicherungsrechtliche Abteilung
+Urteil vom 13. Juli 2026
+Verwaltungsrichter Jakob, Kammerpräsident
+Verwaltungsrichterin Frey, Verwaltungsrichter Knapp
+Gerichtsschreiberin Collatz…</description>
+      <pubDate>Mon, 10 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">be_verwaltungsgericht_200 2026 284</guid>
+      <category>be_verwaltungsgericht</category>
+    </item>
+    <item>
+      <title>gr_gerichte SR2 2026 16 vom 2026-08-10</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_SR2%202026%2016</link>
+      <description>Obergericht des Kantons Graubünden
+Dretgira superiura dal chantun Grischun
+Tribunale d'appello del Cantone dei Grigioni
+Beschluss vom 30. Juli 2026
+mitgeteilt am 5. August 2026
+Referenz
+SR2 26 16
+Instanz
+Zweite strafrechtliche Kammer
+Besetzung
+Nydegg…</description>
+      <pubDate>Mon, 10 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">gr_gerichte_SR2 2026 16</guid>
+      <category>gr_gerichte</category>
     </item>
     <item>
       <title>be_verwaltungsgericht 200 2026 193 vom 2026-08-07</title>
@@ -496,6 +547,22 @@ Gerichtsschreiberin …</description>
       <category>be_verwaltungsgericht</category>
     </item>
     <item>
+      <title>gr_gerichte ZR1 2026 117 vom 2026-08-04</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_ZR1%202026%20117</link>
+      <description>Obergericht des Kantons Graubünden
+Dretgira superiura dal chantun Grischun
+Tribunale d'appello del Cantone dei Grigioni
+Entscheid vom 5. August 2026
+ohne schriftliche Begründung mitgeteilt am 5. August 2026
+Referenz
+ZR1 26 117
+Instanz
+Erste zivilrech…</description>
+      <pubDate>Tue, 04 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">gr_gerichte_ZR1 2026 117</guid>
+      <category>gr_gerichte</category>
+    </item>
+    <item>
       <title>zg_verwaltungsgericht A 2026 33 vom 2026-08-04</title>
       <link>https://mcp.opencaselaw.ch/entscheid/zg_verwaltungsgericht_A%202026%2033</link>
       <description>VERWALTUNGSGERICHT DES KANTONS ZUG
@@ -656,6 +723,22 @@ www.justic…</description>
       <category>be_zivilstraf</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht E-2379/2026 vom 2026-07-31</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-2379_2026</link>
+      <description>Asyl und Wegweisung</description>
+      <pubDate>Fri, 31 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-2379.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht E-2638/2026 vom 2026-07-31</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-2638_2026</link>
+      <description>Asyl und Wegweisung</description>
+      <pubDate>Fri, 31 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-2638.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>gr_gerichte SR2 2025 96 vom 2026-07-31</title>
       <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_SR2%202025%2096</link>
       <description>Obergericht des Kantons Graubünden
@@ -737,6 +820,25 @@ Departeme…</description>
       <category>so_gerichte</category>
     </item>
     <item>
+      <title>ag_zivilgericht ZOR.2025.42 vom 2026-07-30</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ag_zivilgericht_ZOR.2025.42</link>
+      <description>Obergericht
+Zivilgericht, 2. Kammer
+ZOR.2025.42
+(OZ.2023.2)
+Urteil vom 30. Juli 2026
+Besetzung Oberrichter Six, Präsident
+Oberrichterin Vasvary
+Ersatzrichter Meier
+Gerichtsschreiber i.V. Degiacomi
+Kläger A._____,
+[…]
+vertreten durch Rechtsanwalt Mark…</description>
+      <pubDate>Thu, 30 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ag_zivilgericht_ZOR.2025.42</guid>
+      <category>ag_zivilgericht</category>
+    </item>
+    <item>
       <title>be_verwaltungsgericht 200 2026 52 vom 2026-07-30</title>
       <link>https://mcp.opencaselaw.ch/entscheid/be_verwaltungsgericht_200%202026%2052</link>
       <description>IV 200 2026 52
@@ -750,115 +852,6 @@ Gerichtsschreibe…</description>
       <pubDate>Thu, 30 Jul 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">be_verwaltungsgericht_200 2026 52</guid>
       <category>be_verwaltungsgericht</category>
-    </item>
-    <item>
-      <title>be_zivilstraf SK 2024 169 vom 2026-07-30</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/be_zivilstraf_SK%202024%20169</link>
-      <description>Obergericht
-des Kantons Bern
-1. Strafkammer
-Cour suprême
-du canton de Berne
-1re Chambre pénale
-Urteil
-SK 24 169
-Hochschulstrasse 17
-Postfach
-3001 Bern
-Telefon +41 31 635 48 08
-obergericht-straf.bern@justice.be.ch
-www.justice.be.ch/obergericht
-Bern, 2…</description>
-      <pubDate>Thu, 30 Jul 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">be_zivilstraf_SK 2024 169</guid>
-      <category>be_zivilstraf</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht E-1469/2026 vom 2026-07-30</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-1469_2026</link>
-      <description>Nichteintreten auf Asylgesuch und Wegweisung (sicherer Drittstaat - Art. 31a Abs. 1 Bst. a AsylG)</description>
-      <pubDate>Thu, 30 Jul 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-1469.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht E-4045/2026 vom 2026-07-30</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-4045_2026</link>
-      <description>Asyl und Wegweisung (Mehrfachgesuch)</description>
-      <pubDate>Thu, 30 Jul 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-4045.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht F-4813/2026 vom 2026-07-30</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-4813_2026</link>
-      <description>Nichteintreten auf Asylgesuch und Wegweisung (sicherer Drittstaat - Art. 31a Abs. 1 Bst. a AsylG)</description>
-      <pubDate>Thu, 30 Jul 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-4813.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>gr_gerichte SV2 2026 12 vom 2026-07-30</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_SV2%202026%2012</link>
-      <description>Obergericht des Kantons Graubünden
-Dretgira superiura dal chantun Grischun
-Tribunale d'appello del Cantone dei Grigioni
-Urteil vom 15. Juli 2026
-mitgeteilt am 17. Juli 2026
-Referenz
-SV2 26 12
-Instanz
-Zweite sozialversicherungsrechtliche Kammer
-Besetz…</description>
-      <pubDate>Thu, 30 Jul 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">gr_gerichte_SV2 2026 12</guid>
-      <category>gr_gerichte</category>
-    </item>
-    <item>
-      <title>so_gerichte VSBES.2026.168 vom 2026-07-30</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/so_gerichte_VSBES.2026.168</link>
-      <description>Urteilvom30. Juli 2026
-
-Es wirken mit:
-
-Präsidentin Weber-Probst
-
-Gerichtsschreiber Haldemann
-
-In Sachen
-
-A.___
-
-Beschwerdeführerin
-
-gegen
-
-Ausgleichskasse des Kantons Solothurn,Allmendweg 6, 4528 Zuchwil,
-
-Beschwerdegegnerin
-
-betreffendPrämienverbil…</description>
-      <pubDate>Thu, 30 Jul 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">so_gerichte_VSBES.2026.168</guid>
-      <category>so_gerichte</category>
-    </item>
-    <item>
-      <title>ag_handelsgericht HSU.2026.28 vom 2026-07-29</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ag_handelsgericht_HSU.2026.28</link>
-      <description>Handelsgericht
-2. Kammer
-HSU.2026.28 / fe / mv
-Entscheid vom 29. Juli 2026
-Besetzung Oberrichter Vetter, Präsident
-Gerichtsschreiber Schneuwly
-Rechtspraktikant Eisenring
-Gesuchstellerin S. Stiftung ________
-Gesuchsgegne- C. GmbH, __________
-rin
-Gegen…</description>
-      <pubDate>Wed, 29 Jul 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ag_handelsgericht_HSU.2026.28</guid>
-      <category>ag_handelsgericht</category>
     </item>
   </channel>
 </rss>
