@@ -1,0 +1,81 @@
+{
+ "_status": "machine findings; voice adjudication (C2) pending",
+ "decisions_in_window": 118911,
+ "denominator_prefixed_total": 898094,
+ "denominator_tokens_by_language_and_form": {
+  "de|bare": 102609,
+  "de|prefixed": 353115,
+  "fr|bare": 132997,
+  "fr|prefixed": 507104,
+  "it|bare": 10692,
+  "it|prefixed": 37875
+ },
+ "denominator_tokens_total": 1144392,
+ "distinct_tokens": 293,
+ "dropped_by_guard": 594,
+ "findings_by_court_top": {
+  "ag_zivilgericht": 8,
+  "be_verwaltungsgericht": 3,
+  "be_zivilstraf": 7,
+  "bge": 5,
+  "bger": 96,
+  "bl_gerichte": 8,
+  "bstger": 6,
+  "bvger": 39,
+  "fr_gerichte": 23,
+  "ge_gerichte": 143,
+  "gr_gerichte": 13,
+  "so_gerichte": 20,
+  "ti_gerichte": 9,
+  "vd_findinfo": 42,
+  "vd_gerichte": 67,
+  "vd_omni": 5,
+  "vs_gerichte": 13,
+  "zh_handelsgericht": 7,
+  "zh_obergericht": 21,
+  "zh_verwaltungsgericht": 7
+ },
+ "findings_by_form": {
+  "bare": 1,
+  "prefixed": 590
+ },
+ "findings_by_language": {
+  "de": 210,
+  "fr": 356,
+  "it": 25
+ },
+ "findings_by_reason": {
+  "division_absent_for_volume": 88,
+  "page_beyond_series": 484,
+  "volume_out_of_range": 19
+ },
+ "findings_qualified": 591,
+ "findings_raw": 1185,
+ "generated_at": "2026-08-11T14:21:02.658155+00:00",
+ "graph_mtime": "2026-08-11T13:53:16.083704+00:00",
+ "primary_rate_ppm": 656.9,
+ "primary_universe": "prefixed reporter citations",
+ "rate_per_language_ppm": {
+  "de": 594.7,
+  "fr": 702.0,
+  "it": 660.1
+ },
+ "since": "2024-01-01",
+ "tokens_repeated": {
+  "BGE 123 I 424": 18,
+  "BGE 130 I 585": 8,
+  "BGE 130 III 858": 12,
+  "BGE 133 II 629": 22,
+  "BGE 134 II 2017": 16,
+  "BGE 136 VI 55": 6,
+  "BGE 137 V 2010": 14,
+  "BGE 138 II 636": 19,
+  "BGE 140 IV 373": 9,
+  "BGE 141 I 557": 9,
+  "BGE 141 IV 557": 27,
+  "BGE 142 I 455": 28,
+  "BGE 142 II 2018": 6,
+  "BGE 142 II 612": 6,
+  "BGE 142 IV 551": 6
+ }
+}
