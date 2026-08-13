@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feed.xml</link>
     <description>Latest published decisions across all Swiss courts indexed by OpenCaseLaw.</description>
     <language>de-CH</language>
-    <lastBuildDate>Wed, 12 Aug 2026 10:53:31 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 13 Aug 2026 11:05:09 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feed.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -662,6 +662,14 @@ als Aufsic…</description>
       <category>gr_gerichte</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht B-4320/2026 vom 2026-08-05</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_B-4320_2026</link>
+      <description>Ecoles polytechniques fédérales (sans le personnel)</description>
+      <pubDate>Wed, 05 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:B-4320.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>nw_gerichte BAS 26 2 vom 2026-08-05</title>
       <link>https://mcp.opencaselaw.ch/entscheid/nw_gerichte_BAS%2026%202</link>
       <description>GERICHTE OBERGERICHT Bahnhofplatz 3, Postfach 1241, 6371 Stans
@@ -893,20 +901,6 @@ Besetzung Vizepräsidentin Barbara Brodmann, Vorsitz,
 Verwaltungsrichterin Dr. med. Car…</description>
       <pubDate>Wed, 05 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">nw_gerichte_SV 26 4</guid>
-      <category>nw_gerichte</category>
-    </item>
-    <item>
-      <title>nw_gerichte VA 25 23 vom 2026-08-05</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/nw_gerichte_VA%2025%2023</link>
-      <description>GERICHTE VERWALTUNGSGERICHT Bahnhofplatz 3, Postfach 1241, 6371 Stans
-Tel. 041 618 79 70, www.nw.ch
-VA 25 23 Beschwerde beim BGer hängig
-Entscheid vom 23. Februar 2026
-Verwaltungsabteilung
-Besetzung Präsidentin Livia Zimmermann, Vorsitz,
-Verwaltungsr…</description>
-      <pubDate>Wed, 05 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">nw_gerichte_VA 25 23</guid>
       <category>nw_gerichte</category>
     </item>
   </channel>
