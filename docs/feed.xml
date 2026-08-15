@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feed.xml</link>
     <description>Latest published decisions across all Swiss courts indexed by OpenCaseLaw.</description>
     <language>de-CH</language>
-    <lastBuildDate>Fri, 14 Aug 2026 11:23:34 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 15 Aug 2026 09:52:40 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feed.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -855,6 +855,38 @@ Anklägerin Staatsanwaltschaft Lenzburg-Aar…</description>
       <category>ag_strafgericht</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht A-2961/2026 vom 2026-08-06</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_A-2961_2026</link>
+      <description>Mehrwertsteuer</description>
+      <pubDate>Thu, 06 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:A-2961.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht B-3491/2026 vom 2026-08-06</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_B-3491_2026</link>
+      <description>Unerlaubte Tätigkeit (BankG, BEHG, KAG)</description>
+      <pubDate>Thu, 06 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:B-3491.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht C-5212/2026 vom 2026-08-06</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-5212_2026</link>
+      <description>Rentenanspruch</description>
+      <pubDate>Thu, 06 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-5212.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht E-1655/2025 vom 2026-08-06</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-1655_2025</link>
+      <description>Asile et renvoi</description>
+      <pubDate>Thu, 06 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-1655.2025</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>gr_gerichte SBK 2026 66 vom 2026-08-06</title>
       <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_SBK%202026%2066</link>
       <description>Obergericht des Kantons Graubünden
@@ -870,6 +902,23 @@ als Aufsic…</description>
       <pubDate>Thu, 06 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">gr_gerichte_SBK 2026 66</guid>
       <category>gr_gerichte</category>
+    </item>
+    <item>
+      <title>ju_gerichte ADM 2026 34 vom 2026-08-06</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ju_gerichte_ADM%202026%2034</link>
+      <description>RÉPUBLIQUE ET CANTON DU JURA
+TRIBUNAL CANTONAL
+COUR ADMINISTRATIVE
+ADM 2026 34
+Présidente : Sylviane Liniger Odiet
+Juges : Carine Guenat et Lisiane Poupon
+Greffière : Mélanie Farine
+ARRÊT DU 6 AOÛT 2026
+en la cause liée entre
+A.________, c/o D.______…</description>
+      <pubDate>Thu, 06 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ju_gerichte_ADM 2026 34</guid>
+      <category>ju_gerichte</category>
     </item>
     <item>
       <title>Bundesgericht 5A_173/2026 vom 2026-08-05</title>
@@ -930,59 +979,6 @@ Bundesrichter Kölz, H…</description>
       <guid isPermaLink="false">ECLI:CH:BGer:2026:7B_1429.2025</guid>
       <category>bger</category>
       <category>Strafprozess</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht B-4320/2026 vom 2026-08-05</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_B-4320_2026</link>
-      <description>Ecoles polytechniques fédérales (sans le personnel)</description>
-      <pubDate>Wed, 05 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:B-4320.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht E-3541/2026 vom 2026-08-05</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-3541_2026</link>
-      <description>Verweigerung vorübergehender Schutz</description>
-      <pubDate>Wed, 05 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-3541.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht F-5204/2026 vom 2026-08-05</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-5204_2026</link>
-      <description>Nichteintreten auf Asylgesuch und Wegweisung (Dublin-Verfahren - Art. 31a Abs. 1 Bst. b AsylG)</description>
-      <pubDate>Wed, 05 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-5204.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>nw_gerichte BAS 26 2 vom 2026-08-05</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/nw_gerichte_BAS%2026%202</link>
-      <description>GERICHTE OBERGERICHT Bahnhofplatz 3, Postfach 1241, 6371 Stans
-Tel. 041 618 79 70, www.nw.ch
-BAS 26 2 Beschwerde am BGer hängig
-Beschluss vom 29. April 2026
-Beschwerdeabteilung in Strafsachen
-Besetzung Vizepräsidentin Barbara Brodmann, Vorsitz,
-Oberr…</description>
-      <pubDate>Wed, 05 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">nw_gerichte_BAS 26 2</guid>
-      <category>nw_gerichte</category>
-    </item>
-    <item>
-      <title>nw_gerichte BAS 26 4 vom 2026-08-05</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/nw_gerichte_BAS%2026%204</link>
-      <description>GERICHTE OBERGERICHT Bahnhofplatz 3, Postfach 1241, 6371 Stans
-Tel. 041 618 79 70, www.nw.ch
-BAS 26 4
-Beschluss vom 22. Mai 2026
-Beschwerdeabteilung in Strafsachen
-Besetzung Vizepräsidentin Barbara Brodmann, Vorsitz,
-Oberrichter Franz Odermatt,
-Oberr…</description>
-      <pubDate>Wed, 05 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">nw_gerichte_BAS 26 4</guid>
-      <category>nw_gerichte</category>
     </item>
   </channel>
 </rss>

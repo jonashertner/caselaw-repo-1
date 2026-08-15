@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/de.xml</link>
     <description>Latest published Swiss court decisions in Deutsch.</description>
     <language>de-CH</language>
-    <lastBuildDate>Fri, 14 Aug 2026 11:27:12 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 15 Aug 2026 09:56:08 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/de.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -372,6 +372,30 @@ Anklägerin Staatsanwaltschaft Lenzburg-Aar…</description>
       <category>ag_strafgericht</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht A-2961/2026 vom 2026-08-06</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_A-2961_2026</link>
+      <description>Mehrwertsteuer</description>
+      <pubDate>Thu, 06 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:A-2961.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht B-3491/2026 vom 2026-08-06</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_B-3491_2026</link>
+      <description>Unerlaubte Tätigkeit (BankG, BEHG, KAG)</description>
+      <pubDate>Thu, 06 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:B-3491.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht C-5212/2026 vom 2026-08-06</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-5212_2026</link>
+      <description>Rentenanspruch</description>
+      <pubDate>Thu, 06 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-5212.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>gr_gerichte SBK 2026 66 vom 2026-08-06</title>
       <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_SBK%202026%2066</link>
       <description>Obergericht des Kantons Graubünden
@@ -416,6 +440,22 @@ Bundesrichter Kölz, H…</description>
       <guid isPermaLink="false">ECLI:CH:BGer:2026:7B_1429.2025</guid>
       <category>bger</category>
       <category>Strafprozess</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht B-1191/2026 vom 2026-08-05</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_B-1191_2026</link>
+      <description>Beiträge für vorbereitende Kurse</description>
+      <pubDate>Wed, 05 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:B-1191.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht E-2995/2025 vom 2026-08-05</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-2995_2025</link>
+      <description>Asyl und Wegweisung</description>
+      <pubDate>Wed, 05 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-2995.2025</guid>
+      <category>bvger</category>
     </item>
     <item>
       <title>Bundesverwaltungsgericht E-3541/2026 vom 2026-08-05</title>
@@ -798,147 +838,6 @@ Gesuchs- Staatsanwaltscha…</description>
       <pubDate>Tue, 04 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ag_strafgericht_SST.2026.177</guid>
       <category>ag_strafgericht</category>
-    </item>
-    <item>
-      <title>be_verwaltungsgericht 100 2024 254 vom 2026-08-04</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/be_verwaltungsgericht_100%202024%20254</link>
-      <description>100.2024.254U
-STN/BIM/SRE
-Verwaltungsgericht des Kantons Bern
-Verwaltungsrechtliche Abteilung
-Urteil vom 3. Juli 2026
-Verwaltungsrichterin Herzog, präsidierendes Mitglied
-Verwaltungsrichterin Steinmann, Verwaltungsrichter Stohner
-Gerichtsschreiberin …</description>
-      <pubDate>Tue, 04 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">be_verwaltungsgericht_100 2024 254</guid>
-      <category>be_verwaltungsgericht</category>
-    </item>
-    <item>
-      <title>Bundesgericht 1C_186/2025 vom 2026-08-04</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_1C_186_2025</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-1C_186/2025
-
-Urteil vom 4. August 2026
-
-I. öffentlich-rechtliche Abteilung
-
-Besetzung
-
-Bundesrichter Haag, Präsident,
-
-Bundesrichter Müller, Merz,
-
-Gerichtsschreiber Mattle.
-
-Verf…</description>
-      <pubDate>Tue, 04 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:1C_186.2025</guid>
-      <category>bger</category>
-      <category>Raumplanung und öffentliches Baurecht</category>
-    </item>
-    <item>
-      <title>Bundesgericht 1C_30/2026 vom 2026-08-04</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_1C_30_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-1C_30/2026
-
-Urteil vom 4. August 2026
-
-I. öffentlich-rechtliche Abteilung
-
-Besetzung
-
-Bundesrichter Haag, Präsident,
-
-Bundesrichter Kneubühler, Merz,
-
-Gerichtsschreiberin Dillier.…</description>
-      <pubDate>Tue, 04 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:1C_30.2026</guid>
-      <category>bger</category>
-      <category>Ökologisches Gleichgewicht</category>
-    </item>
-    <item>
-      <title>Bundesgericht 4A_313/2026 vom 2026-08-04</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_4A_313_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-4A_313/2026
-
-Urteil vom 4. August 2026
-
-I. zivilrechtliche Abteilung
-
-Besetzung
-
-Bundesrichter Hurni, Präsident,
-
-Gerichtsschreiber Dürst.
-
-Verfahrensbeteiligte
-
-A.________,
-
-Besc…</description>
-      <pubDate>Tue, 04 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:4A_313.2026</guid>
-      <category>bger</category>
-      <category>Schuldbetreibungs- und Konkursrecht</category>
-    </item>
-    <item>
-      <title>Bundesgericht 4A_315/2026 vom 2026-08-04</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_4A_315_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-4A_315/2026
-
-Urteil vom 4. August 2026
-
-I. zivilrechtliche Abteilung
-
-Besetzung
-
-Bundesrichter Hurni, Präsident,
-
-Gerichtsschreiber Dürst.
-
-Verfahrensbeteiligte
-
-A.________,
-
-Besc…</description>
-      <pubDate>Tue, 04 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:4A_315.2026</guid>
-      <category>bger</category>
-      <category>Schuldbetreibungs- und Konkursrecht</category>
     </item>
   </channel>
 </rss>
