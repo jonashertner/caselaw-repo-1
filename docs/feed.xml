@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feed.xml</link>
     <description>Latest published decisions across all Swiss courts indexed by OpenCaseLaw.</description>
     <language>de-CH</language>
-    <lastBuildDate>Sat, 15 Aug 2026 09:52:40 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 16 Aug 2026 10:49:04 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feed.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -520,6 +520,35 @@ J…</description>
       <category>fr_gerichte</category>
     </item>
     <item>
+      <title>bs_appellationsgericht AUS.2026.68 vom 2026-08-14</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bs_appellationsgericht_AUS.2026.68</link>
+      <description>Appellationsgericht
+
+des Kantons Basel-Stadt
+
+als Verwaltungsgericht
+
+Einzelrichterfür Zwangsmassnahmen imAusländerrecht
+
+AUS.2026.68
+
+URTEIL
+
+vom14.
+August 2026
+
+Beteiligte
+
+Migrationsamt des Kantons
+Basel-Stadt,
+
+Spiegelgasse 12, Postfach, 4001
+…</description>
+      <pubDate>Fri, 14 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">bs_appellationsgericht_AUS.2026.68</guid>
+      <category>bs_appellationsgericht</category>
+    </item>
+    <item>
       <title>be_verwaltungsgericht 200 2025 452 vom 2026-08-13</title>
       <link>https://mcp.opencaselaw.ch/entscheid/be_verwaltungsgericht_200%202025%20452</link>
       <description>EL 200 2025 452
@@ -950,35 +979,6 @@ Participants à la …</description>
       <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_173.2026</guid>
       <category>bger</category>
       <category>Droit de la famille</category>
-    </item>
-    <item>
-      <title>Bundesgericht 7B_1429/2025 vom 2026-08-05</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_7B_1429_2025</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-7B_1429/2025
-
-Urteil vom 5. August 2026
-
-II. strafrechtliche Abteilung
-
-Besetzung
-
-Bundesrichter Abrecht, Präsident,
-
-Bundesrichterinnen van de Graaf, Koch,
-
-Bundesrichter Kölz, H…</description>
-      <pubDate>Wed, 05 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:7B_1429.2025</guid>
-      <category>bger</category>
-      <category>Strafprozess</category>
     </item>
   </channel>
 </rss>

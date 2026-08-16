@@ -1,7 +1,7 @@
 {
-  "run_at": "2026-08-15T10:11:27+00:00",
+  "run_at": "2026-08-16T11:06:54+00:00",
   "db_path": "/opt/caselaw/repo/output/decisions.db",
-  "duration_seconds": 915.22,
+  "duration_seconds": 870.84,
   "summary": {
     "total": 67,
     "passed": 57,
@@ -29,7 +29,7 @@
       "passed": true,
       "metric_value": 0,
       "threshold": 0,
-      "message": "0 of 1776 sampled rows contain control chars",
+      "message": "0 of 1752 sampled rows contain control chars",
       "sample_rows": [],
       "fix_advice": "build_fts5._clean_text (d0072b2) must strip these at insert — a hit means the build-side guarantee regressed (check recent build_fts5/_clean_text changes)",
       "court": null,
@@ -154,17 +154,17 @@
       "fix_advice": "check INSERT OR IGNORE / INSERT OR REPLACE in scrapers and build_fts5.merge_shards",
       "court": null,
       "extra": {
-        "total": 1053260,
-        "distinct": 1053260
+        "total": 1053282,
+        "distinct": 1053282
       }
     },
     {
       "name": "schema.corpus_total_count",
       "severity": "critical",
       "passed": true,
-      "metric_value": 1053260,
+      "metric_value": 1053282,
       "threshold": 950000,
-      "message": "corpus total: 1,053,260",
+      "message": "corpus total: 1,053,282",
       "sample_rows": [],
       "fix_advice": "check publish.py Step 2 build_fts5 logs; verify .tmp swap completed atomically",
       "court": null,
@@ -174,9 +174,9 @@
       "name": "mcp_tools.search_fts_returns_hits",
       "severity": "critical",
       "passed": true,
-      "metric_value": 404991,
+      "metric_value": 405005,
       "threshold": 100,
-      "message": "FTS5 'Beschwerde' query: 404,991 hits",
+      "message": "FTS5 'Beschwerde' query: 405,005 hits",
       "sample_rows": [],
       "fix_advice": "if 0, FTS5 build never indexed; rerun build_fts5",
       "court": null,
@@ -230,8 +230,8 @@
       "court": null,
       "extra": {
         "distribution": {
-          "de": 501503,
-          "fr": 460888,
+          "de": 501519,
+          "fr": 460894,
           "it": 90869
         }
       }
@@ -240,15 +240,15 @@
       "name": "languages.distribution_plausible",
       "severity": "critical",
       "passed": true,
-      "metric_value": 47.61435922754116,
+      "metric_value": 47.614883763322645,
       "threshold": 30.0,
       "message": "DE 47.6% / FR 43.8% / IT 8.6% / RM 0.00%",
       "sample_rows": [],
       "fix_advice": "DE and FR each need ≥30%, IT ≥3%; under-floor means a language-block of scrapers crashed in publish.py Step 1",
       "court": null,
       "extra": {
-        "de": 501503,
-        "fr": 460888,
+        "de": 501519,
+        "fr": 460894,
         "it": 90869
       }
     },
@@ -640,9 +640,9 @@
       "name": "courts.federal_present.bge",
       "severity": "critical",
       "passed": true,
-      "metric_value": 50474,
+      "metric_value": 50475,
       "threshold": 1,
-      "message": "bge: 50,474 decisions",
+      "message": "bge: 50,475 decisions",
       "sample_rows": [],
       "fix_advice": null,
       "court": "bge",
@@ -690,31 +690,10 @@
       "name": "dates.future_window",
       "severity": "quarantine",
       "passed": true,
-      "metric_value": 4,
+      "metric_value": 0,
       "threshold": 50,
-      "message": "4 future-dated rows (within tolerance)",
-      "sample_rows": [
-        {
-          "decision_id": "fr_gerichte_502 2026 202",
-          "court": "fr_gerichte",
-          "decision_date": "2026-09-15"
-        },
-        {
-          "decision_id": "fr_gerichte_608 2025 164",
-          "court": "fr_gerichte",
-          "decision_date": "2026-09-15"
-        },
-        {
-          "decision_id": "fr_gerichte_502 2026 135",
-          "court": "fr_gerichte",
-          "decision_date": "2026-09-15"
-        },
-        {
-          "decision_id": "fr_gerichte_604 2025 137",
-          "court": "fr_gerichte",
-          "decision_date": "2026-09-15"
-        }
-      ],
+      "message": "0 future-dated rows (within tolerance)",
+      "sample_rows": [],
       "fix_advice": "if >50, expect a scraper date-parsing regression",
       "court": null,
       "extra": {}
@@ -737,22 +716,22 @@
       "passed": false,
       "metric_value": 220601,
       "threshold": 50,
-      "message": "220,601 rows still use http:// (http 220,601 / https 832,659)",
+      "message": "220,601 rows still use http:// (http 220,601 / https 832,681)",
       "sample_rows": [],
       "fix_advice": "upgrade scraper to write https://, then run a REPLACE(source_url, 'http://', 'https://') backfill",
       "court": null,
       "extra": {
         "http": 220601,
-        "https": 832659
+        "https": 832681
       }
     },
     {
       "name": "urls.decision_id_whitespace",
       "severity": "warning",
       "passed": false,
-      "metric_value": 58888,
+      "metric_value": 58889,
       "threshold": 50000,
-      "message": "58,888 decision_ids contain whitespace (percent-encoded in URLs; ugly but functional)",
+      "message": "58,889 decision_ids contain whitespace (percent-encoded in URLs; ugly but functional)",
       "sample_rows": [],
       "fix_advice": "if growing >50k, a new scraper started concatenating dockets with spaces; consider underscore separator at scraper time for cleaner URLs",
       "court": null,
@@ -762,9 +741,9 @@
       "name": "structure.federal_have_erwaegungen",
       "severity": "warning",
       "passed": false,
-      "metric_value": 87.9,
+      "metric_value": 87.1,
       "threshold": 95.0,
-      "message": "BGer (>5y old): 879/1000 sample have sidecar paragraphs (87.9%)",
+      "message": "BGer (>5y old): 871/1000 sample have sidecar paragraphs (87.1%)",
       "sample_rows": [],
       "fix_advice": null,
       "court": null,
@@ -922,9 +901,9 @@
       "name": "cross_db.no_orphan_structure_rows",
       "severity": "warning",
       "passed": false,
-      "metric_value": 8.54,
+      "metric_value": 8.98,
       "threshold": 1.0,
-      "message": "427/5000 (8.54%) sidecar rows orphan",
+      "message": "449/5000 (8.98%) sidecar rows orphan",
       "sample_rows": [],
       "fix_advice": "rerun extract_decision_structure.py against current decisions.db so IDs realign",
       "court": null,

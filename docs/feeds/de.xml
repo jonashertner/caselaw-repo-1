@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/de.xml</link>
     <description>Latest published Swiss court decisions in Deutsch.</description>
     <language>de-CH</language>
-    <lastBuildDate>Sat, 15 Aug 2026 09:56:08 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 16 Aug 2026 10:52:21 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/de.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -154,6 +154,35 @@ Präsiden…</description>
       <pubDate>Tue, 25 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">fr_gerichte_605 2026 7</guid>
       <category>fr_gerichte</category>
+    </item>
+    <item>
+      <title>bs_appellationsgericht AUS.2026.68 vom 2026-08-14</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bs_appellationsgericht_AUS.2026.68</link>
+      <description>Appellationsgericht
+
+des Kantons Basel-Stadt
+
+als Verwaltungsgericht
+
+Einzelrichterfür Zwangsmassnahmen imAusländerrecht
+
+AUS.2026.68
+
+URTEIL
+
+vom14.
+August 2026
+
+Beteiligte
+
+Migrationsamt des Kantons
+Basel-Stadt,
+
+Spiegelgasse 12, Postfach, 4001
+…</description>
+      <pubDate>Fri, 14 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">bs_appellationsgericht_AUS.2026.68</guid>
+      <category>bs_appellationsgericht</category>
     </item>
     <item>
       <title>be_verwaltungsgericht 200 2025 452 vom 2026-08-13</title>
@@ -818,25 +847,6 @@ Gesuchsteller A._____,
 Gesuchs- Staatsanwaltscha…</description>
       <pubDate>Tue, 04 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ag_strafgericht_SST.2026.176</guid>
-      <category>ag_strafgericht</category>
-    </item>
-    <item>
-      <title>ag_strafgericht SST.2026.177 vom 2026-08-04</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ag_strafgericht_SST.2026.177</link>
-      <description>Obergericht
-Strafgericht, 1. Kammer
-SST.2026.177
-(STA.2024.7787)
-Beschluss vom 4. August 2026
-Besetzung Oberrichter Six, Präsident
-Oberrichter Fedier
-Oberrichterin Vasvary
-Gerichtsschreiberin Zwick
-Gesuchsteller A._____,
-[…]
-Gesuchs- Staatsanwaltscha…</description>
-      <pubDate>Tue, 04 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ag_strafgericht_SST.2026.177</guid>
       <category>ag_strafgericht</category>
     </item>
   </channel>
