@@ -2385,7 +2385,7 @@
     "2026-07": 1651,
     "2026-08": 89
   },
-  "generated_at": "2026-08-16T10:42:03.772065+00:00",
+  "generated_at": "2026-08-16T19:10:15.760365+00:00",
   "scraper_health": {
     "run_at": "2026-08-16T03:15:05.061497+00:00",
     "run_duration_s": 8044.1,
@@ -3425,7 +3425,7 @@
         "note": null,
         "state_count": 7656,
         "jsonl_size_mb": 190.5,
-        "jsonl_mtime": "2026-08-16T02:01:51.842567+00:00"
+        "jsonl_mtime": "2026-08-16T10:56:33.154939+00:00"
       },
       "sg_publikationen": {
         "success": true,
@@ -3510,7 +3510,7 @@
         "note": null,
         "state_count": 1686,
         "jsonl_size_mb": 100.6,
-        "jsonl_mtime": "2026-08-14T14:51:55.583527+00:00"
+        "jsonl_mtime": "2026-08-16T14:42:07.481117+00:00"
       },
       "hudoc_ch": {
         "success": false,
@@ -3583,15 +3583,15 @@
       "ZH": 135
     },
     "commentaries": 1170,
-    "scholarship_publications": 24474,
+    "scholarship_publications": 25073,
     "scholarship_by_source": {
       "boris_law": 7319,
-      "e_periodica_polsci": 3088,
+      "e_periodica_polsci": 3089,
       "e_periodica_law": 3041,
       "zhaw_digitalcollection": 3040,
+      "libra_unine": 1992,
       "eth_research_collection": 1760,
-      "unige_law": 1378,
-      "libra_unine": 1131,
+      "unige_law": 1115,
       "e_periodica_pubadmin": 855,
       "fhnw_irf": 496,
       "onlinekommentar": 390,
@@ -3610,29 +3610,29 @@
       "alexandria_law": 13
     },
     "scholarship_by_type": {
-      "article": 18799,
-      "book": 3910,
-      "dissertation": 632,
-      "report": 427,
+      "article": 19202,
+      "book": 4166,
+      "dissertation": 565,
+      "report": 434,
       "commentary": 420,
       "working_paper": 173,
       "guidance": 70,
       "reference_article": 40,
       "bachelor_thesis": 3
     },
-    "citation_edges": 9826435,
-    "statute_edges": 12454444
+    "citation_edges": 9826708,
+    "statute_edges": 12454645
   },
   "interesting_stats": {
     "most_cited_decision": {
       "docket": "BGE 125 V 351",
-      "citation_count": 77263,
+      "citation_count": 77264,
       "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
     },
     "most_cited_statute": {
       "law_code": "LTF",
       "article": "100",
-      "ref_count": 184047
+      "ref_count": 184052
     },
     "oldest_decision": {
       "docket": "1_I_26",
@@ -3644,17 +3644,17 @@
       "de_pct": 47.6,
       "fr_pct": 43.8,
       "it_pct": 8.6,
-      "total": 1053260
+      "total": 1053282
     },
     "regeste_coverage": {
       "pct": 38.5,
-      "with_regeste": 405405,
-      "total": 1053260
+      "with_regeste": 405406,
+      "total": 1053282
     },
     "graph_size": {
-      "decision_edges": 11517070,
-      "statute_edges": 12454444,
-      "total": 23971514
+      "decision_edges": 11517378,
+      "statute_edges": 12454645,
+      "total": 23972023
     },
     "echr_switzerland": {
       "total": 3020,
@@ -3670,13 +3670,13 @@
     "top_5_decisions": [
       {
         "docket": "BGE 125 V 351",
-        "citation_count": 77263,
+        "citation_count": 77264,
         "regeste_excerpt": "Regeste\n Art. 4 BV; Art. 108 Abs. 1 lit. b UVG; Art. 40 BZP in Verbindung mit Art. 19 VwVG; Art. 95 Abs. 2 in Verbindung mit Art. 113 und 132 OG: Beweiswürdigun",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
       },
       {
         "docket": "125 V 351",
-        "citation_count": 74829,
+        "citation_count": 74831,
         "regeste_excerpt": "Regeste\n Art. 4 BV; Art. 108 Abs. 1 lit. b UVG; Art. 40 BZP in Verbindung mit Art. 19 VwVG; Art. 95 Abs. 2 in Verbindung mit Art. 113 und 132 OG: Beweiswürdigun",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_125 V 351"
       },
@@ -3688,7 +3688,7 @@
       },
       {
         "docket": "BGE 134 V 231",
-        "citation_count": 38618,
+        "citation_count": 38620,
         "regeste_excerpt": "Regeste\n Art. 6 Abs. 1 UVG; Beweiswert diagnostischer Methoden; funktionelle Magnetresonanztomographie; Schleudertrauma. Eine medizinisch-diagnostische Methode ",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_134_V_231"
       },
@@ -3703,12 +3703,12 @@
       {
         "law_code": "LTF",
         "article": "100",
-        "ref_count": 184047
+        "ref_count": 184052
       },
       {
         "law_code": "LTF",
         "article": "113",
-        "ref_count": 113433
+        "ref_count": 113437
       },
       {
         "law_code": "LTF",
@@ -3718,7 +3718,7 @@
       {
         "law_code": "BGG",
         "article": "42",
-        "ref_count": 96260
+        "ref_count": 96273
       },
       {
         "law_code": "BGG",
@@ -3746,7 +3746,7 @@
         "earliest": "1875-01-01",
         "latest": "2026-02-27",
         "span_years": 151,
-        "decision_count": 50474
+        "decision_count": 50475
       },
       {
         "court": "ch_vb",
@@ -4371,7 +4371,10 @@
       "ZH": 7,
       "BS": 8
     },
-    "corpus": {},
+    "corpus": {
+      "citation_edges": 273,
+      "statute_edges": 201
+    },
     "previous_generated_at": "2026-08-15T22:07:25.615615+00:00"
   }
 }
