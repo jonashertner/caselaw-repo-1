@@ -1,19 +1,19 @@
 {
-  "total": 1053283,
-  "source_representations": 1053283,
+  "total": 1053305,
+  "source_representations": 1053305,
   "representation_method_version": "2026-07-23.1",
-  "unique_decisions": 912371,
-  "unique_decisions_lower_bound": 912321,
+  "unique_decisions": 912393,
+  "unique_decisions_lower_bound": 912343,
   "duplicate_representations": 140912,
   "unique_decisions_status": "current",
   "by_court": [
     {
       "court": "bger",
       "canton": "CH",
-      "count": 192563,
+      "count": 192582,
       "earliest": "1986-10-06",
-      "latest": "2026-08-05",
-      "last_scraped": "2026-08-14T10:40:59.209092+00:00",
+      "latest": "2026-08-06",
+      "last_scraped": "2026-08-17T11:00:18.679309+00:00",
       "languages": [
         "de",
         "fr",
@@ -861,10 +861,10 @@
     {
       "court": "ecthr_committee",
       "canton": "CE",
-      "count": 241,
+      "count": 244,
       "earliest": "2010-11-25",
       "latest": "2026-07-09",
-      "last_scraped": "2026-07-09T14:02:39.491814+00:00",
+      "last_scraped": "2026-08-17T14:04:30.480491+00:00",
       "languages": [
         "fr"
       ]
@@ -1758,7 +1758,7 @@
     {
       "canton": "CE",
       "name": "CE",
-      "count": 1638,
+      "count": 1641,
       "court_count": 3,
       "earliest": "1961-07-01",
       "latest": "2026-07-09",
@@ -1837,9 +1837,9 @@
     }
   ],
   "by_language": {
-    "de": 501520,
-    "fr": 460894,
-    "it": 90869
+    "de": 501532,
+    "fr": 460901,
+    "it": 90872
   },
   "by_year": {
     "1875": 179,
@@ -1989,29 +1989,29 @@
     "2019": 49582,
     "2020": 50350,
     "2021": 51808,
-    "2022": 51540,
+    "2022": 51541,
     "2023": 51466,
-    "2024": 51646,
+    "2024": 51648,
     "2025": 48608,
-    "2026": 19227
+    "2026": 19246
   },
   "recent_daily": {
     "2026-07-19": 1,
     "2026-07-20": 61,
     "2026-07-21": 82,
     "2026-07-22": 43,
-    "2026-07-23": 66,
+    "2026-07-23": 67,
     "2026-07-24": 32,
     "2026-07-27": 46,
-    "2026-07-28": 47,
-    "2026-07-29": 38,
+    "2026-07-28": 49,
+    "2026-07-29": 41,
     "2026-07-30": 45,
-    "2026-07-31": 23,
+    "2026-07-31": 26,
     "2026-08-01": 1,
-    "2026-08-03": 19,
-    "2026-08-04": 17,
+    "2026-08-03": 21,
+    "2026-08-04": 20,
     "2026-08-05": 28,
-    "2026-08-06": 7,
+    "2026-08-06": 8,
     "2026-08-07": 4,
     "2026-08-09": 1,
     "2026-08-10": 6,
@@ -2029,7 +2029,7 @@
     {
       "court": "bger",
       "canton": "CH",
-      "count": 192563
+      "count": 192582
     },
     {
       "court": "ge_gerichte",
@@ -2226,13 +2226,13 @@
     "2021": 2.9,
     "2022": -0.5,
     "2023": -0.1,
-    "2024": 0.3,
+    "2024": 0.4,
     "2025": -5.9,
     "2026": -60.4
   },
   "federal_vs_cantonal": {
-    "federal": 396385,
-    "cantonal": 656898
+    "federal": 396404,
+    "cantonal": 656901
   },
   "language_by_year": {
     "2005": {
@@ -2322,7 +2322,7 @@
     },
     "2022": {
       "de": 23683,
-      "fr": 25096,
+      "fr": 25097,
       "it": 2761
     },
     "2023": {
@@ -2332,7 +2332,7 @@
     },
     "2024": {
       "de": 23523,
-      "fr": 25901,
+      "fr": 25903,
       "it": 2222
     },
     "2025": {
@@ -2341,9 +2341,9 @@
       "it": 1548
     },
     "2026": {
-      "de": 10401,
-      "fr": 8080,
-      "it": 746
+      "de": 10413,
+      "fr": 8084,
+      "it": 749
     }
   },
   "by_month": {
@@ -2356,9 +2356,9 @@
     "2024-02": 4306,
     "2024-03": 4375,
     "2024-04": 4222,
-    "2024-05": 4439,
+    "2024-05": 4440,
     "2024-06": 4781,
-    "2024-07": 3963,
+    "2024-07": 3964,
     "2024-08": 3942,
     "2024-09": 4209,
     "2024-10": 4446,
@@ -2380,12 +2380,12 @@
     "2026-02": 3421,
     "2026-03": 3309,
     "2026-04": 2722,
-    "2026-05": 2491,
-    "2026-06": 2680,
-    "2026-07": 1652,
-    "2026-08": 90
+    "2026-05": 2492,
+    "2026-06": 2681,
+    "2026-07": 1663,
+    "2026-08": 96
   },
-  "generated_at": "2026-08-17T10:40:09.692876+00:00",
+  "generated_at": "2026-08-17T19:43:26.281846+00:00",
   "scraper_health": {
     "run_at": "2026-08-17T02:22:15.779957+00:00",
     "run_duration_s": 4875.1,
@@ -2828,9 +2828,9 @@
         "duration_s": 864.1,
         "error": null,
         "note": null,
-        "state_count": 98375,
+        "state_count": 98377,
         "jsonl_size_mb": 1485.7,
-        "jsonl_mtime": "2026-08-17T10:40:07.019421+00:00"
+        "jsonl_mtime": "2026-08-17T16:00:55.911135+00:00"
       },
       "bge": {
         "success": true,
@@ -3287,9 +3287,9 @@
         "duration_s": 2774.5,
         "error": null,
         "note": "1656 listed on portal but content not downloadable (empty page or missing PDF)",
-        "state_count": 1686,
+        "state_count": 1689,
         "jsonl_size_mb": 100.6,
-        "jsonl_mtime": "2026-08-17T01:49:01.427920+00:00"
+        "jsonl_mtime": "2026-08-17T14:51:51.117527+00:00"
       },
       "emark": {
         "success": true,
@@ -3442,7 +3442,7 @@
         "note": null,
         "state_count": 7656,
         "jsonl_size_mb": 190.5,
-        "jsonl_mtime": "2026-08-17T01:56:18.891439+00:00"
+        "jsonl_mtime": "2026-08-17T10:57:57.553760+00:00"
       },
       "lu_gerichte": {
         "success": true,
@@ -3620,8 +3620,8 @@
       "reference_article": 40,
       "bachelor_thesis": 3
     },
-    "citation_edges": 9826708,
-    "statute_edges": 12454645
+    "citation_edges": 9827094,
+    "statute_edges": 12454910
   },
   "interesting_stats": {
     "most_cited_decision": {
@@ -3632,7 +3632,7 @@
     "most_cited_statute": {
       "law_code": "LTF",
       "article": "100",
-      "ref_count": 184052
+      "ref_count": 184053
     },
     "oldest_decision": {
       "docket": "1_I_26",
@@ -3644,20 +3644,20 @@
       "de_pct": 47.6,
       "fr_pct": 43.8,
       "it_pct": 8.6,
-      "total": 1053282
+      "total": 1053305
     },
     "regeste_coverage": {
       "pct": 38.5,
-      "with_regeste": 405406,
-      "total": 1053282
+      "with_regeste": 405409,
+      "total": 1053305
     },
     "graph_size": {
-      "decision_edges": 11517378,
-      "statute_edges": 12454645,
-      "total": 23972023
+      "decision_edges": 11517816,
+      "statute_edges": 12454910,
+      "total": 23972726
     },
     "echr_switzerland": {
-      "total": 3020,
+      "total": 3023,
       "grand_chamber": 103,
       "in_2026": 141,
       "most_recent": {
@@ -3703,7 +3703,7 @@
       {
         "law_code": "LTF",
         "article": "100",
-        "ref_count": 184052
+        "ref_count": 184053
       },
       {
         "law_code": "LTF",
@@ -3713,17 +3713,17 @@
       {
         "law_code": "LTF",
         "article": "42",
-        "ref_count": 108375
+        "ref_count": 108378
       },
       {
         "law_code": "BGG",
         "article": "42",
-        "ref_count": 96273
+        "ref_count": 96277
       },
       {
         "law_code": "BGG",
         "article": "66",
-        "ref_count": 60358
+        "ref_count": 60367
       }
     ],
     "materialien_coverage": {
@@ -4063,6 +4063,14 @@
   "recent": {
     "bge": [
       {
+        "decision_id": "bger_1C_401_2026",
+        "docket": "1C_401/2026",
+        "date": "2026-08-06",
+        "court": "bger",
+        "language": "it",
+        "summary": "Assistenza giudiziaria internazionale in materia penale a Malta; consegna di mezzi di prova,"
+      },
+      {
         "decision_id": "bger_7B_1429_2025",
         "docket": "7B_1429/2025",
         "date": "2026-08-05",
@@ -4077,6 +4085,30 @@
         "court": "bger",
         "language": "fr",
         "summary": "effet suspensif (mesures provisionnelles; modification du droit aux relations personnelles, etc.),"
+      },
+      {
+        "decision_id": "bger_8C_735_2025",
+        "docket": "8C_735/2025",
+        "date": "2026-08-04",
+        "court": "bger",
+        "language": "de",
+        "summary": "Invalidenversicherung,"
+      },
+      {
+        "decision_id": "bger_6B_457_2025",
+        "docket": "6B_457/2025",
+        "date": "2026-08-04",
+        "court": "bger",
+        "language": "it",
+        "summary": "Ripetuto riciclaggio di denaro, in parte tentato; arbitrio; commisurazione della pena,"
+      },
+      {
+        "decision_id": "bger_5D_30_2026",
+        "docket": "5D_30/2026",
+        "date": "2026-08-04",
+        "court": "bger",
+        "language": "de",
+        "summary": "Vollstreckung (Wohnungsausweisung),"
       },
       {
         "decision_id": "bger_4A_315_2026",
@@ -4109,38 +4141,6 @@
         "court": "bger",
         "language": "de",
         "summary": "Bau- und Planungsrecht,"
-      },
-      {
-        "decision_id": "bger_8C_96_2025",
-        "docket": "8C_96/2025",
-        "date": "2026-08-03",
-        "court": "bger",
-        "language": "fr",
-        "summary": "Assurance-accidents (procédure de première instance),"
-      },
-      {
-        "decision_id": "bger_8C_469_2026",
-        "docket": "8C_469/2026",
-        "date": "2026-08-03",
-        "court": "bger",
-        "language": "de",
-        "summary": "Sozialhilfe (Prozessvoraussetzung),"
-      },
-      {
-        "decision_id": "bger_8C_468_2026",
-        "docket": "8C_468/2026",
-        "date": "2026-08-03",
-        "court": "bger",
-        "language": "de",
-        "summary": "Arbeitslosenversicherung (Prozessvoraussetzung),"
-      },
-      {
-        "decision_id": "bger_8C_452_2026",
-        "docket": "8C_452/2026",
-        "date": "2026-08-03",
-        "court": "bger",
-        "language": "de",
-        "summary": "Unfallversicherung (Prozessvoraussetzung),"
       }
     ],
     "cantonal": [
@@ -4359,14 +4359,20 @@
     }
   ],
   "delta": {
-    "total": 1,
+    "total": 23,
     "by_court": {
-      "ag_strafgericht": 1
+      "bger": 19,
+      "ag_strafgericht": 1,
+      "ecthr_committee": 3
     },
     "by_canton": {
-      "AG": 1
+      "AG": 1,
+      "CE": 3
     },
-    "corpus": {},
+    "corpus": {
+      "citation_edges": 386,
+      "statute_edges": 265
+    },
     "previous_generated_at": "2026-08-16T19:10:15.760365+00:00"
   }
 }
