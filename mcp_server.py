@@ -6117,27 +6117,41 @@ def _rerank_rows(
     # because a short page is indistinguishable from exhaustion. Collapsing
     # the ranking first makes offset address a stable, duplicate-free list and
     # restores exactly min(limit, remaining) rows.
+    # Three collapse rules apply downstream, so all three must apply HERE or
+    # the page shrinks again after it is cut: decision_id and canonical key
+    # (_dedupe_results_by_decision_id), plus the handler's dateless
+    # court|docket key that folds the BGE dual-ID formats
+    # ('bge_125 III 231' vs 'bge_BGE_125_III_231').
     _seen_ids: set[str] = set()
     _seen_keys: set[str] = set()
+    _seen_dockets: set[str] = set()
     _deduped: list = []
     for _entry in scored:
         _row = _entry[3]
         _did = _row["decision_id"]
         if _did in _seen_ids:
             continue
-        _ckey = _make_canonical_key(
-            _row_get(_row, "court") or "",
-            _row_get(_row, "docket_number") or "",
-            _row_get(_row, "decision_date"),
-        )
+        _court = _row_get(_row, "court") or ""
+        _docket = _row_get(_row, "docket_number") or ""
+        _ckey = _make_canonical_key(_court, _docket,
+                                    _row_get(_row, "decision_date"))
         # Empty-docket keys (court||date) collide across unrelated decisions;
         # the id check alone governs them. Predicate copied verbatim from
         # _dedupe_results_by_decision_id so the two paths cannot diverge.
         if _ckey and "||" not in _ckey and _ckey in _seen_keys:
             continue
+        # Handler key, copied verbatim from the search_decisions renderer.
+        _dn = re.sub(r"[^A-Z0-9]", "", _docket.upper())
+        if _court == "bge":
+            _dn = re.sub(r"^(?:CH)?(?:BGE|ATF|DTF)", "", _dn)
+        _dkey = f"{_court}|{_dn}"
+        if _dn and _dkey in _seen_dockets:
+            continue
         _seen_ids.add(_did)
         if _ckey and "||" not in _ckey:
             _seen_keys.add(_ckey)
+        if _dn:
+            _seen_dockets.add(_dkey)
         _deduped.append(_entry)
     scored = _deduped
     result_slice = scored[offset:offset + limit]
