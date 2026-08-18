@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/jonashertner-opencaselaw-badge.png)](https://mseep.ai/app/jonashertner-opencaselaw)
+
 # OpenCaseLaw
 
 Open Swiss case law and legislation for legal research and AI.
