@@ -205,3 +205,22 @@ def test_transitive_grouping():
          "source_url": None}
     g = group([a, b, c])
     assert g["a"] == g["b"] == g["c"]
+
+
+def test_cited_judgment_numbers_do_not_merge_entities():
+    """A publication page citing OTHER judgments must not fuse them into
+    its entity. A 4,000-char window did exactly that in production and
+    produced entities of twelve unrelated JTAPI decisions."""
+    page = {"decision_id": "ge_p", "court": "ge_gerichte",
+            "docket_number": "A/4229/2016", "decision_date": "2017-06-13",
+            "regeste": "ATA/655/2017 - descripteurs",
+            "full_text": ("ATA/655/2017 en la cause X. " + "texte " * 200
+                          + " voir aussi JTAPI/718/2025 et JTAPI/460/2025 "
+                            "et JTAPI/343/2024")}
+    own = {"decision_id": "ge_own", "court": "ge_gerichte",
+           "docket_number": "ATA/655/2017", "source_url": None}
+    cited = {"decision_id": "ge_cited", "court": "ge_gerichte",
+             "docket_number": "JTAPI/718/2025", "source_url": None}
+    g = group([page, own, cited])
+    assert g["ge_p"] == g["ge_own"]        # its own judgment: merged
+    assert g["ge_p"] != g["ge_cited"]      # merely cited: separate

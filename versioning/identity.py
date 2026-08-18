@@ -150,8 +150,18 @@ _JUDGMENT_NO = re.compile(
     re.I)
 
 
+# The publication page names its own judgment number in the HEADER. A
+# 4,000-character window also swept up judgment numbers merely CITED in
+# the body, and transitive union then chained unrelated JTAPI decisions
+# into entities of twelve (production check, 2026-08-18). The header
+# window is both faithful to the observed layout and the safe choice:
+# missing a link leaves two representations unmerged, while a wrong link
+# fuses distinct judgments.
+_CROSSREF_HEAD_CHARS = 300
+
+
 def crossref_channel(court: str | None, rec: dict) -> str | None:
-    """Judgment number declared inside a publication page.
+    """Judgment number declared in a publication page's header.
 
     Only emitted FROM a case-number record: the publication page points
     at the judgment, not the reverse, so this is a one-directional link
@@ -160,7 +170,7 @@ def crossref_channel(court: str | None, rec: dict) -> str | None:
     if not _CASE_NO.match((rec.get("docket_number") or "").strip()):
         return None
     head = ((rec.get("regeste") or "") + " "
-            + (rec.get("full_text") or ""))[:4000]
+            + (rec.get("full_text") or ""))[:_CROSSREF_HEAD_CHARS]
     m = _JUDGMENT_NO.search(head)
     if not m:
         return None
