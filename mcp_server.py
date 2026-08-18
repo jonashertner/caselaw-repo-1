@@ -3530,7 +3530,18 @@ def _search_fts5_inner(
             # it unmarked made `total` a function of the caller's page size
             # (60 -> 400 -> 2000 for one query, #56). The pool is a lower bound
             # on the expanded result set, never an exact count; say so.
-            _lower_bound = _exact_capped or total_candidates > _exact_total
+            #
+            # #75: that predicate is false whenever _exact_total already
+            # exceeds the un-enlarged pool floor (MIN_CANDIDATE_POOL = 60), so
+            # at limit <= 15 the strict-FTS count rendered as exact while the
+            # same query at a larger limit or offset served 30x more rows. The
+            # population, not the page size, decides: whenever more than the
+            # strict query ran, the retrievable set is a superset of the exact
+            # count and `total` is a lower bound. A single-strategy run (the
+            # phrase path) keeps its exact, unmarked total.
+            _expanded = len(strategies) > 1
+            _lower_bound = (
+                _exact_capped or total_candidates > _exact_total or _expanded)
         if meta is not None:
             meta["total_is_lower_bound"] = _lower_bound
         return reranked, total_out
@@ -6097,6 +6108,38 @@ def _rerank_rows(
         scored.sort(key=lambda x: (x[3]["decision_date"] or ""), reverse=reverse)
 
     # ── Enrich results with graph + metadata ──
+    # Deduplicate BEFORE paginating (#77). The caller ran
+    # _dedupe_results_by_decision_id on the already-sliced page, so canonical
+    # twins were removed from the page instead of from the ranking: limit=50
+    # delivered 49 rows, limit=200 delivered 192, while thousands of further
+    # candidates waited behind the cut. That also broke the documented
+    # completeness contract (`showing < limit` => "all results returned"),
+    # because a short page is indistinguishable from exhaustion. Collapsing
+    # the ranking first makes offset address a stable, duplicate-free list and
+    # restores exactly min(limit, remaining) rows.
+    _seen_ids: set[str] = set()
+    _seen_keys: set[str] = set()
+    _deduped: list = []
+    for _entry in scored:
+        _row = _entry[3]
+        _did = _row["decision_id"]
+        if _did in _seen_ids:
+            continue
+        _ckey = _make_canonical_key(
+            _row_get(_row, "court") or "",
+            _row_get(_row, "docket_number") or "",
+            _row_get(_row, "decision_date"),
+        )
+        # Empty-docket keys (court||date) collide across unrelated decisions;
+        # the id check alone governs them. Predicate copied verbatim from
+        # _dedupe_results_by_decision_id so the two paths cannot diverge.
+        if _ckey and "||" not in _ckey and _ckey in _seen_keys:
+            continue
+        _seen_ids.add(_did)
+        if _ckey and "||" not in _ckey:
+            _seen_keys.add(_ckey)
+        _deduped.append(_entry)
+    scored = _deduped
     result_slice = scored[offset:offset + limit]
     result_ids = [row["decision_id"] for _, _, _, row in result_slice]
     statutes_by_id = _batch_fetch_statutes(result_ids, limit_per=8)
@@ -9063,8 +9106,9 @@ def _format_appeal_chain_response(result: dict) -> str:
 
     chain = result.get("chain", [])
     did = result.get("decision_id", "?")
-    docket = result.get("docket_number", did)
     court = result.get("court", "?")
+    docket = _normalize_federal_docket(
+        _clean_docket(result.get("docket_number")), court) or did
     date = result.get("decision_date", "?")
 
     self_link = _md_link(docket, _canonical_decision_url(did))
@@ -10666,6 +10710,39 @@ def _clean_docket(docket: str | None) -> str:
     return docket.strip()
 
 
+# Federal docket grammar: chamber code, separator, running number / year —
+# '1B_1/2007', '4A_177/2021', '9C 850/2009', and the EVG-era two-digit forms
+# 'C_1/07', 'U_49/98'. The underscore is the only separator the Federal
+# Supreme Court's own citation rules use; a space in that slot is an ingest
+# artifact of the entscheidsuche feeds. Because R1 tells consumers to copy
+# citation_string verbatim, the artefact turns the anti-hallucination channel
+# into the error source, so it is normalised at render time for every federal
+# court rather than waiting on a corpus rebuild.
+#
+# Scope measured on production 2026-08-18: 66,456 affected federal rows —
+# 49,845 with a digit-first chamber code (the shape reported in #76) and a
+# further 16,611 single-letter EVG codes with two-digit years, which the
+# report's own pattern missed. Every prefix observed is a real chamber code
+# (6B, 2C, 5A, 9C, 8C, I, 4A, 1C, 1B, U, C, H, 5D, K, B, 4D, 2D, 7B, P, 1F)
+# and 64,903 of the rewrites agree character-for-character with the
+# decision_id, which is independent ground truth.
+#
+# The slash is what makes this safe: cantonal series legitimately contain
+# spaces ('410 2024 329', 'PKG 2024 1') and federal collection dockets do too
+# ('BB 2023 1'), but none of them carries the number/year slash, so none can
+# match. Federal courts only, in any case.
+_FED_SPACE_DOCKET = re.compile(r"^([0-9A-Z]{1,3}) (\d+/\d{2,4})$")
+_FEDERAL_DOCKET_COURTS = {"bger", "bge", "bvger", "bstger", "bpatger"}
+
+
+def _normalize_federal_docket(docket: str, court: str | None) -> str:
+    """Restore the canonical underscore in a federal docket. No-op otherwise."""
+    if not docket or (court or "").lower() not in _FEDERAL_DOCKET_COURTS:
+        return docket
+    m = _FED_SPACE_DOCKET.match(docket)
+    return f"{m.group(1)}_{m.group(2)}" if m else docket
+
+
 # Cantonal court-code suffixes are canton-prefixed German court names
 # (zh_obergericht, be_verwaltungsgericht). Map the suffix to a readable label so
 # the citation never emits the raw collection code as a court abbreviation
@@ -10717,7 +10794,8 @@ def _build_citation_strings(decision: dict, pinpoint: str | None = None) -> dict
     a safe "<court_upper> <docket>" form that is still valid Swiss legal shorthand.
     """
     court = (decision.get("court") or "").lower()
-    docket = _clean_docket(decision.get("docket_number"))
+    docket = _normalize_federal_docket(
+        _clean_docket(decision.get("docket_number")), court)
     decision_id = decision.get("decision_id", "")
     decision_date = decision.get("decision_date") or ""
     pin = _strip_erw_prefix(pinpoint)
@@ -10909,8 +10987,11 @@ def _handle_get_decisions(
         found_rows.append(result)
 
         citation = _build_citation_strings(result)
-        head = _md_link(_clean_docket(result.get("docket_number")) or raw_id,
-                        citation["canonical_url"])
+        head = _md_link(
+            _normalize_federal_docket(
+                _clean_docket(result.get("docket_number")),
+                result.get("court")) or raw_id,
+            citation["canonical_url"])
         parts = [f"## {head}"]
         meta = []
         if result.get("court"):
@@ -19320,8 +19401,17 @@ def _search_practice(
     # Sanitize FTS5 input (invariant #3) — every sibling FTS handler does this.
     # Without it a query with an apostrophe / hyphen / `Art.` / unbalanced quote
     # raises sqlite3.OperationalError and returns an error instead of results.
+    #
+    # Explicit-operator path (#78): the sanitizer quotes a bare OR as '"OR"',
+    # which FTS5 then requires as an AND term — so 'X OR X' returned FEWER
+    # rows than 'X AND X'. search_laws got this fix in #60; search_practice
+    # did not. When the ORIGINAL query carries operator syntax, run it raw and
+    # fall back to the sanitized form only if SQLite rejects it, so malformed
+    # input still degrades to results instead of an error.
+    explicit = _has_explicit_fts_syntax(query)
     safe_query = _sanitize_fts5(query)
-    if not safe_query:
+    fts_query = query.strip() if explicit else safe_query
+    if not fts_query:
         return {
             "query": query,
             "filters": {k: v for k, v in {
@@ -19331,7 +19421,7 @@ def _search_practice(
             "total": 0,
             "results": [],
         }
-    where, params = ["practice_fts MATCH ?"], [safe_query]
+    where, params = ["practice_fts MATCH ?"], [fts_query]
     if source:
         where.append("p.source = ?"); params.append(source)
     if issuing_authority:
@@ -19359,11 +19449,21 @@ def _search_practice(
         WHERE {' AND '.join(where)}
     """
     try:
-        rows = conn.execute(sql, [*params, limit]).fetchall()
-        # `total` must be the number of MATCHING documents, not the page size.
-        # It was len(rows), i.e. capped by `limit` — so a client asking how much
-        # guidance exists on a topic was told "10" no matter how much there was.
-        total = conn.execute(count_sql, params).fetchone()[0]
+        try:
+            rows = conn.execute(sql, [*params, limit]).fetchall()
+            # `total` must be the number of MATCHING documents, not the page
+            # size. It was len(rows), i.e. capped by `limit` — so a client
+            # asking how much guidance exists on a topic was told "10" no
+            # matter how much there was.
+            total = conn.execute(count_sql, params).fetchone()[0]
+        except sqlite3.OperationalError:
+            # Raw operator query rejected by FTS5 (e.g. the NEAR(a b, 5) comma,
+            # #78). Retry sanitized rather than leaking the engine error.
+            if not explicit or fts_query == safe_query or not safe_query:
+                raise
+            params[0] = safe_query
+            rows = conn.execute(sql, [*params, limit]).fetchall()
+            total = conn.execute(count_sql, params).fetchone()[0]
     except sqlite3.OperationalError as e:
         return {"error": "fts5_query_error", "message": str(e), "query": query}
     finally:
@@ -21460,7 +21560,9 @@ def _list_tools() -> list[Tool]:
                 "properties": {
                     "query": {
                         "type": "string",
-                        "description": "Search query (FTS5 syntax: quotes for phrases, OR for alternatives, NEAR/N for proximity).",
+                        # NEAR/N is not FTS5 syntax and never worked here
+                        # (#78); the engine's own form is NEAR(a b, N).
+                        "description": "Search query (FTS5 syntax: quotes for phrases, OR for alternatives, NEAR(term1 term2, N) for proximity).",
                     },
                     "source": {
                         "type": "string",
@@ -22106,7 +22208,11 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
             citation = _build_citation_strings(result)
             # H1 is itself a Markdown link so the LLM propagates a clickable
             # citation when it cites this decision in its final answer.
-            h1 = _md_link(_clean_docket(result.get('docket_number')), citation['canonical_url'])
+            h1 = _md_link(
+                _normalize_federal_docket(
+                    _clean_docket(result.get('docket_number')),
+                    result.get('court')),
+                citation['canonical_url'])
             text = (
                 f"# {h1}\n"
                 f"**Court:** {result['court']} | "

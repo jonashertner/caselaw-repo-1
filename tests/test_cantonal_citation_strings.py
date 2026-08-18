@@ -5,6 +5,7 @@ no unreliable date inside a citable string.
 """
 from __future__ import annotations
 
+import datetime
 import sys
 from pathlib import Path
 
@@ -13,6 +14,13 @@ if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 
 import mcp_server as m  # noqa: E402
+
+# The original fixtures hard-coded 2026-08-17 as "a future date"; on
+# 2026-08-18 it became the past and both assertions flipped. A date-relative
+# fixture tests the property (future dates are unreliable) instead of a
+# calendar coincidence.
+_FUTURE = (datetime.date.today() + datetime.timedelta(days=30)).isoformat()
+_FUTURE_YEAR = _FUTURE[:4]
 
 
 def test_cantonal_court_label_derivation():
@@ -27,21 +35,22 @@ def test_cantonal_court_label_derivation():
 def test_citation_date_reliability():
     assert m._citation_date_reliable("2025-09-27") is True
     assert m._citation_date_reliable("2026-01-01") is False   # placeholder
-    assert m._citation_date_reliable("2026-08-17") is False   # future
+    assert m._citation_date_reliable(_FUTURE) is False        # future
     assert m._citation_date_reliable(None) is False
 
 
 def test_cantonal_citation_string_no_raw_code_no_bad_date():
     dec = {
         "court": "fr_gerichte", "canton": "FR",
-        "docket_number": "101 2026 140", "decision_date": "2026-08-17",  # future
+        "docket_number": "101 2026 140", "decision_date": _FUTURE,
         "decision_id": "fr_gerichte_101 2026 140",
     }
     cs = m._build_citation_strings(dec)
     assert "FR_GERICHTE" not in cs["citation_string_de"]
     assert cs["citation_string_de"].startswith("Gericht FR")
     assert cs["citation_string_fr"].startswith("Tribunal FR")
-    assert "2026" not in cs["citation_string_de"].split("140")[-1]  # future date suppressed
+    # future date suppressed: nothing follows the docket
+    assert _FUTURE_YEAR not in cs["citation_string_de"].split("140")[-1]
     assert "vom" not in cs["citation_string_de"]
 
 
