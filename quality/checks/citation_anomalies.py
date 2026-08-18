@@ -125,8 +125,13 @@ def _bge_series_index(rg) -> tuple[dict, int]:
         vol, div, page = int(m.group(1)), m.group(2).upper(), int(m.group(3))
         idx.setdefault((vol, div), []).append(page)
         max_vol = max(max_vol, vol)
-    for pages in idx.values():
-        pages.sort()
+    # Deduplicate: the bge court carries multiple docket formats per
+    # decision across scrape eras, so raw appends repeat start pages
+    # (50,467 rows -> 35,420 unique starts; review 2026-08-13). Windows
+    # are gap-based and unaffected, but counts and any released index
+    # must be over unique starts.
+    for key in list(idx):
+        idx[key] = sorted(set(idx[key]))
     return idx, max_vol
 
 
