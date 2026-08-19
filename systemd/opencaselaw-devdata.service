@@ -1,0 +1,13 @@
+[Unit]
+Description=OpenCaseLaw dev-data collection into the private data repo
+# After the nightly pipeline's usual exit; the collector is read-only
+# against production files and light, but there is no reason to overlap.
+After=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/caselaw/repo
+ExecStart=/usr/bin/python3 /opt/caselaw/repo/scripts/collect_dev_data.py --dest /opt/caselaw/data-private
+StandardOutput=append:/opt/caselaw/repo/logs/devdata_collect.log
+StandardError=append:/opt/caselaw/repo/logs/devdata_collect.log
+TimeoutStartSec=1800

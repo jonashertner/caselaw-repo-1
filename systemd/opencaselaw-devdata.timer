@@ -1,0 +1,9 @@
+[Unit]
+Description=Daily dev-data collection (18:30 UTC, after the nightly pipeline exits)
+
+[Timer]
+OnCalendar=*-*-* 18:30:00 UTC
+Persistent=true
+
+[Install]
+WantedBy=timers.target
