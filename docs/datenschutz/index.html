@@ -200,7 +200,7 @@ OCL.init({
       priv_summary_bullet_cookies:'<strong>Keine Cookies.</strong> Die Website setzt keinerlei Cookies, weder notwendige noch optionale.',
       priv_summary_bullet_fp:'<strong>Kein Fingerprinting.</strong> Kein Canvas-, Font-, Audio- oder WebGL-Fingerprinting. Keine Drittanbieter-Analyse.',
       priv_summary_bullet_google:'<strong>Kein Google Analytics, kein Plausible Cloud, kein Sentry.</strong> Jede Auswertung läuft auf unserem eigenen Server in Deutschland.',
-      priv_summary_bullet_queries:'<strong>Suchanfragen werden nicht mit Ihnen verknüpft.</strong> Läuft die semantische Nachsortierung, wird der Anfragetext (max. 200 Zeichen) in einem internen Qualitätsprotokoll erfasst — ohne IP-Adresse, ohne Nutzer-ID, ohne Sitzungsbezug. Die Einträge lassen sich weder Ihnen noch einander zuordnen. Die Protokolldateien werden nach 30 Tagen automatisch gelöscht.',
+      priv_summary_bullet_queries:'<strong>Entwicklungsdaten: befristete Vollerhebung, keine dauerhafte Speicherung individueller Daten.</strong> Zur Verbesserung der Suche, für Forschung und für das Training eigener Modelle erfassen wir während einer befristeten Evaluationsphase vollständige Anfragedaten: Werkzeug, Parameter einschliesslich Anfragetext, Zeitpunkt, Client-Klasse und eine Sitzungskennung. <strong>Keine IP-Adresse wird mit Anfragen gespeichert</strong>; Sitzungen sind nicht mit Personen verknüpfbar — kein Konto, kein Login, die Kennung wechselt mit jeder Verbindung. Dokumenttexte aus dem Word-Add-in werden nie gespeichert, nur ihre Länge. <strong>Rohdaten mit Sitzungsbezug werden spätestens 12 Monate nach Erfassung gelöscht.</strong> Dauerhaft bleiben nur aggregierte Statistiken und abgeleitete Forschungsdatensätze ohne Sitzungs- und Personenbezug sowie daraus trainierte Modelle. Der Erhebungscode ist quelloffen (<code>mcp_server.py</code>, <code>scripts/collect_dev_data.py</code>).',
       priv_summary_bullet_ids:'<strong>Keine Nutzer-IDs.</strong> Wir können dieselbe Person nicht über zwei Besuche hinweg wiedererkennen — kryptographisch nicht, nicht nur als Richtlinie.',
       priv_summary_bullet_dp:'<strong>Alle publizierten Zahlen sind differentiell privat</strong> (ε = 1,0) und unterliegen einer k-Anonymitätsschwelle von k = 10.',
       priv_logs_heading:'Server-Logs in drei Stufen',
@@ -222,7 +222,7 @@ OCL.init({
       priv_rollup_bullet_reach:'<strong>Ungefähre Anzahl aktiver Installationen</strong> pro Client-Klasse (via HyperLogLog-Skizze, pro Monat rotierend).',
       priv_rollup_bullet_status:'<strong>HTTP-Statusverteilung</strong> über alle Anfragen.',
       priv_rollup_never_heading:'Was wir ausdrücklich niemals sammeln',
-      priv_rollup_never_queries:'<strong>Verknüpfung von Suchanfragen mit Personen</strong> — Anfragetexte werden ohne IP-Adresse, Nutzer-ID und Sitzungsbezug erfasst; eine Zuordnung zu Ihnen oder zwischen zwei Anfragen ist strukturell nicht möglich. Die Protokolldateien werden nach 30 Tagen automatisch gelöscht.',
+      priv_rollup_never_queries:'<strong>Dauerhafte individuelle Profile</strong> — keine IP-Adresse bei Anfragen, kein Nutzerkonto, keine Verknüpfung einer Sitzung mit einer Person. Während der Evaluationsphase werden Anfragen <em>innerhalb derselben Sitzung</em> miteinander verknüpft; diese Rohdaten sind befristet und werden spätestens nach 12 Monaten gelöscht. Was dauerhaft bleibt, enthält keinen Sitzungs- oder Personenbezug.',
       priv_rollup_never_docs:'Welche Entscheide oder Gesetze eine bestimmte Person aufruft.',
       priv_rollup_never_ip:'Rohe IP-Adressen in Aggregaten oder Stufe-3-Daten.',
       priv_rollup_never_ua:'Vollständige User-Agent-Strings über 72 Stunden hinaus (nur Klasse, z. B. „cursor“).',
@@ -247,7 +247,7 @@ OCL.init({
       priv_contact_heading:'Fragen, Bedenken, Audits',
       priv_contact_1:'Alle hier beschriebenen Mechanismen sind Open Source und prüfbar im <a href="https://github.com/jonashertner/opencaselaw">GitHub-Repository</a>. Wenn Sie eine Diskrepanz zwischen dieser Seite und dem tatsächlichen Verhalten des Systems feststellen, betrachten Sie das als Bug — melden Sie es uns und wir beheben es.',
       priv_contact_2:'E-Mail: <a href="mailto:team@jonashertner.com">team@jonashertner.com</a><br>Fragen zum Datenschutz werden innerhalb weniger Tage beantwortet.',
-      priv_contact_version:'Letzte Aktualisierung: 2026-04-11 · Versioniert in Git, Änderungen öffentlich einsehbar.'
+      priv_contact_version:'Letzte Aktualisierung: 2026-08-19 · Versioniert in Git, Änderungen öffentlich einsehbar.'
     },
     fr:{
       kicker:'Confidentialité',
@@ -261,7 +261,7 @@ OCL.init({
       priv_summary_bullet_cookies:'<strong>Aucun cookie.</strong> Le site n’installe aucun cookie, ni nécessaire ni facultatif.',
       priv_summary_bullet_fp:'<strong>Aucun fingerprinting.</strong> Ni canvas, ni polices, ni audio, ni WebGL. Aucune analyse tierce.',
       priv_summary_bullet_google:'<strong>Pas de Google Analytics, pas de Plausible Cloud, pas de Sentry.</strong> Toute analyse s’exécute sur notre propre serveur en Allemagne.',
-      priv_summary_bullet_queries:'<strong>Les requêtes de recherche ne sont pas liées à vous.</strong> Lorsque le reclassement sémantique s\'exécute, le texte de la requête (200 caractères au maximum) est consigné dans un journal qualité interne — sans adresse IP, sans identifiant d\'utilisateur, sans référence de session. Les entrées ne peuvent être rattachées ni à vous ni les unes aux autres. Les fichiers journaux sont automatiquement supprimés après 30 jours.',
+      priv_summary_bullet_queries:'<strong>Données de développement : capture complète pour une période limitée, aucun stockage permanent d\'informations individuelles.</strong> Pour améliorer la recherche, à des fins de recherche scientifique et pour entraîner nos propres modèles, nous enregistrons pendant une période d\'évaluation limitée des données de requête complètes : outil, paramètres y compris le texte de la requête, horodatage, classe de client et un identifiant de session. <strong>Aucune adresse IP n\'est stockée avec les requêtes</strong>; les sessions ne peuvent pas être rattachées à des personnes — pas de compte, pas de connexion permanente, l\'identifiant change à chaque connexion. Le texte des documents du complément Word n\'est jamais stocké, seulement sa longueur. <strong>Les données brutes portant une référence de session sont supprimées au plus tard 12 mois après leur collecte.</strong> Ne subsistent durablement que des statistiques agrégées et des jeux de données de recherche dérivés, sans référence de session ni de personne, ainsi que les modèles entraînés à partir de ceux-ci. Le code de collecte est open source (<code>mcp_server.py</code>, <code>scripts/collect_dev_data.py</code>).',
       priv_summary_bullet_ids:'<strong>Pas d’identifiants utilisateur.</strong> Nous ne pouvons pas reconnaître la même personne entre deux visites — cryptographiquement, pas seulement par politique.',
       priv_summary_bullet_dp:'<strong>Tous les chiffres publiés sont différentiellement privés</strong> (ε = 1,0) et soumis à un seuil d’anonymat k = 10.',
       priv_logs_heading:'Logs serveur en trois niveaux',
@@ -283,7 +283,7 @@ OCL.init({
       priv_rollup_bullet_reach:'<strong>Nombre approximatif d’installations actives</strong> par classe client (via une esquisse HyperLogLog, à rotation mensuelle).',
       priv_rollup_bullet_status:'<strong>Distribution des codes HTTP</strong> sur toutes les requêtes.',
       priv_rollup_never_heading:'Ce que nous ne collectons jamais',
-      priv_rollup_never_queries:'<strong>Le rattachement des requêtes à une personne</strong> — les textes de requête sont consignés sans adresse IP, sans identifiant d\'utilisateur et sans référence de session; aucun rattachement à vous ou entre deux requêtes n\'est structurellement possible. Les fichiers journaux sont automatiquement supprimés après 30 jours.',
+      priv_rollup_never_queries:'<strong>Profils individuels permanents</strong> — aucune adresse IP avec les requêtes, aucun compte d\'utilisateur, aucun lien entre une session et une personne. Pendant la période d\'évaluation, les requêtes <em>d\'une même session</em> sont liées entre elles; ces données brutes sont limitées dans le temps et supprimées au plus tard après 12 mois. Ce qui est conservé durablement ne comporte aucune référence de session ni de personne.',
       priv_rollup_never_docs:'Quelles décisions ou lois une personne donnée consulte.',
       priv_rollup_never_ip:'Adresses IP brutes dans les agrégats ou les données de niveau 3.',
       priv_rollup_never_ua:'Chaînes User-Agent complètes au-delà de 72 heures (seulement la classe).',
@@ -308,7 +308,7 @@ OCL.init({
       priv_contact_heading:'Questions, préoccupations, audits',
       priv_contact_1:'Tous les mécanismes décrits ici sont open source et vérifiables dans le <a href="https://github.com/jonashertner/opencaselaw">dépôt GitHub</a>. Si vous constatez un écart entre cette page et le comportement réel du système, considérez cela comme un bug — signalez-le et nous le corrigerons.',
       priv_contact_2:'E-mail : <a href="mailto:team@jonashertner.com">team@jonashertner.com</a><br>Les questions de confidentialité reçoivent une réponse en quelques jours.',
-      priv_contact_version:'Dernière mise à jour : 2026-04-11 · Versionné dans Git, modifications publiquement consultables.'
+      priv_contact_version:'Dernière mise à jour : 2026-08-19 · Versionné dans Git, modifications publiquement consultables.'
     },
     it:{
       kicker:'Privacy',
@@ -322,7 +322,7 @@ OCL.init({
       priv_summary_bullet_cookies:'<strong>Nessun cookie.</strong> Il sito non installa alcun cookie, né necessario né facoltativo.',
       priv_summary_bullet_fp:'<strong>Nessun fingerprinting.</strong> Né canvas, né font, né audio, né WebGL. Nessuna analisi di terze parti.',
       priv_summary_bullet_google:'<strong>Niente Google Analytics, niente Plausible Cloud, niente Sentry.</strong> Ogni analisi è eseguita sul nostro server in Germania.',
-      priv_summary_bullet_queries:'<strong>Le query di ricerca non vengono collegate a voi.</strong> Quando viene eseguito il riordino semantico, il testo della query (massimo 200 caratteri) è registrato in un log interno di qualità — senza indirizzo IP, senza ID utente, senza riferimento di sessione. Le voci non sono riconducibili né a voi né tra loro. I file di log vengono eliminati automaticamente dopo 30 giorni.',
+      priv_summary_bullet_queries:'<strong>Dati di sviluppo: rilevamento completo per un periodo limitato, nessuna conservazione permanente di informazioni individuali.</strong> Per migliorare la ricerca, a fini di ricerca scientifica e per addestrare modelli propri, durante una fase di valutazione limitata registriamo dati di richiesta completi: strumento, parametri incluso il testo della query, momento, classe di client e un identificativo di sessione. <strong>Nessun indirizzo IP viene memorizzato con le richieste</strong>; le sessioni non possono essere ricondotte a persone — nessun account, nessun login, l\'identificativo cambia a ogni connessione. Il testo dei documenti del componente aggiuntivo Word non viene mai memorizzato, solo la sua lunghezza. <strong>I dati grezzi con riferimento di sessione vengono cancellati al più tardi 12 mesi dopo la raccolta.</strong> In modo permanente restano solo statistiche aggregate e set di dati di ricerca derivati, privi di riferimenti a sessioni e persone, nonché i modelli addestrati su di essi. Il codice di raccolta è open source (<code>mcp_server.py</code>, <code>scripts/collect_dev_data.py</code>).',
       priv_summary_bullet_ids:'<strong>Nessun identificativo utente.</strong> Non possiamo riconoscere la stessa persona tra due visite — crittograficamente, non solo come politica.',
       priv_summary_bullet_dp:'<strong>Tutti i numeri pubblicati sono differenzialmente privati</strong> (ε = 1,0) e soggetti a una soglia di k-anonimità k = 10.',
       priv_logs_heading:'Log del server a tre livelli',
@@ -344,7 +344,7 @@ OCL.init({
       priv_rollup_bullet_reach:'<strong>Numero approssimativo di installazioni attive</strong> per classe client (tramite sketch HyperLogLog, a rotazione mensile).',
       priv_rollup_bullet_status:'<strong>Distribuzione dei codici HTTP</strong> su tutte le richieste.',
       priv_rollup_never_heading:'Cosa non raccogliamo mai',
-      priv_rollup_never_queries:'<strong>Il collegamento delle query a una persona</strong> — i testi delle query sono registrati senza indirizzo IP, ID utente e riferimento di sessione; nessuna attribuzione a voi o tra due query è strutturalmente possibile. I file di log vengono eliminati automaticamente dopo 30 giorni.',
+      priv_rollup_never_queries:'<strong>Profili individuali permanenti</strong> — nessun indirizzo IP con le richieste, nessun account utente, nessun collegamento tra una sessione e una persona. Durante la fase di valutazione le richieste <em>della stessa sessione</em> vengono collegate tra loro; questi dati grezzi sono limitati nel tempo e vengono cancellati al più tardi dopo 12 mesi. Ciò che viene conservato in modo permanente non contiene riferimenti a sessioni o persone.',
       priv_rollup_never_docs:'Quali decisioni o leggi una determinata persona consulta.',
       priv_rollup_never_ip:'Indirizzi IP grezzi negli aggregati o nei dati di livello 3.',
       priv_rollup_never_ua:'Stringhe User-Agent complete oltre le 72 ore (solo la classe).',
@@ -369,7 +369,7 @@ OCL.init({
       priv_contact_heading:'Domande, preoccupazioni, audit',
       priv_contact_1:'Tutti i meccanismi qui descritti sono open source e verificabili nel <a href="https://github.com/jonashertner/opencaselaw">repository GitHub</a>. Se notate una discrepanza tra questa pagina e il comportamento effettivo del sistema, consideratela un bug — segnalatecela e la correggeremo.',
       priv_contact_2:'E-mail: <a href="mailto:team@jonashertner.com">team@jonashertner.com</a><br>Le domande sulla privacy ricevono risposta in pochi giorni.',
-      priv_contact_version:'Ultimo aggiornamento: 2026-04-11 · Versionato in Git, modifiche pubblicamente consultabili.'
+      priv_contact_version:'Ultimo aggiornamento: 2026-08-19 · Versionato in Git, modifiche pubblicamente consultabili.'
     },
     rm:{
       kicker:'Protecziun da datas',
@@ -383,7 +383,7 @@ OCL.init({
       priv_summary_bullet_cookies:'<strong>Nagin cookie.</strong> Il sit na metta nagin cookie — nè necessari nè facultativ.',
       priv_summary_bullet_fp:'<strong>Nagin fingerprinting.</strong> Nè canvas, nè fonts, nè audio, nè WebGL. Nagina analisa da terzs.',
       priv_summary_bullet_google:'<strong>Nagin Google Analytics, nagin Plausible Cloud, nagin Sentry.</strong> Tut las analisas van en noss agen server en Germania.',
-      priv_summary_bullet_queries:'<strong>Las dumondas da tschertga na vegnan betg colliadas cun Vus.</strong> Sche la reordinaziun semantica vegn exequida, vegn il text da la dumonda (maximalmain 200 caracters) registrà en in protocol da qualitad intern — senza adressa IP, senza ID d\'utilisader, senza referenza da sesida. Las endataziuns na pon vegnir attribuidas ni a Vus ni ina a l\'autra. Las datotecas da protocol vegnan stizzadas automaticamain suenter 30 dis.',
+      priv_summary_bullet_queries:'<strong>Datas da svilup: registraziun cumpletta per ina perioda limitada, nagina memorisaziun permanenta d\'infurmaziuns individualas.</strong> Per meglierar la tschertga, per finamiras da retschertga e per trenar agens models registrain nus durant ina fasa d\'evaluaziun limitada datas da dumonda cumplettas: utensil, parameters inclus il text da la dumonda, mument, classa da client ed ina identificaziun da sesida. <strong>Nagina adressa IP na vegn memorisada cun las dumondas</strong>; sesidas na pon betg vegnir colliadas cun persunas — nagin conto, nagin login, l\'identificaziun mida cun mintga connexiun. Il text da documents dal Word-Add-in na vegn mai memorisà, mo sia lunghezza. <strong>Datas brutas cun referenza da sesida vegnan stizzadas il pli tard 12 mais suenter la registraziun.</strong> Permanent restan mo statisticas aggregadas e sets da datas da retschertga derivads senza referenza da sesida e da persuna sco er models trenads sin quels. Il code da rimnada è open source (<code>mcp_server.py</code>, <code>scripts/collect_dev_data.py</code>).',
       priv_summary_bullet_ids:'<strong>Naginas IDs d’utilisader.</strong> Nus na pudain betg reconuscher la medema persuna tranter duas visitas — cryptograficamain, betg mo sco reglament.',
       priv_summary_bullet_dp:'<strong>Tut las cifras publitgadas èn a privezza differenziala</strong> (ε = 1,0) e suttastan ad ina saida da k-anonimitad k = 10.',
       priv_logs_heading:'Logs dal server en trais nivels',
@@ -405,7 +405,7 @@ OCL.init({
       priv_rollup_bullet_reach:'<strong>Dumber approximativ d’installaziuns activas</strong> per classa client (via HyperLogLog, rotaziun mensila).',
       priv_rollup_bullet_status:'<strong>Distribuziun dals codes HTTP</strong> surtut las dumondas.',
       priv_rollup_never_heading:'Quai che nus na recoltain mai',
-      priv_rollup_never_queries:'<strong>La colliaziun da dumondas cun persunas</strong> — ils texts da las dumondas vegnan registrads senza adressa IP, ID d\'utilisader e referenza da sesida; ina attribuziun a Vus u tranter duas dumondas n\'è structuralmain betg pussaivla. Las datotecas da protocol vegnan stizzadas automaticamain suenter 30 dis.',
+      priv_rollup_never_queries:'<strong>Profils individuals permanents</strong> — nagina adressa IP cun las dumondas, nagin conto d\'utilisader, nagina colliaziun tranter ina sesida ed ina persuna. Durant la fasa d\'evaluaziun vegnan dumondas <em>da la medema sesida</em> colliadas ina cun l\'autra; questas datas brutas èn limitadas temporalmain e vegnan stizzadas il pli tard suenter 12 mais. Quai che vegn tegnì permanentamain na cuntegna nagina referenza da sesida u da persuna.',
       priv_rollup_never_docs:'Tge decisiuns u leschas ina persuna specifica consulta.',
       priv_rollup_never_ip:'Adressas IP grezzas en aggregats u en datas dal nivel 3.',
       priv_rollup_never_ua:'Cordas User-Agent cumplainas sur 72 uras (mo la classa).',
@@ -430,7 +430,7 @@ OCL.init({
       priv_contact_heading:'Dumondas, preoccupaziuns, audits',
       priv_contact_1:'Tut ils mecanissems qua descrits èn open source e verifitgabels en il <a href="https://github.com/jonashertner/opencaselaw">repositori GitHub</a>.',
       priv_contact_2:'E-mail: <a href="mailto:team@jonashertner.com">team@jonashertner.com</a><br>Dumondas davart la protecziun da datas survegnan resposta en pauc dis.',
-      priv_contact_version:'Davosa actualisaziun: 2026-04-11 · Versiunà en Git.'
+      priv_contact_version:'Davosa actualisaziun: 2026-08-19 · Versiunà en Git.'
     },
     en:{
       kicker:'Privacy',
@@ -444,7 +444,7 @@ OCL.init({
       priv_summary_bullet_cookies:'<strong>No cookies.</strong> The site sets no cookies at all, neither necessary nor optional.',
       priv_summary_bullet_fp:'<strong>No fingerprinting.</strong> No canvas, font, audio, or WebGL fingerprinting. No third-party analytics.',
       priv_summary_bullet_google:'<strong>No Google Analytics, no Plausible Cloud, no Sentry.</strong> All analysis runs on our own server in Germany.',
-      priv_summary_bullet_queries:'<strong>Search queries are not linked to you.</strong> When semantic re-ranking runs, the query text (200 characters at most) is recorded in an internal quality log — with no IP address, no user ID, no session reference. Entries cannot be attributed to you, or to one another. The log files are automatically deleted after 30 days.',
+      priv_summary_bullet_queries:'<strong>Development data: full capture for a limited period, no permanent storage of individual information.</strong> To improve search, for research and to train our own models, we record complete request data during a limited evaluation period: tool, parameters including query text, timestamp, client class and a session identifier. <strong>No IP address is stored with any request</strong>; sessions cannot be linked to persons — there is no account, no login, and the identifier rotates with every connection. Document text from the Word add-in is never stored, only its length. <strong>Raw records carrying a session reference are deleted at the latest 12 months after collection.</strong> What persists permanently is only aggregate statistics and derived research datasets stripped of session and personal references, and models trained from them. The collection code is open source (<code>mcp_server.py</code>, <code>scripts/collect_dev_data.py</code>).',
       priv_summary_bullet_ids:'<strong>No user IDs.</strong> We cannot recognise the same person across two visits — cryptographically, not just as a policy.',
       priv_summary_bullet_dp:'<strong>All published numbers are differentially private</strong> (ε = 1.0) and subject to a k-anonymity threshold of k = 10.',
       priv_logs_heading:'Server logs in three tiers',
@@ -466,7 +466,7 @@ OCL.init({
       priv_rollup_bullet_reach:'<strong>Approximate active installations</strong> per client class (via a HyperLogLog sketch that rotates monthly).',
       priv_rollup_bullet_status:'<strong>HTTP status distribution</strong> across all requests.',
       priv_rollup_never_heading:'What we never collect',
-      priv_rollup_never_queries:'<strong>Any link between a query and a person</strong> — query text is recorded with no IP address, no user ID and no session reference; attribution to you, or between two queries, is structurally impossible. The log files are automatically deleted after 30 days.',
+      priv_rollup_never_queries:'<strong>Permanent individual profiles</strong> — no IP address with requests, no user account, no link between a session and a person. During the evaluation period, requests <em>within the same session</em> are linked to one another; those raw records are time-limited and deleted at the latest after 12 months. What is kept permanently carries no session or personal reference.',
       priv_rollup_never_docs:'Which decisions or laws a specific person looks up.',
       priv_rollup_never_ip:'Raw IP addresses in aggregates or Tier-3 data.',
       priv_rollup_never_ua:'Full User-Agent strings beyond 72 hours (only the class).',
@@ -491,7 +491,7 @@ OCL.init({
       priv_contact_heading:'Questions, concerns, audits',
       priv_contact_1:'Every mechanism described here is open source and auditable in the <a href="https://github.com/jonashertner/opencaselaw">GitHub repository</a>. If you spot a discrepancy between this page and the system’s actual behaviour, treat it as a bug — report it and we will fix it.',
       priv_contact_2:'Email: <a href="mailto:team@jonashertner.com">team@jonashertner.com</a><br>Privacy questions get a reply within a few days.',
-      priv_contact_version:'Last updated: 2026-04-11 · Versioned in Git, changes publicly visible.'
+      priv_contact_version:'Last updated: 2026-08-19 · Versioned in Git, changes publicly visible.'
     }
   }
 });
