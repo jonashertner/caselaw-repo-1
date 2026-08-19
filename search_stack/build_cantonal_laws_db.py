@@ -231,11 +231,26 @@ def build(direct_dir: Path, lexfind_dir: Path, output_db: Path) -> None:
         for f in sorted(lexfind_dir.glob("*.jsonl")):
             canton_files[f.stem.upper()] = f
 
-    # Direct sources override LexFind
+    # Direct sources override LexFind. The override is wholesale — a canton
+    # comes entirely from one file — so a direct shard that is present but
+    # truncated silently replaces the fallback with less than it held. The
+    # "non-empty" test below is in bytes, which does not catch that: on
+    # 2026-08-19 a stale 126 KB ZH shard holding 3 laws displaced 1,374, and
+    # nothing in the log said so. Shadowing a much larger fallback is
+    # therefore worth a warning, even though it is legitimate when the direct
+    # scrape is simply more selective than LexFind's index.
     if direct_dir.exists():
         for f in sorted(direct_dir.glob("*.jsonl")):
             if f.stat().st_size > 0:  # Only override if non-empty
-                canton_files[f.stem.upper()] = f
+                canton = f.stem.upper()
+                prev = canton_files.get(canton)
+                if prev is not None and f.stat().st_size * 5 < prev.stat().st_size:
+                    log.warning(
+                        "[%s] direct shard is %.1f MB but shadows a %.1f MB "
+                        "LexFind shard — check %s is current",
+                        canton, f.stat().st_size / 1e6,
+                        prev.stat().st_size / 1e6, f)
+                canton_files[canton] = f
 
     if not canton_files:
         log.error("No JSONL files found in %s or %s", direct_dir, lexfind_dir)
@@ -330,7 +345,8 @@ def build(direct_dir: Path, lexfind_dir: Path, output_db: Path) -> None:
                     c_arts += 1
                 c_laws += 1
 
-        log.info("[%s] %d laws, %d articles", canton, c_laws, c_arts)
+        log.info("[%s] %d laws, %d articles (%s)", canton, c_laws, c_arts,
+                 "direct" if path.parent == direct_dir else "lexfind")
         total_laws += c_laws
         total_articles += c_arts
 
