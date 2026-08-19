@@ -73,6 +73,7 @@ import asyncio
 import collections
 import contextvars
 import hashlib
+import secrets
 import json
 import logging
 import math
@@ -2171,6 +2172,46 @@ _CAPTURE_SECRET_FIELDS = {"license_key", "license", "token", "api_key",
                           "authorization", "password"}
 
 
+def _new_result_set_id() -> str:
+    """An opaque, ephemeral token identifying one search's result list.
+
+    Echoed in the search response and stamped into the impression record,
+    so a later fetch can be joined back to the exact ranked list it came
+    from — the impression/click pair that unbiased learning-to-rank needs
+    and that a raw fetch event, shorn of its position, cannot provide.
+
+    Random, tied to no person, meaningless after the day's records are
+    pruned. Correlating two requests by it is the within-session linkage
+    the /datenschutz/ evaluation-period notice discloses.
+    """
+    return "rs_" + secrets.token_hex(8)
+
+
+def _traffic_class(client: str | None, src: str, tool: str | None,
+                   has_session: bool) -> str:
+    """crawler | agent | direct — the segment a record belongs to.
+
+    Most raw volume is crawler traffic (export_decision bots); the
+    signal-bearing sessions are a minority, and a dataset that does not
+    separate them trains on noise. Coarse and deterministic:
+      * crawler — a known bot UA, or a bulk export fetch
+      * agent   — an MCP session running several tools (real research)
+      * direct  — a stateless one-shot API call
+    """
+    if client == "bot":
+        return "crawler"
+    if src == "mcp" and has_session:
+        return "agent"
+    # A bulk export with no session is the classic crawler shape; the
+    # SAME tool inside a session is an agent reading a result it found,
+    # which the interaction join counts as engagement — so the session,
+    # not the tool alone, decides. (The join's _FETCH_TOOLS and this
+    # classifier must not disagree about export_decision.)
+    if tool in ("export_decision", "get_decisions") and not has_session:
+        return "crawler"
+    return "direct"
+
+
 def _capture_event(record: dict) -> None:
     """Append one full-capture record. Never raises; never blocks."""
     if not _FULL_CAPTURE:
@@ -3752,7 +3793,15 @@ def _search_fts5_inner(
                 merged.extend(cross[ci:])
                 reranked = merged[:len(reranked)]
 
+        # Result-set id: the join key between this impression and any
+        # later fetch. Minted once, carried into the trace, the response
+        # (via meta) and the impression capture record below.
+        _result_set_id = _new_result_set_id()
+        if meta is not None:
+            meta["result_set_id"] = _result_set_id
+
         # Emit research trace
+        _trace["result_set_id"] = _result_set_id
         _trace["total_candidates"] = total_candidates
         _trace["result_count"] = len(reranked)
         _trace["total_ms"] = round((time.monotonic() - _trace_t0) * 1000)
@@ -3768,6 +3817,29 @@ def _search_fts5_inner(
         _trace["cross_lingual_positions"] = cross
         _trace["timestamp"] = datetime.now(timezone.utc).isoformat()
         _log_search_trace(_trace)
+
+        # Impression: the ranked list as shown, in the capture stream
+        # (which carries the session id) so a later fetch in the same
+        # session joins to it offline. This is the half of every LTR
+        # training pair — the displayed positions — that a fetch event
+        # cannot reconstruct after the fact. Ids and ranks; the query
+        # itself rides the tool-call capture record, not this one.
+        if _FULL_CAPTURE:
+            _sid = _ctx_session_id.get("")
+            _capture_event({
+                "src": "impression",
+                "ts": datetime.now(timezone.utc).isoformat(),
+                "sid": _sid[:16] if _sid else None,
+                "result_set_id": _result_set_id,
+                "query_len": len(query or ""),
+                # Ranked ids + positions. Position is the load-bearing LTR
+                # signal; the per-candidate scores already live in the
+                # trace's signals_top, cross-referenced by result_set_id,
+                # so they are not duplicated here.
+                "ranked": [{"id": r.get("decision_id", ""), "rank": i}
+                           for i, r in enumerate(reranked[:30])
+                           if r.get("decision_id")],
+            })
 
         # Honest `total`: exact count of decisions matching the query + filters,
         # not the reranked candidate-pool size. max() keeps total >= what is
@@ -22510,6 +22582,9 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
         "src": "mcp", "ts": datetime.now(timezone.utc).isoformat(),
         "sid": _call_sid[:16] if _call_sid else None,
         "client": _client_class(_call_ua) if _call_ua else "-",
+        "traffic": _traffic_class(
+            _client_class(_call_ua) if _call_ua else None,
+            "mcp", name, bool(_call_sid)),
         "tool": name, "args": _capture_args(arguments),
     })
     # Track in session map
@@ -22706,13 +22781,19 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 # the decision widget renders from. Tuple returns bypass the
                 # wrapper's open-access note, so apply it here — same parity
                 # fix the law-search branch needed.
+                _struct = _decision_hits_structured(
+                    results, arguments.get("query", "") or "",
+                    arguments.get("language") or "de",
+                    total=total_count, total_is_lower_bound=_total_lb)
+                # Same result-set id the impression logged: an agent that
+                # passes it back on a later get_decision (from_result_set)
+                # gives a clean relevance join, no offline inference.
+                if _search_meta.get("result_set_id"):
+                    _struct["result_set_id"] = _search_meta["result_set_id"]
                 return (
                     [TextContent(type="text",
                                  text=_with_open_access_note(text + _echr_note))],
-                    _decision_hits_structured(
-                        results, arguments.get("query", "") or "",
-                        arguments.get("language") or "de",
-                        total=total_count, total_is_lower_bound=_total_lb),
+                    _struct,
                 )
             return [TextContent(type="text", text=text + _echr_note)]
 
@@ -24140,11 +24221,14 @@ setInterval(load, 30000);
                 tool, err = _classify_rest_metric(request.url.path, status)
                 if tool:
                     _record_tool_call(tool, (time.monotonic() - t0) * 1000, error=err)
+                    _rest_client = _client_class(
+                        request.headers.get("user-agent"))
                     _capture_event({
                         "src": "rest",
                         "ts": datetime.now(timezone.utc).isoformat(),
-                        "client": _client_class(
-                            request.headers.get("user-agent")),
+                        "client": _rest_client,
+                        "traffic": _traffic_class(
+                            _rest_client, "rest", tool, False),
                         "tool": tool, "path": request.url.path,
                         "params": _capture_args(
                             dict(request.query_params)),
@@ -25280,6 +25364,12 @@ setInterval(load, 30000);
             "has_more": has_more,
             "next_offset": (offset + returned) if has_more else None,
         }
+        # Echo the result-set id so a client that later fetches one of
+        # these decisions can pass it back (from_result_set=…) for a clean
+        # relevance join. Backward-compatible: clients that ignore it lose
+        # nothing, and the offline session join covers them anyway.
+        if _search_meta.get("result_set_id"):
+            resp["result_set_id"] = _search_meta["result_set_id"]
         if _search_meta.get("query_condensed"):
             resp["query_condensed"] = True
             resp["condensed_terms"] = _search_meta.get("condensed_terms", [])

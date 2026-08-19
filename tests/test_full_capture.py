@@ -79,3 +79,23 @@ def test_no_ip_field_in_the_mcp_capture_site():
             assert "sid" in keys and "ip" not in keys
             return
     raise AssertionError("MCP capture site not found")
+
+
+def test_export_is_crawler_only_without_a_session():
+    """The classifier and the interaction join must agree about
+    export_decision: a session-less bulk export is a crawler, the same
+    tool inside a session is an agent reading a result it found (which
+    the join counts as a fetch)."""
+    assert m._traffic_class(None, "rest", "export_decision", False) == "crawler"
+    assert m._traffic_class("claude.ai", "mcp", "export_decision", True) == "agent"
+
+
+def test_traffic_segments():
+    assert m._traffic_class("bot", "rest", "search_decisions", False) == "crawler"
+    assert m._traffic_class("claude.ai", "mcp", "search_decisions", True) == "agent"
+    assert m._traffic_class("chatgpt", "rest", "search_decisions", False) == "direct"
+
+
+def test_result_set_id_is_opaque_and_unique():
+    a, b = m._new_result_set_id(), m._new_result_set_id()
+    assert a.startswith("rs_") and a != b and len(a) > 8

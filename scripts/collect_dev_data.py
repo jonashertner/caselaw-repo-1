@@ -286,10 +286,55 @@ class Collector:
                             "Upstream-portal provenance; no user data.",
                             compress=True)
 
+        # Demand queue: corpus-derived (unresolved citations), no user
+        # data. Regenerated from the reference graph, so a daily snapshot
+        # tracks how the acquisition priorities move as the corpus grows.
+        self._build_and_copy(
+            "demand_queue",
+            [sys.executable, str(REPO / "scripts" / "build_demand_queue.py"),
+             "--db", str(REPO / "output" / "reference_graph.db"),
+             "--out", str(self.dest / "datasets" / "demand_queue")],
+            self.dest / "datasets" / "demand_queue",
+            "Decisions Swiss courts cite but the corpus does not hold, "
+            "ranked by how many decisions cite each — an acquisition queue "
+            "built from evidence. Corpus-derived; no user data.")
+
+        # Interaction dataset: the impression→fetch join (reranker
+        # training pairs). Only meaningful once full capture is on; the
+        # join reads the capture stream, which stays private.
+        self._build_and_copy(
+            "interactions",
+            [sys.executable,
+             str(REPO / "scripts" / "build_interaction_dataset.py"),
+             "--captures", str(REPO / "output" / "research_logs"),
+             "--out", str(self.dest / "datasets" / "interactions")],
+            self.dest / "datasets" / "interactions",
+            "Reranker training pairs: each search's ranked list with which "
+            "results were fetched and cited. Joined offline per session; "
+            "the training rows carry no session id.")
+
         if not self.dry:
             (self.dest / "MANIFEST.jsonl").open("a", encoding="utf-8").write(
                 json.dumps({"date": self.today, "collected": self.manifest},
                            ensure_ascii=False) + "\n")
+
+    def _build_and_copy(self, dataset: str, cmd: list, out_dir: Path,
+                        schema_note: str) -> None:
+        """Run a builder that writes straight into the dataset dir, then
+        refresh the card. The builders are read-only against production."""
+        if self.dry:
+            log.info("[%s] dry-run: would run %s", dataset, " ".join(cmd[:2]))
+            return
+        out_dir.mkdir(parents=True, exist_ok=True)
+        r = subprocess.run(cmd, capture_output=True, text=True, timeout=1800)
+        if r.returncode != 0:
+            log.error("[%s] builder failed: %s", dataset,
+                      (r.stderr or r.stdout)[-300:])
+            return
+        self._card(out_dir, dataset, schema_note, True)
+        self.manifest.append({"dataset": dataset, "file": f"{self.today}.jsonl",
+                              "records": None})
+        log.info("[%s] built", dataset)
 
     # ── traces: 0c-gated ─────────────────────────────────────────────
 
