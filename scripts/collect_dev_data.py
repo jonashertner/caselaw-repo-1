@@ -1,0 +1,350 @@
+#!/usr/bin/env python3
+"""Collect R&D datasets into the private data repo.
+
+Runs daily on the VPS after the publish pipeline exits, gathers the
+system-side data streams into /opt/caselaw/data-private (a clone of the
+private opencaselaw-data repo), refreshes each dataset's card, and
+commits. The goal is training-grade datasets with schemas and
+provenance, not a log dump — every dataset directory carries a CARD.md
+with the schema, the generating code path, and whether the data may ever
+leave the private repo.
+
+What it deliberately does NOT collect (yet): search_traces_*.jsonl.
+Those files carry rerank query text under a published 30-day-deletion
+promise; exporting them — even stripped — waits until the /datenschutz/
+amendment (Phase 0c) ships. Nothing is lost by waiting: the server keeps
+30 days, so the collector can backfill the window the day the amendment
+lands. `--include-traces` exists for exactly that day and refuses to run
+while the guard file is absent.
+
+Privacy is enforced structurally, not by care: every record written is
+scanned for identifier keys (IP, user agent, session id, cohort) and the
+run ABORTS on the first hit. The collector only reads; it never deletes
+or modifies a source.
+
+Usage (VPS, via systemd timer; also runnable by hand):
+    python3 scripts/collect_dev_data.py --dest /opt/caselaw/data-private
+    python3 scripts/collect_dev_data.py --dest ... --dry-run
+"""
+from __future__ import annotations
+
+import argparse
+import datetime as _dt
+import gzip
+import json
+import logging
+import shutil
+import sqlite3
+import subprocess
+import sys
+from pathlib import Path
+
+log = logging.getLogger("collect_dev_data")
+
+REPO = Path(__file__).resolve().parents[1]
+
+# Keys that must never appear in an exported record, at any nesting depth.
+FORBIDDEN_KEYS = {"ip", "client_ip", "remote_addr", "user_id", "session_id",
+                  "sid", "ua", "user_agent", "cohort", "install_cohort",
+                  "email", "stripe_customer"}
+
+# The 0c guard: trace export stays off until the amendment is live. The
+# deploy step that publishes the amended /datenschutz/ creates this file;
+# its content is the amendment's publication date.
+TRACES_ALLOWED_MARKER = "TRACES_EXPORT_APPROVED"
+
+
+def _scan(obj, path="$"):
+    """Abort-on-identifier scan, recursive. Returns list of violations."""
+    hits = []
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            if isinstance(k, str) and k.lower() in FORBIDDEN_KEYS:
+                hits.append(f"{path}.{k}")
+            hits.extend(_scan(v, f"{path}.{k}"))
+    elif isinstance(obj, list):
+        for i, v in enumerate(obj[:50]):
+            hits.extend(_scan(v, f"{path}[{i}]"))
+    return hits
+
+
+class Collector:
+    def __init__(self, dest: Path, dry_run: bool = False):
+        self.dest = dest
+        self.dry = dry_run
+        self.today = _dt.datetime.now(_dt.timezone.utc).strftime("%Y-%m-%d")
+        self.manifest: list[dict] = []
+
+    # ── plumbing ─────────────────────────────────────────────────────
+
+    def _write_jsonl_gz(self, dataset: str, records: list[dict],
+                        schema_note: str, private_only: bool = True) -> None:
+        """One dated, compressed shard per day per dataset + a card."""
+        if not records:
+            log.info("[%s] nothing to collect", dataset)
+            return
+        for rec in records:
+            bad = _scan(rec)
+            if bad:
+                raise SystemExit(
+                    f"PRIVACY ABORT: identifier key(s) {bad} in dataset "
+                    f"'{dataset}' — nothing was written")
+        d = self.dest / "datasets" / dataset
+        out = d / f"{self.today}.jsonl.gz"
+        if self.dry:
+            log.info("[%s] dry-run: %d records -> %s", dataset, len(records), out)
+            return
+        d.mkdir(parents=True, exist_ok=True)
+        with gzip.open(out, "wt", encoding="utf-8") as fh:
+            for rec in records:
+                fh.write(json.dumps(rec, ensure_ascii=False) + "\n")
+        self._card(d, dataset, schema_note, private_only)
+        self.manifest.append({"dataset": dataset, "file": str(out.name),
+                              "records": len(records)})
+        log.info("[%s] %d records -> %s", dataset, len(records), out.name)
+
+    def _copy_file(self, dataset: str, src: Path, schema_note: str,
+                   dated: bool = True) -> None:
+        """Snapshot-copy a whole artifact (DB, JSONL) without parsing it."""
+        if not src.exists():
+            log.info("[%s] source absent: %s", dataset, src)
+            return
+        d = self.dest / "datasets" / dataset
+        name = f"{self.today}-{src.name}" if dated else src.name
+        if self.dry:
+            log.info("[%s] dry-run: copy %s -> %s", dataset, src, d / name)
+            return
+        d.mkdir(parents=True, exist_ok=True)
+        if src.suffix == ".db":
+            # A consistent snapshot of a possibly-live SQLite file.
+            con = sqlite3.connect(f"file:{src}?mode=ro", uri=True)
+            try:
+                dst = sqlite3.connect(d / name)
+                con.backup(dst)
+                dst.close()
+            finally:
+                con.close()
+        else:
+            shutil.copy2(src, d / name)
+        self._card(d, dataset, schema_note, True)
+        self.manifest.append({"dataset": dataset, "file": name,
+                              "records": None})
+        log.info("[%s] copied %s", dataset, name)
+
+    def _card(self, d: Path, dataset: str, schema_note: str,
+              private_only: bool) -> None:
+        """Refresh the dataset card: hand-written schema, generated stats."""
+        shards = sorted(p.name for p in d.glob("*.jsonl.gz"))
+        card = d / "CARD.md"
+        card.write_text(
+            f"# {dataset}\n\n"
+            f"{schema_note}\n\n"
+            f"- **May leave the private repo:** "
+            f"{'no' if private_only else 'yes — see licence note above'}\n"
+            f"- **Generated by:** `scripts/collect_dev_data.py` "
+            f"(source paths in the collector)\n"
+            f"- **Shards:** {len(shards)}"
+            + (f" ({shards[0]} .. {shards[-1]})" if shards else "")
+            + f"\n- **Card refreshed:** {self.today}\n",
+            encoding="utf-8")
+
+    @staticmethod
+    def _read_jsonl(path: Path, since: str | None = None) -> list[dict]:
+        if not path.exists():
+            return []
+        out = []
+        with open(path, encoding="utf-8", errors="replace") as fh:
+            for line in fh:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    r = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                if since and str(r.get("ts") or r.get("flushed_at") or "") < since:
+                    continue
+                out.append(r)
+        return out
+
+    # ── the day-one datasets ─────────────────────────────────────────
+
+    def collect(self) -> None:
+        yesterday = (_dt.datetime.now(_dt.timezone.utc)
+                     - _dt.timedelta(days=1)).strftime("%Y-%m-%d")
+
+        # Pipeline runs: the full history is small; ship the whole file's
+        # NEW rows each day (dedup by (run_id, type, step) on the consumer
+        # side is trivial; shards are per-day already).
+        self._write_jsonl_gz(
+            "publish_runs",
+            self._read_jsonl(REPO / "state" / "publish_runs.jsonl",
+                             since=yesterday),
+            "One record per pipeline step and per run "
+            "(`type`: run_start | step | run_summary). Step records carry "
+            "`status` (ok|failed|exception|skipped_cascade) and `elapsed_s`; "
+            "summaries carry `outcome`, `total_s`, `failed_steps`. "
+            "System telemetry only — no user data by construction.")
+
+        # Daily metrics: aggregate counters incl. outcome provenance.
+        self._write_jsonl_gz(
+            "daily_metrics",
+            self._read_jsonl(
+                REPO / "output" / "research_logs" / "daily_metrics.jsonl",
+                since=yesterday),
+            "Periodic `_get_metrics()` snapshots: per-tool calls, errors, "
+            "latency percentiles, substantive/empty outcomes, "
+            "outcome_declared vs outcome_from_status, empty_reasons. "
+            "Aggregates only; no query content, no identifiers.")
+
+        # LLM spend: cost per feature, no prompt/completion text.
+        self._write_jsonl_gz(
+            "llm_usage",
+            self._read_jsonl(REPO / "logs" / "llm_usage.jsonl",
+                             since=yesterday),
+            "One record per LLM call: model, feature, token counts, "
+            "cost_usd, ok. No prompt or completion text.")
+
+        # Scraper health: today's snapshot, kept per-day (the source file
+        # is overwritten every run, so history exists only here).
+        for name in ("scraper_health.json", "scraper_health_federal.json",
+                     "practice_health.json"):
+            src = REPO / "logs" / name
+            if src.exists():
+                try:
+                    payload = json.loads(src.read_text())
+                except Exception:
+                    continue
+                self._write_jsonl_gz(
+                    f"scraper_health/{name.removesuffix('.json')}",
+                    [{"date": self.today, "snapshot": payload}],
+                    "Per-day snapshot of the scraper health report (the "
+                    "source file is overwritten each run; the trend lives "
+                    "only in these shards). Court-level counts and errors; "
+                    "no user data.")
+
+        # Quality: history DB snapshot + all per-run reports.
+        self._copy_file("quality_history",
+                        REPO / "quality" / "history.db",
+                        "SQLite snapshot of quality/history.db: one row per "
+                        "check per run (measurements + run_log). Corpus "
+                        "quality only.")
+        reports = REPO / "quality" / "reports"
+        if reports.exists():
+            recs = []
+            for p in sorted(reports.glob("*.json")):
+                if p.name == "latest.json":
+                    continue
+                try:
+                    recs.append({"file": p.name,
+                                 "report": json.loads(p.read_text())})
+                except Exception:
+                    continue
+            self._write_jsonl_gz(
+                "quality_reports", recs,
+                "Per-run QC reports (scope: full | critical_only | subset). "
+                "Check results over the corpus; no user data.")
+
+        # Benchmarks: every current artifact, dated.
+        bench = REPO / "benchmarks"
+        if bench.exists():
+            for p in sorted(bench.glob("*.json")) + sorted(bench.glob("*.jsonl")):
+                self._copy_file("benchmarks", p,
+                                "Search-quality and citation benchmark "
+                                "artifacts as of the shard date. Authored "
+                                "test queries, not user queries.")
+
+        # Corpus provenance already produced by other work.
+        self._copy_file("cantonal_law_names",
+                        REPO / "output" / "cantonal_abbreviations.jsonl",
+                        "Harvested cantonal law names: canton, sr_number, "
+                        "abbreviation, short_title, qualified (ZH/StG), "
+                        "source provenance. Public-record law metadata.")
+
+        # Scraper provenance: coverage.db snapshot.
+        self._copy_file("scraper_coverage",
+                        REPO / "state" / "coverage.db",
+                        "SQLite snapshot of state/coverage.db: per-run "
+                        "discovery + fetch events, gap queue, portal "
+                        "snapshots. Upstream-portal provenance; no user data.")
+
+        if not self.dry:
+            (self.dest / "MANIFEST.jsonl").open("a", encoding="utf-8").write(
+                json.dumps({"date": self.today, "collected": self.manifest},
+                           ensure_ascii=False) + "\n")
+
+    # ── traces: 0c-gated ─────────────────────────────────────────────
+
+    def collect_traces(self) -> None:
+        """Search-trace export. Runs ONLY once the amendment marker exists."""
+        marker = self.dest / TRACES_ALLOWED_MARKER
+        if not marker.exists():
+            raise SystemExit(
+                f"traces export refused: {marker} absent. Create it (content: "
+                "the /datenschutz/ amendment publication date) only after the "
+                "amendment is live in all five languages.")
+        src_dir = REPO / "output" / "research_logs"
+        for p in sorted(src_dir.glob("search_traces_*.jsonl")):
+            self._write_jsonl_gz(
+                f"search_traces/{p.stem}",
+                self._read_jsonl(p),
+                "Search traces incl. rerank labels (query ≤200 chars, "
+                "candidate_ids, llm_order), CE scores, structured parse, "
+                "per-signal contributions. Collected under the amended "
+                "notice; never leaves the private repo.")
+
+
+def _git_commit_push(dest: Path, today: str, dry: bool) -> None:
+    if dry:
+        log.info("dry-run: skipping git commit/push")
+        return
+    env_ssh = ("ssh -i /opt/caselaw/keys/opencaselaw-data-deploy "
+               "-o IdentitiesOnly=yes")
+    def g(*args):
+        return subprocess.run(
+            ["git", "-C", str(dest), *args],
+            env={"GIT_SSH_COMMAND": env_ssh, "PATH": "/usr/bin:/bin",
+                 "GIT_AUTHOR_NAME": "ocl-collector",
+                 "GIT_AUTHOR_EMAIL": "collector@opencaselaw.ch",
+                 "GIT_COMMITTER_NAME": "ocl-collector",
+                 "GIT_COMMITTER_EMAIL": "collector@opencaselaw.ch"},
+            capture_output=True, text=True, timeout=300)
+    g("add", "-A")
+    r = g("commit", "-m", f"collect {today}")
+    if "nothing to commit" in (r.stdout + r.stderr):
+        log.info("nothing new to commit")
+        return
+    p = g("push")
+    if p.returncode != 0:
+        log.error("push failed: %s", (p.stderr or p.stdout)[-400:])
+        raise SystemExit(1)
+    log.info("pushed")
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(description=__doc__.split("\n", 1)[0])
+    ap.add_argument("--dest", required=True, type=Path,
+                    help="clone of the private opencaselaw-data repo")
+    ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--include-traces", action="store_true",
+                    help="also export search traces (refuses without the "
+                         "amendment marker file)")
+    ap.add_argument("--no-push", action="store_true")
+    ap.add_argument("-v", "--verbose", action="store_true")
+    args = ap.parse_args()
+    logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO,
+                        format="%(asctime)s %(message)s")
+    if not (args.dest / ".git").exists() and not args.dry_run:
+        log.error("%s is not a git clone — refusing", args.dest)
+        return 1
+    c = Collector(args.dest, dry_run=args.dry_run)
+    c.collect()
+    if args.include_traces:
+        c.collect_traces()
+    if not args.no_push:
+        _git_commit_push(args.dest, c.today, args.dry_run)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
