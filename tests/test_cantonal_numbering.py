@@ -88,3 +88,26 @@ def test_synthetic_ids_cannot_be_mistaken_for_lexfind_ids():
     got = _synthetic_id("TI", "101.000")
     assert got > (1 << 52)
     assert got < (1 << 53)
+
+
+def test_a_portal_scraped_law_gets_no_lexfind_url():
+    """`_lexfind_url(...) or original_url` is how callers pick a source
+    link, so a URL built from a synthetic id does not merely 404 — it
+    displaces the canton's own correct URL."""
+    import mcp_server as m
+
+    assert m._lexfind_url(_synthetic_id("ZH", "101")) is None
+    assert m._lexfind_url(22579) == "https://www.lexfind.ch/fe/de/tol/22579"
+    assert m._lexfind_url(None) is None
+    assert m._lexfind_url("22579", "fr") == \
+        "https://www.lexfind.ch/fe/fr/tol/22579"
+
+
+def test_the_two_synthetic_floors_agree():
+    """The mirror mints the ids and the server classifies them; if the
+    two constants drift, portal laws start getting fabricated links
+    again with nothing to catch it."""
+    import mcp_server as m
+
+    from search_stack.build_cantonal_laws_db import _SYNTHETIC_FLOOR
+    assert m._SYNTHETIC_LAW_ID_FLOOR == _SYNTHETIC_FLOOR

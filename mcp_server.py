@@ -18656,10 +18656,31 @@ def _fedlex_url(sr_number, article_num=None, lang: str = "de") -> str | None:
     return url
 
 
+# A law scraped from a canton's own portal has no LexFind id at all, so
+# the cantonal mirror mints a synthetic one above this floor (kept in step
+# with search_stack.build_cantonal_laws_db._SYNTHETIC_FLOOR, which the
+# tests pin). Real LexFind ids are five digits; anything at or above the
+# floor is ours.
+_SYNTHETIC_LAW_ID_FLOOR = 1 << 52
+
+
 def _lexfind_url(lexfind_id, lang: str = "de") -> str | None:
-    """LexFind detail-page URL for a cantonal law."""
+    """LexFind detail-page URL for a cantonal law — if LexFind has one.
+
+    Returns None for a portal-scraped law rather than a URL built from
+    its synthetic id: lexfind.ch/tol/<synthetic> resolves to nothing, and
+    callers use this as `_lexfind_url(...) or original_url`, so a
+    plausible-looking wrong link would displace the canton's own correct
+    one. Reachable whenever the local mirror answers instead of the live
+    LexFind API.
+    """
     if not lexfind_id:
         return None
+    try:
+        if int(lexfind_id) >= _SYNTHETIC_LAW_ID_FLOOR:
+            return None
+    except (TypeError, ValueError):
+        pass
     return f"https://www.lexfind.ch/fe/{lang or 'de'}/tol/{lexfind_id}"
 
 
