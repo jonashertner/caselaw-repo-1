@@ -29,7 +29,7 @@ Search 971,000+ Swiss court decisions and insert citations directly in Microsoft
   including correct **E. / consid. / para. numbers** (sourced from
   `decision_structure.db` for federal courts)
 
-### Pro (CHF 19/month, license-based)
+### Pro (CHF 5/month, license-based)
 
 Two distinct workflows, two buttons:
 
