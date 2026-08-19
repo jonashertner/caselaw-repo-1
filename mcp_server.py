@@ -22506,6 +22506,9 @@ _OUTCOME_ID_KEYS = ("decision_id", "lexfind_id", "sr_number", "case_id", "id")
 _OUTCOME_MAX_CHARS = 200_000
 
 
+_ENTSCHEID_RE = re.compile(r"/entscheid/([A-Za-z0-9_%.\-]{3,120})")
+
+
 def _returned_ids(result, limit: int = 30) -> list:
     """The identifiers a tool handed back.
 
@@ -22513,11 +22516,24 @@ def _returned_ids(result, limit: int = 30) -> list:
     about the response — so a call was an input with no recorded output
     and taught nothing about what this tool actually answers. This is the
     other half of the pair.
+
+    Most tools answer in Markdown rather than JSON, so a parse alone
+    would leave the majority of the surface blank. The R1 citation
+    contract is what makes those recoverable: every decision a tool
+    names carries a verbatim /entscheid/<id> link, so the ids can be
+    read straight out of the prose.
     """
     try:
         text = _response_text(result).strip()
-        if not text or text[0] not in "{[" or len(text) > _OUTCOME_MAX_CHARS:
+        if not text or len(text) > _OUTCOME_MAX_CHARS:
             return []
+        if text[0] not in "{[":
+            seen_md: dict = {}
+            for m in _ENTSCHEID_RE.finditer(text):
+                seen_md.setdefault(urllib.parse.unquote(m.group(1)), None)
+                if len(seen_md) >= limit:
+                    break
+            return list(seen_md)
         payload = json.loads(text)
     except Exception:
         return []

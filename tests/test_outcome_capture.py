@@ -57,11 +57,33 @@ def test_a_huge_answer_is_skipped_rather_than_reparsed():
                                 "decision_id": "bger_4A_1_2020"})) == []
 
 
+def test_identifiers_are_recovered_from_a_markdown_answer():
+    """Most tools answer in Markdown, so a JSON parse alone would leave
+    the majority of the surface blank. R1 guarantees every decision is
+    named with a verbatim /entscheid/<id> link, which is what makes the
+    ids readable out of prose."""
+    from mcp.types import TextContent
+    md = ("**1.** [BGE 125 V 351](https://mcp.opencaselaw.ch/entscheid/"
+          "bge_BGE_125_V_351) (1999) — 77298 citations\n"
+          "**2.** [125 V 351](https://mcp.opencaselaw.ch/entscheid/"
+          "bge_125%20V%20351)\n")
+    got = m._returned_ids([TextContent(type="text", text=md)])
+    assert got == ["bge_BGE_125_V_351", "bge_125 V 351"], \
+        "percent-escapes must be decoded to the real id"
+
+
+def test_markdown_ids_deduplicate_and_stay_bounded():
+    from mcp.types import TextContent
+    md = " ".join(f"[x](https://mcp.opencaselaw.ch/entscheid/bger_{i})"
+                  for i in range(80)) * 2
+    got = m._returned_ids([TextContent(type="text", text=md)])
+    assert len(got) <= 30 and len(set(got)) == len(got)
+
+
 def test_non_json_and_empty_answers_are_harmless():
     from mcp.types import TextContent
     assert m._returned_ids([TextContent(type="text", text="plain prose")]) == []
     assert m._returned_ids([]) == []
-    assert m._returned_ids(None if False else []) == []
 
 
 def test_the_outcome_record_carries_status_latency_and_ids(tmp_path, monkeypatch):
