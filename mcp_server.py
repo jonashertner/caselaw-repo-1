@@ -2147,6 +2147,64 @@ def _declare_outcome(response, payload, empty_reason: str | None = None):
     return payload
 
 
+# ── Full-capture mode (time-boxed evaluation period) ─────────────────
+# Policy 2026-08-19: for a first period, gather every data point the
+# server sees, then prune by measured usefulness. OFF by default; turns
+# on via SWISS_CASELAW_FULL_CAPTURE=1 in .env.mcp ONLY after the amended
+# /datenschutz/ is live — the notice precedes the collection, never the
+# reverse. Records go to research_logs/capture_YYYY-MM-DD.jsonl and are
+# collected into the private data repo behind the same amendment marker
+# as the traces.
+#
+# Two carve-outs, deliberate and not env-controlled:
+#   * attest / verify-claim / draft document BODIES are never captured —
+#     they are client work product, and the Word add-in's own policy
+#     states document text is not stored on our server.
+#   * no IP addresses — the session id carries the sequence analytics; a
+#     session is a pseudonymous connection, not a person.
+_FULL_CAPTURE = os.environ.get("SWISS_CASELAW_FULL_CAPTURE", "") == "1"
+# Free-text fields that are document content rather than a query, plus
+# credentials. Stripped from captured arguments; length recorded instead.
+_CAPTURE_BODY_FIELDS = {"response_text", "document_text", "text", "claim",
+                        "facts", "content", "body"}
+_CAPTURE_SECRET_FIELDS = {"license_key", "license", "token", "api_key",
+                          "authorization", "password"}
+
+
+def _capture_event(record: dict) -> None:
+    """Append one full-capture record. Never raises; never blocks."""
+    if not _FULL_CAPTURE:
+        return
+    try:
+        day = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        path = _RESEARCH_LOG_DIR / f"capture_{day}.jsonl"
+        _RESEARCH_LOG_DIR.mkdir(parents=True, exist_ok=True)
+        with _research_log_lock:
+            with open(path, "a", encoding="utf-8") as fh:
+                fh.write(json.dumps(record, ensure_ascii=False,
+                                    default=str) + "\n")
+    except Exception:                                   # pragma: no cover
+        pass
+
+
+def _capture_args(arguments: dict) -> dict:
+    """Arguments as received, minus document bodies and credentials.
+
+    Bodies are replaced by their length so volume stays measurable
+    without the content ever landing on disk.
+    """
+    out = {}
+    for k, v in (arguments or {}).items():
+        kl = k.lower()
+        if kl in _CAPTURE_SECRET_FIELDS:
+            out[k] = "<redacted>"
+        elif kl in _CAPTURE_BODY_FIELDS and isinstance(v, str):
+            out[f"{k}_len"] = len(v)
+        else:
+            out[k] = v
+    return out
+
+
 def _record_query(query: str):
     """No-op (privacy contract: query content is never logged).
 
@@ -22448,6 +22506,12 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 json.dumps(_log_args, ensure_ascii=False) if _log_args else "{}",
                 _client_class(_call_ua) if _call_ua else "-",
                 _is_commercial)
+    _capture_event({
+        "src": "mcp", "ts": datetime.now(timezone.utc).isoformat(),
+        "sid": _call_sid[:16] if _call_sid else None,
+        "client": _client_class(_call_ua) if _call_ua else "-",
+        "tool": name, "args": _capture_args(arguments),
+    })
     # Track in session map
     if _call_sid and _call_sid in _session_clients:
         _sc = _session_clients[_call_sid]
@@ -24076,6 +24140,17 @@ setInterval(load, 30000);
                 tool, err = _classify_rest_metric(request.url.path, status)
                 if tool:
                     _record_tool_call(tool, (time.monotonic() - t0) * 1000, error=err)
+                    _capture_event({
+                        "src": "rest",
+                        "ts": datetime.now(timezone.utc).isoformat(),
+                        "client": _client_class(
+                            request.headers.get("user-agent")),
+                        "tool": tool, "path": request.url.path,
+                        "params": _capture_args(
+                            dict(request.query_params)),
+                        "status": status,
+                        "ms": round((time.monotonic() - t0) * 1000),
+                    })
                     # REST outcome. The body is a stream here and reading it
                     # would buffer every export, so the route declares its own
                     # outcome via X-OCL-Outcome (see _mark_outcome) and the
