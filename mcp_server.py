@@ -2085,6 +2085,11 @@ def _payload_outcome(payload) -> tuple[str, str | None] | None:
         return None
     err = payload.get("error")
     if isinstance(err, str) and err.strip():
+        # A miss that still offers real alternatives is a different result
+        # from a dead end, and counting them together would hide whether
+        # the candidate fallback actually helps anyone.
+        if payload.get("candidates"):
+            return "empty", "id_not_found_with_candidates"
         low = err.lower()
         if any(s in low for s in _ERR_NO_CORPUS):
             return "empty", "corpus_not_built"
@@ -17022,6 +17027,52 @@ def _get_curriculum_cases_for_topic(topic: str) -> list[dict]:
 # ── Statute tools ──────────────────────────────────────────────
 
 
+# A cantonal law is identified by canton PLUS number, never by abbreviation
+# alone: StG is the tax act in ZH, BE and AG and the federal stamp-duty act
+# as well, BauG is the building act in BE and AG. Everything below therefore
+# stays scoped to one canton and reports the canton with every candidate.
+def _cantonal_candidates(canton: str, abbreviation: str,
+                         language: str, limit: int = 5) -> list:
+    """The closest laws in THIS canton, so a miss is still an answer.
+
+    Delegates to search_laws rather than querying the mirror directly.
+    That is not indirection for its own sake: a hand-rolled title/FTS
+    query returns noise on this corpus (StG in ZH gives the
+    Finanzausgleichsverordnung), while the tuned search path puts
+    Zurich's Steuergesetz and Planungs- und Baugesetz in the top three.
+
+    Deliberately NOT a resolver. An earlier attempt read the abbreviation
+    out of the law's own text on the theory that a law declares its short
+    form as "(StG)" — but Swiss drafting writes the same bracketed form
+    on first CITATION, so it resolved StG to whichever act happened to
+    cite the tax law. Against production data 6 of 12 lookups "resolved"
+    and nearly all were the wrong act. Offering candidates the caller
+    chooses between is honest; asserting one of them is not.
+    """
+    if not abbreviation:
+        return []
+    try:
+        res = search_laws(query=abbreviation, canton=canton,
+                          jurisdiction="cantonal", language=language,
+                          limit=limit)
+    except Exception:                                   # pragma: no cover
+        return []
+    out = []
+    for r in (res or {}).get("results", [])[:limit]:
+        sr = r.get("sr_number") or r.get("systematic_number")
+        if not sr:
+            continue
+        out.append({
+            "canton": canton,
+            "sr_number": sr,
+            "title": r.get("title"),
+            # Canton-qualified: the number alone repeats across cantons and
+            # against the federal collection, so it never travels bare.
+            "key": f"{canton}/{sr}",
+        })
+    return out
+
+
 def _get_law_cantonal(
     sr_number: str | None,
     abbreviation: str | None,
@@ -17056,10 +17107,30 @@ def _get_law_cantonal(
                     if row:
                         sr_number = row["sr_number"]
             if not sr_number:
-                return {"error": (
+                # Never a bare dead end: the law is usually in the corpus and
+                # only the name we were given does not reach it. Hand back
+                # real laws so the caller can pick one, rather than an
+                # apology. They are search hits over the actual corpus, and
+                # they are offered as candidates rather than asserted as the
+                # answer — an abbreviation we cannot source is not one we may
+                # guess at.
+                cands = _cantonal_candidates(canton_u, abbreviation, language)
+                out = {"error": (
                     f"No cantonal law found for {canton_u} with abbreviation "
                     f"'{abbreviation}'. Try search_laws or search_legislation."
                 )}
+                if cands:
+                    out["candidates"] = cands
+                    out["note"] = (
+                        f"{canton_u} does not publish '{abbreviation}' as a "
+                        f"title. The closest {canton_u} laws are listed under "
+                        "`candidates`; re-request one by its `sr_number` with "
+                        f"canton={canton_u}. Cantonal abbreviations repeat "
+                        "across cantons (StG exists in ZH, BE and AG and is "
+                        "also a federal act), so a cantonal law is only "
+                        "identified by canton + number."
+                    )
+                return out
 
         if not sr_number:
             return {"error": "Provide sr_number, abbreviation, or use search_laws."}

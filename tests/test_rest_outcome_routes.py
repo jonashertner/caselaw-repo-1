@@ -276,3 +276,15 @@ def test_a_rejected_request_is_not_an_answer(rest_app):
     assert (m._metrics["tool_outcomes"]["materialien"]["empty"]
             == before.get("empty", 0) + 1)
     assert m._metrics["empty_reasons"]["materialien"]["http_422"] >= 1
+
+
+def test_a_miss_that_offers_alternatives_is_counted_separately():
+    """A dead end and a miss carrying real candidates are different
+    results for the user; one counter for both would hide whether the
+    cantonal fallback helps anyone."""
+    assert m._payload_outcome({"error": "No cantonal law found for ZH …"}) == (
+        "empty", "id_not_found")
+    assert m._payload_outcome({
+        "error": "No cantonal law found for ZH …",
+        "candidates": [{"canton": "ZH", "sr_number": "631.1"}],
+    }) == ("empty", "id_not_found_with_candidates")
