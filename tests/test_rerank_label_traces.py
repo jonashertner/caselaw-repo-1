@@ -150,3 +150,32 @@ def test_llm_terms_keeps_only_added_terms():
     kept = [t for t in llm_terms
             if not {w.lower() for w in re.findall(r"\w+", t)} <= qtoks]
     assert kept == ["Art. 336 OR", "Kündigungsschutz"]
+
+
+def test_labels_carry_their_judge_and_weights_provenance(monkeypatch):
+    """Labels without provenance decay into noise: judgments spanning
+    silent prompt or weight changes are different datasets. The CE
+    record must name its model; the rerank record its model + prompt
+    hash; the signals record the SCORING_CONFIG hash."""
+    import ast, inspect
+    src = inspect.getsource(m._apply_llm_rerank)
+    ks = [{k.value for k in d.keys if isinstance(k, ast.Constant)}
+          for d in ast.walk(ast.parse(src)) if isinstance(d, ast.Dict)]
+    trace = next(k for k in ks if "candidate_ids" in k)
+    assert "judge" in trace, "rerank labels must name their judge"
+    assert isinstance(m._RERANK_PROMPT_V, str) and len(m._RERANK_PROMPT_V) == 8
+    assert isinstance(m._SCORING_V, str) and len(m._SCORING_V) == 8
+
+    seen = _capture(monkeypatch)
+
+    class FakeEncoder:
+        def predict(self, pairs):
+            return [0.5] * len(pairs)
+
+    rows = [(1.0, -0.5, 0, {"decision_id": "a", "title": "", "regeste": "",
+                            "snippet": ""})]
+    monkeypatch.setattr(m, "_get_cross_encoder", lambda: FakeEncoder())
+    monkeypatch.setattr(m, "CROSS_ENCODER_ENABLED", True)
+    m._apply_cross_encoder_boosts(rows, "q")
+    rec = [r for r in seen if r.get("type") == "cross_encoder"][0]
+    assert rec["model"] == m.CROSS_ENCODER_MODEL

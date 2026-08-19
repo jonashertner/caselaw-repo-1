@@ -3639,6 +3639,7 @@ def _search_fts5_inner(
         # Per-signal contributions for what actually surfaced. Only the
         # top 10 — the full pool is hundreds of rows and the tuning
         # question is about the head, not the tail.
+        _trace["signals_weights_v"] = _SCORING_V
         _trace["signals_top"] = {
             r["decision_id"]: _signal_sink[r["decision_id"]]
             for r in reranked[:10] if r.get("decision_id") in _signal_sink
@@ -7435,6 +7436,7 @@ def _apply_cross_encoder_boosts(
     _log_search_trace({
         "type": "cross_encoder",
         "query_len": len(query or ""),
+        "model": CROSS_ENCODER_MODEL,
         "scores_by_id": {
             row["decision_id"]: round(float(raw), 4)
             for raw, (_s, _b, _i, row) in zip(raw_scores, rerank_subset)
@@ -7513,6 +7515,16 @@ LLM_RERANK_PROMPT = (
     "Example: [\"bge_BGE_131_III_115\",\"bge_BGE_110_II_136\"]\n"
     "Output ONLY the JSON array, nothing else."
 )
+
+
+# Version stamps for the label streams. Labels without provenance decay
+# into noise: six months of rerank judgments spanning three silent
+# prompt tweaks are three datasets, not one, and nothing recorded which
+# was which. Hashes, not dates — two deploys with the same prompt ARE
+# the same judge.
+_RERANK_PROMPT_V = hashlib.sha256(LLM_RERANK_PROMPT.encode()).hexdigest()[:8]
+_SCORING_V = hashlib.sha256(
+    json.dumps(SCORING_CONFIG, sort_keys=True).encode()).hexdigest()[:8]
 
 
 def _apply_llm_rerank(
@@ -7653,6 +7665,8 @@ def _apply_llm_rerank(
         "candidates": top_n,
         "candidate_ids": [r["decision_id"] for _s, _b, _i, r in rerank_subset],
         "llm_order": [d for d in ranked_ids if isinstance(d, str)][:top_n],
+        "judge": {"model": "claude-haiku-4-5-20251001",
+                  "prompt_v": _RERANK_PROMPT_V},
         "timestamp": datetime.now(timezone.utc).isoformat(),
     })
 
