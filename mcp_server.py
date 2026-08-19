@@ -3182,8 +3182,18 @@ def _search_fts5_inner(
         # excerpt already carried, no raw query text.
         _trace["structured_parse"] = dict(structured_parse)
         # The expansion terms actually used downstream were never traced
-        # at all; a parser trained without them learns half the job.
-        _trace["llm_terms"] = list(llm_terms or [])[:12]
+        # at all; a parser trained without them learns half the job. Only
+        # the ADDED terms are kept: expansion frequently echoes the
+        # query's own tokens, and the type-A record stores query_len
+        # precisely so that no query text rides along — a term whose
+        # every token already appears in the query is an echo, not an
+        # expansion, and is dropped. (The delta is also the better
+        # dataset: it is the part a parser has to learn.)
+        _qtoks = {t.lower() for t in re.findall(r"\w+", query or "")}
+        _trace["llm_terms"] = [
+            t for t in (llm_terms or [])
+            if not {w.lower() for w in re.findall(r"\w+", t)} <= _qtoks
+        ][:12]
         # Inject doctrine + synonyms as FTS strategy
         if structured_parse:
             doctrine = (structured_parse.get("doctrine") or "").strip()

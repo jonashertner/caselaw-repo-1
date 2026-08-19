@@ -132,3 +132,21 @@ def test_rerank_trace_shape_is_pinned_in_source():
     assert trace is not None, "rerank trace must carry candidate_ids"
     assert "llm_order" in trace, "rerank trace must carry Haiku's ordering"
     assert not (_FORBIDDEN_KEYS & trace), "no identifiers in the rerank trace"
+
+
+def test_llm_terms_keeps_only_added_terms():
+    """Expansion echoes the query's own tokens; the type-A trace stores
+    query_len precisely so no query text rides along. A term whose every
+    token already appears in the query is an echo and must be dropped —
+    the ADDED terms are both the privacy-safe subset and the part a
+    parser actually has to learn."""
+    import re
+    query = "Missbräuchliche Kündigung Arbeitsvertrag"
+    llm_terms = ["Missbräuchliche Kündigung",          # pure echo -> out
+                 "Art. 336 OR",                        # added -> kept
+                 "Kündigungsschutz",                   # added -> kept
+                 "kündigung arbeitsvertrag"]           # echo, case -> out
+    qtoks = {t.lower() for t in re.findall(r"\w+", query)}
+    kept = [t for t in llm_terms
+            if not {w.lower() for w in re.findall(r"\w+", t)} <= qtoks]
+    assert kept == ["Art. 336 OR", "Kündigungsschutz"]
