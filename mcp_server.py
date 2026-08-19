@@ -22496,12 +22496,84 @@ def _deep_research_fetch(doc_id: str) -> dict:
     }
 
 
+# Identifier keys worth recording from a tool's answer. Not the payload:
+# the documents are CC0 and already in the corpus, so the id is the whole
+# signal and the text is redundant bulk.
+_OUTCOME_ID_KEYS = ("decision_id", "lexfind_id", "sr_number", "case_id", "id")
+# Big answers are single-document fetches whose id is already in the
+# arguments, so skipping them costs nothing and keeps a full-text reply
+# from being reparsed on every call.
+_OUTCOME_MAX_CHARS = 200_000
+
+
+def _returned_ids(result, limit: int = 30) -> list:
+    """The identifiers a tool handed back.
+
+    Capture recorded every request and, outside search, nothing at all
+    about the response — so a call was an input with no recorded output
+    and taught nothing about what this tool actually answers. This is the
+    other half of the pair.
+    """
+    try:
+        text = _response_text(result).strip()
+        if not text or text[0] not in "{[" or len(text) > _OUTCOME_MAX_CHARS:
+            return []
+        payload = json.loads(text)
+    except Exception:
+        return []
+    out: list = []
+    seen: set = set()
+
+    def walk(node, depth: int = 0) -> None:
+        if len(out) >= limit or depth > 4:
+            return
+        if isinstance(node, dict):
+            for k in _OUTCOME_ID_KEYS:
+                v = node.get(k)
+                if isinstance(v, (str, int)) and str(v) and str(v) not in seen:
+                    seen.add(str(v))
+                    out.append(str(v))
+                    if len(out) >= limit:
+                        return
+            for v in node.values():
+                walk(v, depth + 1)
+        elif isinstance(node, list):
+            for v in node[:limit]:
+                walk(v, depth + 1)
+
+    walk(payload)
+    return out
+
+
+def _capture_outcome(name: str, outcome: str, started: float,
+                     result=None, error: str = "") -> None:
+    """One record per completed tool call: what it answered, or how it
+    failed. MCP records carried no status at all — REST had one — so a
+    failed call and a good one were indistinguishable after the fact,
+    and the arguments that provoke an error are exactly what would
+    improve a tool description."""
+    try:
+        _capture_event({
+            "src": "outcome",
+            "ts": datetime.now(timezone.utc).isoformat(),
+            "sid": (_ctx_session_id.get("") or None),
+            "tool": name,
+            "outcome": outcome,
+            "ms": round((time.monotonic() - started) * 1000),
+            "returned_ids": _returned_ids(result) if result is not None else [],
+            "error": error[:200] if error else None,
+        })
+    except Exception:
+        pass  # capture must never break serving
+
+
 async def _dispatch_with_timeout(name: str, arguments: dict):
     """Run one tool dispatch under TOOL_DISPATCH_TIMEOUT_S. On timeout, return a
     clean error payload instead of letting the client hang indefinitely. (wait_for
     cancels the awaiting coroutine; the underlying to_thread thread finishes in the
     background, but the request is freed.) Separate from the decorated wrapper so
     it is unit-testable."""
+    _started = time.monotonic()
     try:
         result = await asyncio.wait_for(
             _handle_call_tool_inner(name, arguments),
@@ -22511,13 +22583,20 @@ async def _dispatch_with_timeout(name: str, arguments: dict):
         # actually answered. _handle_call_tool_inner's own finally has
         # already counted the call and any exception; it cannot see the
         # return value, which is why the label is attached here.
-        _record_tool_outcome(name, _classify_outcome(result))
+        _outcome = _classify_outcome(result)
+        _record_tool_outcome(name, _outcome)
+        # Same choke point, durable: the label, the latency and the ids
+        # handed back, so the call is a recorded (input, output) pair
+        # rather than a request whose answer nobody kept.
+        _capture_outcome(name, _outcome, _started, result=result)
         return result
     except asyncio.TimeoutError:
         logger.warning(
             "tool dispatch aborted: %s exceeded %ss server-side timeout (load/backlog)",
             name, TOOL_DISPATCH_TIMEOUT_S,
         )
+        _capture_outcome(name, "timeout", _started,
+                         error=f"exceeded {TOOL_DISPATCH_TIMEOUT_S}s")
         return [TextContent(type="text", text=json.dumps({
             "error": "server_timeout",
             "tool": name,
@@ -22528,6 +22607,13 @@ async def _dispatch_with_timeout(name: str, arguments: dict):
                 "under temporary load — please retry; typical calls return in 1-10s."
             ),
         }, ensure_ascii=False))]
+    except Exception as exc:
+        # A raised tool is the one case the old capture could not see at
+        # all: the request was recorded, the failure was not, so the
+        # arguments that provoke an error were unrecoverable afterwards.
+        _capture_outcome(name, "error", _started,
+                         error=f"{type(exc).__name__}: {exc}")
+        raise
 
 
 _UI_WIDGETS = [m for m in (law_widget, decision_widget) if m is not None]
