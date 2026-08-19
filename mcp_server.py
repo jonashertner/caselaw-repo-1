@@ -97,7 +97,12 @@ from mcp.types import TextContent, Tool, ToolAnnotations
 # All tools are read-only (search/lookup, no mutations)
 _READ_ONLY = ToolAnnotations(readOnlyHint=True, destructiveHint=False, openWorldHint=False)
 
-from fastapi import FastAPI, Query, Path as PathParam, HTTPException, Request, Depends
+# `Response` must be a MODULE global, not a function-local import: this file
+# runs under `from __future__ import annotations`, so FastAPI resolves the
+# `response: Response` injection through get_type_hints() against the
+# handler's __globals__ and never sees a name imported inside a function.
+from fastapi import (FastAPI, Query, Path as PathParam, HTTPException, Request,
+                     Depends, Response)
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
@@ -2034,6 +2039,87 @@ def _mark_outcome(response, outcome: str, reason: str | None = None):
     except Exception:                                   # pragma: no cover
         pass
     return response
+
+
+# Keys under which a REST payload carries its answer. A payload whose
+# every present key here is an empty list answered nothing, whatever the
+# HTTP status says.
+_RESULT_KEYS = ("results", "articles", "commentaries", "cases",
+                "leading_cases", "publications", "documents", "sources",
+                "botschaft_documents", "amendment_refs",
+                "parliamentary_modifications", "laws",
+                "catalog", "by_source")
+
+# Several helpers report a miss as a 200 carrying {"error": "..."}. The
+# three kinds are not the same finding and must not share a counter: a
+# missing database is an operations problem, a caught exception is a
+# fault the 5xx-only error rate cannot see, and a malformed request is
+# the caller's.
+#
+# The corpus test names the two things that can be absent rather than
+# matching "not available" loosely: "Historical version not available
+# for SR 210 as of 2020-01-01" is a version that does not exist, not a
+# database that was never deployed, and must not be filed as one.
+_ERR_NO_CORPUS = ("database not available", "graph not available",
+                  "not built", "deploy ")
+_ERR_BACKEND = ("database error", "lookup failed", "search failed",
+                "query failed")
+_ERR_BAD_REQUEST = ("provide ", "at least one of", "is required")
+
+# Statuses that mean "ran, returned no law" when a route has not declared
+# its own outcome. 400/422 belong here: a rejected request produced no
+# legal content, and the route raised before it could say so itself.
+_EMPTY_STATUSES = frozenset({204, 400, 404, 410, 422})
+
+
+def _payload_outcome(payload) -> tuple[str, str | None] | None:
+    """Classify a REST payload as substantive or empty — or decline.
+
+    Returns (outcome, reason) where reason is None if the caller should
+    name it, or None outright when the shape is unrecognised. Declining
+    is the safe answer: an unlabelled route falls back to the status
+    heuristic and is counted as assumed, which beats a confident wrong
+    label. Nothing here may guess.
+    """
+    if not isinstance(payload, dict):
+        return None
+    err = payload.get("error")
+    if isinstance(err, str) and err.strip():
+        low = err.lower()
+        if any(s in low for s in _ERR_NO_CORPUS):
+            return "empty", "corpus_not_built"
+        if any(s in low for s in _ERR_BACKEND):
+            return "empty", "backend_error"
+        if any(s in low for s in _ERR_BAD_REQUEST):
+            return "empty", "bad_request"
+        return "empty", "id_not_found"
+    present = [k for k in _RESULT_KEYS if isinstance(payload.get(k), list)]
+    if present:
+        if any(payload[k] for k in present):
+            return "substantive", None
+        return "empty", None            # caller names it
+    total = payload.get("total")
+    if isinstance(total, int):
+        return ("substantive", None) if total else ("empty", None)
+    return None
+
+
+def _declare_outcome(response, payload, empty_reason: str | None = None):
+    """Label a dict payload's outcome on the way out, and return it.
+
+        return _declare_outcome(response, resp, "no_fts_match")
+
+    `empty_reason` names the miss only where the payload cannot: a
+    payload that already says WHY it is empty (no corpus, backend fault,
+    bad request) keeps its own, more specific reason.
+    """
+    verdict = _payload_outcome(payload)
+    if verdict:
+        outcome, reason = verdict
+        _mark_outcome(response, outcome,
+                      (reason or empty_reason or "no_match")
+                      if outcome == "empty" else None)
+    return payload
 
 
 def _record_query(query: str):
@@ -23693,7 +23779,11 @@ setInterval(load, 30000);
                             source = "declared"
                             reason = response.headers.get("x-ocl-empty-reason")
                         else:
-                            outcome = ("empty" if status in (204, 404, 410)
+                            # 4xx included: a rejected request ran the tool
+                            # and returned no law. Counting 400/422 as
+                            # answered flattered exactly the calls whose
+                            # parameters we should be documenting better.
+                            outcome = ("empty" if status in _EMPTY_STATUSES
                                        else "substantive")
                             source = "status"
                             reason = "http_%d" % status if outcome == "empty" else None
@@ -24681,6 +24771,7 @@ setInterval(load, 30000);
                               "until has_more is false to retrieve the complete list.")
     async def api_search_decisions(
         request: Request,
+        response: Response,
         query: str = Query(None, description="Search query (FTS5 syntax: keywords, \"phrases\", AND/OR/NOT). Max 4,000 chars; input over 500 chars is auto-condensed to citations + key terms — send 3-8 precise terms for best results."),
         q: str = Query(None, description="Alias for `query` (the short name used in the public docs / by most clients). `query` wins if both are given."),
         court: str = Query(None, description="Filter by court code (e.g., bger, bvger, zh_obergericht)"),
@@ -24804,7 +24895,25 @@ setInterval(load, 30000);
             note = ((note + " ") if note else "") + _cnote
         if note:
             resp["note"] = note
-        return resp
+        # Name the miss precisely where the arguments allow it. Only two
+        # cases are decidable without a second count query, and both are
+        # exact: no query at all means the filters excluded everything,
+        # no filters at all means the text matched nothing. The mixed
+        # case is not attributable, and says so rather than guessing.
+        _filtered = any(v not in (None, "") for v in (
+            court, canton, language, date_from, date_to, chamber,
+            marked_for_publication))
+        if returned:
+            _reason = None
+        elif total:
+            _reason = "page_beyond_end"
+        elif not (query or "").strip():
+            _reason = "filters_excluded_all"
+        elif _filtered:
+            _reason = "no_match_with_filters"
+        else:
+            _reason = "no_fts_match"
+        return _declare_outcome(response, resp, _reason)
 
     @rest_api.get("/decisions/{decision_id}", tags=["Case Law"],
                   summary="Get a single decision",
@@ -25005,6 +25114,7 @@ setInterval(load, 30000);
                               "based on citation graph. Each result carries citation_string_{de,fr,it} "
                               "+ canonical_url + rule_statement for copy-ready use.")
     async def api_find_leading_cases(
+        response: Response,
         query: str = Query(None, description="Text query to filter by topic (max 4,000 chars)"),
         law_code: str = Query(None, description="Law code (e.g., BV, OR, ZGB, StGB)"),
         article: str = Query(None, description="Article number (requires law_code)"),
@@ -25040,7 +25150,9 @@ setInterval(load, 30000);
                     await asyncio.to_thread(
                         _pinpoint_enrich_results, inner, claim, top_n=3
                     )
-        return result
+        return _declare_outcome(
+            response, result,
+            "no_fts_match" if (query or "").strip() else "filters_excluded_all")
 
     # ── Analysis endpoints ─────────────────────────────────────
 
@@ -25083,6 +25195,7 @@ setInterval(load, 30000);
                   description="Unified FTS5 search across statutes.db (federal) "
                               "and cantonal_laws.db (all 26 cantons).")
     async def api_search_laws(
+        response: Response,
         query: str = Query(None, description="Search query"),
         q: str = Query(None, description="Alias for `query`."),
         sr_number: str = Query(None, description="Restrict to specific federal law by SR"),
@@ -25099,16 +25212,22 @@ setInterval(load, 30000);
         query = query or q
         if not query:
             raise HTTPException(status_code=422, detail="A search query is required; pass it as `query` or `q`.")
-        return await asyncio.to_thread(
-            search_laws, query=query, sr_number=sr_number, canton=canton,
-            jurisdiction=jurisdiction, language=language, limit=limit,
-        )
+        _filtered = any(v not in (None, "") for v in
+                        (sr_number, canton, language)) or jurisdiction != "all"
+        return _declare_outcome(
+            response,
+            await asyncio.to_thread(
+                search_laws, query=query, sr_number=sr_number, canton=canton,
+                jurisdiction=jurisdiction, language=language, limit=limit,
+            ),
+            "no_match_with_filters" if _filtered else "no_fts_match")
 
     @rest_api.get("/laws/{abbreviation}", tags=["Statutes"],
                   summary="Look up a Swiss law (federal + cantonal)",
                   description="Look up a federal law by abbreviation/SR or a "
                               "cantonal law by SR + canton.")
     async def api_get_law(
+        response: Response,
         abbreviation: str = PathParam(description="Law abbreviation (e.g., BV, OR, ZGB, StGB) — or '_' for cantonal lookup by SR"),
         sr_number: str = Query(None, description="SR number (e.g., 210 for ZGB)"),
         article: str = Query(None, description="Article number to retrieve (e.g., 8, 41a)"),
@@ -25124,7 +25243,8 @@ setInterval(load, 30000);
             as_of=as_of,
         )
         if (format or "").lower() == "xml":
-            from fastapi import Response, HTTPException
+            # Response and HTTPException are module globals; a local import
+            # here would shadow `Response` across the whole function body.
             arts = (result or {}).get("articles") or []
             frag = arts[0].get("xml") if arts else None
             if not frag:
@@ -25134,7 +25254,11 @@ setInterval(load, 30000);
                            "federal article (?article=…); rebuild statutes.db to populate it.",
                 )
             return Response(content=frag, media_type="application/xml")
-        return result
+        # A law found but no matching article is a miss, not an answer:
+        # ?article=999 returns the law's metadata with articles: [].
+        return _declare_outcome(
+            response, result,
+            "article_not_found" if article else "id_not_found")
 
     # In-process validity cache for /amendment-ref. Keyed by
     # (ref_type, year, page). Avoids re-asking Fedlex SPARQL on every
@@ -25311,6 +25435,7 @@ setInterval(load, 30000);
                   summary="Search commentaries",
                   description="Search OnlineKommentar.ch scholarly commentaries on Swiss law.")
     async def api_search_commentaries(
+        response: Response,
         query: str = Query(None, description="Search query"),
         q: str = Query(None, description="Alias for `query`."),
         abbreviation: str = Query(None, description="Filter by law abbreviation"),
@@ -25320,24 +25445,32 @@ setInterval(load, 30000);
         query = query or q
         if not query:
             raise HTTPException(status_code=422, detail="A search query is required; pass it as `query` or `q`.")
-        return await asyncio.to_thread(
-            search_commentaries, query=query, abbreviation=abbreviation,
-            language=language, limit=limit,
-        )
+        _filtered = any(v not in (None, "") for v in (abbreviation, language))
+        return _declare_outcome(
+            response,
+            await asyncio.to_thread(
+                search_commentaries, query=query, abbreviation=abbreviation,
+                language=language, limit=limit,
+            ),
+            "no_match_with_filters" if _filtered else "no_fts_match")
 
     @rest_api.get("/commentaries/{abbreviation}", tags=["Commentaries"],
                   summary="Get commentary for a law",
                   description="Get OnlineKommentar commentary for a specific law article.")
     async def api_get_commentary(
+        response: Response,
         abbreviation: str = PathParam(description="Law abbreviation (e.g., OR, ZGB)"),
         sr_number: str = Query(None, description="SR number"),
         article: str = Query(None, description="Article number"),
         language: str = Query("de", description="Language: de, fr, it"),
     ):
-        return await asyncio.to_thread(
-            get_commentary, abbreviation=abbreviation, sr_number=sr_number,
-            article=article, language=language,
-        )
+        return _declare_outcome(
+            response,
+            await asyncio.to_thread(
+                get_commentary, abbreviation=abbreviation, sr_number=sr_number,
+                article=article, language=language,
+            ),
+            "article_not_found" if article else "id_not_found")
 
     # ── OA legal scholarship endpoints ─────────────────────────
 
@@ -25351,6 +25484,7 @@ setInterval(load, 30000);
                       "license terms — preserve when re-using)."
                   ))
     async def api_search_scholarship(
+        response: Response,
         query: str = Query(None, description="Topic query (FTS5 syntax); optional if `author` or a filter is given"),
         q: str = Query(None, description="Alias for `query`."),
         source: str = Query(None, description="Filter by source slug"),
@@ -25365,11 +25499,17 @@ setInterval(load, 30000);
         query = query or q
         if not query and not (author or source or pub_type or language or year_min or year_max):
             raise HTTPException(status_code=422, detail="Provide a `query` (or `q`), or at least one filter (author/source/pub_type/language/year).")
-        return await asyncio.to_thread(
-            search_scholarship, query=query or "", source=source, pub_type=pub_type,
-            language=language, year_min=year_min, year_max=year_max,
-            author=author, sort=sort, limit=limit,
-        )
+        _filtered = any(v not in (None, "") for v in
+                        (source, pub_type, language, year_min, year_max, author))
+        return _declare_outcome(
+            response,
+            await asyncio.to_thread(
+                search_scholarship, query=query or "", source=source, pub_type=pub_type,
+                language=language, year_min=year_min, year_max=year_max,
+                author=author, sort=sort, limit=limit,
+            ),
+            ("filters_excluded_all" if not (query or "").strip() else
+             "no_match_with_filters" if _filtered else "no_fts_match"))
 
     @rest_api.get("/scholarship/sources", tags=["Scholarship"],
                   summary="List indexed scholarship sources + license catalog",
@@ -25377,8 +25517,11 @@ setInterval(load, 30000);
                       "Returns counts per source + license + attribution. "
                       "Always available even when the scholarship DB is empty."
                   ))
-    async def api_list_scholarship_sources():
-        return await asyncio.to_thread(list_scholarship_sources)
+    async def api_list_scholarship_sources(response: Response):
+        return _declare_outcome(
+            response,
+            await asyncio.to_thread(list_scholarship_sources),
+            "corpus_empty")
 
     @rest_api.get("/scholarship/licenses", tags=["Scholarship"],
                   summary="Full license + attribution catalog for all sources",
@@ -25388,9 +25531,10 @@ setInterval(load, 30000);
                       "and scaffolded-but-inactive sources so the catalog "
                       "lists everything that will eventually be served."
                   ))
-    async def api_scholarship_licenses():
+    async def api_scholarship_licenses(response: Response):
         from scrapers.scholarship.sources import licenses_catalog
-        return {"catalog": licenses_catalog()}
+        return _declare_outcome(response, {"catalog": licenses_catalog()},
+                                "corpus_empty")
 
     @rest_api.get("/scholarship/citation-stats", tags=["Scholarship"],
                   summary="Citation-bridge counts between scholarship and caselaw",
@@ -25400,7 +25544,7 @@ setInterval(load, 30000);
                       "statute corpora. Populated nightly by Step 2b of "
                       "build_legal_scholarship.py."
                   ))
-    async def api_scholarship_citation_stats():
+    async def api_scholarship_citation_stats(response: Response):
         def _stats():
             conn = _get_scholarship_conn()
             if conn is None:
@@ -25438,30 +25582,46 @@ setInterval(load, 30000);
                 }
             finally:
                 conn.close()
-        return await asyncio.to_thread(_stats)
+        payload = await asyncio.to_thread(_stats)
+        # A count of zero is an answer — "no citations resolved yet" is
+        # information. An absent corpus is not, and _stats says which by
+        # attaching a note rather than an error, so the generic
+        # classifier cannot tell them apart.
+        _mark_outcome(response,
+                      "empty" if payload.get("note") else "substantive",
+                      "corpus_not_built" if payload.get("note") else None)
+        return payload
 
     @rest_api.get("/scholarship/cited-by-statute", tags=["Scholarship"],
                   summary="Scholarship citing a statute article")
     async def api_scholarship_cited_by_statute(
+        response: Response,
         sr_number: str = Query(..., description="SR number (e.g. '220')"),
         article: str = Query(None, description="Article number (e.g. '41')"),
         limit: int = Query(20, ge=1, le=100),
     ):
-        return await asyncio.to_thread(
-            find_scholarship_citing_statute,
-            sr_number=sr_number, article=article, limit=limit,
-        )
+        return _declare_outcome(
+            response,
+            await asyncio.to_thread(
+                find_scholarship_citing_statute,
+                sr_number=sr_number, article=article, limit=limit,
+            ),
+            "no_citing_scholarship")
 
     @rest_api.get("/scholarship/cited-by-decision", tags=["Scholarship"],
                   summary="Scholarship citing a court decision")
     async def api_scholarship_cited_by_decision(
+        response: Response,
         decision_id: str = Query(..., description="Decision id (e.g. 'bge_BGE_140_III_86')"),
         limit: int = Query(20, ge=1, le=100),
     ):
-        return await asyncio.to_thread(
-            find_scholarship_citing_decision,
-            decision_id=decision_id, limit=limit,
-        )
+        return _declare_outcome(
+            response,
+            await asyncio.to_thread(
+                find_scholarship_citing_decision,
+                decision_id=decision_id, limit=limit,
+            ),
+            "no_citing_scholarship")
 
     @rest_api.get("/scholarship-fulltext", tags=["Scholarship"],
                   summary="Get full text of an OA publication (on demand)")
@@ -25473,9 +25633,13 @@ setInterval(load, 30000);
     @rest_api.get("/scholarship/{pub_id:path}", tags=["Scholarship"],
                   summary="Get a single publication by pub_id")
     async def api_get_scholarship(
+        response: Response,
         pub_id: str = PathParam(description="Canonical pub_id"),
     ):
-        return await asyncio.to_thread(get_scholarship, pub_id=pub_id)
+        return _declare_outcome(
+            response,
+            await asyncio.to_thread(get_scholarship, pub_id=pub_id),
+            "id_not_found")
 
     # ── Materialien endpoints ─────────────────────────────────
 
@@ -25485,17 +25649,22 @@ setInterval(load, 30000);
                               "key arguments, design choices, rejected alternatives, and "
                               "parliamentary modifications.")
     async def api_get_materialien(
+        response: Response,
         law_code: str = PathParam(description="Law abbreviation (e.g., BGFA, BV)"),
         article: str = Query(None, description="Article number (e.g., '1', '8')"),
     ):
-        return await asyncio.to_thread(
-            get_materialien, law_code=law_code, article=article,
-        )
+        return _declare_outcome(
+            response,
+            await asyncio.to_thread(
+                get_materialien, law_code=law_code, article=article,
+            ),
+            "article_not_found" if article else "id_not_found")
 
     @rest_api.get("/materialien", tags=["Materialien"],
                   summary="Search preparatory materials",
                   description="Full-text search across all Botschaft data.")
     async def api_search_materialien(
+        response: Response,
         query: str = Query(None, description="Search query"),
         q: str = Query(None, description="Alias for `query`."),
         law_code: str = Query(None, description="Filter by law code"),
@@ -25504,9 +25673,12 @@ setInterval(load, 30000);
         query = query or q
         if not query:
             raise HTTPException(status_code=422, detail="A search query is required; pass it as `query` or `q`.")
-        return await asyncio.to_thread(
-            search_materialien, query=query, law_code=law_code, limit=limit,
-        )
+        return _declare_outcome(
+            response,
+            await asyncio.to_thread(
+                search_materialien, query=query, law_code=law_code, limit=limit,
+            ),
+            "no_match_with_filters" if law_code else "no_fts_match")
 
     # ── Legislation endpoints ──────────────────────────────────
 

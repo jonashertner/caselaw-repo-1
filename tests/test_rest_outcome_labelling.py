@@ -73,13 +73,16 @@ def test_recorders_never_raise():
     m._record_empty_reason("t2", None)        # type: ignore[arg-type]
 
 
-def test_status_fallback_semantics_unchanged():
-    """Routes that have not opted in must behave exactly as before:
-    204/404/410 empty, everything else substantive."""
-    for status, expected in ((204, "empty"), (404, "empty"), (410, "empty"),
+def test_status_fallback_counts_rejections_as_unanswered():
+    """A route that has not declared its outcome falls back to the status.
+    422 was counted as answered until 2026-08-19, which flattered exactly
+    the calls whose parameters need better documentation: the caller got
+    no law, so it is empty."""
+    for status, expected in ((204, "empty"), (400, "empty"), (404, "empty"),
+                             (410, "empty"), (422, "empty"),
                              (200, "substantive"), (201, "substantive"),
-                             (422, "substantive")):
-        got = "empty" if status in (204, 404, 410) else "substantive"
+                             (206, "substantive"), (304, "substantive")):
+        got = "empty" if status in m._EMPTY_STATUSES else "substantive"
         assert got == expected, status
 
 

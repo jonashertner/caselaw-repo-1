@@ -82,6 +82,13 @@ def reconstruct(lines):
     derr = collections.defaultdict(collections.Counter)
     dsub = collections.defaultdict(collections.Counter)   # answered
     dempty = collections.defaultdict(collections.Counter)  # ran, no answer
+    # Provenance and diagnosis. An answered rate is only worth reading
+    # alongside how much of it was measured rather than inferred from an
+    # HTTP status, and an empty rate is only actionable with a reason.
+    ddecl = collections.defaultdict(collections.Counter)   # route said so
+    dstat = collections.defaultdict(collections.Counter)   # status guessed
+    dreason: dict = collections.defaultdict(
+        lambda: collections.defaultdict(collections.Counter))
 
     for _boot, bydays in boots.items():
         prev_tools: dict = {}
@@ -104,6 +111,13 @@ def reconstruct(lines):
                 # line below makes visible rather than hiding.
                 dsub[day][name] += max(0, v.get("substantive", 0) - ps)
                 dempty[day][name] += max(0, v.get("empty", 0) - pn)
+                pd = (prev_tools.get(name) or {}).get("outcome_declared", 0)
+                pst = (prev_tools.get(name) or {}).get("outcome_from_status", 0)
+                ddecl[day][name] += max(0, v.get("outcome_declared", 0) - pd)
+                dstat[day][name] += max(0, v.get("outcome_from_status", 0) - pst)
+                pr = (prev_tools.get(name) or {}).get("empty_reasons") or {}
+                for reason, cnt in (v.get("empty_reasons") or {}).items():
+                    dreason[day][name][reason] += max(0, cnt - pr.get(reason, 0))
                 daily[day] += delta_c
             sess = d.get("sessions", 0) or 0
             dsess[day] += max(0, sess - prev_sess)
@@ -111,7 +125,7 @@ def reconstruct(lines):
                 dcli[day][k] += max(0, v - prev_cli.get(k, 0))
             prev_tools, prev_sess = tools, sess
             prev_cli = dict(d.get("clients") or {})
-    return daily, dsess, dcli, dtools, derr, dsub, dempty
+    return daily, dsess, dcli, dtools, derr, dsub, dempty, ddecl, dstat, dreason
 
 
 def main() -> int:
@@ -120,7 +134,8 @@ def main() -> int:
         print(f"not found: {path}", file=sys.stderr)
         return 1
     with open(path, encoding="utf-8", errors="replace") as f:
-        daily, dsess, dcli, dtools, derr, dsub, dempty = reconstruct(f)
+        (daily, dsess, dcli, dtools, derr, dsub, dempty,
+         ddecl, dstat, dreason) = reconstruct(f)
     if not daily:
         print("no parseable flush records")
         return 1
@@ -150,16 +165,38 @@ def main() -> int:
         subs.update(dsub[d])
         empt.update(dempty[d])
 
+    decl = collections.Counter()
+    stat = collections.Counter()
+    reasons: dict = collections.defaultdict(collections.Counter)
+    for d in window:
+        decl.update(ddecl[d])
+        stat.update(dstat[d])
+        for name, c in dreason[d].items():
+            reasons[name].update(c)
+
     print(f"\ntop tools over {len(window)} days:")
     print(f"  {'tool':30s} {'calls':>9s}  {'err':>7s}  {'answered':>9s}  "
-          f"{'empty':>8s}  {'labelled':>8s}")
+          f"{'empty':>8s}  {'labelled':>8s}  {'measured':>8s}")
     for name, n in tools.most_common(15):
         e, s, m = errs.get(name, 0), subs.get(name, 0), empt.get(name, 0)
         labelled = s + m
         cov = f"{100 * labelled / max(1, n):.0f}%"
         ans = f"{100 * s / labelled:.1f}%" if labelled else "-"
+        # `measured` is the share of outcomes the route declared. The
+        # remainder was inferred from the HTTP status, which cannot see a
+        # 200 carrying an empty list — so a low figure here means the
+        # answered rate beside it is optimistic, not wrong.
+        srcs = decl.get(name, 0) + stat.get(name, 0)
+        meas = f"{100 * decl.get(name, 0) / srcs:.0f}%" if srcs else "-"
         print(f"  {name:30s} {n:9,}  {100 * e / max(1, n):6.2f}%  {ans:>9s}  "
-              f"{m:8,}  {cov:>8s}")
+              f"{m:8,}  {cov:>8s}  {meas:>8s}")
+
+    if reasons:
+        print("\nwhy calls answered nothing:")
+        ranked = sorted(reasons.items(), key=lambda kv: -sum(kv[1].values()))
+        for name, c in ranked[:8]:
+            top = ", ".join(f"{r} {v:,}" for r, v in c.most_common(4))
+            print(f"  {name:30s} {top}")
 
     tot_calls = sum(tools.values())
     tot_lab = sum(subs.values()) + sum(empt.values())

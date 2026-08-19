@@ -21,13 +21,23 @@ from scripts.metrics_report import reconstruct  # noqa: E402
 
 
 def _rec(boot, flushed_at, calls, sessions=0, clients=None, errors=0,
-         substantive=None, empty=None):
+         substantive=None, empty=None, declared=None, from_status=None,
+         reasons=None):
     tool = {"calls": calls, "errors": errors}
     # Records written before outcome labelling shipped carry neither key.
     if substantive is not None:
         tool["substantive"] = substantive
     if empty is not None:
         tool["empty"] = empty
+    # Provenance and reasons arrived later still, so they are separately
+    # optional: a record may label outcomes without saying where the
+    # label came from.
+    if declared is not None:
+        tool["outcome_declared"] = declared
+    if from_status is not None:
+        tool["outcome_from_status"] = from_status
+    if reasons is not None:
+        tool["empty_reasons"] = reasons
     return json.dumps({
         "uptime_since": boot, "flushed_at": flushed_at, "sessions": sessions,
         "tools": {"get_decision": tool},
@@ -45,7 +55,7 @@ def test_cumulative_counters_become_daily_deltas():
         _rec("bootB", "2026-07-02T12:00:00", 12, sessions=2),
         _rec("bootB", "2026-07-02T23:50:00", 30, sessions=5),
     ]
-    daily, dsess, dcli, dtools, derr, dsub, dempty = reconstruct(lines)
+    daily, dsess, dcli, dtools, derr, dsub, dempty, *_ = reconstruct(lines)
     assert daily["2026-07-01"] == 25          # last flush of the day, not the sum
     assert daily["2026-07-02"] == (40 - 25) + 30   # boot A delta + boot B total
     assert dsess["2026-07-01"] == 7
@@ -112,7 +122,7 @@ def test_outcome_counters_delta_like_calls():
         _rec("bootA", "2026-07-01T20:00:00", 30, substantive=25, empty=5),
         _rec("bootB", "2026-07-01T21:00:00", 6, substantive=4, empty=2),
     ]
-    _, _, _, _, _, dsub, dempty = reconstruct(lines)
+    _, _, _, _, _, dsub, dempty, *_ = reconstruct(lines)
     assert dsub["2026-07-01"]["get_decision"] == 25 + 4
     assert dempty["2026-07-01"]["get_decision"] == 5 + 2
 
@@ -124,7 +134,7 @@ def test_records_without_outcome_keys_report_zero_labelled():
         _rec("bootA", "2026-07-01T08:00:00", 10),
         _rec("bootA", "2026-07-01T20:00:00", 30),
     ]
-    daily, _, _, _, _, dsub, dempty = reconstruct(lines)
+    daily, _, _, _, _, dsub, dempty, *_ = reconstruct(lines)
     assert daily["2026-07-01"] == 30
     assert dsub["2026-07-01"]["get_decision"] == 0
     assert dempty["2026-07-01"]["get_decision"] == 0
@@ -135,6 +145,60 @@ def test_outcome_counters_clamp_on_worker_restart():
         _rec("bootA", "2026-07-01T08:00:00", 50, substantive=40, empty=10),
         _rec("bootA", "2026-07-02T08:00:00", 10, substantive=8, empty=2),
     ]
-    _, _, _, _, _, dsub, dempty = reconstruct(lines)
+    _, _, _, _, _, dsub, dempty, *_ = reconstruct(lines)
     assert dsub["2026-07-02"]["get_decision"] == 0
     assert dempty["2026-07-02"]["get_decision"] == 0
+
+
+def test_provenance_counters_delta_like_calls():
+    """`declared` vs `from_status` is what separates a measured answered
+    rate from an assumed one, so it must survive reconstruction."""
+    lines = [
+        _rec("bootA", "2026-07-01T08:00:00", 10, declared=6, from_status=4),
+        _rec("bootA", "2026-07-01T20:00:00", 30, declared=20, from_status=10),
+        _rec("bootB", "2026-07-01T21:00:00", 6, declared=5, from_status=1),
+    ]
+    _, _, _, _, _, _, _, ddecl, dstat, _ = reconstruct(lines)
+    assert ddecl["2026-07-01"]["get_decision"] == 20 + 5
+    assert dstat["2026-07-01"]["get_decision"] == 10 + 1
+
+
+def test_empty_reasons_delta_per_key():
+    """The reason histogram is cumulative per boot like every other
+    counter, so it deltas per KEY — not per dict."""
+    lines = [
+        _rec("bootA", "2026-07-01T08:00:00", 10,
+             reasons={"no_fts_match": 3}),
+        _rec("bootA", "2026-07-01T20:00:00", 30,
+             reasons={"no_fts_match": 8, "filters_excluded_all": 2}),
+        _rec("bootB", "2026-07-01T21:00:00", 6,
+             reasons={"no_fts_match": 1}),
+    ]
+    dreason = reconstruct(lines)[9]
+    assert dreason["2026-07-01"]["get_decision"]["no_fts_match"] == 8 + 1
+    assert dreason["2026-07-01"]["get_decision"]["filters_excluded_all"] == 2
+
+
+def test_reason_counters_clamp_on_worker_restart():
+    lines = [
+        _rec("bootA", "2026-07-01T08:00:00", 50, declared=40,
+             reasons={"no_fts_match": 9}),
+        _rec("bootA", "2026-07-02T08:00:00", 10, declared=8,
+             reasons={"no_fts_match": 2}),
+    ]
+    _, _, _, _, _, _, _, ddecl, _, dreason = reconstruct(lines)
+    assert ddecl["2026-07-02"]["get_decision"] == 0
+    assert dreason["2026-07-02"]["get_decision"]["no_fts_match"] == 0
+
+
+def test_records_without_provenance_report_nothing_measured():
+    """Pre-deploy days must not be counted as measured; the report shows
+    them as '-', never as 100% declared."""
+    lines = [
+        _rec("bootA", "2026-07-01T08:00:00", 10, substantive=8, empty=2),
+        _rec("bootA", "2026-07-01T20:00:00", 30, substantive=25, empty=5),
+    ]
+    _, _, _, _, _, _, _, ddecl, dstat, dreason = reconstruct(lines)
+    assert ddecl["2026-07-01"]["get_decision"] == 0
+    assert dstat["2026-07-01"]["get_decision"] == 0
+    assert not dreason["2026-07-01"]["get_decision"]
