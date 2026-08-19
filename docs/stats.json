@@ -1,19 +1,19 @@
 {
-  "total": 1053640,
-  "source_representations": 1053640,
+  "total": 1053676,
+  "source_representations": 1053676,
   "representation_method_version": "2026-07-23.1",
-  "unique_decisions": 912728,
-  "unique_decisions_lower_bound": 912678,
+  "unique_decisions": 912764,
+  "unique_decisions_lower_bound": 912714,
   "duplicate_representations": 140912,
   "unique_decisions_status": "current",
   "by_court": [
     {
       "court": "bger",
       "canton": "CH",
-      "count": 192604,
+      "count": 192635,
       "earliest": "1986-10-06",
-      "latest": "2026-08-06",
-      "last_scraped": "2026-08-18T10:40:39.411973+00:00",
+      "latest": "2026-08-10",
+      "last_scraped": "2026-08-19T10:41:06.764754+00:00",
       "languages": [
         "de",
         "fr",
@@ -557,10 +557,10 @@
     {
       "court": "ecthr_chamber",
       "canton": "CE",
-      "count": 1300,
+      "count": 1303,
       "earliest": "1961-07-01",
       "latest": "2026-07-07",
-      "last_scraped": "2026-08-14T14:06:26.176680+00:00",
+      "last_scraped": "2026-08-19T14:06:09.836567+00:00",
       "languages": [
         "fr"
       ]
@@ -861,10 +861,10 @@
     {
       "court": "ecthr_committee",
       "canton": "CE",
-      "count": 244,
+      "count": 246,
       "earliest": "2010-11-25",
       "latest": "2026-07-09",
-      "last_scraped": "2026-08-17T14:04:30.480491+00:00",
+      "last_scraped": "2026-08-19T14:09:33.009872+00:00",
       "languages": [
         "fr"
       ]
@@ -1758,7 +1758,7 @@
     {
       "canton": "CE",
       "name": "CE",
-      "count": 1641,
+      "count": 1646,
       "court_count": 3,
       "earliest": "1961-07-01",
       "latest": "2026-07-09",
@@ -1837,9 +1837,9 @@
     }
   ],
   "by_language": {
-    "de": 501675,
-    "fr": 461072,
-    "it": 90893
+    "de": 501692,
+    "fr": 461089,
+    "it": 90895
   },
   "by_year": {
     "1875": 179,
@@ -1975,7 +1975,7 @@
     "2005": 22099,
     "2006": 23237,
     "2007": 29129,
-    "2008": 28293,
+    "2008": 28294,
     "2009": 32679,
     "2010": 34770,
     "2011": 35837,
@@ -1985,35 +1985,35 @@
     "2015": 44775,
     "2016": 46409,
     "2017": 47536,
-    "2018": 49166,
+    "2018": 49167,
     "2019": 49582,
     "2020": 50350,
-    "2021": 51808,
+    "2021": 51809,
     "2022": 51543,
     "2023": 51468,
-    "2024": 51649,
-    "2025": 48637,
-    "2026": 19527
+    "2024": 51650,
+    "2025": 48638,
+    "2026": 19558
   },
   "recent_daily": {
     "2026-07-20": 63,
     "2026-07-21": 83,
-    "2026-07-22": 48,
-    "2026-07-23": 73,
+    "2026-07-22": 50,
+    "2026-07-23": 74,
     "2026-07-24": 39,
     "2026-07-27": 50,
-    "2026-07-28": 56,
-    "2026-07-29": 66,
-    "2026-07-30": 48,
-    "2026-07-31": 30,
+    "2026-07-28": 57,
+    "2026-07-29": 69,
+    "2026-07-30": 49,
+    "2026-07-31": 31,
     "2026-08-01": 1,
     "2026-08-03": 31,
-    "2026-08-04": 28,
-    "2026-08-05": 35,
-    "2026-08-06": 19,
+    "2026-08-04": 31,
+    "2026-08-05": 38,
+    "2026-08-06": 21,
     "2026-08-07": 8,
     "2026-08-09": 1,
-    "2026-08-10": 11,
+    "2026-08-10": 16,
     "2026-08-11": 7,
     "2026-08-12": 2,
     "2026-08-13": 9,
@@ -2031,7 +2031,7 @@
     {
       "court": "bger",
       "canton": "CH",
-      "count": 192604
+      "count": 192635
     },
     {
       "court": "ge_gerichte",
@@ -2230,11 +2230,11 @@
     "2023": -0.1,
     "2024": 0.4,
     "2025": -5.8,
-    "2026": -59.9
+    "2026": -59.8
   },
   "federal_vs_cantonal": {
-    "federal": 396467,
-    "cantonal": 657173
+    "federal": 396498,
+    "cantonal": 657178
   },
   "language_by_year": {
     "2005": {
@@ -2254,7 +2254,7 @@
     },
     "2008": {
       "de": 14169,
-      "fr": 10657,
+      "fr": 10658,
       "it": 3467
     },
     "2009": {
@@ -2304,7 +2304,7 @@
     },
     "2018": {
       "de": 22108,
-      "fr": 24463,
+      "fr": 24464,
       "it": 2595
     },
     "2019": {
@@ -2319,7 +2319,7 @@
     },
     "2021": {
       "de": 22886,
-      "fr": 26196,
+      "fr": 26197,
       "it": 2726
     },
     "2022": {
@@ -2334,18 +2334,18 @@
     },
     "2024": {
       "de": 23523,
-      "fr": 25904,
+      "fr": 25905,
       "it": 2222
     },
     "2025": {
       "de": 23367,
-      "fr": 23722,
+      "fr": 23723,
       "it": 1548
     },
     "2026": {
-      "de": 10542,
-      "fr": 8234,
-      "it": 751
+      "de": 10559,
+      "fr": 8246,
+      "it": 753
     }
   },
   "by_month": {
@@ -2357,7 +2357,7 @@
     "2024-01": 4156,
     "2024-02": 4306,
     "2024-03": 4375,
-    "2024-04": 4222,
+    "2024-04": 4223,
     "2024-05": 4440,
     "2024-06": 4781,
     "2024-07": 3964,
@@ -2366,7 +2366,7 @@
     "2024-10": 4446,
     "2024-11": 4527,
     "2024-12": 4280,
-    "2025-01": 4240,
+    "2025-01": 4241,
     "2025-02": 4113,
     "2025-03": 4289,
     "2025-04": 3964,
@@ -2381,13 +2381,13 @@
     "2026-01": 2867,
     "2026-02": 3447,
     "2026-03": 3331,
-    "2026-04": 2740,
-    "2026-05": 2510,
-    "2026-06": 2694,
-    "2026-07": 1756,
-    "2026-08": 162
+    "2026-04": 2741,
+    "2026-05": 2513,
+    "2026-06": 2698,
+    "2026-07": 1766,
+    "2026-08": 175
   },
-  "generated_at": "2026-08-19T10:30:52.656634+00:00",
+  "generated_at": "2026-08-19T18:21:43.325670+00:00",
   "scraper_health": {
     "run_at": "2026-08-19T03:05:39.061986+00:00",
     "run_duration_s": 7478.4,
@@ -2711,9 +2711,9 @@
         "duration_s": 866.0,
         "error": null,
         "note": null,
-        "state_count": 98399,
-        "jsonl_size_mb": 1486.0,
-        "jsonl_mtime": "2026-08-19T10:01:59.016860+00:00"
+        "state_count": 98430,
+        "jsonl_size_mb": 1486.6,
+        "jsonl_mtime": "2026-08-19T11:01:01.240499+00:00"
       },
       "fr_anwaltsaufsicht": {
         "success": true,
@@ -2798,7 +2798,7 @@
         "note": null,
         "state_count": 21337,
         "jsonl_size_mb": 490.2,
-        "jsonl_mtime": "2026-08-19T09:18:25.691423+00:00"
+        "jsonl_mtime": "2026-08-19T10:38:57.185739+00:00"
       },
       "gl_gerichte": {
         "success": true,
@@ -3427,7 +3427,7 @@
         "note": null,
         "state_count": 7656,
         "jsonl_size_mb": 190.5,
-        "jsonl_mtime": "2026-08-19T02:07:01.247560+00:00"
+        "jsonl_mtime": "2026-08-19T10:57:01.631911+00:00"
       },
       "lu_gerichte": {
         "success": true,
@@ -3527,9 +3527,9 @@
         "duration_s": 7193.1,
         "error": null,
         "note": "2020 listed on portal but content not downloadable (empty page or missing PDF)",
-        "state_count": 1689,
-        "jsonl_size_mb": 100.6,
-        "jsonl_mtime": "2026-08-19T03:05:38.995227+00:00"
+        "state_count": 1694,
+        "jsonl_size_mb": 100.9,
+        "jsonl_mtime": "2026-08-19T14:53:50.930518+00:00"
       }
     },
     "run_at_daily": "2026-08-19T03:05:39.061986+00:00",
@@ -3622,19 +3622,19 @@
       "reference_article": 40,
       "bachelor_thesis": 3
     },
-    "citation_edges": 9829539,
-    "statute_edges": 12457567
+    "citation_edges": 9832040,
+    "statute_edges": 12460066
   },
   "interesting_stats": {
     "most_cited_decision": {
       "docket": "BGE 125 V 351",
-      "citation_count": 77269,
+      "citation_count": 77298,
       "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
     },
     "most_cited_statute": {
       "law_code": "LTF",
       "article": "100",
-      "ref_count": 184071
+      "ref_count": 184093
     },
     "oldest_decision": {
       "docket": "1_I_26",
@@ -3646,20 +3646,20 @@
       "de_pct": 47.6,
       "fr_pct": 43.8,
       "it_pct": 8.6,
-      "total": 1053469
+      "total": 1053676
     },
     "regeste_coverage": {
       "pct": 38.5,
-      "with_regeste": 405419,
-      "total": 1053469
+      "with_regeste": 405458,
+      "total": 1053676
     },
     "graph_size": {
-      "decision_edges": 11520754,
-      "statute_edges": 12457567,
-      "total": 23978321
+      "decision_edges": 11523628,
+      "statute_edges": 12460066,
+      "total": 23983694
     },
     "echr_switzerland": {
-      "total": 3023,
+      "total": 3028,
       "grand_chamber": 103,
       "in_2026": 141,
       "most_recent": {
@@ -3672,31 +3672,31 @@
     "top_5_decisions": [
       {
         "docket": "BGE 125 V 351",
-        "citation_count": 77269,
+        "citation_count": 77298,
         "regeste_excerpt": "Regeste\n Art. 4 BV; Art. 108 Abs. 1 lit. b UVG; Art. 40 BZP in Verbindung mit Art. 19 VwVG; Art. 95 Abs. 2 in Verbindung mit Art. 113 und 132 OG: Beweiswürdigun",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
       },
       {
         "docket": "125 V 351",
-        "citation_count": 74841,
+        "citation_count": 74872,
         "regeste_excerpt": "Regeste\n Art. 4 BV; Art. 108 Abs. 1 lit. b UVG; Art. 40 BZP in Verbindung mit Art. 19 VwVG; Art. 95 Abs. 2 in Verbindung mit Art. 113 und 132 OG: Beweiswürdigun",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_125 V 351"
       },
       {
         "docket": "BGE 122 V 157",
-        "citation_count": 40279,
+        "citation_count": 40290,
         "regeste_excerpt": "Regeste\n Art. 4 BV, Art. 6 Ziff. 1 EMRK. - Art. 4 BV und Art. 6 Ziff. 1 EMRK umfassen keinen formellen Anspruch auf Beizug versicherungsexterner medizinischer G",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_122_V_157"
       },
       {
         "docket": "BGE 134 V 231",
-        "citation_count": 38626,
+        "citation_count": 38642,
         "regeste_excerpt": "Regeste\n Art. 6 Abs. 1 UVG; Beweiswert diagnostischer Methoden; funktionelle Magnetresonanztomographie; Schleudertrauma. Eine medizinisch-diagnostische Methode ",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_134_V_231"
       },
       {
         "docket": "BGE 115 V 133",
-        "citation_count": 34557,
+        "citation_count": 34558,
         "regeste_excerpt": "Regeste\n Art. 67 und 76 KUVG, Art. 6 und 18 UVG. Präzisierung der in BGE 113 V 307 veröffentlichten Rechtsprechung zum adäquaten Kausalzusammenhang.\nRegeste\n Ar",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_115_V_133"
       }
@@ -3705,27 +3705,27 @@
       {
         "law_code": "LTF",
         "article": "100",
-        "ref_count": 184071
+        "ref_count": 184093
       },
       {
         "law_code": "LTF",
         "article": "113",
-        "ref_count": 113437
+        "ref_count": 113444
       },
       {
         "law_code": "LTF",
         "article": "42",
-        "ref_count": 108404
+        "ref_count": 108424
       },
       {
         "law_code": "BGG",
         "article": "42",
-        "ref_count": 96296
+        "ref_count": 96323
       },
       {
         "law_code": "BGG",
         "article": "66",
-        "ref_count": 60380
+        "ref_count": 60392
       }
     ],
     "materialien_coverage": {
@@ -3783,7 +3783,7 @@
         "earliest": "1908-11-08",
         "latest": "2026-08-13",
         "span_years": 118,
-        "decision_count": 169570
+        "decision_count": 169626
       }
     ]
   },
@@ -4065,12 +4065,68 @@
   "recent": {
     "bge": [
       {
+        "decision_id": "bger_5A_752_2026",
+        "docket": "5A_752/2026",
+        "date": "2026-08-10",
+        "court": "bger",
+        "language": "de",
+        "summary": "Aufschiebende Wirkung (Pfändungsankündigung),"
+      },
+      {
+        "decision_id": "bger_5A_751_2026",
+        "docket": "5A_751/2026",
+        "date": "2026-08-10",
+        "court": "bger",
+        "language": "de",
+        "summary": "unentgeltliche Rechtspflege, Kostenvorschuss (Konkurseröffnung),"
+      },
+      {
+        "decision_id": "bger_5A_623_2026",
+        "docket": "5A_623/2026",
+        "date": "2026-08-10",
+        "court": "bger",
+        "language": "fr",
+        "summary": "poursuite en réalisation de gage (vente aux enchères),"
+      },
+      {
+        "decision_id": "bger_4A_403_2026",
+        "docket": "4A_403/2026",
+        "date": "2026-08-10",
+        "court": "bger",
+        "language": "de",
+        "summary": "Beschwerde wegen Rechtsverweigerung und Rechtsverzögerung durch das Obergericht des Kantons Aargau, Zivilgericht, in verschiedenen Verfahren."
+      },
+      {
+        "decision_id": "bger_2C_449_2026",
+        "docket": "2C_449/2026",
+        "date": "2026-08-10",
+        "court": "bger",
+        "language": "de",
+        "summary": "Aufenthaltsbewilligung,"
+      },
+      {
+        "decision_id": "bger_5A_644_2026",
+        "docket": "5A_644/2026",
+        "date": "2026-08-06",
+        "court": "bger",
+        "language": "de",
+        "summary": "Anordnung der Versteigerung eines Liquidationsanteils an Gesamteigentum,"
+      },
+      {
         "decision_id": "bger_4D_119_2026",
         "docket": "4D_119/2026",
         "date": "2026-08-06",
         "court": "bger",
         "language": "fr",
         "summary": "indemnisation du conseil d'office,"
+      },
+      {
+        "decision_id": "bger_1C_501_2025",
+        "docket": "1C_501/2025",
+        "date": "2026-08-06",
+        "court": "bger",
+        "language": "de",
+        "summary": "Neubau Mobilfunkanlage,"
       },
       {
         "decision_id": "bger_1C_401_2026",
@@ -4087,62 +4143,6 @@
         "court": "bger",
         "language": "fr",
         "summary": "Prolongation de la détention provisoire,"
-      },
-      {
-        "decision_id": "bger_7B_1429_2025",
-        "docket": "7B_1429/2025",
-        "date": "2026-08-05",
-        "court": "bger",
-        "language": "de",
-        "summary": "Verwertbarkeit von Beweismitteln (SkyECC-Daten); Eintretensvoraussetzungen,"
-      },
-      {
-        "decision_id": "bger_5A_745_2026",
-        "docket": "5A_745/2026",
-        "date": "2026-08-05",
-        "court": "bger",
-        "language": "de",
-        "summary": "Superprovisorischer Aufschub der Vollstreckbarkeit (Obhut),"
-      },
-      {
-        "decision_id": "bger_5A_173_2026",
-        "docket": "5A_173/2026",
-        "date": "2026-08-05",
-        "court": "bger",
-        "language": "fr",
-        "summary": "effet suspensif (mesures provisionnelles; modification du droit aux relations personnelles, etc.),"
-      },
-      {
-        "decision_id": "bger_8C_735_2025",
-        "docket": "8C_735/2025",
-        "date": "2026-08-04",
-        "court": "bger",
-        "language": "de",
-        "summary": "Invalidenversicherung,"
-      },
-      {
-        "decision_id": "bger_7B_916_2026",
-        "docket": "7B_916/2026",
-        "date": "2026-08-04",
-        "court": "bger",
-        "language": "de",
-        "summary": "Sicherheitsleistung; Nichteintreten,"
-      },
-      {
-        "decision_id": "bger_7B_793_2026",
-        "docket": "7B_793/2026",
-        "date": "2026-08-04",
-        "court": "bger",
-        "language": "de",
-        "summary": "Amtliche Verteidigung; Nichteintreten,"
-      },
-      {
-        "decision_id": "bger_6B_457_2025",
-        "docket": "6B_457/2025",
-        "date": "2026-08-04",
-        "court": "bger",
-        "language": "it",
-        "summary": "Ripetuto riciclaggio di denaro, in parte tentato; arbitrio; commisurazione della pena,"
       }
     ],
     "cantonal": [
@@ -4239,6 +4239,14 @@
     ]
   },
   "upcoming_amendments": [
+    {
+      "sr_number": "143.5",
+      "in_force_date": "2026-08-20",
+      "title_de": "Verordnung vom 14. November 2012 über die Ausstellung von Reisedokumenten für ausländische Personen (RDV)",
+      "title_fr": "Ordonnance du 14 novembre 2012 sur l'établissement de documents de voyage pour étrangers (ODV)",
+      "title_it": "Ordinanza del 14 novembre 2012 concernente il rilascio di documenti di viaggio per stranieri (ODV)",
+      "url": "https://www.fedlex.admin.ch/eli/cc/2012/713"
+    },
     {
       "sr_number": "813.12",
       "in_force_date": "2026-09-01",
@@ -4350,20 +4358,12 @@
       "title_fr": "Loi fédérale du 3 octobre 2008 sur les titres intermédiés (LTI)",
       "title_it": "Legge federale del 3 ottobre 2008 sui titoli contabili (Legge sui titoli contabili, LTCo)",
       "url": "https://www.fedlex.admin.ch/eli/cc/2009/450"
-    },
-    {
-      "sr_number": "651.1",
-      "in_force_date": "2026-10-01",
-      "title_de": "Bundesgesetz vom 28. September 2012 über die internationale Amtshilfe in Steuersachen (Steueramtshilfegesetz, StAhiG)",
-      "title_fr": "Loi fédérale du 28 septembre 2012 sur l'assistance administrative internationale en matière fiscale (Loi sur l'assistance administrative fiscale, LAAF)",
-      "title_it": "Legge federale del 28 settembre 2012 sull'assistenza amministrativa internazionale in materia fiscale (Legge sull'assistenza amministrativa fiscale, LAAF)",
-      "url": "https://www.fedlex.admin.ch/eli/cc/2013/31"
     }
   ],
   "delta": {
-    "total": 193,
+    "total": 229,
     "by_court": {
-      "bger": 22,
+      "bger": 53,
       "ge_gerichte": 56,
       "bvger": 14,
       "ti_gerichte": 18,
@@ -4379,9 +4379,11 @@
       "ag_zivilgericht": 2,
       "ag_verwaltungsgericht": 3,
       "zg_verwaltungsgericht": 3,
+      "ecthr_chamber": 3,
       "ju_gerichte": 3,
       "ag_spezialverwaltungsgericht": 4,
-      "ag_handelsgericht": 2
+      "ag_handelsgericht": 2,
+      "ecthr_committee": 2
     },
     "by_canton": {
       "GE": 56,
@@ -4395,11 +4397,12 @@
       "AG": 14,
       "BS": 3,
       "ZG": 3,
+      "CE": 5,
       "JU": 3
     },
     "corpus": {
-      "citation_edges": 2445,
-      "statute_edges": 2657
+      "citation_edges": 4946,
+      "statute_edges": 5156
     },
     "previous_generated_at": "2026-08-18T11:48:54.577695+00:00"
   }
