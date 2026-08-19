@@ -104,26 +104,38 @@ class Collector:
         log.info("[%s] %d records -> %s", dataset, len(records), out.name)
 
     def _copy_file(self, dataset: str, src: Path, schema_note: str,
-                   dated: bool = True) -> None:
+                   dated: bool = True, compress: bool = False) -> None:
         """Snapshot-copy a whole artifact (DB, JSONL) without parsing it."""
         if not src.exists():
             log.info("[%s] source absent: %s", dataset, src)
             return
         d = self.dest / "datasets" / dataset
         name = f"{self.today}-{src.name}" if dated else src.name
+        if compress:
+            name += ".gz"
         if self.dry:
             log.info("[%s] dry-run: copy %s -> %s", dataset, src, d / name)
             return
         d.mkdir(parents=True, exist_ok=True)
         if src.suffix == ".db":
             # A consistent snapshot of a possibly-live SQLite file.
+            tmp = d / (name.removesuffix(".gz") + ".tmp")
             con = sqlite3.connect(f"file:{src}?mode=ro", uri=True)
             try:
-                dst = sqlite3.connect(d / name)
+                dst = sqlite3.connect(tmp)
                 con.backup(dst)
                 dst.close()
             finally:
                 con.close()
+            if compress:
+                with open(tmp, "rb") as fi, gzip.open(d / name, "wb") as fo:
+                    shutil.copyfileobj(fi, fo)
+                tmp.unlink()
+            else:
+                tmp.rename(d / name)
+        elif compress:
+            with open(src, "rb") as fi, gzip.open(d / name, "wb") as fo:
+                shutil.copyfileobj(fi, fo)
         else:
             shutil.copy2(src, d / name)
         self._card(d, dataset, schema_note, True)
@@ -261,12 +273,18 @@ class Collector:
                         "abbreviation, short_title, qualified (ZH/StG), "
                         "source provenance. Public-record law metadata.")
 
-        # Scraper provenance: coverage.db snapshot.
-        self._copy_file("scraper_coverage",
-                        REPO / "state" / "coverage.db",
-                        "SQLite snapshot of state/coverage.db: per-run "
-                        "discovery + fetch events, gap queue, portal "
-                        "snapshots. Upstream-portal provenance; no user data.")
+        # Scraper provenance: coverage.db is ~600 MB — a daily snapshot
+        # would sink a git repo in a week. Weekly (Sunday), gzipped; the
+        # in-between days are recoverable from the source, which is
+        # append-mostly.
+        if _dt.datetime.now(_dt.timezone.utc).weekday() == 6:
+            self._copy_file("scraper_coverage",
+                            REPO / "state" / "coverage.db",
+                            "WEEKLY gzipped SQLite snapshot of "
+                            "state/coverage.db: per-run discovery + fetch "
+                            "events, gap queue, portal snapshots. "
+                            "Upstream-portal provenance; no user data.",
+                            compress=True)
 
         if not self.dry:
             (self.dest / "MANIFEST.jsonl").open("a", encoding="utf-8").write(
