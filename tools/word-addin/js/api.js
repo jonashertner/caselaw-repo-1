@@ -68,6 +68,66 @@ async function oclBuildHeaders(extra) {
   return headers;
 }
 
+// A GET has no side effect, so a transient failure is safe to repeat.
+// Without this a single blip surfaced as an error in the task pane: the
+// header claimed retry and rate limiting, but nothing retried anything.
+var RETRY_STATUSES = [502, 503, 504];
+var MAX_ATTEMPTS = 3;
+
+// Nothing bounded how long a request could hang. fetch() has no default
+// timeout, so a slow or stalled call left the pane waiting indefinitely
+// with no way back — and server-side tools genuinely do run for tens of
+// seconds. 45s is comfortably past a normal call and well short of a
+// user concluding the add-in is broken.
+var REQUEST_TIMEOUT_MS = 45000;
+
+function _timeoutSignal(ms) {
+  // AbortSignal.timeout is not in every Office webview yet.
+  if (typeof AbortSignal !== 'undefined' && AbortSignal.timeout) {
+    return AbortSignal.timeout(ms);
+  }
+  if (typeof AbortController === 'undefined') return null;
+  var ctl = new AbortController();
+  setTimeout(function () { ctl.abort(); }, ms);
+  return ctl.signal;
+}
+
+function _sleep(ms) {
+  return new Promise(function (r) { setTimeout(r, ms); });
+}
+
+async function _fetchWithTimeout(url, opts) {
+  opts = opts || {};
+  var signal = _timeoutSignal(REQUEST_TIMEOUT_MS);
+  if (signal) opts.signal = signal;
+  var attempt = fetch(url, opts);
+  // Where the webview has no AbortController the signal above is null and
+  // aborting is impossible, so racing a timer is the only way the timeout
+  // means anything. Without this the guard silently did nothing in exactly
+  // the old webviews it exists to protect: the request could not be
+  // cancelled AND the wait was unbounded.
+  if (!signal) {
+    attempt = Promise.race([
+      attempt,
+      _sleep(REQUEST_TIMEOUT_MS).then(function () {
+        var e = new Error('timeout');
+        e.name = 'TimeoutError';
+        throw e;
+      }),
+    ]);
+  }
+  try {
+    return await attempt;
+  } catch (e) {
+    // An abort is indistinguishable from a network drop to the caller
+    // otherwise, and the two want different messages.
+    if (e && (e.name === 'AbortError' || e.name === 'TimeoutError')) {
+      throw { type: 'timeout', message: 'Request timed out.' };
+    }
+    throw { type: 'network_error', message: (e && e.message) || 'Network error' };
+  }
+}
+
 async function apiFetch(path, params) {
   params = params || {};
   var url = new URL(API_BASE + path);
@@ -77,7 +137,12 @@ async function apiFetch(path, params) {
   });
 
   var headers = await oclBuildHeaders();
-  var resp = await fetch(url.toString(), { headers: headers });
+  var resp;
+  for (var attempt = 1; ; attempt++) {
+    resp = await _fetchWithTimeout(url.toString(), { headers: headers });
+    if (RETRY_STATUSES.indexOf(resp.status) === -1 || attempt >= MAX_ATTEMPTS) break;
+    await _sleep(300 * attempt);   // 300ms, then 600ms
+  }
 
   if (resp.status === 429) {
     var retryAfter = parseInt(resp.headers.get('Retry-After') || '30', 10);
@@ -359,7 +424,10 @@ async function apiPost(path, body) {
     opts.headers['Content-Type'] = 'application/json';
     opts.body = JSON.stringify(body);
   }
-  var resp = await fetch(url, opts);
+  // Timed out, but never retried: a POST bills a Pro call and may have
+  // been applied server-side, so repeating one is not safe the way a
+  // GET is.
+  var resp = await _fetchWithTimeout(url, opts);
   if (resp.status === 429) {
     throw { type: 'rate_limit', retryAfter: parseInt(resp.headers.get('Retry-After') || '30', 10) };
   }

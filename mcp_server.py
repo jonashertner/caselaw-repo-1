@@ -1889,10 +1889,21 @@ def _derive_session_id(sess) -> str:
         return ""
 
 
-def _client_class(ua: str | None) -> str:
+def _client_class(ua: str | None, x_client: str | None = None) -> str:
     """Coarse client class from a User-Agent — the label that may be
     logged durably. Mirrors the middleware's metrics buckets; returns a
-    class, never the UA string itself."""
+    class, never the UA string itself.
+
+    The Word add-in runs in an Office webview and sends whatever
+    User-Agent that webview carries, so it is indistinguishable from any
+    other browser by UA alone and was landing in "other". It identifies
+    itself with an X-Client header instead — which the REST metrics
+    already read — so the header wins where it is present. Without this
+    the one paying, non-agent client is unsegmentable in the dev-data
+    corpus, which is precisely the population worth analysing on its own.
+    """
+    if (x_client or "").strip().lower() == "word-addin":
+        return "word_addin"
     u = (ua or "").lower()
     if not u:
         return "-"
@@ -24409,7 +24420,8 @@ setInterval(load, 30000);
                 if tool:
                     _record_tool_call(tool, (time.monotonic() - t0) * 1000, error=err)
                     _rest_client = _client_class(
-                        request.headers.get("user-agent"))
+                        request.headers.get("user-agent"),
+                        request.headers.get("x-client"))
                     _capture_event({
                         "src": "rest",
                         "ts": datetime.now(timezone.utc).isoformat(),
