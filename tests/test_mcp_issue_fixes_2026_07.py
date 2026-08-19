@@ -116,8 +116,9 @@ def test_pure_phrase_strategy_drops_or_alternation():
 def test_analyze_query_skips_haiku_parse_for_pure_phrase():
     # For a pure phrase the structured (Haiku) parse is skipped, so no doctrine/
     # synonym strategies get injected downstream to broaden past the phrase (#42).
-    strategies, llm_terms, parsed = mcp_server._analyze_query('"Treu und Glauben"', False)
+    strategies, llm_terms, parsed, outcome = mcp_server._analyze_query('"Treu und Glauben"', False)
     assert parsed == {}
+    assert outcome == "skipped"      # deliberate skip, not a failure
     assert [s["name"] for s in strategies] == ["raw"]
     assert llm_terms == []
 

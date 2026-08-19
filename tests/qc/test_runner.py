@@ -129,3 +129,29 @@ def test_buggy_check_does_not_kill_run(temp_db, monkeypatch):
     assert bad_results[0].severity is types.Severity.CRITICAL
     assert not bad_results[0].passed
     assert "synthetic failure" in bad_results[0].message
+
+
+def test_gate_run_cannot_overwrite_the_full_archive(temp_db, tmp_path):
+    """Regression (2026-08-19): the archive was keyed on the DAY, so the
+    publish gate's --critical-only run replaced the day's full report
+    with a filtered one under the same name — silent history loss. Two
+    runs on one day must produce two files, and a partial report must
+    say what it is, both in the filename and in the payload."""
+    full = runner.run(db_path=temp_db, record_history=False,
+                      parallel=False, only=["schema"])
+    gate = runner.run(db_path=temp_db, record_history=False,
+                      critical_only=True, parallel=False)
+    p_full = runner.write_report(full, out_dir=tmp_path)
+    p_gate = runner.write_report(gate, out_dir=tmp_path)
+    assert p_full != p_gate, "two runs on one day must not collide"
+    assert p_full.exists() and p_gate.exists()
+    assert "critical_only" in p_gate.name, "a gate archive must be identifiable"
+    assert gate.to_dict()["scope"] == "critical_only"
+    assert full.to_dict()["scope"] == "subset"
+
+
+def test_a_true_full_run_archives_without_a_scope_suffix(temp_db, tmp_path):
+    report = runner.run(db_path=temp_db, record_history=False, parallel=False)
+    out = runner.write_report(report, out_dir=tmp_path)
+    assert report.scope == "full"
+    assert "-" not in out.name.replace(report.run_at[:10], ""), out.name

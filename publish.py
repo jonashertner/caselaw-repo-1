@@ -60,6 +60,27 @@ def _notify(title: str, message: str, *, priority: str = "default"):
         pass  # notification failure must never break the pipeline
 
 
+def _append_run_record(record: dict) -> None:
+    """Append one JSON line to state/publish_runs.jsonl.
+
+    The pipeline's only durable structured record. Until 2026-08-19 a run
+    left behind 109 overwritten bytes on success and NOTHING on failure
+    (the failure branch exited before any marker) — per-step timings were
+    computed, logged as text and lost, so a 13h41m → 17h07m build creep
+    and a gate timeout were invisible until they hurt. Append-only, one
+    line per step and one summary per run, written on success AND failure.
+
+    Telemetry must never break the pipeline: any error here is swallowed.
+    """
+    try:
+        state_dir = REPO_DIR / "state"
+        state_dir.mkdir(exist_ok=True)
+        with open(state_dir / "publish_runs.jsonl", "a", encoding="utf-8") as fh:
+            fh.write(json.dumps(record, ensure_ascii=False) + "\n")
+    except Exception:
+        pass
+
+
 def _save_checkpoint(step_num, results: dict):
     """Save completed step so pipeline can resume after crash."""
     CHECKPOINT_PATH.write_text(json.dumps({
@@ -1759,6 +1780,15 @@ def main():
 
     results = {}
     start = time.time()
+    # One id per run, shared by every publish_runs.jsonl record it writes.
+    run_id = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H%M%SZ")
+    _append_run_record({
+        "type": "run_start", "run_id": run_id,
+        "full_rebuild": bool(args.full_rebuild), "dry_run": bool(args.dry_run),
+        "steps_requested": [str(n) for n, _, _ in STEPS],
+        "resumed_from_checkpoint": bool(_load_checkpoint()),
+        "ts": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+    })
 
     # Steps 4 (HF upload) and 6/6a (git push) must not run if critical steps failed,
     # because step 4 prunes remote parquet based on local state. Step 5c (QC gate)
@@ -1880,6 +1910,12 @@ def main():
                 logger.warning(
                     f"  Step {num} ({name}): SKIPPED — critical earlier step failed\n"
                 )
+                _append_run_record({
+                    "type": "step", "run_id": run_id, "step": str(num),
+                    "name": name, "status": "skipped_cascade",
+                    "elapsed_s": 0.0,
+                    "ts": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                })
                 continue
         step_start = time.time()
         try:
@@ -1956,11 +1992,24 @@ def main():
             elapsed = time.time() - step_start
             status = "OK" if ok else "FAILED"
             logger.info(f"  → {status} ({elapsed:.1f}s)\n")
+            _append_run_record({
+                "type": "step", "run_id": run_id, "step": str(num),
+                "name": name, "status": status.lower(),
+                "elapsed_s": round(elapsed, 1),
+                "ts": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            })
             if ok:
                 _save_checkpoint(num, results)
         except Exception as e:
             results[num] = False
             logger.error(f"  → EXCEPTION: {e}\n", exc_info=True)
+            _append_run_record({
+                "type": "step", "run_id": run_id, "step": str(num),
+                "name": name, "status": "exception",
+                "elapsed_s": round(time.time() - step_start, 1),
+                "error": str(e)[:200],
+                "ts": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            })
 
     # Defensive: flush any deferred parallel batch in case STEPS ends with
     # parallel-safe entries (current layout has 4, 7, 5, 6, 6b after the batch,
@@ -2006,6 +2055,21 @@ def main():
             else:
                 failed_steps.append(f"{num} ({name})")
     logger.info(f"  Total time: {total_elapsed:.1f}s")
+
+    # One summary line per run, success or failure alike. The failure
+    # branch exits the process below, which is exactly why the record is
+    # written FIRST — failed runs used to leave no structured trace at all.
+    _append_run_record({
+        "type": "run_summary", "run_id": run_id,
+        "outcome": "failed" if failed_steps else "ok",
+        "total_s": round(total_elapsed, 1),
+        "failed_steps": failed_steps,
+        "non_fatal_failures": non_fatal_failures,
+        "stale_downstream": fts5_failed,
+        "steps": {str(k): (v if isinstance(v, str) else bool(v))
+                  for k, v in results.items()},
+        "ts": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+    })
 
     # Notify on completion
     if failed_steps:

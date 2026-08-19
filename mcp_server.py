@@ -1854,6 +1854,26 @@ _ctx_client_ua = contextvars.ContextVar("client_ua", default="")
 _ctx_session_id = contextvars.ContextVar("session_id", default="")
 
 
+def _client_class(ua: str | None) -> str:
+    """Coarse client class from a User-Agent — the label that may be
+    logged durably. Mirrors the middleware's metrics buckets; returns a
+    class, never the UA string itself."""
+    u = (ua or "").lower()
+    if not u:
+        return "-"
+    if "claude-user" in u:
+        return "claude.ai"
+    if "claude-code" in u or "claude-vscode" in u:
+        return "claude-code"
+    if "undici" in u or "chatgpt" in u or "openai" in u:
+        return "chatgpt"
+    if "gemini" in u or "google" in u:
+        return "gemini"
+    if "bot" in u or "crawler" in u:
+        return "bot"
+    return "other"
+
+
 def _trusted_client_ip(req) -> str:
     """Client IP behind a single trusted nginx hop — spoofing-resistant.
 
@@ -3146,18 +3166,24 @@ def _search_fts5_inner(
     # ── Query analysis: expansion + structured parse run CONCURRENTLY (~2s saved,
     #    identical results to the prior sequential path) ──
     _trace["parse_start_ms"] = round((time.monotonic() - _trace_t0) * 1000)
-    strategies, llm_terms, structured_parse = _analyze_query(
+    strategies, llm_terms, structured_parse, _parse_outcome = _analyze_query(
         fts_query, is_docket_query, original_query=query,
         force_natural_language=bool(_condensed_info))
     _trace["parse_ms"] = round((time.monotonic() - _trace_t0) * 1000) - _trace.get("parse_start_ms", 0)
+    # ok | empty | skipped | failed | timeout — a parse failure was
+    # indistinguishable from a query that never warranted a parse, so the
+    # failure rate was unknowable (audit 2026-08-19).
+    _trace["parse_outcome"] = _parse_outcome
     if structured_parse:
-        _trace["structured_parse"] = {
-            "doctrine": structured_parse.get("doctrine", ""),
-            "doctrine_fr": structured_parse.get("doctrine_fr", ""),
-            "statutes": structured_parse.get("statutes", []),
-            "synonyms": structured_parse.get("synonyms", []),
-            "domain": structured_parse.get("domain", ""),
-        }
+        # The FULL parse, not a five-field excerpt: this record is the
+        # training set for a small query parser that could replace the
+        # Haiku call (query-parse dominates search p50). Every field is
+        # model-derived legal vocabulary — the same class of content the
+        # excerpt already carried, no raw query text.
+        _trace["structured_parse"] = dict(structured_parse)
+        # The expansion terms actually used downstream were never traced
+        # at all; a parser trained without them learns half the job.
+        _trace["llm_terms"] = list(llm_terms or [])[:12]
         # Inject doctrine + synonyms as FTS strategy
         if structured_parse:
             doctrine = (structured_parse.get("doctrine") or "").strip()
@@ -3585,6 +3611,7 @@ def _search_fts5_inner(
             all_ids = {r["decision_id"] for r in inline_docket_results}
             all_ids.update(candidate_meta.keys())
             return merged, len(all_ids)
+        _signal_sink: dict = {}
         reranked = _rerank_rows(
             rows_for_rerank,
             fts_query,
@@ -3596,8 +3623,16 @@ def _search_fts5_inner(
             sort=sort,
             is_docket_query=is_docket_query,
             deadline=_deadline,
+            signal_sink=_signal_sink,
         )
         reranked = _dedupe_results_by_decision_id(reranked)
+        # Per-signal contributions for what actually surfaced. Only the
+        # top 10 — the full pool is hundreds of rows and the tuning
+        # question is about the head, not the tail.
+        _trace["signals_top"] = {
+            r["decision_id"]: _signal_sink[r["decision_id"]]
+            for r in reranked[:10] if r.get("decision_id") in _signal_sink
+        }
         # Soft boost: if legal_area filter given, promote matching results
         if legal_area and reranked:
             la_lower = legal_area.lower()
@@ -6086,12 +6121,19 @@ def _rerank_rows(
     sort: str | None = None,
     is_docket_query: bool = False,
     deadline: float | None = None,
+    signal_sink: dict | None = None,
 ) -> list[dict]:
     """
     Re-rank lexical FTS candidates with lightweight query-intent signals.
 
     The FTS index provides robust candidate retrieval; this stage improves top-k
     quality for practitioner-style natural-language and docket-centric queries.
+
+    `signal_sink`, when given, receives {decision_id: {signal: weighted
+    contribution}} for every scored candidate. Until 2026-08-19 the ~20
+    per-row signals were collapsed to one scalar and discarded, so the
+    hand-set SCORING_CONFIG weights could not be tuned against evidence —
+    there was no record of which signal fired on which query.
     """
     if not rows:
         return []
@@ -6268,6 +6310,38 @@ def _rerank_rows(
         )
         final_score = bm25_component + signal
 
+        if signal_sink is not None:
+            # The weighted CONTRIBUTIONS, not the raw features: what the
+            # tuner needs is how much each term actually moved this row
+            # under the current weights. ~20 floats per candidate; the
+            # caller keeps only the top-k after ranking.
+            signal_sink[decision_id] = {
+                "bm25": round(bm25_component, 4),
+                "docket_exact": round(SCORING_CONFIG["w_docket_exact"] * docket_exact, 4),
+                "docket_partial": round(SCORING_CONFIG["w_docket_partial"] * docket_partial, 4),
+                "title_cov": round(SCORING_CONFIG["w_title_cov"] * title_cov, 4),
+                "regeste_cov": round(SCORING_CONFIG["w_regeste_cov"] * regeste_cov, 4),
+                "snippet_cov": round(SCORING_CONFIG["w_snippet_cov"] * snippet_cov, 4),
+                "expanded_regeste_cov": round(SCORING_CONFIG["w_expanded_regeste_cov"] * expanded_regeste_cov, 4),
+                "expanded_title_cov": round(SCORING_CONFIG["w_expanded_title_cov"] * expanded_title_cov, 4),
+                "phrase_hit": round(SCORING_CONFIG["w_phrase_hit"] * phrase_hit, 4),
+                "rrf": round(SCORING_CONFIG["w_rrf_score"] * rrf_score, 4),
+                "strategy_hits": round(SCORING_CONFIG["w_strategy_hits"] * min(strategy_hits, int(SCORING_CONFIG["strategy_hits_cap"])), 4),
+                "statute": round(statute_signal, 4),
+                "citation": round(citation_signal, 4),
+                "authority": round(authority_signal, 4),
+                "in_pool": round(in_pool_signal, 4),
+                "local_ref": round(local_ref_signal, 4),
+                "court_prior": round(court_prior_signal, 4),
+                "court_intent": round(court_intent_signal, 4),
+                "court_authority": round(court_authority_boost, 4),
+                "procedure": round(procedure_signal, 4),
+                "language": round(language_signal, 4),
+                "vector": round(vector_signal, 4),
+                "sparse": round(sparse_signal, 4),
+                "final": round(final_score, 4),
+            }
+
         scored.append((final_score, bm25_score, idx, row))
 
     # Both rerank passes exist to refine RELEVANCE order. Under an explicit
@@ -6420,8 +6494,16 @@ def _analyze_query(
             # avoid (#42). Keep the phrase exact end to end.
             skip = is_docket_query or _is_pure_phrase_query(fts_query)
             _box["parse"] = {} if skip else _parse_query_structured(fts_query)
+            # An empty dict can now mean three different things; say which,
+            # because a parse FAILURE was indistinguishable from a query
+            # that never warranted a parse, so the failure rate was
+            # unknowable (audit 2026-08-19). "empty" = the model ran and
+            # found no legal structure.
+            _box["parse_outcome"] = ("skipped" if skip
+                                     else "ok" if _box["parse"] else "empty")
         except Exception:
             _box["parse"] = {}
+            _box["parse_outcome"] = "failed"
 
     _t = threading.Thread(target=_run_parse, daemon=True)
     _t.start()
@@ -6431,7 +6513,11 @@ def _analyze_query(
         force_natural_language=force_natural_language,
     )
     _t.join(timeout=LLM_EXPANSION_TIMEOUT + 3.0)
-    return strategies, llm_terms, _box.get("parse", {})
+    # Thread still alive after the join timeout = the parse is hanging;
+    # for the caller that is a failure, not an empty result.
+    if "parse_outcome" not in _box:
+        _box["parse_outcome"] = "timeout"
+    return strategies, llm_terms, _box.get("parse", {}), _box["parse_outcome"]
 
 
 def _build_query_strategies(
@@ -7328,6 +7414,24 @@ def _apply_cross_encoder_boosts(
         for score, (_s, _b, _i, row) in zip(normalized, rerank_subset)
     }
 
+    # Research trace. Unlike the Haiku path this function traced NOTHING
+    # until 2026-08-19 — the scores were computed and dropped, so
+    # CE-vs-Haiku agreement (two independent relevance judges over the
+    # same candidates) was unmeasurable. Ids and scores only; query_len
+    # rather than text because this record adds no query content of its
+    # own. Raw scores, not the normalised ones: normalisation flattens a
+    # low-confidence board into the same 0..1 span as a confident one,
+    # which is exactly the difference a quality analysis needs to see.
+    _log_search_trace({
+        "type": "cross_encoder",
+        "query_len": len(query or ""),
+        "scores_by_id": {
+            row["decision_id"]: round(float(raw), 4)
+            for raw, (_s, _b, _i, row) in zip(raw_scores, rerank_subset)
+        },
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    })
+
     boosted: list[tuple[float, float, int, sqlite3.Row]] = []
     for score, bm25, idx, row in scored:
         ce_score = ce_by_id.get(row["decision_id"], 0.0)
@@ -7520,7 +7624,16 @@ def _apply_llm_rerank(
     if pre_top and post_top and pre_top != post_top:
         _metrics["haiku_rerank_changed_top"] += 1
 
-    # Research trace: log rerank details
+    # Research trace. This is a labelled-ranking record, not just an
+    # impact counter: we are already paying Haiku to order these
+    # candidates over a real query, and until 2026-08-19 the ordering
+    # was thrown away — only pre/post_top survived, so the label stream
+    # could neither train a reranker nor even measure agreement.
+    #
+    # `candidate_ids` is the retrieval order shown to the model,
+    # `llm_order` the order it returned. Decision ids and the query the
+    # existing record already carried — no new user data, same 30-day
+    # trace retention as before.
     _log_search_trace({
         "type": "rerank",
         "query": query[:200],
@@ -7528,6 +7641,8 @@ def _apply_llm_rerank(
         "post_top": post_top,
         "changed": pre_top != post_top,
         "candidates": top_n,
+        "candidate_ids": [r["decision_id"] for _s, _b, _i, r in rerank_subset],
+        "llm_order": [d for d in ranked_ids if isinstance(d, str)][:top_n],
         "timestamp": datetime.now(timezone.utc).isoformat(),
     })
 
@@ -22296,9 +22411,18 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                             "date_from", "date_to", "canton", "chamber",
                             "limit", "offset", "sort", "e_number")
     _log_args = {k: v for k, v in arguments.items() if k in _STRUCTURAL_LOG_KEYS}
-    logger.info("tool_call: %s %s [ip=%s ua=%s sid=%s commercial=%s]", name,
+    # No IP, User-Agent or session id on this line. /datenschutz/ describes
+    # three log tiers; the systemd journal is none of them and journald
+    # retention is not governed by the Tier-1 72 h shred — so identifiers
+    # written here were an undisclosed fourth surface (found 2026-08-19).
+    # Nothing consumed them (the integrator report parses nginx Tier 1, not
+    # the journal), so they are simply gone: the derived client class and
+    # the commercial flag carry the operational signal. The in-memory
+    # session map below is unaffected — it dies with the process, which is
+    # what "in-memory" promises.
+    logger.info("tool_call: %s %s [client=%s commercial=%s]", name,
                 json.dumps(_log_args, ensure_ascii=False) if _log_args else "{}",
-                _call_ip or "-", _call_ua[:80] if _call_ua else "-", _call_sid[:12] if _call_sid else "-",
+                _client_class(_call_ua) if _call_ua else "-",
                 _is_commercial)
     # Track in session map
     if _call_sid and _call_sid in _session_clients:

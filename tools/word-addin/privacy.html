@@ -123,7 +123,13 @@
     <h2>5. No tracking</h2>
     <p>
       The add-in does not use cookies, analytics, tracking pixels, or any form of
-      behavioral monitoring. We do not collect usage statistics or telemetry.
+      behavioral monitoring. It sends one optional, anonymous usage signal: a
+      monthly-rotating install-cohort hash used solely to estimate the number of
+      active installations. The hash changes every month and cannot be linked
+      across months or to you; you can disable it at any time under
+      <em>Settings&nbsp;&rarr;&nbsp;Anonymous usage signal</em>, and the add-in
+      works identically without it. Details are in the
+      <a href="https://opencaselaw.ch/datenschutz/">OpenCaseLaw privacy notice</a>.
     </p>
 
     <h2>6. Personal data</h2>
@@ -153,8 +159,14 @@
 
     <h2>9. Data retention</h2>
     <p>
-      Search queries and document text are processed in real time and are not stored on our
-      server. Pro subscriber email addresses are retained for the duration of the subscription
+      Search queries and document text are processed in real time. Document text is
+      never stored on our server. When semantic re-ranking runs, the query text
+      (200 characters at most) is recorded in an internal quality log &mdash; with no
+      IP address, no user ID and no session reference, so entries cannot be
+      attributed to you or to one another &mdash; and is automatically deleted per the
+      retention period stated in the
+      <a href="https://opencaselaw.ch/datenschutz/">OpenCaseLaw privacy notice</a>.
+      Pro subscriber email addresses are retained for the duration of the subscription
       and deleted upon cancellation.
     </p>
 

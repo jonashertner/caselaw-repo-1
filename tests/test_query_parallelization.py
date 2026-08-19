@@ -24,7 +24,7 @@ def test_analyze_query_runs_the_two_haiku_calls_concurrently(monkeypatch):
     monkeypatch.setattr(mcp_server, "_build_query_strategies", fake_build_strategies)
     monkeypatch.setattr(mcp_server, "_parse_query_structured", fake_parse)
 
-    strategies, llm_terms, parse = mcp_server._analyze_query("q", is_docket_query=False)
+    strategies, llm_terms, parse, outcome = mcp_server._analyze_query("q", is_docket_query=False)
     assert strategies == ["strat"]
     assert llm_terms == ["term"]
     assert parse == {"doctrine": "Kündigung"}
@@ -35,7 +35,7 @@ def test_analyze_query_skips_parse_for_docket_queries(monkeypatch):
     parse_calls = []
     monkeypatch.setattr(mcp_server, "_parse_query_structured",
                         lambda q: (parse_calls.append(q), {})[1])
-    strategies, llm_terms, parse = mcp_server._analyze_query("4A_1/2020", is_docket_query=True)
+    strategies, llm_terms, parse, outcome = mcp_server._analyze_query("4A_1/2020", is_docket_query=True)
     assert strategies == ["s"]
     assert parse == {}
     assert parse_calls == []   # parse must NOT run for docket queries
@@ -44,5 +44,24 @@ def test_analyze_query_skips_parse_for_docket_queries(monkeypatch):
 def test_analyze_query_propagates_strategies_result(monkeypatch):
     monkeypatch.setattr(mcp_server, "_build_query_strategies", lambda q, **kw: (["a", "b"], ["x"]))
     monkeypatch.setattr(mcp_server, "_parse_query_structured", lambda q: {"domain": "civil"})
-    s, t, p = mcp_server._analyze_query("Verjährung", is_docket_query=False)
+    s, t, p, _o = mcp_server._analyze_query("Verjährung", is_docket_query=False)
     assert s == ["a", "b"] and t == ["x"] and p == {"domain": "civil"}
+
+
+def test_parse_outcome_distinguishes_failure_from_absence(monkeypatch):
+    """ok / empty / skipped / failed are four different findings. Until
+    2026-08-19 an exception and a query that never warranted a parse both
+    surfaced as {}, so the parse-failure rate was unknowable."""
+    monkeypatch.setattr(mcp_server, "_build_query_strategies",
+                        lambda *a, **k: ([], []))
+    monkeypatch.setattr(mcp_server, "_parse_query_structured",
+                        lambda q: {"doctrine": "Verjährung"})
+    assert mcp_server._analyze_query("Verjährung", is_docket_query=False)[3] == "ok"
+    monkeypatch.setattr(mcp_server, "_parse_query_structured", lambda q: {})
+    assert mcp_server._analyze_query("asdf", is_docket_query=False)[3] == "empty"
+    assert mcp_server._analyze_query("4A_1/2020", is_docket_query=True)[3] == "skipped"
+
+    def boom(q):
+        raise RuntimeError("api down")
+    monkeypatch.setattr(mcp_server, "_parse_query_structured", boom)
+    assert mcp_server._analyze_query("Verjährung", is_docket_query=False)[3] == "failed"

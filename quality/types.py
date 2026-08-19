@@ -77,15 +77,21 @@ class CheckResult:
 
 @dataclass
 class CheckRunReport:
-    """Aggregate of one full QC run.
+    """Aggregate of one QC run.
 
-    Written to quality/reports/YYYY-MM-DD.json + reports/latest.json
+    Written to quality/reports/<run_at>[-gate].json + reports/latest.json
     + appended to quality/history.db for drift detection.
     """
     run_at: str                       # ISO 8601 UTC timestamp
     db_path: str
     duration_seconds: float
     results: list[CheckResult]
+    # Which checks this run actually executed: 'full', 'critical_only'
+    # (the publish gate) or 'subset' (--only). A filtered report must say
+    # so — until 2026-08-19 a gate run archived under the same
+    # YYYY-MM-DD.json name as the day's full run and silently replaced a
+    # complete report with a partial one.
+    scope: str = "full"
 
     @property
     def critical_failures(self) -> list[CheckResult]:
@@ -117,6 +123,7 @@ class CheckRunReport:
     def to_dict(self) -> dict[str, Any]:
         return {
             "run_at": self.run_at,
+            "scope": self.scope,
             "db_path": self.db_path,
             "duration_seconds": self.duration_seconds,
             "summary": {

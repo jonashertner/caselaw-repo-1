@@ -182,6 +182,8 @@ def run(
         db_path=str(db_path),
         duration_seconds=round(duration, 2),
         results=sorted(results, key=lambda r: (r.severity, r.name), reverse=True),
+        scope=("critical_only" if critical_only
+               else "subset" if only else "full"),
     )
 
     if record_history:
@@ -195,12 +197,22 @@ def run(
 
 
 def write_report(report: CheckRunReport, out_dir: Path | str = DEFAULT_REPORT_DIR) -> Path:
-    """Persist `latest.json` + dated archive. Returns the dated path."""
+    """Persist `latest.json` + per-run archive. Returns the archive path.
+
+    The archive is keyed on the full run timestamp, not the day. Keying
+    on the day meant a later run replaced an earlier one under the same
+    name — and because the publish gate runs --critical-only, a FILTERED
+    report silently replaced the day's complete one. Non-full runs also
+    carry their scope in the filename so a partial report can never be
+    mistaken for a full archive in a directory listing.
+    """
     import json
 
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
-    dated = out_dir / f"{report.run_at[:10]}.json"
+    stamp = report.run_at[:19].replace(":", "")     # 2026-08-19T142345
+    suffix = "" if report.scope == "full" else f"-{report.scope}"
+    dated = out_dir / f"{stamp}Z{suffix}.json"
     latest = out_dir / "latest.json"
     payload = report.to_dict()
     for p in (dated, latest):

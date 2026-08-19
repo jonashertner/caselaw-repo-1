@@ -61,7 +61,7 @@ def _fixture_conn():
 def test_search_inner_skips_expensive_sources_past_deadline(monkeypatch):
     conn = _fixture_conn()
     monkeypatch.setattr(mcp_server, "_analyze_query",
-                        lambda q, d, **kw: ([{"query": "Notwehr", "name": "nl_and", "weight": 1.0}], [], {}))
+                        lambda q, d, **kw: ([{"query": "Notwehr", "name": "nl_and", "weight": 1.0}], [], {}, "empty"))
     monkeypatch.setattr(mcp_server, "_rerank_rows", lambda *a, **k: [])
     monkeypatch.setattr(mcp_server, "_load_graph_signal_map", lambda *a, **k: {})
     calls = []
@@ -86,7 +86,7 @@ def test_search_inner_rechecks_deadline_between_sub_sources(monkeypatch):
     # after — chunk-vector and sparse must then be skipped, not launched anyway.
     conn = _fixture_conn()
     monkeypatch.setattr(mcp_server, "_analyze_query",
-                        lambda q, d, **kw: ([{"query": "Notwehr", "name": "nl_and", "weight": 1.0}], [], {}))
+                        lambda q, d, **kw: ([{"query": "Notwehr", "name": "nl_and", "weight": 1.0}], [], {}, "empty"))
     monkeypatch.setattr(mcp_server, "_rerank_rows", lambda *a, **k: [])
     monkeypatch.setattr(mcp_server, "_load_graph_signal_map", lambda *a, **k: {})
     calls = []

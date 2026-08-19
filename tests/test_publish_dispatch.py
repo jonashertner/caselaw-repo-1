@@ -97,3 +97,28 @@ def test_publish_sqlite_snapshot_can_run_without_delta_state(monkeypatch):
     assert "--publish-snapshot" in cmd
     assert "--dry-run" in cmd
     assert called["desc"] == "Publish artifacts"
+
+
+def test_append_run_record_is_durable_and_never_raises(tmp_path, monkeypatch):
+    """publish_runs.jsonl is the pipeline's only durable structured
+    record — one line per step and per run, written on success AND
+    failure. Until 2026-08-19 a failed run left nothing behind (the
+    failure branch exited before any marker), so build creep and gate
+    timeouts were invisible until they hurt. Telemetry must also never
+    be able to break the pipeline: a write failure is swallowed."""
+    import json as _json
+    import publish as p
+    monkeypatch.setattr(p, "REPO_DIR", tmp_path)
+    p._append_run_record({"type": "run_start", "run_id": "r1"})
+    p._append_run_record({"type": "step", "run_id": "r1", "step": "2",
+                          "status": "failed", "elapsed_s": 1.5})
+    p._append_run_record({"type": "run_summary", "run_id": "r1",
+                          "outcome": "failed", "failed_steps": ["2 (Build FTS5)"]})
+    lines = [_json.loads(l) for l in
+             (tmp_path / "state" / "publish_runs.jsonl").read_text().splitlines()]
+    assert [l["type"] for l in lines] == ["run_start", "step", "run_summary"]
+    assert lines[2]["outcome"] == "failed", "failed runs must leave a record"
+
+    # A broken filesystem must not become a broken pipeline.
+    monkeypatch.setattr(p, "REPO_DIR", tmp_path / "nope" / "\0bad")
+    p._append_run_record({"type": "step"})   # must not raise

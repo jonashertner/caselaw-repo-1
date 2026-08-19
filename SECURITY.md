@@ -45,43 +45,35 @@ This policy covers:
 
 ## Data Collection & Privacy
 
-OpenCaseLaw collects minimal operational data to improve search quality and to ensure transparency about how this nonprofit platform is used.
+The authoritative, versioned privacy notice is
+[opencaselaw.ch/datenschutz](https://opencaselaw.ch/datenschutz/). The summary
+below mirrors it; where the two differ, the notice governs. (This section
+previously described an older design — including query-text and session-ID
+collection that no longer exists — and was rewritten 2026-08-19 to match the
+code.)
 
 ### What is collected
 
 | Data | Purpose | Retention |
 |------|---------|-----------|
-| Tool call counts | Which features are used/unused | In-memory, resets on restart |
-| Per-tool avg latency | Performance monitoring | In-memory, resets on restart |
-| Zero-result query text | Fix search gaps | In-memory, last 500, resets on restart |
-| Haiku rerank fire/change rate | Validate reranking value | In-memory, resets on restart |
-| Search query text | Usage analysis, search quality research | In-memory, resets on restart |
-| Client type (claude.ai, chatgpt, cursor, etc.) | Understand platform adoption | In-memory, resets on restart |
+| Tool call counts, per-tool latency, error rates, outcome labels | Which features work, which return nothing | In-memory + daily aggregate flush |
+| Client class (claude.ai, chatgpt, cursor, …) | Platform adoption | Same aggregate flush |
+| Haiku rerank fire/change rate | Validate reranking value | Same aggregate flush |
+| Rerank quality log: query text (≤200 chars), candidate decision IDs, model ordering | Search-quality research and development | 30 days, then deleted — no IP, no user ID, no session reference |
+| Search traces (query *length*, strategies, timings, result IDs — no query text) | Latency and strategy analysis | 30 days, then deleted |
 
-### Commercial platform monitoring
-
-OpenCaseLaw is a nonprofit, open-access legal research platform. We log connection metadata (IP addresses, user agents, MCP session IDs, and tool call details) to detect when commercial platforms route their users' requests through our infrastructure.
-
-**Why this matters:** Users of commercial AI products (e.g. Copilot, ChatGPT, Cursor) should know when their service provider is sourcing legal research from a nonprofit platform rather than from proprietary databases. Transparency about the data supply chain is important for informed use.
-
-**What is logged for this purpose:**
-
-| Data | Purpose | Retention |
-|------|---------|-----------|
-| IP address of connecting client | Identify commercial infrastructure (e.g. Azure, AWS) | In-memory + daily report (JSON) |
-| User-Agent string | Classify client type (python-httpx, openai-mcp, etc.) | In-memory + daily report |
-| MCP session ID | Correlate tool calls within a session | In-memory, resets on restart |
-| Tool name and query arguments | Understand usage patterns | In-memory, resets on restart |
-
-**What is NOT logged:**
-
-- No end-user identity (we see the commercial platform's IP, not the individual user's)
-- No personal data, cookies, or device fingerprints
-- No geolocation beyond what is inherent in an IP address
+What is deliberately **not** collected: query text outside the rerank quality
+log, zero-result query text (a former design, removed), any link between a
+query and a person or between two queries, referer headers, fingerprints, and
+any link between Stripe billing data and usage.
 
 ### Nginx access logs
 
-Standard nginx access logs (IP, timestamp, path, status, user-agent) are retained for 14 days and analyzed daily for commercial integrator detection. These logs are not shared with third parties.
+Three tiers, as published in the notice: Tier 1 (IP + User-Agent) is kept
+**72 hours** for abuse defence, then shredded; Tier 2 (class labels only) 14
+days; Tier 3 is daily aggregates with differential privacy (ε = 1.0, k = 10)
+and may be published. The tier configuration is in `ops/nginx/ocl-logging.conf`
+and the rollup in `scripts/rollup_analytics.py` — both auditable in this repo.
 
 ### Access
 
