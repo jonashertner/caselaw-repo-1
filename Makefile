@@ -114,9 +114,27 @@ assert hit > 0.7, f'Hit@10 regression: {hit}'; \
 print(f'  ✓ matches paper §7 headline (MRR=0.630, Hit@10=0.833)')"
 
 .PHONY: test
-test:
+test: test-addin
 	@$(PYTHON) -m pytest -q
 
+# The Word add-in ships ~250 KB of JavaScript whose tests could only be run
+# by hand (node tests/x.test.js), so nothing checked them: `make test` is
+# pytest, and pytest does not collect .js. They cover the two things the Pro
+# flow depends on being exactly right — that redaction never mangles a
+# citation, and that the citation formatter matches the server — which is
+# precisely the code that must not rot unnoticed. Skipped, not failed, where
+# node is absent, so the Python gate still runs on a machine without it.
+test-addin:
+	@if command -v node >/dev/null 2>&1; then \
+		for t in tools/word-addin/tests/*.test.js; do \
+			node "$$t" >/dev/null || { echo "FAIL $$t"; node "$$t"; exit 1; }; \
+		done; \
+		echo "add-in JS tests: OK"; \
+	else \
+		echo "add-in JS tests: skipped (node not installed)"; \
+	fi
+
+.PHONY: test-addin
 .PHONY: paper
 paper:
 	@cd $(PAPER_DIR) && tectonic paper.tex 2>&1 | tail -3
