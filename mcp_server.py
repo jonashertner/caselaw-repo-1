@@ -1834,6 +1834,12 @@ _metrics = {
     # resolves to exists=false and a get_law miss are all HTTP 200 and land
     # in tool_calls indistinguishable from a hit. See _classify_outcome.
     "tool_outcomes": collections.defaultdict(collections.Counter),
+    # How each REST outcome was determined ('declared' by the route vs
+    # 'status' inferred from the HTTP code) and, when empty, why. Without
+    # the first, an answered rate cannot be read honestly: a status-only
+    # label scores an empty 200 as answered.
+    "outcome_sources": collections.defaultdict(collections.Counter),
+    "empty_reasons": collections.defaultdict(collections.Counter),
     "startup_time": datetime.now(timezone.utc).isoformat(),
 }
 
@@ -1985,6 +1991,49 @@ def _record_tool_outcome(name: str, outcome: str) -> None:
         _metrics["tool_outcomes"][name][outcome] += 1
     except Exception:                                   # pragma: no cover
         pass
+
+
+def _record_outcome_source(name: str, source: str) -> None:
+    """Where a REST outcome came from: 'declared' (the route said so) or
+    'status' (inferred from the HTTP code, which cannot see an empty 200).
+
+    Published so a reader can tell how much of an answered rate is
+    measured and how much is assumed.
+    """
+    try:
+        _metrics["outcome_sources"][name][source] += 1
+    except Exception:                                   # pragma: no cover
+        pass
+
+
+def _record_empty_reason(name: str, reason: str) -> None:
+    """Why a call answered nothing — no_fts_match, filters_excluded_all,
+    id_not_found, corpus_not_built, out_of_range, http_404 …
+
+    Call counts say a tool ran; the answered rate says it found something;
+    only the reason says what to fix.
+    """
+    try:
+        _metrics["empty_reasons"][name][reason[:48]] += 1
+    except Exception:                                   # pragma: no cover
+        pass
+
+
+def _mark_outcome(response, outcome: str, reason: str | None = None):
+    """Declare a REST route's outcome for the metrics middleware.
+
+    Routes know their payload; the middleware cannot see it without
+    buffering the stream. Usage:
+
+        return _mark_outcome(JSONResponse(payload), "empty", "no_fts_match")
+    """
+    try:
+        response.headers["X-OCL-Outcome"] = outcome
+        if reason:
+            response.headers["X-OCL-Empty-Reason"] = reason[:48]
+    except Exception:                                   # pragma: no cover
+        pass
+    return response
 
 
 def _record_query(query: str):
@@ -2431,6 +2480,18 @@ def _get_metrics() -> dict:
             # calls - labelled is the share no outcome could be attached to.
             "substantive": outcomes.get("substantive", 0),
             "empty": outcomes.get("empty", 0),
+            # Provenance of those labels. 'status' means inferred from the
+            # HTTP code, which cannot see a 200 carrying an empty list, so
+            # a tool whose outcomes are mostly status-derived has an
+            # optimistic answered rate. 'declared' means the route said so.
+            "outcome_declared": (_metrics["outcome_sources"].get(name)
+                                 or {}).get("declared", 0),
+            "outcome_from_status": (_metrics["outcome_sources"].get(name)
+                                    or {}).get("status", 0),
+            # Top reasons a call answered nothing — the actionable field.
+            "empty_reasons": dict(
+                (_metrics["empty_reasons"].get(name)
+                 or collections.Counter()).most_common(5)),
         }
 
     # Query content never surfaced (privacy contract — see
@@ -23608,18 +23669,38 @@ setInterval(load, 30000);
                 tool, err = _classify_rest_metric(request.url.path, status)
                 if tool:
                     _record_tool_call(tool, (time.monotonic() - t0) * 1000, error=err)
-                    # REST outcomes come from the status code: the body is a
-                    # stream here and reading it to look for no-result markers
-                    # would buffer every export. 404/410/204 is the REST way of
-                    # saying "nothing"; 5xx is already the error flag above.
-                    # Known limit: a search returning an empty list is a 200
-                    # and is labelled substantive. Fixing that needs the route
-                    # to set a header, not the middleware to guess.
+                    # REST outcome. The body is a stream here and reading it
+                    # would buffer every export, so the route declares its own
+                    # outcome via X-OCL-Outcome (see _mark_outcome) and the
+                    # middleware only reads the header.
+                    #
+                    # Without the header we fall back to the status code, which
+                    # is what this did exclusively until 2026-08-19. That
+                    # fallback CANNOT see a 200 carrying an empty list, so it
+                    # scores every empty search as answered — and since REST is
+                    # ~84% of calls, it inflated the global answered rate to
+                    # 99.4%. Routes that can return an empty 200 should call
+                    # _mark_outcome; until they do, their numbers stay
+                    # optimistic and `outcome_source` says so.
                     if not err and status < 500:
-                        _record_tool_outcome(
-                            tool,
-                            "empty" if status in (204, 404, 410) else "substantive",
-                        )
+                        declared = None
+                        try:
+                            declared = response.headers.get("x-ocl-outcome")
+                        except Exception:               # pragma: no cover
+                            declared = None
+                        if declared in ("empty", "substantive"):
+                            outcome = declared
+                            source = "declared"
+                            reason = response.headers.get("x-ocl-empty-reason")
+                        else:
+                            outcome = ("empty" if status in (204, 404, 410)
+                                       else "substantive")
+                            source = "status"
+                            reason = "http_%d" % status if outcome == "empty" else None
+                        _record_tool_outcome(tool, outcome)
+                        _record_outcome_source(tool, source)
+                        if outcome == "empty" and reason:
+                            _record_empty_reason(tool, reason)
                     # Track word-addin client
                     if request.headers.get("x-client") == "word-addin":
                         _record_tool_call("word-addin:" + tool, (time.monotonic() - t0) * 1000, error=err)
