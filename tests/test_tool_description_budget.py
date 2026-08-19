@@ -63,17 +63,32 @@ def test_attest_response_keeps_calling_protocol_in_budget():
 def test_practice_description_constraints_still_hold():
     """The description must state the corpus honestly: what is covered, with
     counts, and what is still missing. Updated 2026-07-29 when SECO shipped
-    (790 -> 1,892 documents) — this assertion is what caught the stale
-    "NOT covered: ... SECO ..." line, which would have told users we lack a
-    corpus we had just ingested."""
+    (790 -> 1,892 documents) and 2026-08-19 when FINMA shipped (-> 3,062) —
+    this assertion is what caught the stale "NOT covered: ... SECO ..." line
+    both times, which would have told users we lack a corpus we had just
+    ingested. A confident false statement is worse than the gap it
+    describes, so the claim and the corpus have to move together."""
     [t] = [t for t in m._list_tools() if t.name == "search_practice"]
     d = t.description or ""
     # still-missing sources must stay disclosed
-    for gap in ("BSV", "FINMA", "BAG", "cantonal"):
+    for gap in ("BSV", "BAG", "cantonal"):
         assert gap in d, gap
     # shipped sources must be named with their counts
-    for present in ("SECO", "ESTV", "BAFU", "SEM", "1,892", "1,102", "ch_vb"):
+    for present in ("FINMA", "SECO", "ESTV", "BAFU", "SEM",
+                    "3,062", "1,133", "1,102", "ch_vb"):
         assert present in d, present
-    # and SECO must no longer be listed as a gap
+    # a shipped source must never appear in the gap list
     gaps = d.split("NOT covered:", 1)[1] if "NOT covered:" in d else ""
-    assert "SECO" not in gaps, gaps[:120]
+    for shipped in ("SECO", "FINMA", "ESTV", "BAFU", "SEM"):
+        assert shipped not in gaps, f"{shipped} listed as a gap: {gaps[:120]}"
+
+
+def test_practice_filters_match_the_description():
+    """Every source/authority the description advertises must actually be
+    selectable, or the filter enum and the prose disagree."""
+    [t] = [t for t in m._list_tools() if t.name == "search_practice"]
+    props = t.inputSchema["properties"]
+    assert "finma_rs" in props["source"]["enum"]
+    assert "FINMA" in props["issuing_authority"]["enum"]
+    # FINMA circular annexes are a distinct class and must be filterable.
+    assert "rundschreiben_anhang" in props["doc_type"]["enum"]

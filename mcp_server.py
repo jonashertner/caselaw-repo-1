@@ -10030,7 +10030,9 @@ server = Server(
         "portal scraping for 19 cantons + LexFind fallback for the rest), "
         "1,100+ scholarly commentaries, a verbatim Federal Council Botschaft "
         "corpus (5,900+ documents, ~410K FTS5-indexed paragraphs), "
-        "federal administrative practice — Verwaltungspraxis, 1,892 documents: "
+        "federal administrative practice — Verwaltungspraxis, 3,062 documents: "
+        "FINMA Rundschreiben in force and superseded, every published version "
+        "of each (DE/FR/IT/EN), "
         "SECO commentary on the Arbeitsgesetz and ArGV 1-5 article by "
         "article (DE/FR/IT), ESTV "
         "Kreisschreiben and MWST-Infos (DE/FR/IT), SEM Weisungen and "
@@ -21705,16 +21707,20 @@ def _list_tools() -> list[Tool]:
                 "ADMINISTRATIVE PRACTICE (Verwaltungspraxis): Wegleitungen, "
                 "Kreisschreiben, MWST-Infos, Weisungen, Rundschreiben, "
                 "Vollzugshilfen — interpretive agency guidance, not court "
-                "decisions. 1,892 documents: SECO commentary on the "
-                "Arbeitsgesetz and ArGV 1-5, article by article (1,102, "
-                "DE/FR/IT — the reference for employment-law questions); ESTV "
-                "tax and VAT (438, DE/FR/IT); BAFU environment (297, DE); SEM "
-                "migration/asylum/citizenship (55, DE). Returns ranked excerpts "
-                "with authority, document number, date and a PDF link. NOT "
-                "covered: BSV/AHV-IV, FINMA, BAG and all cantonal "
-                "administrations — say so rather than implying a gap is an "
-                "absence of guidance. For federal administrative decisions "
-                "before 2017 use search_decisions(court='ch_vb') (VPB/JAAC)."
+                "decisions. 3,062 documents: FINMA circulars, in force and "
+                "superseded, every published version (1,133, DE/FR/IT/EN); "
+                "SECO commentary on the Arbeitsgesetz and ArGV 1-5, article by "
+                "article (1,102, DE/FR/IT — the reference for employment-law "
+                "questions); ESTV tax and VAT (438, DE/FR/IT); BAFU "
+                "environment (297, DE); SEM migration/asylum/citizenship (92, "
+                "DE). Returns ranked excerpts with authority, document number, "
+                "date and a PDF link. A FINMA circular's versions share its "
+                "doc_number and differ by `date`: for past conduct take the "
+                "version whose date precedes it, not the newest. NOT covered: "
+                "BSV/AHV-IV, BAG and all cantonal administrations — say so "
+                "rather than implying a gap is an absence of guidance. For "
+                "federal administrative decisions before 2017 use "
+                "search_decisions(court='ch_vb') (VPB/JAAC)."
             ),
             inputSchema={
                 "type": "object",
@@ -21727,21 +21733,22 @@ def _list_tools() -> list[Tool]:
                     },
                     "source": {
                         "type": "string",
-                        "enum": ["seco_arg", "bafu_vollzug", "estv_ks", "estv_mwst", "sem_weisungen"],
-                        "description": "Filter by source key. seco_arg (1,102), bafu_vollzug (297), estv_ks (285), estv_mwst (153), sem_weisungen (55).",
+                        "enum": ["finma_rs", "seco_arg", "bafu_vollzug", "estv_ks", "estv_mwst", "sem_weisungen"],
+                        "description": "Filter by source key. finma_rs (1,133), seco_arg (1,102), bafu_vollzug (297), estv_ks (285), estv_mwst (153), sem_weisungen (92).",
                     },
                     "issuing_authority": {
                         "type": "string",
-                        "enum": ["SECO", "ESTV", "BAFU", "SEM"],
-                        "description": "Filter by authority. SECO (1,102), ESTV (438), BAFU (297), SEM (55).",
+                        "enum": ["FINMA", "SECO", "ESTV", "BAFU", "SEM"],
+                        "description": "Filter by authority. FINMA (1,133), SECO (1,102), ESTV (438), BAFU (297), SEM (92).",
                     },
                     "doc_type": {
                         "type": "string",
                         "enum": [
-                            "wegleitung", "vollzugshilfe", "kreisschreiben", "mwst_branchen_info",
-                            "mwst_info", "weisung", "rundschreiben",
+                            "wegleitung", "rundschreiben", "vollzugshilfe", "kreisschreiben",
+                            "rundschreiben_anhang", "mwst_branchen_info",
+                            "mwst_info", "weisung",
                         ],
-                        "description": "Filter by document type. wegleitung (1,102), vollzugshilfe (297), kreisschreiben (285), mwst_branchen_info (84), mwst_info (69), weisung (39), rundschreiben (16).",
+                        "description": "Filter by document type. wegleitung (1,102), rundschreiben (1,017), vollzugshilfe (297), kreisschreiben (285), rundschreiben_anhang (132 — FINMA circular annexes: audit strategies, reporting forms), mwst_branchen_info (84), weisung (76), mwst_info (69).",
                     },
                     "language": {
                         "type": "string",

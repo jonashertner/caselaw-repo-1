@@ -23,6 +23,7 @@ from .seco_arg import SecoArgScraper
 from .ssk_kreisschreiben import SskKreisschreibenScraper
 from .are_vollzugshilfen import AreVollzugshilfenScraper
 from .epa_personalrecht import EpaPersonalrechtScraper
+from .finma_rundschreiben import FinmaRundschreibenScraper
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +34,7 @@ ENABLED_SCRAPERS = {
     "sem_weisungen": SemWeisungenScraper,
     "bafu_vollzug":  BafuVollzugshilfenScraper,
     "seco_arg":      SecoArgScraper,
+    "finma_rs":      FinmaRundschreibenScraper,
 }
 
 # Defensive scaffolds — need first-run validation before enabling
