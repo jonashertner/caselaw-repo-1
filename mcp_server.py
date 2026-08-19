@@ -87,6 +87,7 @@ import threading
 import time
 import unicodedata
 import urllib.parse
+import weakref
 import html as html_lib
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -1854,6 +1855,39 @@ _ctx_client_ip = contextvars.ContextVar("client_ip", default="")
 _ctx_client_ua = contextvars.ContextVar("client_ua", default="")
 _ctx_session_id = contextvars.ContextVar("session_id", default="")
 
+# One opaque id per live MCP connection, minted on first use.
+#
+# The ASGI layer can read a session id off the wire (`session_id=` in the
+# SSE POST query string, `Mcp-Session-Id` for Streamable HTTP) but cannot
+# usefully publish it: both transports run the MCP protocol loop in a
+# long-lived task created at connect, and later POSTs feed messages into
+# it from *different* tasks. A contextvar set in the POST never reaches
+# the tool handler, which is why every captured record carried sid=None
+# and the impression->fetch join produced nothing at all.
+#
+# Deriving it from the SDK's own per-request session object instead works
+# for both transports and needs one call site. Keyed weakly so the id
+# dies with the connection, which is what /datenschutz/ describes: "eine
+# Sitzungskennung ... die Kennung wechselt mit jeder Verbindung". Not
+# id(), whose values are recycled after garbage collection and would
+# silently fuse two unrelated sessions.
+_session_ids: "weakref.WeakKeyDictionary" = weakref.WeakKeyDictionary()
+
+
+def _derive_session_id(sess) -> str:
+    """Stable opaque id for the connection `sess` belongs to, or ''."""
+    if sess is None:
+        return ""
+    try:
+        sid = _session_ids.get(sess)
+        if sid is None:
+            sid = "s_" + secrets.token_hex(8)
+            _session_ids[sess] = sid
+        return sid
+    except TypeError:
+        # Not weak-referenceable — no session linkage rather than a crash.
+        return ""
+
 
 def _client_class(ua: str | None) -> str:
     """Coarse client class from a User-Agent — the label that may be
@@ -2279,6 +2313,20 @@ _METRICS_HISTORY = _RESEARCH_LOG_DIR / "daily_metrics.jsonl"
 # daily_metrics.jsonl is structurally unreachable.
 _RESEARCH_TRACE_RETENTION_DAYS = int(os.environ.get("RESEARCH_TRACE_RETENTION_DAYS", "30"))
 _TRACE_FILE_RE = re.compile(r"^search_traces_(\d{4}-\d{2}-\d{2})\.jsonl$")
+
+# capture_*.jsonl is the evaluation-phase corpus: full tool arguments,
+# query text and a session id, i.e. session-linked raw data. The page
+# sets no fixed deadline for it — retention is the developer's call,
+# bounded by the stated purposes — so the default here keeps everything
+# and the window is set by choosing a value, which is what exercising
+# that discretion looks like in practice. Kept separate from the 30-day
+# trace window either way: the point of the period is a corpus long
+# enough to learn from, and traces carry no session reference.
+#
+# The prune below globbed search_traces_* only, so capture files had no
+# deletion path at all; setting this now actually does something.
+_CAPTURE_RETENTION_DAYS = int(os.environ.get("CAPTURE_RETENTION_DAYS", "0"))
+_CAPTURE_FILE_RE = re.compile(r"^capture_(\d{4}-\d{2}-\d{2})\.jsonl$")
 _last_trace_prune_day: str | None = None
 
 
@@ -2290,19 +2338,23 @@ def _prune_search_traces(today: str) -> None:
     if _last_trace_prune_day == today:
         return
     _last_trace_prune_day = today
-    if _RESEARCH_TRACE_RETENTION_DAYS <= 0:
-        return  # retention disabled → keep everything, prune nothing
-    try:
-        cutoff = (
-            datetime.strptime(today, "%Y-%m-%d")
-            - timedelta(days=_RESEARCH_TRACE_RETENTION_DAYS)
-        ).strftime("%Y-%m-%d")
-        for f in _RESEARCH_LOG_DIR.glob("search_traces_*.jsonl"):
-            mt = _TRACE_FILE_RE.match(f.name)
-            if mt and mt.group(1) < cutoff:
-                f.unlink(missing_ok=True)
-    except Exception:
-        pass  # retention must never break search
+    for pattern, regex, days in (
+        ("search_traces_*.jsonl", _TRACE_FILE_RE,
+         _RESEARCH_TRACE_RETENTION_DAYS),
+        ("capture_*.jsonl", _CAPTURE_FILE_RE, _CAPTURE_RETENTION_DAYS),
+    ):
+        if days <= 0:
+            continue  # retention disabled → keep everything, prune nothing
+        try:
+            cutoff = (
+                datetime.strptime(today, "%Y-%m-%d") - timedelta(days=days)
+            ).strftime("%Y-%m-%d")
+            for f in _RESEARCH_LOG_DIR.glob(pattern):
+                mt = regex.match(f.name)
+                if mt and mt.group(1) < cutoff:
+                    f.unlink(missing_ok=True)
+        except Exception:
+            pass  # retention must never break search
 
 # ── Persistent metrics (SQLite) ──────────────────────────────
 # Stores true deltas per day so lifetime totals survive restarts.
@@ -22573,7 +22625,19 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
     # Log tool call with client context for usage analysis
     _call_ip = _ctx_client_ip.get("")
     _call_ua = _ctx_client_ua.get("")
+    # The transports cannot hand the session down (see _derive_session_id),
+    # so take it from the SDK's per-request context here instead. Set on the
+    # contextvar so every downstream capture site — including the impression
+    # record written inside search — sees the same id without changing.
     _call_sid = _ctx_session_id.get("")
+    if not _call_sid:
+        try:
+            _call_sid = _derive_session_id(
+                getattr(server.request_context, "session", None))
+        except Exception:
+            _call_sid = ""   # capture must never break serving
+        if _call_sid:
+            _ctx_session_id.set(_call_sid)
     _is_commercial = bool(_call_ua) and not _KNOWN_FREE_CLIENTS.search(_call_ua)
     # Privacy contract (public at /datenschutz/): "Search query content is
     # never logged at any tier." Free-text, user-intent-revealing fields
