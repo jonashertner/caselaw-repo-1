@@ -21,6 +21,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import logging
 import os
@@ -40,10 +41,29 @@ LEXFIND_DIR = Path(os.environ.get("LEXFIND_CANTONAL_OUTPUT", "output/lexfind_can
 OUTPUT_DB = Path(os.environ.get("CANTONAL_LAWS_DB", "output/cantonal_laws.db"))
 
 
+# Synthetic ids are namespaced above every real LexFind id (the largest
+# observed is ~35k) so the two can never be confused, and kept under
+# 2**53 so a JSON client does not silently lose precision on them.
+_SYNTHETIC_FLOOR = 1 << 52
+
+
 def _synthetic_id(canton: str, sr_number: str) -> int:
-    """Generate a stable integer ID for non-LexFind laws."""
+    """A stable id for a law LexFind does not number.
+
+    Was `hash(key)`, which Python salts per process: the same law was
+    given a different id on every build, so nothing could reference one
+    across runs. sha1 makes it actually stable, as the name always
+    claimed.
+
+    Stability raises the stakes on collisions — a colliding pair would
+    now collide on EVERY build rather than one night, and `INSERT OR
+    REPLACE` would drop one of the two laws permanently. Hence 48 bits
+    of digest (~1e-7 over a corpus this size) rather than the 31 the
+    old mask left, plus the uniqueness assertion in build().
+    """
     key = f"{canton}_{sr_number}"
-    return hash(key) & 0x7FFFFFFF  # positive 31-bit int
+    digest = hashlib.sha1(key.encode("utf-8")).digest()[:6]
+    return _SYNTHETIC_FLOOR | int.from_bytes(digest, "big")
 
 
 SCHEMA = """
@@ -267,6 +287,13 @@ def build(direct_dir: Path, lexfind_dir: Path, output_db: Path) -> None:
     log.info("Processing %d canton JSONL files", len(jsonl_files))
 
     now_iso = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    # id -> the canton_sr it was minted from. Two DIFFERENT laws hashing
+    # to one id would have one of them silently dropped by INSERT OR
+    # REPLACE, and now that the ids are stable it would happen on every
+    # build rather than once. The same law arriving twice is a different
+    # thing (source duplicate, handled by the REPLACE) and must not trip
+    # this, so the check is on the key, not on the id alone.
+    synthetic_keys: dict[int, str] = {}
     total_laws = 0
     total_articles = 0
     for path in jsonl_files:
@@ -295,6 +322,14 @@ def build(direct_dir: Path, lexfind_dir: Path, output_db: Path) -> None:
                     lexfind_id = _synthetic_id(
                         row.get("canton") or canton, sr
                     )
+                    key = f"{row.get('canton') or canton}_{sr}"
+                    prior = synthetic_keys.setdefault(lexfind_id, key)
+                    if prior != key:
+                        raise SystemExit(
+                            f"synthetic id collision: {prior!r} and {key!r} "
+                            f"both hash to {lexfind_id} — one law would be "
+                            f"lost; change the digest width in _synthetic_id"
+                        )
                 language = row.get("language") or "de"
 
                 conn.execute(

@@ -20,6 +20,8 @@ from typing import Iterator
 
 import requests
 
+from .numbering import split_number_and_title
+
 logger = logging.getLogger(__name__)
 
 BASE_URL = "https://www3.ti.ch/CAN/RLeggi/public/index.php"
@@ -104,13 +106,9 @@ class TIScraper:
         title = stub["title"]
 
         if title_match:
+            # Title format: "101.000 Costituzione..." or bare title
             raw_title = html_mod.unescape(title_match.group(1).strip())
-            # Title format: "101.000" or "Costituzione..."
-            sr_match = re.match(r'^([\d.]+)\s*(.*)', raw_title)
-            if sr_match:
-                sr_number = sr_match.group(1).rstrip(".")
-                if sr_match.group(2):
-                    title = sr_match.group(2).strip()
+            sr_number, title = split_number_and_title(raw_title, fallback="")
 
         if not sr_number:
             # Try extracting from page content
@@ -118,7 +116,14 @@ class TIScraper:
             if sr_match:
                 sr_number = sr_match.group(1).rstrip(".")
             else:
-                sr_number = str(stub["law_id"])
+                # The index carries the number in the title ("101.000
+                # Costituzione della Repubblica...") even when the detail
+                # page's <h1> does not, and every TI law took this path:
+                # all 623 ended up numbered 1..623 by row position, so no
+                # real Ticino number resolved. The row counter is a last
+                # resort, not the first one.
+                sr_number, title = split_number_and_title(
+                    stub["title"], fallback=str(stub["law_id"]))
 
         # Parse articles and full text from the HTML body
         articles, full_text = self._parse_law_html(html)

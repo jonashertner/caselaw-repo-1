@@ -19,6 +19,8 @@ from typing import Iterator
 
 import requests
 
+from .numbering import split_number_and_title
+
 logger = logging.getLogger(__name__)
 
 USER_AGENT = (
@@ -88,14 +90,15 @@ class SILScraper:
             filename = match.group(1)
             raw_title = match.group(2).strip()
 
-            # Parse SR number from title: "101 Constitution de la ..."
-            sr_match = re.match(r"^([\d.]+[a-z]?)\s+(.*)", raw_title)
-            if sr_match:
-                sr_number = sr_match.group(1)
-                title = sr_match.group(2).strip()
-            else:
-                sr_number = filename.replace(".htm", "")
-                title = raw_title
+            # Parse SR number from title: "101 Constitution de la ...",
+            # or Geneva's "A 1 01 Acte d'union ...". Geneva's RSG numbers
+            # are alphanumeric, so the numeric-only pattern this used to
+            # apply never matched and every GE law fell through to the
+            # filename slug (rsg_a1_01), which no practitioner cites and
+            # which get_law cannot resolve. NE shares this scraper and is
+            # numeric, so it takes the same branch it always did.
+            sr_number, title = split_number_and_title(
+                raw_title, fallback=filename.replace(".htm", ""))
 
             # Clean encoding artifacts
             title = html.unescape(title)
