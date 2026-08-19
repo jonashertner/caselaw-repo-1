@@ -4240,6 +4240,30 @@ def _get_vec_conn() -> sqlite3.Connection | None:
         return None
 
 
+def _install_unicode_casing(conn: sqlite3.Connection) -> None:
+    """Make UPPER()/LOWER() understand more than ASCII.
+
+    SQLite's built-ins fold a-z only, so UPPER('BüG') is 'BüG' while
+    Python's is 'BÜG'. Every abbreviation lookup compares one against the
+    other, which means an abbreviation containing an umlaut can never
+    match. 48 federal abbreviations were unreachable this way, among them
+    LugÜ (Lugano Convention), EPÜ 2000 (European Patent Convention) and
+    BüG (Bürgerrechtsgesetz).
+
+    Overriding the built-ins repairs every existing query at once rather
+    than asking eight call sites to remember. The Python callback costs a
+    little per row, which is why it is installed only on statutes.db —
+    5,528 laws, where it does not register.
+    """
+    try:
+        conn.create_function(
+            "upper", 1, lambda s: s.upper() if isinstance(s, str) else s)
+        conn.create_function(
+            "lower", 1, lambda s: s.lower() if isinstance(s, str) else s)
+    except sqlite3.Error:                               # pragma: no cover
+        pass  # an older SQLite refusing the override must not break serving
+
+
 def _get_statutes_conn() -> sqlite3.Connection | None:
     """Open a read-only connection to the statutes DB, or None if unavailable."""
     global _statutes_warned
@@ -4251,6 +4275,7 @@ def _get_statutes_conn() -> sqlite3.Connection | None:
     try:
         conn = sqlite3.connect(f"file:{STATUTES_DB_PATH}?immutable=1", uri=True, timeout=0.5)
         conn.row_factory = sqlite3.Row
+        _install_unicode_casing(conn)
         return conn
     except sqlite3.Error as e:
         logger.warning("Failed to open statutes DB: %s", e)
@@ -17031,6 +17056,62 @@ def _get_curriculum_cases_for_topic(topic: str) -> list[dict]:
 # alone: StG is the tax act in ZH, BE and AG and the federal stamp-duty act
 # as well, BauG is the building act in BE and AG. Everything below therefore
 # stays scoped to one canton and reports the canton with every candidate.
+_QUALIFIED_NAME = re.compile(r"^\s*([A-Za-z]{2})\s*/\s*(\S.*)$")
+
+
+def split_qualified_law_name(name: str) -> tuple[str | None, str]:
+    """'ZH/StG' -> ('ZH', 'StG'); 'StG' -> (None, 'StG').
+
+    Cantonal statutes are named with their canton because the
+    abbreviation alone is ambiguous — StG is the tax act in ZH, BE and AG.
+    Federal law is the unprefixed default, which is how practitioners
+    write it, so an unprefixed name means the federal collection.
+
+    'EG SchKG' is not split: only a two-letter head before a slash is a
+    canton.
+    """
+    m = _QUALIFIED_NAME.match(name or "")
+    if not m:
+        return None, (name or "").strip()
+    return m.group(1).upper(), m.group(2).strip()
+
+
+def _cantonal_sr_from_name(conn, canton: str, name: str,
+                           language: str) -> str | None:
+    """SR number for any name a cantonal law answers to.
+
+    Abbreviation, short title or full title — ZH/StG and
+    ZH/Steuergesetz both reach Zurich's tax act. Only ~40% of cantonal
+    laws have an abbreviation at all, so the title is what makes the
+    other 60% reachable rather than a gap.
+
+    A name the canton published outranks one derived from the title, so
+    a guess can never shadow the canton's own answer.
+    """
+    if conn is None or not name:
+        return None
+    # casefold(), not lower() and not COLLATE NOCASE: sources write
+    # FINMAG, FinmaG and finmag for the same act, and SQLite's NOCASE
+    # folds a-z only — "Bürgerrechtsgesetz" would never match itself.
+    n = name.strip().casefold()
+    try:
+        row = conn.execute(
+            """SELECT sr_number FROM law_names
+                WHERE canton = ? AND language = ? AND name_folded = ?
+                ORDER BY CASE name_type WHEN 'abbreviation' THEN 0
+                                        WHEN 'short_title'  THEN 1
+                                        ELSE 2 END,
+                         CASE source WHEN 'lexwork_api' THEN 0 ELSE 1 END
+                LIMIT 1""",
+            (canton, language, n),
+        ).fetchone()
+        return row["sr_number"] if row else None
+    except sqlite3.Error:
+        # The table only exists once the corpus has been rebuilt with it;
+        # an older mirror must keep serving, not start failing.
+        return None
+
+
 def _cantonal_candidates(canton: str, abbreviation: str,
                          language: str, limit: int = 5) -> list:
     """The closest laws in THIS canton, so a miss is still an answer.
@@ -17095,9 +17176,15 @@ def _get_law_cantonal(
             if re.match(r"^[\d./]+$", abbreviation):
                 sr_number = abbreviation
             else:
-                # Resolve a textual abbreviation via the mirror's titles.
                 conn = _get_cantonal_conn()
                 if conn is not None:
+                    # The name index first: every law is reachable by its
+                    # title there, and by its abbreviation where one
+                    # exists. The old title-LIKE match stays as a fallback
+                    # for a mirror built before the index existed.
+                    sr_number = _cantonal_sr_from_name(
+                        conn, canton_u, abbreviation, language)
+                if conn is not None and not sr_number:
                     row = conn.execute(
                         """SELECT sr_number FROM laws
                         WHERE canton = ? AND language = ?
@@ -17394,6 +17481,14 @@ def get_law(
     historical version of the law from Fedlex (available from ~2021).
     """
     canton_u = (canton or "CH").upper()
+    # A canton-prefixed name carries its own jurisdiction: ZH/StG is
+    # Zurich's tax act whatever `canton` says, while bare StG is the
+    # federal stamp-duty act. Naming them this way is what stops the two
+    # being confused, so the prefix decides and an explicit canton only
+    # applies to unprefixed names.
+    _prefix, _bare = split_qualified_law_name(abbreviation or "")
+    if _prefix:
+        abbreviation, canton_u = _bare, _prefix
     if canton_u != "CH":
         return _get_law_cantonal(sr_number, abbreviation, article, language, canton_u)
 
