@@ -1,0 +1,47 @@
+{
+ "_": "P2 release artifacts; regenerate all paper numbers via tables/build_tables.py",
+ "scan_generated_at": "2026-08-13T22:08:33.386943+00:00",
+ "graph_mtime": "2026-08-13T15:18:13.396765+00:00",
+ "scanned_databases": {
+  "decisions.db": {
+   "sha256": "22515710c20da099c9aa2163a9e63b860cc2e8fa29077f140322b454a7ac04bc",
+   "bytes": 70304518144,
+   "mtime": "2026-08-13T15:04:38.370562293+00:00"
+  },
+  "reference_graph.db": {
+   "sha256": "6234342d8a662bc07eb9bf98c56db10bed67c23f6d4061c460a24d7f85577d3e",
+   "bytes": 5195145216,
+   "mtime": "2026-08-13T15:18:13.396764505+00:00"
+  }
+ },
+ "files": {
+  "bge_series_index.json": {
+   "sha256": "187fc17d6b2739ec2a0ae2599e37bc57b43b93e15c72f96af667eaac529c3879",
+   "bytes": 187195
+  },
+  "db_hashes.json": {
+   "sha256": "1a71831dab6d2cea01bbaa3ebcf7c782ddb4ff93defe4539d6b79ca2233404b2",
+   "bytes": 508
+  },
+  "p2_backscan.json": {
+   "sha256": "45e5cff11c92d4ee822c34f85bd591c48e16e9b7322ed1accce69808ef3d3b11",
+   "bytes": 33931
+  },
+  "p2_distinct_tokens.json": {
+   "sha256": "e9c087a7cca4d6dd26b07adcb37efae3a77f035d3c8966be15b92b5cda284944",
+   "bytes": 64079
+  },
+  "p2_findings.jsonl": {
+   "sha256": "88946869f315e5b33b27a068b03d8a184bc8de7ae1f87b0713b9e93e809f7bf9",
+   "bytes": 1396268
+  },
+  "p2_pre1955_pool.jsonl": {
+   "sha256": "812d2a9f7dfcf346769b7ab1f70efc6f290c5398511c1e641ab40910fc9f38f5",
+   "bytes": 1558929
+  },
+  "p2_probe.json": {
+   "sha256": "3d21d5f32823b6e86e3c521952cf03cb51a31c44f86e6711fdc42ca16fad3893",
+   "bytes": 75113
+  }
+ }
+}

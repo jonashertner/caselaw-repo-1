@@ -1,0 +1,2967 @@
+{
+ "_method": "relevancy.bger.ch resolver; 200/redirect = exists, 404 = nonexistent; coverage floor volume 80 (1954). Second pass probes unique repair candidates for positive existence.",
+ "generated_at": "2026-08-13T14:06:03.967534+00:00",
+ "n_tokens": 292,
+ "n_confirmed_nonexistent": 254,
+ "n_exists": 0,
+ "n_out_of_coverage": 38,
+ "n_other": 0,
+ "n_candidates_probed": 115,
+ "n_candidates_exist": 109,
+ "results": [
+  {
+   "token": "BGE 142 I 455",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 28,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 141 IV 557",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 27,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 133 II 629",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 22,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 138 II 636",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 19,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 123 I 424",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 18,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 134 II 2017",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 16,
+   "reason": "page_beyond_series page_looks_like_year"
+  },
+  {
+   "token": "BGE 137 V 2010",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 14,
+   "reason": "page_beyond_series page_looks_like_year"
+  },
+  {
+   "token": "BGE 130 III 858",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 12,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 140 IV 373",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 9,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 141 I 557",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 9,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 130 I 585",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 8,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 142 II 2018",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 7,
+   "reason": "page_beyond_series page_looks_like_year"
+  },
+  {
+   "token": "BGE 136 VI 55",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 6,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 142 II 612",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 6,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 142 IV 551",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 6,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 147 III 2093",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 5,
+   "reason": "page_beyond_series page_looks_like_year"
+  },
+  {
+   "token": "BGE 113 II 606",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 5,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 115 VI 1",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 4,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 147 IIII 176",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 4,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 137 II 604",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 4,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 62 III 342",
+   "status": "out_of_coverage",
+   "volume": 62,
+   "occurrences": 4,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 141 II 564",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 4,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 147 III 617",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 4,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 137 III 3377",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 4,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 112 III 901",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 3,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 123 III 626",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 3,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 144 II 519",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 3,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 143 II 877",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 3,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 130 II 585",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 3,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 126 IV 356",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 3,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 133 I 409",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 3,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 136 II 605",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 3,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 141 I 393",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 3,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 150 I 353",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 3,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 147 IIII 249",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 3,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 43 IV 380",
+   "status": "out_of_coverage",
+   "volume": 43,
+   "occurrences": 3,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 142 IIII 617",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 3,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 140 IV 312",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 140 IIII 16",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 100 III 358",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 130 II 699",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 23 II 125",
+   "status": "out_of_coverage",
+   "volume": 23,
+   "occurrences": 2,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 81 V 273",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 144 IV 454",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 123 II 1245",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 148 III 475",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 63 III 409",
+   "status": "out_of_coverage",
+   "volume": 63,
+   "occurrences": 2,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 142 I 253",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 140 IV 380",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 145 V 455",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 35 V 465",
+   "status": "out_of_coverage",
+   "volume": 35,
+   "occurrences": 2,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 135 IV 398",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 142 IIII 234",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 145 IV 2018",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "page_beyond_series page_looks_like_year"
+  },
+  {
+   "token": "BGE 75 III 288",
+   "status": "out_of_coverage",
+   "volume": 75,
+   "occurrences": 2,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 123 I 425",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 22 V 157",
+   "status": "out_of_coverage",
+   "volume": 22,
+   "occurrences": 2,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 132 IV 189",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 118 III 249",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 132 V 837",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 145 III 541",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 122 I 464",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 142 II 599",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 139 II 5234",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 120 III 591",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 145 V 580",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 118 III 415",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 139 IIII 273",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 137 II 2097",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "page_beyond_series page_looks_like_year"
+  },
+  {
+   "token": "BGE 99 III 313",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 132 II 668",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 147 IIII 301",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 136 I 447",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 147 IIII 265",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 120 III 393",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 452 III 502",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "volume_out_of_range"
+  },
+  {
+   "token": "BGE 135 IV 2017",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "page_beyond_series page_looks_like_year"
+  },
+  {
+   "token": "BGE 148 IIII 225",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 146 I 266",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 48 IV 409",
+   "status": "out_of_coverage",
+   "volume": 48,
+   "occurrences": 2,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 144 IV 455",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 146 V 2901",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 146 V 657",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 144 II 2018",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "page_beyond_series page_looks_like_year"
+  },
+  {
+   "token": "BGE 120 II 1015",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 125 III 798",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 146 IIV 297",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 145 V 513",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 148 I 356",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 2,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 148 III 551",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 136 IIII 528",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 149 III 2018",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series page_looks_like_year"
+  },
+  {
+   "token": "BGE 115 III 187",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 133 IV 393",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 144 V 472",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 48 IV 137",
+   "status": "out_of_coverage",
+   "volume": 48,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 199 V 13",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "volume_out_of_range"
+  },
+  {
+   "token": "BGE 139 II 4040",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 136 II 732",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 137 II 617",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 136 V 465",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 11 IV 49",
+   "status": "out_of_coverage",
+   "volume": 11,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 134 II 425",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 137 IV 532",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 55 III 302",
+   "status": "out_of_coverage",
+   "volume": 55,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 13 IV 49",
+   "status": "out_of_coverage",
+   "volume": 13,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 234 IV 82",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "volume_out_of_range"
+  },
+  {
+   "token": "BGE 34 III 186",
+   "status": "out_of_coverage",
+   "volume": 34,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 132 I 332",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 113 III 1390",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 126 IV 2016",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series page_looks_like_year"
+  },
+  {
+   "token": "BGE 181 III 378",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "volume_out_of_range"
+  },
+  {
+   "token": "BGE 72 II 471",
+   "status": "out_of_coverage",
+   "volume": 72,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 144 II 3260",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 12 IV 97",
+   "status": "out_of_coverage",
+   "volume": 12,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 116 III 431",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 134 II 529",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 728 V 792",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "volume_out_of_range"
+  },
+  {
+   "token": "BGE 116 III 441",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 130 IV 237",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 35 III 648",
+   "status": "out_of_coverage",
+   "volume": 35,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 132 II 661",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 138 IV 358",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 21 II 717",
+   "status": "out_of_coverage",
+   "volume": 21,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 133 V 6264",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 134 II 586",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 144 VI 217",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 124 IV 346",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 141 I 433",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 145 III 2013",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series page_looks_like_year"
+  },
+  {
+   "token": "BGE 133 III 4624",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 134 IV 437",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 144 III 591",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 148 V 3397",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 53 II 2002",
+   "status": "out_of_coverage",
+   "volume": 53,
+   "occurrences": 1,
+   "reason": "page_beyond_series page_looks_like_year"
+  },
+  {
+   "token": "BGE 12 IV 217",
+   "status": "out_of_coverage",
+   "volume": 12,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 13 III 232",
+   "status": "out_of_coverage",
+   "volume": 13,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 145 IIII 36",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 134 II 591",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 419 III 210",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "volume_out_of_range"
+  },
+  {
+   "token": "BGE 126 I 294",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 119 III 197",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 101 III 325",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 139 VI 294",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 133 II 687",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 127 I 2002",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series page_looks_like_year"
+  },
+  {
+   "token": "BGE 120 III 237",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 85 II 676",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 104 V 264",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 135 IV 476",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 141 III 732",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 146 III 617",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 74 IV 261",
+   "status": "out_of_coverage",
+   "volume": 74,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 75 III 196",
+   "status": "out_of_coverage",
+   "volume": 75,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 130 II 2020",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series page_looks_like_year"
+  },
+  {
+   "token": "BGE 143 V 714",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 142 I 255",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 146 I 335",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 128 III 675",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 140 II 602",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 143 IIII 42",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 96 IIII 89",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 101 III 209",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 145 IV 1907",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series page_looks_like_year"
+  },
+  {
+   "token": "BGE 135 V 579",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 155 III 63",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "volume_out_of_range"
+  },
+  {
+   "token": "BGE 128 III 595",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 102 III 413",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 412 III 612",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "volume_out_of_range"
+  },
+  {
+   "token": "BGE 45 III 324",
+   "status": "out_of_coverage",
+   "volume": 45,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 60 II 2015",
+   "status": "out_of_coverage",
+   "volume": 60,
+   "occurrences": 1,
+   "reason": "page_beyond_series page_looks_like_year"
+  },
+  {
+   "token": "BGE 135 IV 261",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 102 III 226",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 247 III 265",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "volume_out_of_range"
+  },
+  {
+   "token": "BGE 134 IV 974",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 29 III 131",
+   "status": "out_of_coverage",
+   "volume": 29,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 127 IV 1122",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 193 I 206",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "volume_out_of_range"
+  },
+  {
+   "token": "BGE 125 IIII 42",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 132 II 715",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 140 I 535",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 118 III 333",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 149 III 569",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 143 V 530",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 142 I 517",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 317 III 617",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "volume_out_of_range"
+  },
+  {
+   "token": "BGE 109 IV 312",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 141 I 305",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 145 V 557",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 102 III 229",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 174 I 393",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "volume_out_of_range"
+  },
+  {
+   "token": "BGE 29 III 171",
+   "status": "out_of_coverage",
+   "volume": 29,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 136 IV 263",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 192 III 798",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "volume_out_of_range"
+  },
+  {
+   "token": "BGE 127 IIV 79",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 150 II 1916",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series page_looks_like_year"
+  },
+  {
+   "token": "BGE 146 II 441",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 150 VI 345",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 134 V 2020",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series page_looks_like_year"
+  },
+  {
+   "token": "BGE 95 III 532",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 129 III 792",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 116 III 738",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 119 IV 2412",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 147 II 2019",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series page_looks_like_year"
+  },
+  {
+   "token": "BGE 85 II 747",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 139 I 2181",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 149 IVV 289",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 120 III 280",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 148 III 1005",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 29 V 177",
+   "status": "out_of_coverage",
+   "volume": 29,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 146 V 832",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 43 V 363",
+   "status": "out_of_coverage",
+   "volume": 43,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 148 IIII 201",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 129 IV 411",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 141 I 328",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 146 I 405",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 43 III 578",
+   "status": "out_of_coverage",
+   "volume": 43,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 149 V 356",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 91 IV 294",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 146 IIII 313",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 117 III 404",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 111 V 461",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 26 V 143",
+   "status": "out_of_coverage",
+   "volume": 26,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 147 VI 409",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 150 I 346",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 148 II 645",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 28 I 674",
+   "status": "out_of_coverage",
+   "volume": 28,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 140 IV 406",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 144 IV 3445",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 84 III 451",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 149 I 2017",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series page_looks_like_year"
+  },
+  {
+   "token": "BGE 140 V 688",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 126 II 1171",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 126 II 1771",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 145 III 640",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 120 II 933",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 149 VI 259",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 141 VI 1",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 124 III 660",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 135 II 2098",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series page_looks_like_year"
+  },
+  {
+   "token": "BGE 142 II 732",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 132 II 719",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 138 V 2018",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series page_looks_like_year"
+  },
+  {
+   "token": "BGE 115 IV 319",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 141 IIII 489",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 45 IV 156",
+   "status": "out_of_coverage",
+   "volume": 45,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 146 IV 453",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 127 II 702",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 127 III 702",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 150 III 535",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 135 IIII 46",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 138 IV 2418",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 154 V 361",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "volume_out_of_range"
+  },
+  {
+   "token": "BGE 1 II 239",
+   "status": "out_of_coverage",
+   "volume": 1,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 145 V 442",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 135 I 392",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 193 V 399",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "volume_out_of_range"
+  },
+  {
+   "token": "BGE 34 IV 60",
+   "status": "out_of_coverage",
+   "volume": 34,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 144 IIII 349",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 126 I 346",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 154 IV 124",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "volume_out_of_range"
+  },
+  {
+   "token": "BGE 144 IV 534",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 138 V 2012",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series page_looks_like_year"
+  },
+  {
+   "token": "BGE 127 II 548",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 127 I 366",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 143 IIII 72",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 120 III 285",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 134 IV 380",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 146 II 476",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 142 IIII 758",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 141 IV 530",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 140 III 4563",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 134 II 643",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 186 IV 86",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "volume_out_of_range"
+  },
+  {
+   "token": "BGE 133 IIII 675",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 28 III 244",
+   "status": "out_of_coverage",
+   "volume": 28,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 39 I 804",
+   "status": "out_of_coverage",
+   "volume": 39,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 141 I 350",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 146 I 285",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 130 II 766",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 177 IV 139",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "volume_out_of_range"
+  },
+  {
+   "token": "BGE 116 III 745",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 114 V 3010",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 116 III 320",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 13 II 12",
+   "status": "out_of_coverage",
+   "volume": 13,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 37 III 603",
+   "status": "out_of_coverage",
+   "volume": 37,
+   "occurrences": 1,
+   "reason": "division_absent_for_volume"
+  },
+  {
+   "token": "BGE 105 II 440",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 124 III 2017",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series page_looks_like_year"
+  },
+  {
+   "token": "BGE 133 V 2025",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series page_looks_like_year"
+  },
+  {
+   "token": "BGE 148 I 349",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 146 III 666",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  },
+  {
+   "token": "BGE 144 V 509",
+   "status": "confirmed_nonexistent",
+   "http": 404,
+   "occurrences": 1,
+   "reason": "page_beyond_series"
+  }
+ ],
+ "candidate_results": [
+  {
+   "token": "BGE 138 III 636",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F138-III-636%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 138 II 636"
+  },
+  {
+   "token": "BGE 137 V 210",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F137-V-210%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 137 V 2010"
+  },
+  {
+   "token": "BGE 130 III 58",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F130-III-58%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 130 III 858"
+  },
+  {
+   "token": "BGE 141 V 557",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F141-V-557%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 141 I 557"
+  },
+  {
+   "token": "BGE 142 II 218",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F142-II-218%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 142 II 2018"
+  },
+  {
+   "token": "BGE 136 IV 55",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F136-IV-55%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 136 VI 55"
+  },
+  {
+   "token": "BGE 142 III 612",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F142-III-612%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 142 II 612"
+  },
+  {
+   "token": "BGE 137 III 604",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F137-III-604%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 137 II 604"
+  },
+  {
+   "token": "BGE 137 III 337",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F137-III-337%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 137 III 3377"
+  },
+  {
+   "token": "BGE 122 IV 356",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F122-IV-356%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 126 IV 356"
+  },
+  {
+   "token": "BGE 143 IV 380",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F143-IV-380%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 43 IV 380"
+  },
+  {
+   "token": "BGE 142 III 617",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F142-III-617%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 142 IIII 617"
+  },
+  {
+   "token": "BGE 130 III 699",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F130-III-699%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 130 II 699"
+  },
+  {
+   "token": "BGE 81 IV 273",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F81-IV-273%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 81 V 273"
+  },
+  {
+   "token": "BGE 63 II 409",
+   "status": "out_of_coverage",
+   "volume": 63,
+   "repairs": "BGE 63 III 409"
+  },
+  {
+   "token": "BGE 135 V 465",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F135-V-465%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 35 V 465"
+  },
+  {
+   "token": "BGE 145 IV 218",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F145-IV-218%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 145 IV 2018"
+  },
+  {
+   "token": "BGE 122 V 157",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F122-V-157%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 22 V 157"
+  },
+  {
+   "token": "BGE 132 V 387",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F132-V-387%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 132 V 837"
+  },
+  {
+   "token": "BGE 142 III 599",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F142-III-599%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 142 II 599"
+  },
+  {
+   "token": "BGE 139 II 534",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F139-II-534%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 139 II 5234"
+  },
+  {
+   "token": "BGE 130 III 591",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F130-III-591%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 120 III 591"
+  },
+  {
+   "token": "BGE 145 V 50",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F145-V-50%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 145 V 580"
+  },
+  {
+   "token": "BGE 139 III 273",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F139-III-273%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 139 IIII 273"
+  },
+  {
+   "token": "BGE 137 II 297",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F137-II-297%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 137 II 2097"
+  },
+  {
+   "token": "BGE 99 II 313",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F99-II-313%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 99 III 313"
+  },
+  {
+   "token": "BGE 132 III 668",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F132-III-668%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 132 II 668"
+  },
+  {
+   "token": "BGE 147 III 301",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F147-III-301%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 147 IIII 301"
+  },
+  {
+   "token": "BGE 147 III 265",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F147-III-265%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 147 IIII 265"
+  },
+  {
+   "token": "BGE 135 IV 217",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F135-IV-217%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 135 IV 2017"
+  },
+  {
+   "token": "BGE 144 I 266",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F144-I-266%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 146 I 266"
+  },
+  {
+   "token": "BGE 148 IV 409",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F148-IV-409%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 48 IV 409"
+  },
+  {
+   "token": "BGE 145 IV 455",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F145-IV-455%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 144 IV 455"
+  },
+  {
+   "token": "BGE 146 V 290",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F146-V-290%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 146 V 2901"
+  },
+  {
+   "token": "BGE 141 V 657",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F141-V-657%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 146 V 657"
+  },
+  {
+   "token": "BGE 144 II 218",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F144-II-218%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 144 II 2018"
+  },
+  {
+   "token": "BGE 125 III 78",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F125-III-78%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 125 III 798"
+  },
+  {
+   "token": "BGE 136 III 528",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F136-III-528%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 136 IIII 528"
+  },
+  {
+   "token": "BGE 149 III 218",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F149-III-218%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 149 III 2018"
+  },
+  {
+   "token": "BGE 139 II 404",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F139-II-404%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 139 II 4040"
+  },
+  {
+   "token": "BGE 111 IV 49",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F111-IV-49%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 11 IV 49"
+  },
+  {
+   "token": "BGE 137 IV 352",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F137-IV-352%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 137 IV 532"
+  },
+  {
+   "token": "BGE 113 IV 49",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F113-IV-49%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 13 IV 49"
+  },
+  {
+   "token": "BGE 113 III 139",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F113-III-139%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 113 III 1390"
+  },
+  {
+   "token": "BGE 126 IV 216",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F126-IV-216%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 126 IV 2016"
+  },
+  {
+   "token": "BGE 144 II 326",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F144-II-326%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 144 II 3260"
+  },
+  {
+   "token": "BGE 135 III 648",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F135-III-648%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 35 III 648"
+  },
+  {
+   "token": "BGE 133 V 624",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F133-V-624%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 133 V 6264"
+  },
+  {
+   "token": "BGE 145 III 213",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F145-III-213%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 145 III 2013"
+  },
+  {
+   "token": "BGE 133 III 462",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F133-III-462%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 133 III 4624"
+  },
+  {
+   "token": "BGE 148 V 397",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F148-V-397%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 148 V 3397"
+  },
+  {
+   "token": "BGE 53 II 202",
+   "status": "out_of_coverage",
+   "volume": 53,
+   "repairs": "BGE 53 II 2002"
+  },
+  {
+   "token": "BGE 145 III 36",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F145-III-36%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 145 IIII 36"
+  },
+  {
+   "token": "BGE 149 III 210",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F149-III-210%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 419 III 210"
+  },
+  {
+   "token": "BGE 139 IV 294",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F139-IV-294%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 139 VI 294"
+  },
+  {
+   "token": "BGE 127 I 202",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F127-I-202%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 127 I 2002"
+  },
+  {
+   "token": "BGE 142 III 732",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F142-III-732%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 141 III 732"
+  },
+  {
+   "token": "BGE 130 II 202",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F130-II-202%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 130 II 2020"
+  },
+  {
+   "token": "BGE 143 V 71",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F143-V-71%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 143 V 714"
+  },
+  {
+   "token": "BGE 124 I 255",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F124-I-255%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 142 I 255"
+  },
+  {
+   "token": "BGE 140 III 602",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F140-III-602%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 140 II 602"
+  },
+  {
+   "token": "BGE 143 III 42",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F143-III-42%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 143 IIII 42"
+  },
+  {
+   "token": "BGE 101 III 9",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F101-III-9%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 101 III 209"
+  },
+  {
+   "token": "BGE 102 II 413",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F102-II-413%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 102 III 413"
+  },
+  {
+   "token": "BGE 60 II 205",
+   "status": "out_of_coverage",
+   "volume": 60,
+   "repairs": "BGE 60 II 2015"
+  },
+  {
+   "token": "BGE 102 II 226",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F102-II-226%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 102 III 226"
+  },
+  {
+   "token": "BGE 134 IV 97",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F134-IV-97%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 134 IV 974"
+  },
+  {
+   "token": "BGE 127 IV 122",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F127-IV-122%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 127 IV 1122"
+  },
+  {
+   "token": "BGE 139 I 206",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F139-I-206%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 193 I 206"
+  },
+  {
+   "token": "BGE 141 III 569",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F141-III-569%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 149 III 569"
+  },
+  {
+   "token": "BGE 142 II 517",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F142-II-517%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 142 I 517"
+  },
+  {
+   "token": "BGE 137 III 617",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F137-III-617%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 317 III 617"
+  },
+  {
+   "token": "BGE 147 I 393",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F147-I-393%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 174 I 393"
+  },
+  {
+   "token": "BGE 129 III 171",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F129-III-171%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 29 III 171"
+  },
+  {
+   "token": "BGE 150 II 191",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F150-II-191%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 150 II 1916"
+  },
+  {
+   "token": "BGE 95 II 532",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F95-II-532%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 95 III 532"
+  },
+  {
+   "token": "BGE 138 III 792",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F138-III-792%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 129 III 792"
+  },
+  {
+   "token": "BGE 116 II 738",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F116-II-738%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 116 III 738"
+  },
+  {
+   "token": "BGE 119 IV 242",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F119-IV-242%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 119 IV 2412"
+  },
+  {
+   "token": "BGE 139 I 218",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F139-I-218%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 139 I 2181"
+  },
+  {
+   "token": "BGE 149 IV 289",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F149-IV-289%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 149 IVV 289"
+  },
+  {
+   "token": "BGE 148 III 105",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F148-III-105%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 148 III 1005"
+  },
+  {
+   "token": "BGE 129 V 177",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F129-V-177%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 29 V 177"
+  },
+  {
+   "token": "BGE 148 III 201",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F148-III-201%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 148 IIII 201"
+  },
+  {
+   "token": "BGE 14 I 405",
+   "status": "out_of_coverage",
+   "volume": 14,
+   "repairs": "BGE 146 I 405"
+  },
+  {
+   "token": "BGE 143 III 578",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F143-III-578%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 43 III 578"
+  },
+  {
+   "token": "BGE 91 IV 24",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F91-IV-24%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 91 IV 294"
+  },
+  {
+   "token": "BGE 126 V 143",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F126-V-143%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 26 V 143"
+  },
+  {
+   "token": "BGE 147 IV 409",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F147-IV-409%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 147 VI 409"
+  },
+  {
+   "token": "BGE 148 II 465",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F148-II-465%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 148 II 645"
+  },
+  {
+   "token": "BGE 140 IV 40",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F140-IV-40%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 140 IV 406"
+  },
+  {
+   "token": "BGE 144 IV 345",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F144-IV-345%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 144 IV 3445"
+  },
+  {
+   "token": "BGE 149 I 207",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F149-I-207%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 149 I 2017"
+  },
+  {
+   "token": "BGE 141 V 688",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F141-V-688%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 140 V 688"
+  },
+  {
+   "token": "BGE 126 II 171",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F126-II-171%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 126 II 1771"
+  },
+  {
+   "token": "BGE 149 IV 259",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F149-IV-259%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 149 VI 259"
+  },
+  {
+   "token": "BGE 131 III 660",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F131-III-660%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 124 III 660"
+  },
+  {
+   "token": "BGE 135 II 209",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F135-II-209%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 135 II 2098"
+  },
+  {
+   "token": "BGE 138 V 218",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F138-V-218%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 138 V 2018"
+  },
+  {
+   "token": "BGE 141 III 489",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F141-III-489%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 141 IIII 489"
+  },
+  {
+   "token": "BGE 135 III 46",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F135-III-46%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 135 IIII 46"
+  },
+  {
+   "token": "BGE 129 I 392",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F129-I-392%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 135 I 392"
+  },
+  {
+   "token": "BGE 139 V 399",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F139-V-399%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 193 V 399"
+  },
+  {
+   "token": "BGE 134 IV 60",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F134-IV-60%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 34 IV 60"
+  },
+  {
+   "token": "BGE 144 III 349",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F144-III-349%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 144 IIII 349"
+  },
+  {
+   "token": "BGE 147 IV 534",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F147-IV-534%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 144 IV 534"
+  },
+  {
+   "token": "BGE 142 III 758",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F142-III-758%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 142 IIII 758"
+  },
+  {
+   "token": "BGE 141 V 530",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F141-V-530%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 141 IV 530"
+  },
+  {
+   "token": "BGE 140 III 456",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F140-III-456%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 140 III 4563"
+  },
+  {
+   "token": "BGE 86 IV 86",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F86-IV-86%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 186 IV 86"
+  },
+  {
+   "token": "BGE 133 III 675",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F133-III-675%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 133 IIII 675"
+  },
+  {
+   "token": "BGE 38 I 804",
+   "status": "out_of_coverage",
+   "volume": 38,
+   "repairs": "BGE 39 I 804"
+  },
+  {
+   "token": "BGE 114 V 310",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F114-V-310%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 114 V 3010"
+  },
+  {
+   "token": "BGE 37 II 603",
+   "status": "out_of_coverage",
+   "volume": 37,
+   "repairs": "BGE 37 III 603"
+  },
+  {
+   "token": "BGE 143 III 666",
+   "status": "exists",
+   "http": 200,
+   "final_url": "http://relevancy.bger.ch/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F143-III-666%3Ade&lang=de&type=show_document",
+   "via_redirect": false,
+   "repairs": "BGE 146 III 666"
+  }
+ ]
+}

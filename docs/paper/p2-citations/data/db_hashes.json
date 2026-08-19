@@ -1,0 +1,13 @@
+{
+ "_": "SHA-256 of the exact database files the 2026-08-13 freeze scan read; stat mtimes match the scan's recorded graph_mtime to the microsecond.",
+ "decisions.db": {
+  "sha256": "22515710c20da099c9aa2163a9e63b860cc2e8fa29077f140322b454a7ac04bc",
+  "bytes": 70304518144,
+  "mtime": "2026-08-13T15:04:38.370562293+00:00"
+ },
+ "reference_graph.db": {
+  "sha256": "6234342d8a662bc07eb9bf98c56db10bed67c23f6d4061c460a24d7f85577d3e",
+  "bytes": 5195145216,
+  "mtime": "2026-08-13T15:18:13.396764505+00:00"
+ }
+}

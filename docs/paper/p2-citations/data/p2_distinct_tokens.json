@@ -1,0 +1,2341 @@
+{
+ "_status": "distinct provably-nonexistent prefixed tokens for the external probe (bger.ch 301/404; DFR < vol 80)",
+ "tokens": [
+  {
+   "token": "BGE 142 I 455",
+   "occurrences": 28,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": null,
+   "sample_decision": "ge_gerichte_ATA_915_2024"
+  },
+  {
+   "token": "BGE 141 IV 557",
+   "occurrences": 27,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "vd_gerichte_PE23.011615"
+  },
+  {
+   "token": "BGE 133 II 629",
+   "occurrences": 22,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "ge_gerichte_ATA_82_2024"
+  },
+  {
+   "token": "BGE 138 II 636",
+   "occurrences": 19,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": "BGE 138 III 636",
+   "sample_decision": "ge_gerichte_ACJC_1007_2024"
+  },
+  {
+   "token": "BGE 123 I 424",
+   "occurrences": 18,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "vd_gerichte_OC21.011312"
+  },
+  {
+   "token": "BGE 134 II 2017",
+   "occurrences": 16,
+   "reason": "page_beyond_series page_looks_like_year",
+   "mechanism": "year_for_page",
+   "candidate_unique": null,
+   "sample_decision": "ge_gerichte_ATA_495_2024"
+  },
+  {
+   "token": "BGE 137 V 2010",
+   "occurrences": 14,
+   "reason": "page_beyond_series page_looks_like_year",
+   "mechanism": "year_for_page",
+   "candidate_unique": "BGE 137 V 210",
+   "sample_decision": "bvger_A-3493_2023"
+  },
+  {
+   "token": "BGE 130 III 858",
+   "occurrences": 12,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": "BGE 130 III 58",
+   "sample_decision": "vd_gerichte_LO21.028752"
+  },
+  {
+   "token": "BGE 140 IV 373",
+   "occurrences": 9,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "so_gerichte_STBER.2023.25"
+  },
+  {
+   "token": "BGE 141 I 557",
+   "occurrences": 9,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": "BGE 141 V 557",
+   "sample_decision": "bvger_D-4336_2021"
+  },
+  {
+   "token": "BGE 130 I 585",
+   "occurrences": 8,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "vd_gerichte_JS23.004619"
+  },
+  {
+   "token": "BGE 142 II 2018",
+   "occurrences": 7,
+   "reason": "page_beyond_series page_looks_like_year",
+   "mechanism": "year_for_page",
+   "candidate_unique": "BGE 142 II 218",
+   "sample_decision": "ge_gerichte_JTAPI_596_2024"
+  },
+  {
+   "token": "BGE 136 VI 55",
+   "occurrences": 6,
+   "reason": "division_absent_for_volume",
+   "mechanism": "division_substitution",
+   "candidate_unique": "BGE 136 IV 55",
+   "sample_decision": "fr_gerichte_501_2023_77"
+  },
+  {
+   "token": "BGE 142 II 612",
+   "occurrences": 6,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": "BGE 142 III 612",
+   "sample_decision": "ag_zivilgericht_ZSU.2023.180"
+  },
+  {
+   "token": "BGE 142 IV 551",
+   "occurrences": 6,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bger_2C_104_2025"
+  },
+  {
+   "token": "BGE 147 III 2093",
+   "occurrences": 5,
+   "reason": "page_beyond_series page_looks_like_year",
+   "mechanism": "year_for_page",
+   "candidate_unique": null,
+   "sample_decision": "vd_gerichte_JS23.028903"
+  },
+  {
+   "token": "BGE 113 II 606",
+   "occurrences": 5,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": null,
+   "sample_decision": "ge_gerichte_ACJC_401_2025"
+  },
+  {
+   "token": "BGE 115 VI 1",
+   "occurrences": 4,
+   "reason": "division_absent_for_volume",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "gr_gerichte_SK2 2024 31"
+  },
+  {
+   "token": "BGE 147 IIII 176",
+   "occurrences": 4,
+   "reason": "division_absent_for_volume",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "vs_gerichte_C1 22 298"
+  },
+  {
+   "token": "BGE 137 II 604",
+   "occurrences": 4,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": "BGE 137 III 604",
+   "sample_decision": "ge_gerichte_C_22291_2022"
+  },
+  {
+   "token": "BGE 62 III 342",
+   "occurrences": 4,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "vd_gerichte_PT20.014706"
+  },
+  {
+   "token": "BGE 141 II 564",
+   "occurrences": 4,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bger_4A_352_2023"
+  },
+  {
+   "token": "BGE 147 III 617",
+   "occurrences": 4,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "vd_gerichte_JI23.009896"
+  },
+  {
+   "token": "BGE 137 III 3377",
+   "occurrences": 4,
+   "reason": "page_beyond_series",
+   "mechanism": "page_doubled_digit",
+   "candidate_unique": "BGE 137 III 337",
+   "sample_decision": "ge_gerichte_C_26173_2020"
+  },
+  {
+   "token": "BGE 112 III 901",
+   "occurrences": 3,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": null,
+   "sample_decision": "fr_gerichte_105_2023_147"
+  },
+  {
+   "token": "BGE 123 III 626",
+   "occurrences": 3,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "zh_handelsgericht_HG210201"
+  },
+  {
+   "token": "BGE 144 II 519",
+   "occurrences": 3,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bger_5A_517_2023"
+  },
+  {
+   "token": "BGE 143 II 877",
+   "occurrences": 3,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": null,
+   "sample_decision": "bger_1C_522_2022"
+  },
+  {
+   "token": "BGE 130 II 585",
+   "occurrences": 3,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "so_gerichte_ZKBER.2025.26"
+  },
+  {
+   "token": "BGE 126 IV 356",
+   "occurrences": 3,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": "BGE 122 IV 356",
+   "sample_decision": "ag_strafgericht_SST.2023.170"
+  },
+  {
+   "token": "BGE 133 I 409",
+   "occurrences": 3,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "sg_publikationen_B 2023_151"
+  },
+  {
+   "token": "BGE 136 II 605",
+   "occurrences": 3,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bger_4A_572_2023"
+  },
+  {
+   "token": "BGE 141 I 393",
+   "occurrences": 3,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "fr_gerichte_602_2023_15"
+  },
+  {
+   "token": "BGE 150 I 353",
+   "occurrences": 3,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bge_151 I 137"
+  },
+  {
+   "token": "BGE 147 IIII 249",
+   "occurrences": 3,
+   "reason": "division_absent_for_volume",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bger_5A_604_2024"
+  },
+  {
+   "token": "BGE 43 IV 380",
+   "occurrences": 3,
+   "reason": "division_absent_for_volume",
+   "mechanism": "dropped_leading_volume_digit",
+   "candidate_unique": "BGE 143 IV 380",
+   "sample_decision": "vd_gerichte_ZA24.013939"
+  },
+  {
+   "token": "BGE 142 IIII 617",
+   "occurrences": 3,
+   "reason": "division_absent_for_volume",
+   "mechanism": "division_substitution",
+   "candidate_unique": "BGE 142 III 617",
+   "sample_decision": "so_gerichte_ZKBER.2024.42_d20250221"
+  },
+  {
+   "token": "BGE 140 IV 312",
+   "occurrences": 2,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bge_BGE_150_IV_65"
+  },
+  {
+   "token": "BGE 140 IIII 16",
+   "occurrences": 2,
+   "reason": "division_absent_for_volume",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bger_4A_368_2023"
+  },
+  {
+   "token": "BGE 100 III 358",
+   "occurrences": 2,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "vd_gerichte_PT18.013104"
+  },
+  {
+   "token": "BGE 130 II 699",
+   "occurrences": 2,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": "BGE 130 III 699",
+   "sample_decision": "bvger_A-1066_2023"
+  },
+  {
+   "token": "BGE 23 II 125",
+   "occurrences": 2,
+   "reason": "division_absent_for_volume",
+   "mechanism": "dropped_leading_volume_digit",
+   "candidate_unique": null,
+   "sample_decision": "ge_gerichte_ATA_194_2024"
+  },
+  {
+   "token": "BGE 81 V 273",
+   "occurrences": 2,
+   "reason": "division_absent_for_volume",
+   "mechanism": "division_substitution",
+   "candidate_unique": "BGE 81 IV 273",
+   "sample_decision": "ge_gerichte_AARP_85_2024"
+  },
+  {
+   "token": "BGE 144 IV 454",
+   "occurrences": 2,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bs_appellationsgericht_SB.2021.82"
+  },
+  {
+   "token": "BGE 123 II 1245",
+   "occurrences": 2,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": null,
+   "sample_decision": "ge_gerichte_ATA_357_2024"
+  },
+  {
+   "token": "BGE 148 III 475",
+   "occurrences": 2,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bger_2C_446_2022"
+  },
+  {
+   "token": "BGE 63 III 409",
+   "occurrences": 2,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": "BGE 63 II 409",
+   "sample_decision": "ge_gerichte_ATAS_200_2024"
+  },
+  {
+   "token": "BGE 142 I 253",
+   "occurrences": 2,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "lu_gerichte_7H_22_261"
+  },
+  {
+   "token": "BGE 140 IV 380",
+   "occurrences": 2,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "vd_gerichte_KC23.020408"
+  },
+  {
+   "token": "BGE 145 V 455",
+   "occurrences": 2,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "ju_gerichte_ADM_2023_135"
+  },
+  {
+   "token": "BGE 35 V 465",
+   "occurrences": 2,
+   "reason": "division_absent_for_volume",
+   "mechanism": "dropped_leading_volume_digit",
+   "candidate_unique": "BGE 135 V 465",
+   "sample_decision": "ge_gerichte_ATAS_263_2024"
+  },
+  {
+   "token": "BGE 135 IV 398",
+   "occurrences": 2,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": null,
+   "sample_decision": "vd_gerichte_PE22.002628"
+  },
+  {
+   "token": "BGE 142 IIII 234",
+   "occurrences": 2,
+   "reason": "division_absent_for_volume",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "ge_gerichte_DCSO_148_2024"
+  },
+  {
+   "token": "BGE 145 IV 2018",
+   "occurrences": 2,
+   "reason": "page_beyond_series page_looks_like_year",
+   "mechanism": "year_for_page",
+   "candidate_unique": "BGE 145 IV 218",
+   "sample_decision": "bger_7B_215_2024"
+  },
+  {
+   "token": "BGE 75 III 288",
+   "occurrences": 2,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "ge_gerichte_C_24994_2020"
+  },
+  {
+   "token": "BGE 123 I 425",
+   "occurrences": 2,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bger_7B_45_2023"
+  },
+  {
+   "token": "BGE 22 V 157",
+   "occurrences": 2,
+   "reason": "division_absent_for_volume",
+   "mechanism": "dropped_leading_volume_digit",
+   "candidate_unique": "BGE 122 V 157",
+   "sample_decision": "ge_gerichte_ATAS_416_2024"
+  },
+  {
+   "token": "BGE 132 IV 189",
+   "occurrences": 2,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "ge_gerichte_ACPR_529_2024"
+  },
+  {
+   "token": "BGE 118 III 249",
+   "occurrences": 2,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "vd_gerichte_D523.010911"
+  },
+  {
+   "token": "BGE 132 V 837",
+   "occurrences": 2,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": "BGE 132 V 387",
+   "sample_decision": "ti_gerichte_9.2024.53"
+  },
+  {
+   "token": "BGE 145 III 541",
+   "occurrences": 2,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "vd_gerichte_KC23.054666"
+  },
+  {
+   "token": "BGE 122 I 464",
+   "occurrences": 2,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "ti_gerichte_80.2024.174"
+  },
+  {
+   "token": "BGE 142 II 599",
+   "occurrences": 2,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": "BGE 142 III 599",
+   "sample_decision": "bvger_A-5811_2023"
+  },
+  {
+   "token": "BGE 139 II 5234",
+   "occurrences": 2,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": "BGE 139 II 534",
+   "sample_decision": "bvger_F-5632_2023"
+  },
+  {
+   "token": "BGE 120 III 591",
+   "occurrences": 2,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": "BGE 130 III 591",
+   "sample_decision": "vd_gerichte_JL24.014728"
+  },
+  {
+   "token": "BGE 145 V 580",
+   "occurrences": 2,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": "BGE 145 V 50",
+   "sample_decision": "ge_gerichte_ACST_15_2024"
+  },
+  {
+   "token": "BGE 118 III 415",
+   "occurrences": 2,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "vd_gerichte_XA22.004612"
+  },
+  {
+   "token": "BGE 139 IIII 273",
+   "occurrences": 2,
+   "reason": "division_absent_for_volume",
+   "mechanism": "division_substitution",
+   "candidate_unique": "BGE 139 III 273",
+   "sample_decision": "vd_gerichte_PT19.004189"
+  },
+  {
+   "token": "BGE 137 II 2097",
+   "occurrences": 2,
+   "reason": "page_beyond_series page_looks_like_year",
+   "mechanism": "year_for_page",
+   "candidate_unique": "BGE 137 II 297",
+   "sample_decision": "bger_2C_269_2024"
+  },
+  {
+   "token": "BGE 99 III 313",
+   "occurrences": 2,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": "BGE 99 II 313",
+   "sample_decision": "vd_gerichte_PT19.032766"
+  },
+  {
+   "token": "BGE 132 II 668",
+   "occurrences": 2,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": "BGE 132 III 668",
+   "sample_decision": "bger_9C_38_2024"
+  },
+  {
+   "token": "BGE 147 IIII 301",
+   "occurrences": 2,
+   "reason": "division_absent_for_volume",
+   "mechanism": "division_substitution",
+   "candidate_unique": "BGE 147 III 301",
+   "sample_decision": "fr_gerichte_101_2024_193"
+  },
+  {
+   "token": "BGE 136 I 447",
+   "occurrences": 2,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bvger_A-2081_2025_d20250221"
+  },
+  {
+   "token": "BGE 147 IIII 265",
+   "occurrences": 2,
+   "reason": "division_absent_for_volume",
+   "mechanism": "division_substitution",
+   "candidate_unique": "BGE 147 III 265",
+   "sample_decision": "vs_gerichte_C1 21 265"
+  },
+  {
+   "token": "BGE 120 III 393",
+   "occurrences": 2,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "gr_gerichte_ZR1 2024 157"
+  },
+  {
+   "token": "BGE 452 III 502",
+   "occurrences": 2,
+   "reason": "volume_out_of_range",
+   "mechanism": "unlabelled",
+   "candidate_unique": null,
+   "sample_decision": "ge_gerichte_C_10310_2022"
+  },
+  {
+   "token": "BGE 135 IV 2017",
+   "occurrences": 2,
+   "reason": "page_beyond_series page_looks_like_year",
+   "mechanism": "year_for_page",
+   "candidate_unique": "BGE 135 IV 217",
+   "sample_decision": "bvger_A-1836_2021"
+  },
+  {
+   "token": "BGE 148 IIII 225",
+   "occurrences": 2,
+   "reason": "division_absent_for_volume",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "vd_gerichte_KC24.020620"
+  },
+  {
+   "token": "BGE 146 I 266",
+   "occurrences": 2,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": "BGE 144 I 266",
+   "sample_decision": "bvger_D-4041_2025_d20250429"
+  },
+  {
+   "token": "BGE 48 IV 409",
+   "occurrences": 2,
+   "reason": "division_absent_for_volume",
+   "mechanism": "dropped_leading_volume_digit",
+   "candidate_unique": "BGE 148 IV 409",
+   "sample_decision": "bger_6B_1053_2023"
+  },
+  {
+   "token": "BGE 144 IV 455",
+   "occurrences": 2,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": "BGE 145 IV 455",
+   "sample_decision": "zh_obergericht_SB240343"
+  },
+  {
+   "token": "BGE 146 V 2901",
+   "occurrences": 2,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": "BGE 146 V 290",
+   "sample_decision": "ge_gerichte_ATAS_479_2025"
+  },
+  {
+   "token": "BGE 146 V 657",
+   "occurrences": 2,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": "BGE 141 V 657",
+   "sample_decision": "vd_gerichte_ZI24.004134"
+  },
+  {
+   "token": "BGE 144 II 2018",
+   "occurrences": 2,
+   "reason": "page_beyond_series page_looks_like_year",
+   "mechanism": "year_for_page",
+   "candidate_unique": "BGE 144 II 218",
+   "sample_decision": "bvger_B-2595_2024"
+  },
+  {
+   "token": "BGE 120 II 1015",
+   "occurrences": 2,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": null,
+   "sample_decision": "ge_gerichte_C_26239_2022"
+  },
+  {
+   "token": "BGE 125 III 798",
+   "occurrences": 2,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": "BGE 125 III 78",
+   "sample_decision": "zh_bezirksgericht_pfaeffikon_CG240008"
+  },
+  {
+   "token": "BGE 146 IIV 297",
+   "occurrences": 2,
+   "reason": "division_absent_for_volume",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bger_5A_615_2024"
+  },
+  {
+   "token": "BGE 145 V 513",
+   "occurrences": 2,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bger_1C_575_2025"
+  },
+  {
+   "token": "BGE 148 I 356",
+   "occurrences": 2,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bger_6B_739_2025"
+  },
+  {
+   "token": "BGE 148 III 551",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "be_verwaltungsgericht_100_2023_107"
+  },
+  {
+   "token": "BGE 136 IIII 528",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "division_substitution",
+   "candidate_unique": "BGE 136 III 528",
+   "sample_decision": "bger_4A_79_2022"
+  },
+  {
+   "token": "BGE 149 III 2018",
+   "occurrences": 1,
+   "reason": "page_beyond_series page_looks_like_year",
+   "mechanism": "year_for_page",
+   "candidate_unique": "BGE 149 III 218",
+   "sample_decision": "bvger_F-5298_2022"
+  },
+  {
+   "token": "BGE 115 III 187",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "sg_publikationen_BO.2022.63-K3"
+  },
+  {
+   "token": "BGE 133 IV 393",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "vd_omni_GE.2023.0116"
+  },
+  {
+   "token": "BGE 144 V 472",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": null,
+   "sample_decision": "sg_publikationen_UV 2023_32"
+  },
+  {
+   "token": "BGE 48 IV 137",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "dropped_leading_volume_digit",
+   "candidate_unique": null,
+   "sample_decision": "be_zivilstraf_SK_2023_491"
+  },
+  {
+   "token": "BGE 199 V 13",
+   "occurrences": 1,
+   "reason": "volume_out_of_range",
+   "mechanism": "unlabelled",
+   "candidate_unique": null,
+   "sample_decision": "ge_gerichte_ATAS_61_2024"
+  },
+  {
+   "token": "BGE 139 II 4040",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": "BGE 139 II 404",
+   "sample_decision": "bger_2C_53_2024"
+  },
+  {
+   "token": "BGE 136 II 732",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": null,
+   "sample_decision": "bger_1F_2_2024"
+  },
+  {
+   "token": "BGE 137 II 617",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bl_gerichte_400 23 303"
+  },
+  {
+   "token": "BGE 136 V 465",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bger_9C_504_2023"
+  },
+  {
+   "token": "BGE 11 IV 49",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "dropped_leading_volume_digit",
+   "candidate_unique": "BGE 111 IV 49",
+   "sample_decision": "zh_verwaltungsgericht__VB.2023.00619"
+  },
+  {
+   "token": "BGE 134 II 425",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bger_2C_119_2024"
+  },
+  {
+   "token": "BGE 137 IV 532",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": "BGE 137 IV 352",
+   "sample_decision": "fr_gerichte_501_2022_147"
+  },
+  {
+   "token": "BGE 55 III 302",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bl_gerichte_410 2023 305"
+  },
+  {
+   "token": "BGE 13 IV 49",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "dropped_leading_volume_digit",
+   "candidate_unique": "BGE 113 IV 49",
+   "sample_decision": "so_gerichte_STBER.2023.61"
+  },
+  {
+   "token": "BGE 234 IV 82",
+   "occurrences": 1,
+   "reason": "volume_out_of_range",
+   "mechanism": "unlabelled",
+   "candidate_unique": null,
+   "sample_decision": "zh_obergericht_SB230351"
+  },
+  {
+   "token": "BGE 34 III 186",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "dropped_leading_volume_digit",
+   "candidate_unique": null,
+   "sample_decision": "bger_4A_552_2023"
+  },
+  {
+   "token": "BGE 132 I 332",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bger_1C_461_2023"
+  },
+  {
+   "token": "BGE 113 III 1390",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": "BGE 113 III 139",
+   "sample_decision": "bl_gerichte_420 24 2"
+  },
+  {
+   "token": "BGE 126 IV 2016",
+   "occurrences": 1,
+   "reason": "page_beyond_series page_looks_like_year",
+   "mechanism": "year_for_page",
+   "candidate_unique": "BGE 126 IV 216",
+   "sample_decision": "bger_6B_938_2023"
+  },
+  {
+   "token": "BGE 181 III 378",
+   "occurrences": 1,
+   "reason": "volume_out_of_range",
+   "mechanism": "unlabelled",
+   "candidate_unique": null,
+   "sample_decision": "ge_gerichte_ACJC_387_2024"
+  },
+  {
+   "token": "BGE 72 II 471",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": null,
+   "sample_decision": "zh_handelsgericht_HG220124"
+  },
+  {
+   "token": "BGE 144 II 3260",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": "BGE 144 II 326",
+   "sample_decision": "bvger_B-3764_2023"
+  },
+  {
+   "token": "BGE 12 IV 97",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "dropped_leading_volume_digit",
+   "candidate_unique": null,
+   "sample_decision": "so_gerichte_STBER.2023.53_d20240404"
+  },
+  {
+   "token": "BGE 116 III 431",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bl_gerichte_410 2023 319"
+  },
+  {
+   "token": "BGE 134 II 529",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bstger_SK.2024.12"
+  },
+  {
+   "token": "BGE 728 V 792",
+   "occurrences": 1,
+   "reason": "volume_out_of_range",
+   "mechanism": "unlabelled",
+   "candidate_unique": null,
+   "sample_decision": "ti_gerichte_38.2024.5"
+  },
+  {
+   "token": "BGE 116 III 441",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "sg_publikationen_BO.2022.36+37-K3"
+  },
+  {
+   "token": "BGE 130 IV 237",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "zh_obergericht_LC230038"
+  },
+  {
+   "token": "BGE 35 III 648",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "dropped_leading_volume_digit",
+   "candidate_unique": "BGE 135 III 648",
+   "sample_decision": "bvger_B-4934_2023"
+  },
+  {
+   "token": "BGE 132 II 661",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bstger_SK.2023.23"
+  },
+  {
+   "token": "BGE 138 IV 358",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "zh_obergericht_UE230298"
+  },
+  {
+   "token": "BGE 21 II 717",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "vd_gerichte_PT18.015222"
+  },
+  {
+   "token": "BGE 133 V 6264",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": "BGE 133 V 624",
+   "sample_decision": "bvger_C-450_2021"
+  },
+  {
+   "token": "BGE 134 II 586",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "ar_gerichte_OG O1Z-21-1"
+  },
+  {
+   "token": "BGE 144 VI 217",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "zh_bezirksgericht_zuerich_DG230087"
+  },
+  {
+   "token": "BGE 124 IV 346",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "be_zivilstraf_SK_2023_120"
+  },
+  {
+   "token": "BGE 141 I 433",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bger_1C_98_2022"
+  },
+  {
+   "token": "BGE 145 III 2013",
+   "occurrences": 1,
+   "reason": "page_beyond_series page_looks_like_year",
+   "mechanism": "year_for_page",
+   "candidate_unique": "BGE 145 III 213",
+   "sample_decision": "ge_gerichte_ACJC_739_2024"
+  },
+  {
+   "token": "BGE 133 III 4624",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": "BGE 133 III 462",
+   "sample_decision": "ne_gerichte_CDP.2023.143"
+  },
+  {
+   "token": "BGE 134 IV 437",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "be_zivilstraf_SK_2022_578"
+  },
+  {
+   "token": "BGE 144 III 591",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "zh_handelsgericht_HG210147"
+  },
+  {
+   "token": "BGE 148 V 3397",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "page_doubled_digit",
+   "candidate_unique": "BGE 148 V 397",
+   "sample_decision": "bger_8C_647_2023"
+  },
+  {
+   "token": "BGE 53 II 2002",
+   "occurrences": 1,
+   "reason": "page_beyond_series page_looks_like_year",
+   "mechanism": "year_for_page",
+   "candidate_unique": "BGE 53 II 202",
+   "sample_decision": "ge_gerichte_DAS_161_2024"
+  },
+  {
+   "token": "BGE 12 IV 217",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "unlabelled",
+   "candidate_unique": null,
+   "sample_decision": "be_zivilstraf_SK_2023_157"
+  },
+  {
+   "token": "BGE 13 III 232",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "unlabelled",
+   "candidate_unique": null,
+   "sample_decision": "bger_4D_92_2024"
+  },
+  {
+   "token": "BGE 145 IIII 36",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "division_substitution",
+   "candidate_unique": "BGE 145 III 36",
+   "sample_decision": "vs_gerichte_C1 21 148"
+  },
+  {
+   "token": "BGE 134 II 591",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bstger_SK.2024.23"
+  },
+  {
+   "token": "BGE 419 III 210",
+   "occurrences": 1,
+   "reason": "volume_out_of_range",
+   "mechanism": "volume_substitution",
+   "candidate_unique": "BGE 149 III 210",
+   "sample_decision": "bs_appellationsgericht_BEZ.2024.26"
+  },
+  {
+   "token": "BGE 126 I 294",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "vd_gerichte_DA24.015643"
+  },
+  {
+   "token": "BGE 119 III 197",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "fr_gerichte_101_2024_3"
+  },
+  {
+   "token": "BGE 101 III 325",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "so_gerichte_ZKBER.2024.28_d20240814"
+  },
+  {
+   "token": "BGE 139 VI 294",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "division_substitution",
+   "candidate_unique": "BGE 139 IV 294",
+   "sample_decision": "fr_gerichte_502_2024_39"
+  },
+  {
+   "token": "BGE 133 II 687",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "zh_obergericht_PS240153"
+  },
+  {
+   "token": "BGE 127 I 2002",
+   "occurrences": 1,
+   "reason": "page_beyond_series page_looks_like_year",
+   "mechanism": "year_for_page",
+   "candidate_unique": "BGE 127 I 202",
+   "sample_decision": "ag_gerichte_RRB_Nr._2024-001092"
+  },
+  {
+   "token": "BGE 120 III 237",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "ar_gerichte_OG ERZ-24-33"
+  },
+  {
+   "token": "BGE 85 II 676",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": null,
+   "sample_decision": "ag_zivilgericht_ZOR.2023.33"
+  },
+  {
+   "token": "BGE 104 V 264",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "ag_spezialverwaltungsgericht_3-RV.2023.24"
+  },
+  {
+   "token": "BGE 135 IV 476",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "be_zivilstraf_SK_2023_497"
+  },
+  {
+   "token": "BGE 141 III 732",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": "BGE 142 III 732",
+   "sample_decision": "bger_5A_275_2024"
+  },
+  {
+   "token": "BGE 146 III 617",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "nw_gerichte_38104"
+  },
+  {
+   "token": "BGE 74 IV 261",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bger_7B_21_2023"
+  },
+  {
+   "token": "BGE 75 III 196",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "ti_gerichte_15.2024.20"
+  },
+  {
+   "token": "BGE 130 II 2020",
+   "occurrences": 1,
+   "reason": "page_beyond_series page_looks_like_year",
+   "mechanism": "year_for_page",
+   "candidate_unique": "BGE 130 II 202",
+   "sample_decision": "bger_9C_786_2023"
+  },
+  {
+   "token": "BGE 143 V 714",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": "BGE 143 V 71",
+   "sample_decision": "so_gerichte_ZKBER.2024.33"
+  },
+  {
+   "token": "BGE 142 I 255",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": "BGE 124 I 255",
+   "sample_decision": "bvger_A-4644_2023"
+  },
+  {
+   "token": "BGE 146 I 335",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bger_1C_331_2024"
+  },
+  {
+   "token": "BGE 128 III 675",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "zh_obergericht_PP210037"
+  },
+  {
+   "token": "BGE 140 II 602",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": "BGE 140 III 602",
+   "sample_decision": "be_verwaltungsgericht_100_2023_134"
+  },
+  {
+   "token": "BGE 143 IIII 42",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "division_substitution",
+   "candidate_unique": "BGE 143 III 42",
+   "sample_decision": "vd_gerichte_TD20.035904"
+  },
+  {
+   "token": "BGE 96 IIII 89",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "so_gerichte_SCBES.2024.72"
+  },
+  {
+   "token": "BGE 101 III 209",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": "BGE 101 III 9",
+   "sample_decision": "zh_obergericht_LZ240021"
+  },
+  {
+   "token": "BGE 145 IV 1907",
+   "occurrences": 1,
+   "reason": "page_beyond_series page_looks_like_year",
+   "mechanism": "year_for_page",
+   "candidate_unique": null,
+   "sample_decision": "bger_7B_294_2023"
+  },
+  {
+   "token": "BGE 135 V 579",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bvger_C-1055_2022"
+  },
+  {
+   "token": "BGE 155 III 63",
+   "occurrences": 1,
+   "reason": "volume_out_of_range",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "fr_gerichte_101_2024_25"
+  },
+  {
+   "token": "BGE 128 III 595",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "zg_obergericht_BA 2024 41"
+  },
+  {
+   "token": "BGE 102 III 413",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": "BGE 102 II 413",
+   "sample_decision": "vs_gerichte_C1 22 271"
+  },
+  {
+   "token": "BGE 412 III 612",
+   "occurrences": 1,
+   "reason": "volume_out_of_range",
+   "mechanism": "volume_substitution",
+   "candidate_unique": "BGE 142 III 612",
+   "sample_decision": "sz_gerichte_ZK1 2023 7"
+  },
+  {
+   "token": "BGE 45 III 324",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "dropped_leading_volume_digit",
+   "candidate_unique": null,
+   "sample_decision": "bger_5A_292_2024"
+  },
+  {
+   "token": "BGE 60 II 2015",
+   "occurrences": 1,
+   "reason": "page_beyond_series page_looks_like_year",
+   "mechanism": "year_for_page",
+   "candidate_unique": "BGE 60 II 205",
+   "sample_decision": "vd_gerichte_KC22.040913"
+  },
+  {
+   "token": "BGE 135 IV 261",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "ge_gerichte_ACPR_118_2025"
+  },
+  {
+   "token": "BGE 102 III 226",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": "BGE 102 II 226",
+   "sample_decision": "zh_obergericht_SB240147"
+  },
+  {
+   "token": "BGE 247 III 265",
+   "occurrences": 1,
+   "reason": "volume_out_of_range",
+   "mechanism": "unlabelled",
+   "candidate_unique": null,
+   "sample_decision": "zh_bezirksgericht_dietikon_EE230073"
+  },
+  {
+   "token": "BGE 134 IV 974",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": "BGE 134 IV 97",
+   "sample_decision": "so_gerichte_STBER.2024.10"
+  },
+  {
+   "token": "BGE 29 III 131",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "dropped_leading_volume_digit",
+   "candidate_unique": null,
+   "sample_decision": "so_gerichte_SCBES.2025.12"
+  },
+  {
+   "token": "BGE 127 IV 1122",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "page_doubled_digit",
+   "candidate_unique": "BGE 127 IV 122",
+   "sample_decision": "bstger_SK.2024.47"
+  },
+  {
+   "token": "BGE 193 I 206",
+   "occurrences": 1,
+   "reason": "volume_out_of_range",
+   "mechanism": "volume_substitution",
+   "candidate_unique": "BGE 139 I 206",
+   "sample_decision": "bger_7B_36_2025"
+  },
+  {
+   "token": "BGE 125 IIII 42",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "ti_gerichte_14.2024.128"
+  },
+  {
+   "token": "BGE 132 II 715",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "ag_spezialverwaltungsgericht_4-SV.2023.1"
+  },
+  {
+   "token": "BGE 140 I 535",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "zh_obergericht_SU240004"
+  },
+  {
+   "token": "BGE 118 III 333",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "ag_versicherungsgericht_VKL.2024.12"
+  },
+  {
+   "token": "BGE 149 III 569",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": "BGE 141 III 569",
+   "sample_decision": "gr_gerichte_ZR1 2024 193"
+  },
+  {
+   "token": "BGE 143 V 530",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bvger_C-1559_2023"
+  },
+  {
+   "token": "BGE 142 I 517",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": "BGE 142 II 517",
+   "sample_decision": "bger_1C_208_2023"
+  },
+  {
+   "token": "BGE 317 III 617",
+   "occurrences": 1,
+   "reason": "volume_out_of_range",
+   "mechanism": "volume_substitution",
+   "candidate_unique": "BGE 137 III 617",
+   "sample_decision": "bl_gerichte_410 2024 329"
+  },
+  {
+   "token": "BGE 109 IV 312",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "zh_bezirksgericht_horgen_DG240012"
+  },
+  {
+   "token": "BGE 141 I 305",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "zh_bezirksgericht_affoltern_DG240002"
+  },
+  {
+   "token": "BGE 145 V 557",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bger_2C_72_2024"
+  },
+  {
+   "token": "BGE 102 III 229",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bl_gerichte_810 22 209"
+  },
+  {
+   "token": "BGE 174 I 393",
+   "occurrences": 1,
+   "reason": "volume_out_of_range",
+   "mechanism": "volume_substitution",
+   "candidate_unique": "BGE 147 I 393",
+   "sample_decision": "vd_omni_CCST.2024.0007"
+  },
+  {
+   "token": "BGE 29 III 171",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "dropped_leading_volume_digit",
+   "candidate_unique": "BGE 129 III 171",
+   "sample_decision": "bger_4A_662_2024"
+  },
+  {
+   "token": "BGE 136 IV 263",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "zh_obergericht_SB240182"
+  },
+  {
+   "token": "BGE 192 III 798",
+   "occurrences": 1,
+   "reason": "volume_out_of_range",
+   "mechanism": "unlabelled",
+   "candidate_unique": null,
+   "sample_decision": "vs_gerichte_A1 25 34"
+  },
+  {
+   "token": "BGE 127 IIV 79",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "zh_bezirksgericht_winterthur_GG250003"
+  },
+  {
+   "token": "BGE 150 II 1916",
+   "occurrences": 1,
+   "reason": "page_beyond_series page_looks_like_year",
+   "mechanism": "year_for_page",
+   "candidate_unique": "BGE 150 II 191",
+   "sample_decision": "edoeb_recommandation-du-17-avril-2025-ofdf-rulingsdispositions-spéciales-réservées-art-2025-04-17"
+  },
+  {
+   "token": "BGE 146 II 441",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bvger_C-5361_2022"
+  },
+  {
+   "token": "BGE 150 VI 345",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "zh_obergericht_SB240156"
+  },
+  {
+   "token": "BGE 134 V 2020",
+   "occurrences": 1,
+   "reason": "page_beyond_series page_looks_like_year",
+   "mechanism": "year_for_page",
+   "candidate_unique": null,
+   "sample_decision": "vs_gerichte_S1 23 170"
+  },
+  {
+   "token": "BGE 95 III 532",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": "BGE 95 II 532",
+   "sample_decision": "zh_handelsgericht_HG210076"
+  },
+  {
+   "token": "BGE 129 III 792",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": "BGE 138 III 792",
+   "sample_decision": "fr_gerichte_102 2024 111"
+  },
+  {
+   "token": "BGE 116 III 738",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": "BGE 116 II 738",
+   "sample_decision": "vs_gerichte_C1 24 6"
+  },
+  {
+   "token": "BGE 119 IV 2412",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": "BGE 119 IV 242",
+   "sample_decision": "bstger_SK.2024.25"
+  },
+  {
+   "token": "BGE 147 II 2019",
+   "occurrences": 1,
+   "reason": "page_beyond_series page_looks_like_year",
+   "mechanism": "year_for_page",
+   "candidate_unique": null,
+   "sample_decision": "zg_verwaltungsgericht_A_2022_16"
+  },
+  {
+   "token": "BGE 85 II 747",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": null,
+   "sample_decision": "zh_baurekursgericht_BRGE III Nr. 0076_2025"
+  },
+  {
+   "token": "BGE 139 I 2181",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": "BGE 139 I 218",
+   "sample_decision": "bger_8C_216_2025"
+  },
+  {
+   "token": "BGE 149 IVV 289",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "division_substitution",
+   "candidate_unique": "BGE 149 IV 289",
+   "sample_decision": "ju_gerichte_CP 2024 4"
+  },
+  {
+   "token": "BGE 120 III 280",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "zh_obergericht_LC240045"
+  },
+  {
+   "token": "BGE 148 III 1005",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": "BGE 148 III 105",
+   "sample_decision": "zh_handelsgericht_HG210115"
+  },
+  {
+   "token": "BGE 29 V 177",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "dropped_leading_volume_digit",
+   "candidate_unique": "BGE 129 V 177",
+   "sample_decision": "ag_versicherungsgericht_VBE.2024.537"
+  },
+  {
+   "token": "BGE 146 V 832",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": null,
+   "sample_decision": "bl_gerichte_715 2025 14"
+  },
+  {
+   "token": "BGE 43 V 363",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "dropped_leading_volume_digit",
+   "candidate_unique": null,
+   "sample_decision": "bger_2C_179_2025"
+  },
+  {
+   "token": "BGE 148 IIII 201",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "division_substitution",
+   "candidate_unique": "BGE 148 III 201",
+   "sample_decision": "bger_9C_60_2024"
+  },
+  {
+   "token": "BGE 129 IV 411",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "zh_obergericht_RE250006"
+  },
+  {
+   "token": "BGE 141 I 328",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "fr_gerichte_602_2025_64"
+  },
+  {
+   "token": "BGE 146 I 405",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": "BGE 14 I 405",
+   "sample_decision": "bvger_A-2739_2024"
+  },
+  {
+   "token": "BGE 43 III 578",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "dropped_leading_volume_digit",
+   "candidate_unique": "BGE 143 III 578",
+   "sample_decision": "bger_1C_159_2025"
+  },
+  {
+   "token": "BGE 149 V 356",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bger_8C_548_2024"
+  },
+  {
+   "token": "BGE 91 IV 294",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": "BGE 91 IV 24",
+   "sample_decision": "fr_gerichte_501_2024_141"
+  },
+  {
+   "token": "BGE 146 IIII 313",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "vs_gerichte_C1 24 159"
+  },
+  {
+   "token": "BGE 117 III 404",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bger_4A_101_2025"
+  },
+  {
+   "token": "BGE 111 V 461",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": null,
+   "sample_decision": "ti_gerichte_30.2025.12"
+  },
+  {
+   "token": "BGE 26 V 143",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "dropped_leading_volume_digit",
+   "candidate_unique": "BGE 126 V 143",
+   "sample_decision": "ag_versicherungsgericht_VBE.2024.556"
+  },
+  {
+   "token": "BGE 147 VI 409",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "division_substitution",
+   "candidate_unique": "BGE 147 IV 409",
+   "sample_decision": "bvger_E-1246_2021"
+  },
+  {
+   "token": "BGE 150 I 346",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bger_9C_706_2024"
+  },
+  {
+   "token": "BGE 148 II 645",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": "BGE 148 II 465",
+   "sample_decision": "bger_2C_333_2025"
+  },
+  {
+   "token": "BGE 28 I 674",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "zh_obergericht_LB240065"
+  },
+  {
+   "token": "BGE 140 IV 406",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": "BGE 140 IV 40",
+   "sample_decision": "ti_gerichte_33.2025.20"
+  },
+  {
+   "token": "BGE 144 IV 3445",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "page_doubled_digit",
+   "candidate_unique": "BGE 144 IV 345",
+   "sample_decision": "zh_obergericht_SB250273"
+  },
+  {
+   "token": "BGE 84 III 451",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": null,
+   "sample_decision": "gr_gerichte_ZR1 2024 174"
+  },
+  {
+   "token": "BGE 149 I 2017",
+   "occurrences": 1,
+   "reason": "page_beyond_series page_looks_like_year",
+   "mechanism": "year_for_page",
+   "candidate_unique": "BGE 149 I 207",
+   "sample_decision": "bger_2C_425_2025"
+  },
+  {
+   "token": "BGE 140 V 688",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": "BGE 141 V 688",
+   "sample_decision": "sg_publikationen_B 2025_104"
+  },
+  {
+   "token": "BGE 126 II 1171",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "page_doubled_digit",
+   "candidate_unique": null,
+   "sample_decision": "bvger_A-1890_2023"
+  },
+  {
+   "token": "BGE 126 II 1771",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "page_doubled_digit",
+   "candidate_unique": "BGE 126 II 171",
+   "sample_decision": "bvger_A-1890_2023"
+  },
+  {
+   "token": "BGE 145 III 640",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "ge_gerichte_ACJC_1295_2025"
+  },
+  {
+   "token": "BGE 120 II 933",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": null,
+   "sample_decision": "bger_4A_250_2025"
+  },
+  {
+   "token": "BGE 149 VI 259",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "division_substitution",
+   "candidate_unique": "BGE 149 IV 259",
+   "sample_decision": "tg_gerichte_RBOG-2025-39"
+  },
+  {
+   "token": "BGE 141 VI 1",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bger_8C_568_2025"
+  },
+  {
+   "token": "BGE 124 III 660",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": "BGE 131 III 660",
+   "sample_decision": "zh_bezirksgericht_zuerich_MJ250072-L"
+  },
+  {
+   "token": "BGE 135 II 2098",
+   "occurrences": 1,
+   "reason": "page_beyond_series page_looks_like_year",
+   "mechanism": "year_for_page",
+   "candidate_unique": "BGE 135 II 209",
+   "sample_decision": "bger_1C_568_2024"
+  },
+  {
+   "token": "BGE 142 II 732",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": "BGE 142 III 732",
+   "sample_decision": "bger_1C_249_2025"
+  },
+  {
+   "token": "BGE 132 II 719",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": null,
+   "sample_decision": "zh_obergericht_LB250053"
+  },
+  {
+   "token": "BGE 138 V 2018",
+   "occurrences": 1,
+   "reason": "page_beyond_series page_looks_like_year",
+   "mechanism": "year_for_page",
+   "candidate_unique": "BGE 138 V 218",
+   "sample_decision": "fr_gerichte_608_2025_90"
+  },
+  {
+   "token": "BGE 115 IV 319",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "zg_obergericht_S1_2025_11"
+  },
+  {
+   "token": "BGE 141 IIII 489",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "division_substitution",
+   "candidate_unique": "BGE 141 III 489",
+   "sample_decision": "bger_5A_42_2025"
+  },
+  {
+   "token": "BGE 45 IV 156",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "dropped_leading_volume_digit",
+   "candidate_unique": null,
+   "sample_decision": "bstger_CA.2025.16"
+  },
+  {
+   "token": "BGE 146 IV 453",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "ag_zivilgericht_XBE.2025.56_57"
+  },
+  {
+   "token": "BGE 127 II 702",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": null,
+   "sample_decision": "bger_4A_346_2025"
+  },
+  {
+   "token": "BGE 127 III 702",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bger_4A_346_2025"
+  },
+  {
+   "token": "BGE 150 III 535",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": null,
+   "sample_decision": "bger_5A_137_2025"
+  },
+  {
+   "token": "BGE 135 IIII 46",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "division_substitution",
+   "candidate_unique": "BGE 135 III 46",
+   "sample_decision": "bger_4A_412_2025"
+  },
+  {
+   "token": "BGE 138 IV 2418",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": null,
+   "sample_decision": "zh_obergericht_SM250009"
+  },
+  {
+   "token": "BGE 154 V 361",
+   "occurrences": 1,
+   "reason": "volume_out_of_range",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "zh_sozialversicherungsgericht_IV.2025.00298"
+  },
+  {
+   "token": "BGE 1 II 239",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "dropped_leading_volume_digit",
+   "candidate_unique": null,
+   "sample_decision": "bger_4A_590_2024"
+  },
+  {
+   "token": "BGE 145 V 442",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bger_1C_716_2024"
+  },
+  {
+   "token": "BGE 135 I 392",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": "BGE 129 I 392",
+   "sample_decision": "gr_gerichte_VR1 2024 57"
+  },
+  {
+   "token": "BGE 193 V 399",
+   "occurrences": 1,
+   "reason": "volume_out_of_range",
+   "mechanism": "volume_substitution",
+   "candidate_unique": "BGE 139 V 399",
+   "sample_decision": "vd_gerichte_ZD24.040021"
+  },
+  {
+   "token": "BGE 34 IV 60",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "dropped_leading_volume_digit",
+   "candidate_unique": "BGE 134 IV 60",
+   "sample_decision": "ag_strafgericht_SST.2025.77"
+  },
+  {
+   "token": "BGE 144 IIII 349",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "division_substitution",
+   "candidate_unique": "BGE 144 III 349",
+   "sample_decision": "ag_zivilgericht_ZSU.2024.309"
+  },
+  {
+   "token": "BGE 126 I 346",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bger_9C_222_2025"
+  },
+  {
+   "token": "BGE 154 IV 124",
+   "occurrences": 1,
+   "reason": "volume_out_of_range",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "ne_gerichte_ARMP.2025.156"
+  },
+  {
+   "token": "BGE 144 IV 534",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": "BGE 147 IV 534",
+   "sample_decision": "bger_6B_809_2025"
+  },
+  {
+   "token": "BGE 138 V 2012",
+   "occurrences": 1,
+   "reason": "page_beyond_series page_looks_like_year",
+   "mechanism": "year_for_page",
+   "candidate_unique": null,
+   "sample_decision": "gr_gerichte_PVG 2017 7"
+  },
+  {
+   "token": "BGE 127 II 548",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "vs_gerichte_C1 25 259"
+  },
+  {
+   "token": "BGE 127 I 366",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "gr_gerichte_PVG 2009 1"
+  },
+  {
+   "token": "BGE 143 IIII 72",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "unlabelled",
+   "candidate_unique": null,
+   "sample_decision": "ge_gerichte_ACJC_339_2026"
+  },
+  {
+   "token": "BGE 120 III 285",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "vd_gerichte_JI23.055941"
+  },
+  {
+   "token": "BGE 134 IV 380",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bger_2C_301_2025"
+  },
+  {
+   "token": "BGE 146 II 476",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bger_1C_650_2023"
+  },
+  {
+   "token": "BGE 142 IIII 758",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "division_substitution",
+   "candidate_unique": "BGE 142 III 758",
+   "sample_decision": "bger_4A_493_2025"
+  },
+  {
+   "token": "BGE 141 IV 530",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": "BGE 141 V 530",
+   "sample_decision": "bger_6B_43_2026"
+  },
+  {
+   "token": "BGE 140 III 4563",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": "BGE 140 III 456",
+   "sample_decision": "ge_gerichte_ACJC_391_2026"
+  },
+  {
+   "token": "BGE 134 II 643",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "vd_gerichte_PT20.050863"
+  },
+  {
+   "token": "BGE 186 IV 86",
+   "occurrences": 1,
+   "reason": "volume_out_of_range",
+   "mechanism": "volume_substitution",
+   "candidate_unique": "BGE 86 IV 86",
+   "sample_decision": "ge_gerichte_ACPR_284_2026"
+  },
+  {
+   "token": "BGE 133 IIII 675",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "division_substitution",
+   "candidate_unique": "BGE 133 III 675",
+   "sample_decision": "bger_4A_127_2025"
+  },
+  {
+   "token": "BGE 28 III 244",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "dropped_leading_volume_digit",
+   "candidate_unique": null,
+   "sample_decision": "bger_5A_989_2025"
+  },
+  {
+   "token": "BGE 39 I 804",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": "BGE 38 I 804",
+   "sample_decision": "ge_gerichte_DCSO_173_2026"
+  },
+  {
+   "token": "BGE 141 I 350",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bger_8C_324_2025"
+  },
+  {
+   "token": "BGE 146 I 285",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bger_2C_733_2025"
+  },
+  {
+   "token": "BGE 130 II 766",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": null,
+   "sample_decision": "gr_gerichte_SBK 2026 37"
+  },
+  {
+   "token": "BGE 177 IV 139",
+   "occurrences": 1,
+   "reason": "volume_out_of_range",
+   "mechanism": "unlabelled",
+   "candidate_unique": null,
+   "sample_decision": "ag_strafgericht_SST.2024.220"
+  },
+  {
+   "token": "BGE 116 III 745",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bger_5A_730_2025"
+  },
+  {
+   "token": "BGE 114 V 3010",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "page_extra_digit",
+   "candidate_unique": "BGE 114 V 310",
+   "sample_decision": "bvger_C-3196_2023"
+  },
+  {
+   "token": "BGE 116 III 320",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bger_5A_53_2026"
+  },
+  {
+   "token": "BGE 13 II 12",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "dropped_leading_volume_digit",
+   "candidate_unique": null,
+   "sample_decision": "so_gerichte_VWBES.2025.77"
+  },
+  {
+   "token": "BGE 37 III 603",
+   "occurrences": 1,
+   "reason": "division_absent_for_volume",
+   "mechanism": "dropped_leading_volume_digit",
+   "candidate_unique": "BGE 37 II 603",
+   "sample_decision": "bger_5A_1096_2025"
+  },
+  {
+   "token": "BGE 105 II 440",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "vd_gerichte_PT21.025614"
+  },
+  {
+   "token": "BGE 124 III 2017",
+   "occurrences": 1,
+   "reason": "page_beyond_series page_looks_like_year",
+   "mechanism": "year_for_page",
+   "candidate_unique": null,
+   "sample_decision": "bger_6B_106_2025"
+  },
+  {
+   "token": "BGE 133 V 2025",
+   "occurrences": 1,
+   "reason": "page_beyond_series page_looks_like_year",
+   "mechanism": "year_for_page",
+   "candidate_unique": null,
+   "sample_decision": "zg_verwaltungsgericht_S 2026 10"
+  },
+  {
+   "token": "BGE 148 I 349",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "division_substitution",
+   "candidate_unique": null,
+   "sample_decision": "bvger_A-2185_2024"
+  },
+  {
+   "token": "BGE 146 III 666",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": "BGE 143 III 666",
+   "sample_decision": "bpatger_S2025_003"
+  },
+  {
+   "token": "BGE 144 V 509",
+   "occurrences": 1,
+   "reason": "page_beyond_series",
+   "mechanism": "volume_substitution",
+   "candidate_unique": null,
+   "sample_decision": "nw_gerichte_VA 25 4"
+  }
+ ]
+}

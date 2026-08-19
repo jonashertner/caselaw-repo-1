@@ -126,6 +126,17 @@ paper:
 paper-tables:
 	@cd $(PAPER_DIR) && $(PYTHON) scripts/build_tables.py
 
+P2_DIR := docs/paper/p2-citations
+
+.PHONY: paper2
+paper2:
+	@cd $(P2_DIR) && tectonic paper.tex 2>&1 | tail -3
+	@echo "  paper.pdf: $$(ls -la $(P2_DIR)/paper.pdf | awk '{print $$5}') bytes"
+
+.PHONY: paper2-tables
+paper2-tables:
+	@$(PYTHON) $(P2_DIR)/tables/build_tables.py
+
 .PHONY: tarball
 tarball: paper
 	@cd $(PAPER_DIR) && tar czf opencaselaw-arxiv-$(RELEASE_DATE).tar.gz \
