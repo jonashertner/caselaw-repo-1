@@ -22507,6 +22507,72 @@ def _deep_research_fetch(doc_id: str) -> dict:
     }
 
 
+# Names a caller plausibly reaches for that mean a parameter we already
+# have. `find_leading_cases` describes itself as finding decisions "for a
+# topic or statute" while the parameter is `query`, so a caller sending
+# `topic` is following our own wording — that one is our wording's fault,
+# not the caller's error. The rest are forms seen arriving in practice.
+_TOOL_ARG_ALIASES: dict[str, dict[str, str]] = {
+    "find_leading_cases": {"topic": "query"},
+    "get_decision": {"include_full_text": "full_text"},
+}
+
+_declared_args_cache: dict[str, set] | None = None
+
+
+def _declared_tool_args() -> dict:
+    """tool name -> the argument names its schema actually declares."""
+    global _declared_args_cache
+    if _declared_args_cache is None:
+        out: dict[str, set] = {}
+        try:
+            for t in _list_tools():
+                props = ((getattr(t, "inputSchema", None) or {})
+                         .get("properties") or {})
+                out[t.name] = set(props)
+        except Exception:
+            out = {}
+        _declared_args_cache = out
+    return _declared_args_cache
+
+
+def _normalise_tool_args(name: str, arguments: dict) -> list:
+    """Apply aliases in place; return argument names still unrecognised.
+
+    An unknown argument used to be dropped in silence, which is the worst
+    of the three options: the tool answers a question the caller did not
+    ask and looks confident doing it. A `search_decisions` call carrying
+    `legal_area` came back unfiltered, and nothing told the caller its
+    filter had evaporated. Naming the dropped argument in the reply costs
+    a line and lets the model correct itself on the next call.
+    """
+    if not isinstance(arguments, dict):
+        return []
+    for old, new in (_TOOL_ARG_ALIASES.get(name) or {}).items():
+        if old in arguments and not arguments.get(new):
+            arguments[new] = arguments.pop(old)
+    declared = _declared_tool_args().get(name)
+    if not declared:
+        return []          # unknown tool, or schemas unavailable — say nothing
+    return sorted(k for k in arguments if k not in declared)
+
+
+def _prepend_arg_warning(result, name: str, unknown: list):
+    """Put the warning where the model will actually read it."""
+    if not unknown:
+        return result
+    declared = sorted(_declared_tool_args().get(name) or [])
+    note = (f"NOTE: ignored unrecognised parameter(s) {', '.join(unknown)} — "
+            f"they did NOT filter this result. Valid parameters for "
+            f"{name}: {', '.join(declared)}.\n\n")
+    try:
+        if isinstance(result, list) and result and hasattr(result[0], "text"):
+            result[0].text = note + (result[0].text or "")
+    except Exception:
+        pass
+    return result
+
+
 # Identifier keys worth recording from a tool's answer. Not the payload:
 # the documents are CC0 and already in the corpus, so the id is the whole
 # signal and the text is redundant bulk.
@@ -22573,7 +22639,8 @@ def _returned_ids(result, limit: int = 30) -> list:
 
 
 def _capture_outcome(name: str, outcome: str, started: float,
-                     result=None, error: str = "") -> None:
+                     result=None, error: str = "",
+                     unknown: list | None = None) -> None:
     """One record per completed tool call: what it answered, or how it
     failed. MCP records carried no status at all — REST had one — so a
     failed call and a good one were indistinguishable after the fact,
@@ -22589,6 +22656,10 @@ def _capture_outcome(name: str, outcome: str, started: float,
             "ms": round((time.monotonic() - started) * 1000),
             "returned_ids": _returned_ids(result) if result is not None else [],
             "error": error[:200] if error else None,
+            # Which parameters callers reach for and we do not have is a
+            # direct read on where the schema disagrees with how the tool
+            # reads — the cheapest source of tool-description fixes.
+            "unknown_args": unknown or None,
         })
     except Exception:
         pass  # capture must never break serving
@@ -22601,11 +22672,18 @@ async def _dispatch_with_timeout(name: str, arguments: dict):
     background, but the request is freed.) Separate from the decorated wrapper so
     it is unit-testable."""
     _started = time.monotonic()
+    # Before dispatch, so an aliased argument reaches the handler under the
+    # name it expects and an unrecognised one is reported rather than
+    # silently discarded.
+    _unknown = _normalise_tool_args(_TOOL_NAME_ALIASES.get(name, name),
+                                    arguments)
     try:
         result = await asyncio.wait_for(
             _handle_call_tool_inner(name, arguments),
             timeout=TOOL_DISPATCH_TIMEOUT_S,
         )
+        result = _prepend_arg_warning(
+            result, _TOOL_NAME_ALIASES.get(name, name), _unknown)
         # Single choke point for every MCP tool: label whether the call
         # actually answered. _handle_call_tool_inner's own finally has
         # already counted the call and any exception; it cannot see the
@@ -22615,7 +22693,8 @@ async def _dispatch_with_timeout(name: str, arguments: dict):
         # Same choke point, durable: the label, the latency and the ids
         # handed back, so the call is a recorded (input, output) pair
         # rather than a request whose answer nobody kept.
-        _capture_outcome(name, _outcome, _started, result=result)
+        _capture_outcome(name, _outcome, _started, result=result,
+                         unknown=_unknown)
         return result
     except asyncio.TimeoutError:
         logger.warning(
@@ -22623,7 +22702,8 @@ async def _dispatch_with_timeout(name: str, arguments: dict):
             name, TOOL_DISPATCH_TIMEOUT_S,
         )
         _capture_outcome(name, "timeout", _started,
-                         error=f"exceeded {TOOL_DISPATCH_TIMEOUT_S}s")
+                         error=f"exceeded {TOOL_DISPATCH_TIMEOUT_S}s",
+                         unknown=_unknown)
         return [TextContent(type="text", text=json.dumps({
             "error": "server_timeout",
             "tool": name,
@@ -22639,7 +22719,8 @@ async def _dispatch_with_timeout(name: str, arguments: dict):
         # all: the request was recorded, the failure was not, so the
         # arguments that provoke an error were unrecoverable afterwards.
         _capture_outcome(name, "error", _started,
-                         error=f"{type(exc).__name__}: {exc}")
+                         error=f"{type(exc).__name__}: {exc}",
+                         unknown=_unknown)
         raise
 
 
