@@ -2212,7 +2212,9 @@ _FULL_CAPTURE = os.environ.get("SWISS_CASELAW_FULL_CAPTURE", "") == "1"
 # Free-text fields that are document content rather than a query, plus
 # credentials. Stripped from captured arguments; length recorded instead.
 _CAPTURE_BODY_FIELDS = {"response_text", "document_text", "text", "claim",
-                        "facts", "content", "body"}
+                        "facts", "content", "body", "draft_text",
+                        "redacted_text", "statement", "paragraph_text",
+                        "selected_text"}
 _CAPTURE_SECRET_FIELDS = {"license_key", "license", "token", "api_key",
                           "authorization", "password"}
 
@@ -2273,6 +2275,21 @@ def _capture_event(record: dict) -> None:
         pass
 
 
+# A body can arrive under a name nobody thought to list. attest_response
+# calls its document `draft_text`, which was not in the set above, so 166
+# drafted legal opinions reached disk before anyone noticed — among them a
+# named taxpayer with her canton and employer, and successive revisions of
+# a criminal defence, which is data on criminal proceedings and therefore
+# besonders schützenswert under nFADP Art. 5(c).
+#
+# The lesson is that a denylist of names cannot be trusted on its own, so
+# length is the backstop: no legitimate search query is this long (the
+# longest observed in a day of live traffic was 214 characters), while a
+# document always is. Anything past the threshold is stored as its length
+# whatever it is called, so the next unlisted parameter fails safe.
+_CAPTURE_MAX_ARG_CHARS = 600
+
+
 def _capture_args(arguments: dict) -> dict:
     """Arguments as received, minus document bodies and credentials.
 
@@ -2284,7 +2301,8 @@ def _capture_args(arguments: dict) -> dict:
         kl = k.lower()
         if kl in _CAPTURE_SECRET_FIELDS:
             out[k] = "<redacted>"
-        elif kl in _CAPTURE_BODY_FIELDS and isinstance(v, str):
+        elif isinstance(v, str) and (kl in _CAPTURE_BODY_FIELDS
+                                     or len(v) > _CAPTURE_MAX_ARG_CHARS):
             out[f"{k}_len"] = len(v)
         else:
             out[k] = v

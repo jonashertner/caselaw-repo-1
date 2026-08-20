@@ -52,6 +52,37 @@ def test_document_bodies_are_never_captured():
     assert out["limit"] == 5
 
 
+def test_attest_responses_draft_text_is_a_body():
+    """The one that got missed. attest_response names its document
+    `draft_text`; it was absent from the set, and 166 drafted legal
+    opinions reached disk — including a named taxpayer and successive
+    revisions of a criminal defence."""
+    out = m._capture_args({"draft_text": "Nach Art. 9 DSG..." * 40,
+                           "audit_grounding": True})
+    assert "draft_text" not in out
+    assert out["draft_text_len"] > 0
+    assert out["audit_grounding"] is True
+
+
+def test_a_long_string_is_a_body_whatever_it_is_called():
+    """A denylist of names cannot be trusted alone — that is precisely how
+    draft_text got through. Length is the backstop, so the next unlisted
+    parameter fails safe instead of silently landing on disk."""
+    out = m._capture_args({"unforeseen_new_param": "y" * 5000})
+    assert "unforeseen_new_param" not in out
+    assert out["unforeseen_new_param_len"] == 5000
+
+
+def test_a_real_query_is_still_captured_in_full():
+    """The backstop must not eat the data the notice says we collect. The
+    longest query seen in a day of live traffic was 214 characters."""
+    q = ("Bearbeitung besonders schützenswerter Personendaten Gesundheit "
+         "Einwilligung Amtsgeheimnis Entbindung Sozialhilfe " * 2)
+    assert len(q) < m._CAPTURE_MAX_ARG_CHARS
+    out = m._capture_args({"query": q})
+    assert out["query"] == q
+
+
 def test_credentials_are_redacted():
     out = m._capture_args({"license_key": "OCL-PRO-123", "query": "x",
                            "Authorization": "Bearer abc"})
