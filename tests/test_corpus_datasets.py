@@ -121,6 +121,43 @@ def test_the_summary_pair_uses_the_decisions_own_language(tmp_path):
     assert row["compression"] > 1
 
 
+def test_a_docket_title_is_not_a_summary(tmp_path):
+    """Not every court writes a Regeste; where none exists the field holds
+    the subject line. Measured on the first full run: 94% of `bger` and
+    90% of `bvger` rows were under 200 characters against 6% for `bge`.
+    Pairing a title with a 30,000-char body teaches a model to emit
+    titles."""
+    db = _fixture_db(tmp_path, [
+        ("bvger_x", "bvger", "de", "2020-08-27",
+         "Asyl und Wegweisung (Mehrfachgesuch)", "x" * 30000),
+    ])
+    assert build_summary(db) == []
+
+
+def test_a_title_repeated_either_side_of_a_pipe_is_rejected(tmp_path):
+    """2,415 rows on the first run looked like 'X | X'."""
+    t = "Asyl und Wegweisung (Mehrfachgesuch/Wiedererwägung)"
+    db = _fixture_db(tmp_path, [
+        ("bvger_y", "bvger", "de", "2020-08-27", f"{t} | {t}", "x" * 30000),
+    ])
+    assert build_summary(db) == []
+
+
+def test_html_entities_are_decoded(tmp_path):
+    """The bvger regeste arrive with &auml; intact — 38% of that court's
+    rows on the first run."""
+    reg = ("Art. 8 Abs. 2 BV; Wiedererw&auml;gung einer Verf&uuml;gung des "
+           "SEM. Die Voraussetzungen der Wiedererw&auml;gung sind nach "
+           "st&auml;ndiger Rechtsprechung eng zu fassen, siehe dazu die "
+           "Erw&auml;gungen des Gerichts (E. 3.1 und E. 3.2 hiernach).")
+    db = _fixture_db(tmp_path, [
+        ("bvger_z", "bvger", "de", "2020-08-27", reg, "x" * 30000),
+    ])
+    [row] = build_summary(db)
+    assert "&auml;" not in row["summary"]
+    assert "Wiedererwägung" in row["summary"]
+
+
 def test_a_short_body_is_not_a_summarisation_pair(tmp_path):
     db = _fixture_db(tmp_path, [
         ("bge_b", "bge", "de", "2011-01-01", BGE_137_III_193, "kurz"),

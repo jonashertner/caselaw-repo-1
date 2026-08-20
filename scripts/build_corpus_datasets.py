@@ -38,6 +38,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as _dt
+import html
 import json
 import logging
 import re
@@ -139,13 +140,36 @@ def build_parallel(conn: sqlite3.Connection, min_chars: int = 80) -> list:
     return rows
 
 
+# Not every court writes a Regeste. Where none exists the field holds the
+# docket subject line instead, and pairing that with a 30,000-character
+# body would teach a model to emit titles rather than summarise. Measured
+# on the first full run: 94% of `bger` and 90% of `bvger` rows were under
+# 200 characters, against 6% for `bge`, whose p10 is 242. 200 therefore
+# separates the two populations rather than being a round number.
+_MIN_REAL_REGESTE = 200
+# "Asyl und Wegweisung | Asyl und Wegweisung" — the same title repeated
+# either side of a pipe, 2,415 rows on the first run.
+_DUP_TITLE = re.compile(r"^(.{10,})\s*\|\s*\1", re.S)
+
+
+def _looks_like_a_regeste(text: str) -> bool:
+    if len(text) < _MIN_REAL_REGESTE:
+        return False
+    if _DUP_TITLE.match(text.strip()):
+        return False
+    return True
+
+
 def build_summary(conn: sqlite3.Connection, min_body: int = 1500,
-                  min_regeste: int = 120) -> list:
+                  min_regeste: int = _MIN_REAL_REGESTE) -> list:
     """Regeste against the decision body — expert abstractive summaries."""
     rows, seen = [], 0
+    # length(full_text), not full_text: the body is only ever measured here,
+    # and the corpus is ~70 GB. Selecting the column would stream tens of
+    # gigabytes through Python to compute an integer SQLite already knows.
     for r in conn.execute(
             "SELECT decision_id, court, language, decision_date, regeste, "
-            "full_text FROM decisions WHERE regeste IS NOT NULL "
+            "length(full_text) FROM decisions WHERE regeste IS NOT NULL "
             "AND full_text IS NOT NULL AND length(full_text) > ?", (min_body,)):
         seen += 1
         parts = split_regeste(r[4])
@@ -153,15 +177,15 @@ def build_summary(conn: sqlite3.Connection, min_body: int = 1500,
         # Regeste against a German body would otherwise teach the model to
         # summarise across languages by accident.
         summary = parts.get(r[2]) or (r[4] if not parts else "")
-        summary = (summary or "").strip()
-        if len(summary) < min_regeste:
+        summary = html.unescape((summary or "").strip())
+        if len(summary) < min_regeste or not _looks_like_a_regeste(summary):
             continue
-        body = r[5]
+        body_chars = r[5] or 0
         rows.append({
             "decision_id": r[0], "court": r[1], "language": r[2],
             "decision_date": r[3],
-            "summary": summary, "body_chars": len(body),
-            "compression": round(len(body) / max(1, len(summary)), 1),
+            "summary": summary, "body_chars": body_chars,
+            "compression": round(body_chars / max(1, len(summary)), 1),
         })
     log.info("summary: %d of %d decisions produced a usable pair", len(rows), seen)
     return rows
