@@ -22562,8 +22562,11 @@ def _prepend_arg_warning(result, name: str, unknown: list):
     if not unknown:
         return result
     declared = sorted(_declared_tool_args().get(name) or [])
+    # "affect", not "filter": on get_decision these are not filters at all,
+    # and a message that misdescribes what was ignored is its own small
+    # confusion for the model reading it.
     note = (f"NOTE: ignored unrecognised parameter(s) {', '.join(unknown)} — "
-            f"they did NOT filter this result. Valid parameters for "
+            f"they did NOT affect this result. Valid parameters for "
             f"{name}: {', '.join(declared)}.\n\n")
     try:
         if isinstance(result, list) and result and hasattr(result[0], "text"):

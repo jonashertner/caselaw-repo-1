@@ -66,7 +66,7 @@ def test_the_warning_says_what_was_ignored_and_what_is_valid():
     text = out[0].text
     assert text.startswith("NOTE:")
     assert "legal_area" in text
-    assert "did NOT filter" in text
+    assert "did NOT affect" in text
     assert "query" in text, "the valid parameters have to be named"
     assert "# Leading Cases" in text, "the answer itself must survive"
 
