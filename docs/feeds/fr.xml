@@ -5,9 +5,30 @@
     <link>https://opencaselaw.ch/feeds/fr.xml</link>
     <description>Latest published Swiss court decisions in Français.</description>
     <language>de-CH</language>
-    <lastBuildDate>Wed, 19 Aug 2026 10:40:34 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 20 Aug 2026 10:57:52 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/fr.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>fr_gerichte 101 2026 39 vom 2026-09-15</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_101%202026%2039</link>
+      <description>Tribunal cantonal TC
+Kantonsgericht KG
+Rue des Augustins 3, case postale 630, 1701 Fribourg
+T +41 26 304 15 00
+www.fr.ch/tc
+—
+Pouvoir Judiciaire PJ
+Gerichtsbehörden GB
+101 2026 39
+Arrêt du 3 août 2026
+Ie Cour d’appel civil
+Composition
+Président :
+Jér…</description>
+      <pubDate>Tue, 15 Sep 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">fr_gerichte_101 2026 39</guid>
+      <category>fr_gerichte</category>
+    </item>
     <item>
       <title>fr_gerichte 502 2026 135 vom 2026-09-15</title>
       <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_502%202026%20135</link>
@@ -272,6 +293,27 @@ Co…</description>
       <category>fr_gerichte</category>
     </item>
     <item>
+      <title>fr_gerichte 502 2026 97 vom 2026-08-19</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_502%202026%2097</link>
+      <description>Tribunal cantonal TC
+Kantonsgericht KG
+Rue des Augustins 3, case postale 630, 1701 Fribourg
+T +41 26 304 15 00
+www.fr.ch/tc
+—
+Pouvoir Judiciaire PJ
+Gerichtsbehörden GB
+502 2026 97
+Arrêt du 4 août 2026
+Chambre pénale
+Composition
+Président :
+Laurent Sc…</description>
+      <pubDate>Wed, 19 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">fr_gerichte_502 2026 97</guid>
+      <category>fr_gerichte</category>
+    </item>
+    <item>
       <title>fr_gerichte 603 2025 193 vom 2026-08-19</title>
       <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_603%202025%20193</link>
       <description>Tribunal cantonal TC
@@ -352,6 +394,14 @@ Pré…</description>
       <category>fr_gerichte</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht D-3386/2026 vom 2026-08-17</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-3386_2026</link>
+      <description>Exécution du renvoi (procédure accélérée)</description>
+      <pubDate>Mon, 17 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-3386.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>fr_gerichte 101 2026 140 vom 2026-08-17</title>
       <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_101%202026%20140</link>
       <description>Tribunal cantonal TC
@@ -370,6 +420,26 @@ Président :
 J…</description>
       <pubDate>Mon, 17 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">fr_gerichte_101 2026 140</guid>
+      <category>fr_gerichte</category>
+    </item>
+    <item>
+      <title>fr_gerichte 101 2025 365 vom 2026-08-13</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_101%202025%20365</link>
+      <description>Tribunal cantonal TC
+Kantonsgericht KG
+Rue des Augustins 3, case postale 630, 1701 Fribourg
+T +41 26 304 15 00
+www.fr.ch/tc
+—
+Pouvoir Judiciaire PJ
+Gerichtsbehörden GB
+101 2025 365
+Arrêt du 16 juillet 2026
+Ie Cour d’appel civil
+Composition
+Président …</description>
+      <pubDate>Thu, 13 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">fr_gerichte_101 2025 365</guid>
       <category>fr_gerichte</category>
     </item>
     <item>
@@ -572,6 +642,14 @@ En la cau…</description>
       <category>ge_gerichte</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht E-4291/2026 vom 2026-08-11</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-4291_2026</link>
+      <description>Asile (sans excécution du renvoi) (procédure accélérée)</description>
+      <pubDate>Tue, 11 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-4291.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>fr_gerichte 101 2026 110 vom 2026-08-11</title>
       <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_101%202026%20110</link>
       <description>Tribunal cantonal TC
@@ -722,11 +800,50 @@ rec…</description>
       <category>ge_gerichte</category>
     </item>
     <item>
+      <title>Bundesgericht 5A_623/2026 vom 2026-08-10</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_623_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+5A_623/2026
+
+Arrêt du 10 août 2026
+
+IIe Cour de droit civil
+
+Composition
+
+MM. les Juges fédéraux Bovey, Président,
+
+Hartmann et Brunner
+
+Greffière : Mme Mairot.
+
+Participants à la…</description>
+      <pubDate>Mon, 10 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_623.2026</guid>
+      <category>bger</category>
+      <category>Droit des poursuites et faillites</category>
+    </item>
+    <item>
       <title>Bundesverwaltungsgericht E-5330/2026 vom 2026-08-10</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-5330_2026</link>
       <description>Asile et renvoi (procédure à l'aéroport)</description>
       <pubDate>Mon, 10 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-5330.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht F-8001/2025 vom 2026-08-10</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-8001_2025</link>
+      <description>Visa national</description>
+      <pubDate>Mon, 10 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-8001.2025</guid>
       <category>bvger</category>
     </item>
     <item>
@@ -929,136 +1046,6 @@ A._______…</description>
       <description>Asile et renvoi</description>
       <pubDate>Thu, 06 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-9879.2025</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht E-1655/2025 vom 2026-08-06</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-1655_2025</link>
-      <description>Asile et renvoi</description>
-      <pubDate>Thu, 06 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-1655.2025</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht F-849/2026 vom 2026-08-06</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-849_2026</link>
-      <description>Asile (non-entrée en matière) et renvoi (Etat tiers sûr - art. 31a al. 1 let. a LAsi)</description>
-      <pubDate>Thu, 06 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-849.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>ge_gerichte ATAS/676/2026 vom 2026-08-06</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ge_gerichte_ATAS_676_2026</link>
-      <description>Siégeant : Karine STECK, Présidente 
- 
- 
- 
- 
-RÉPUBLIQUE 
-ET 
- 
- CANTON DE GEN ÈVE 
-POUVOIR JUDICIAIRE 
-A/1789/2025 
-ATAS/676/2026 
- 
-COUR DE JUSTICE 
-Chambre des assurances sociales 
-Ordonnance d’expertise du 5 août 2026 
-Chambre 3 
- 
-En la cause 
-A_…</description>
-      <pubDate>Thu, 06 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ge_gerichte_ATAS_676_2026</guid>
-      <category>ge_gerichte</category>
-    </item>
-    <item>
-      <title>ju_gerichte ADM 2026 34 vom 2026-08-06</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ju_gerichte_ADM%202026%2034</link>
-      <description>RÉPUBLIQUE ET CANTON DU JURA
-TRIBUNAL CANTONAL
-COUR ADMINISTRATIVE
-ADM 2026 34
-Présidente : Sylviane Liniger Odiet
-Juges : Carine Guenat et Lisiane Poupon
-Greffière : Mélanie Farine
-ARRÊT DU 6 AOÛT 2026
-en la cause liée entre
-A.________, c/o D.______…</description>
-      <pubDate>Thu, 06 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ju_gerichte_ADM 2026 34</guid>
-      <category>ju_gerichte</category>
-    </item>
-    <item>
-      <title>Bundesgericht 5A_173/2026 vom 2026-08-05</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_173_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-5A_173/2026
-
-Arrêt du 5 août 2026
-
-IIe Cour de droit civil
-
-Composition
-
-MM. les Juges fédéraux Bovey, Président,
-
-Josi et Brunner.
-
-Greffière : Mme Hildbrand.
-
-Participants à la …</description>
-      <pubDate>Wed, 05 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_173.2026</guid>
-      <category>bger</category>
-      <category>Droit de la famille</category>
-    </item>
-    <item>
-      <title>Bundesgericht 7B_928/2026 vom 2026-08-05</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_7B_928_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-7B_928/2026
-
-Arrêt du 5 août 2026
-
-IIe Cour de droit pénal
-
-Composition
-
-MM. et Mme les Juges fédéraux Abrecht, Président,
-
-Koch et Hofmann.
-
-Greffière : Mme Kropf.
-
-Participants …</description>
-      <pubDate>Wed, 05 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:7B_928.2026</guid>
-      <category>bger</category>
-      <category>Procédure pénale</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht B-4320/2026 vom 2026-08-05</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_B-4320_2026</link>
-      <description>Ecoles polytechniques fédérales (sans le personnel)</description>
-      <pubDate>Wed, 05 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:B-4320.2026</guid>
       <category>bvger</category>
     </item>
   </channel>

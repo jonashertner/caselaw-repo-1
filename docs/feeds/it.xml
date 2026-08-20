@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/it.xml</link>
     <description>Latest published Swiss court decisions in Italiano.</description>
     <language>de-CH</language>
-    <lastBuildDate>Wed, 19 Aug 2026 10:40:35 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 20 Aug 2026 10:57:53 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/it.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -38,6 +38,37 @@ Partecipanti al pro…</description>
       <guid isPermaLink="false">ECLI:CH:BGer:2026:1C_401.2026</guid>
       <category>bger</category>
       <category>Assistenza giudiziaria e estradizione</category>
+    </item>
+    <item>
+      <title>Bundesgericht 4F_16/2026 vom 2026-08-04</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_4F_16_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+4F_16/2026
+
+Sentenza del 4 agosto 2026
+
+I Corte di diritto civile
+
+Composizione
+
+Giudice federale Hurni, Presidente,
+
+Cancelliere G. Piatti.
+
+Partecipanti al procedimento
+
+A._____…</description>
+      <pubDate>Tue, 04 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:4F_16.2026</guid>
+      <category>bger</category>
+      <category>Diritto delle obbligazioni (in generale)</category>
     </item>
     <item>
       <title>Bundesgericht 5A_683/2026 vom 2026-08-04</title>
@@ -320,6 +351,37 @@ Seconda Camera di diritto delle assicurazi…</description>
       <pubDate>Thu, 23 Jul 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">gr_gerichte_SV2 2026 31</guid>
       <category>gr_gerichte</category>
+    </item>
+    <item>
+      <title>Bundesgericht 1C_255/2026 vom 2026-07-22</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_1C_255_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+1C_255/2026
+
+Sentenza del 22 luglio 2026
+
+I Corte di diritto pubblico
+
+Composizione
+
+Giudici federali Haag, Presidente,
+
+Chaix, Merz,
+
+Cancelliere M. Piatti.
+
+Partecipanti al proc…</description>
+      <pubDate>Wed, 22 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:1C_255.2026</guid>
+      <category>bger</category>
+      <category>Pianificazione territoriale e diritto pubblico edilizio</category>
     </item>
     <item>
       <title>Bundesgericht 2C_225/2025 vom 2026-07-21</title>
@@ -963,22 +1025,6 @@ Camera delle esecuzioni e dei …</description>
       <pubDate>Wed, 08 Jul 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">gr_gerichte_SBK 2025 123</guid>
       <category>gr_gerichte</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht C-2148/2024 vom 2026-07-07</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-2148_2024</link>
-      <description>Assicurazione per la vecchiaia e i superstiti (altro)</description>
-      <pubDate>Tue, 07 Jul 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-2148.2024</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht F-4468/2026 vom 2026-07-07</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-4468_2026</link>
-      <description>Asilo (non entrata nel merito) ed allontanamento (procedura Dublino - art. 31a cpv. 1 lett. b LAsi)</description>
-      <pubDate>Tue, 07 Jul 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-4468.2026</guid>
-      <category>bvger</category>
     </item>
   </channel>
 </rss>
