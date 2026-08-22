@@ -33,9 +33,14 @@ while :; do
         echo "[$(date -u +%FT%TZ)] window missed (pipeline still busy at 03:00) — exiting; rerun tomorrow"
         exit 1
     fi
+    # Window 21:00-03:00 UTC (the -lt 3 arm exists because the 2026-08-22
+    # autobump deploy makes tonight's 20:00 incremental a ~5h double
+    # bootstrap, ending ~01:00; the START_DEADLINE above still caps entry
+    # at 03:00 and the CUTOFF still stops the encode at 03:15).
+    H=$(date -u +%H)
     if [ ! -f /tmp/opencaselaw-publish.lock ] \
        && ! systemctl is-active --quiet opencaselaw-publish-incremental.service \
-       && [ "$(date -u +%H)" -ge 21 ]; then
+       && { [ "$H" -ge 21 ] || [ "$H" -lt 3 ]; }; then
         break
     fi
     sleep 300
