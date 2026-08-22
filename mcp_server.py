@@ -11557,7 +11557,9 @@ def _looks_like_page_bleed(text: str, decision: dict | None) -> bool:
 # BGE volumes are annual: volume 1 is 1875, so volume N collects the year
 # N + 1874 (vol. 76 = 1950, vol. 150 = 2024). A stored decision_date whose
 # year is far off its own volume is a corpus defect, not an unusual case.
-_BGE_VOLUME_RE = re.compile(r"\b(?:BGE|ATF|DTF)\s+(\d{1,3})\s+[IVX]+\s+\d+",
+# Part is I, Ia, Ib, II, III, IV or V — the lettered parts ran roughly
+# 1975-1994, so a bare [IVX]+ would skip twenty years of the collection.
+_BGE_VOLUME_RE = re.compile(r"\b(?:BGE|ATF|DTF)\s+(\d{1,3})\s+[IVX]+[ab]?\s+\d+",
                             re.IGNORECASE)
 _BGE_VOLUME_EPOCH = 1874
 # ±1 absorbs the genuine edge: a decision taken late in one year and printed

@@ -228,6 +228,16 @@ def test_year_end_tolerance():
     assert m._bge_volume_year_mismatch("BGE 140 III 86", "2013-12-19") is None
 
 
+def test_lettered_parts_are_checked():
+    """BGE parts Ia/Ib ran roughly 1975-1994. A bare [IVX]+ part matcher skips
+    twenty years of the collection without failing visibly."""
+    assert m._bge_volume_year_mismatch("BGE 105 Ia 349", "1962-04-11")
+    assert m._bge_volume_year_mismatch("BGE 120 Ib 224", "1971-06-02")
+    # …and stays silent when those volumes check out (105 → 1979, 120 → 1994).
+    assert m._bge_volume_year_mismatch("BGE 105 Ia 349", "1979-10-03") is None
+    assert m._bge_volume_year_mismatch("BGE 120 Ib 224", "1994-05-18") is None
+
+
 def test_french_and_italian_forms_are_checked_too():
     assert m._bge_volume_year_mismatch("ATF 76 II 346", "1937-12-30")
     assert m._bge_volume_year_mismatch("DTF 76 II 346", "1937-12-30")
