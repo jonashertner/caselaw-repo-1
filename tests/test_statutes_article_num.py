@@ -52,3 +52,52 @@ def test_correct_simple_number_unchanged():
 def test_correct_number_not_overridden_when_eid_matches():
     num, *_ = b.parse_article(_article("art_168", "<b>Art. 168</b>"))
     assert num == "168"
+
+
+# ── GitHub #87: ordinals past "novies" ────────────────────────────────────────
+# The suffix alternation stopped at "novies", so "322decies" fell through to the
+# single-letter branch and was stored as "322d": present in the corpus, and
+# unreachable by the number anyone would look it up with.
+
+
+def test_decies_parsed_whole():
+    num, *_ = b.parse_article(_article("art_322decies", "Art. 322decies"))
+    assert num == "322decies"
+
+
+def test_decies_parsed_whole_second_case():
+    num, *_ = b.parse_article(_article("art_179decies", "Art. 179decies"))
+    assert num == "179decies"
+
+
+def test_undecies_and_duodecies_parsed_whole():
+    assert b.parse_article(_article("art_5undecies", "Art. 5undecies"))[0] == "5undecies"
+    assert b.parse_article(_article("art_5duodecies", "Art. 5duodecies"))[0] == "5duodecies"
+
+
+def test_unrecognised_ordinal_kept_raw_not_truncated():
+    # The point of the fix is the failure mode, not the lookup table. An ordinal
+    # we have never seen must survive intact so it stays findable; the old regex
+    # would have yielded "322t", and a lookahead that allowed \d+ to backtrack
+    # would have yielded "32".
+    num, *_ = b.parse_article(_article("art_322tredecies", "Art. 322tredecies"))
+    assert num == "322tredecies"
+    assert num not in ("322t", "32", "322")
+
+
+def test_known_ordinals_still_parse():
+    for suffix in ("bis", "ter", "quater", "quinquies", "sexies",
+                   "septies", "octies", "novies"):
+        num, *_ = b.parse_article(
+            _article(f"art_322{suffix}", f"Art. 322{suffix}")
+        )
+        assert num == f"322{suffix}"
+
+
+def test_footnote_text_after_number_still_stripped():
+    # The regex earns its keep by cutting trailing footnote prose; that must
+    # survive the anchoring change.
+    num, *_ = b.parse_article(
+        _article("art_5_a", "Art. 5 a Angenommen in der Volksabstimmung")
+    )
+    assert num == "5a"

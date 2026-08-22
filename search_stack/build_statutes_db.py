@@ -121,6 +121,33 @@ def extract_text(element, skip_tags: set[str] | None = None) -> str:
     return " ".join(p for p in parts if p)
 
 
+# Latin ordinal suffixes used in Fedlex article numbers, longest first so the
+# alternation can never settle for a prefix of a longer ordinal ("decies" inside
+# "duodecies"). Kept in one named place because a missing entry does not fail
+# loudly: the "[a-z]" branch below swallows the first letter and drops the rest.
+# That is how Art. 322decies and Art. 179decies StGB came to be stored as "322d"
+# and "179d" (GitHub #87) — present in the corpus, unreachable by their real
+# number.
+_ORDINAL_SUFFIXES = (
+    "duodecies", "undecies", "decies", "novies", "octies", "septies",
+    "sexies", "quinquies", "quater", "ter", "bis",
+)
+
+# Article number plus optional suffix, where the suffix must end the token.
+# The trailing lookahead is the load-bearing part: an unrecognised ordinal fails
+# the match outright instead of truncating, so parse_article keeps the raw
+# article number. A raw "322tredecies" is findable; a corrupted "322t" is not.
+#
+# The lookahead has to exclude digits as well as letters. With (?![a-z]) alone,
+# "322tredecies" does not fail — the engine backtracks \d+ down to "32" and the
+# lookahead then passes on the leftover "2", yielding "32". Excluding [0-9] too
+# closes that path without disturbing the split-number case ("16 8" -> "16",
+# where \s* backtracks to empty and the lookahead passes on the space).
+_ARTICLE_NUM_RE = re.compile(
+    r"(\d+)\s*(" + "|".join(_ORDINAL_SUFFIXES) + r"|[a-z])?(?![a-z0-9])"
+)
+
+
 def parse_article(article_elem) -> tuple[str, str | None, str, str | None]:
     """Parse an article element, return (article_num, heading, full_text, footnote).
 
@@ -163,7 +190,7 @@ def parse_article(article_elem) -> tuple[str, str | None, str, str | None]:
     article_num = re.sub(r"^Art\.?\s*", "", article_num).strip()
     # Strip any remaining footnote text after the article number
     # e.g. "5 a Angenommen in der..." -> "5a"
-    m = re.match(r"(\d+)\s*((?:bis|ter|quater|quinquies|sexies|septies|octies|novies)|[a-z])?", article_num)
+    m = _ARTICLE_NUM_RE.match(article_num)
     if m:
         article_num = m.group(1) + (m.group(2) or "")
     eid = article_elem.get("eId", "")

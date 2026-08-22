@@ -5739,6 +5739,17 @@ def _bge_ref_candidates(ref: str) -> list[str]:
     r = (ref or "").strip()
     # Drop a trailing pinpoint suffix before the exact-tuple match.
     r = re.sub(r"\s*,?\s+(?:E|Erw|consid|cons)\.?\s+\S.*$", "", r, flags=re.IGNORECASE)
+    # Accept the stored decision_id shapes as input, not only the human
+    # reference form. attest_response builds "bge_BGE_76_II_346" from the
+    # citation text and hands the resolver that id rather than the reference,
+    # so this helper saw a string its tuple regex could not parse and returned
+    # nothing — and a decision stored only as "bge_76_II_346" was reported as
+    # absent from the corpus (GitHub #83). Underscores become spaces so the
+    # regex below sees a reference. Non-BGE ids ("bger_4A_231_2014",
+    # "mkg_MKGE_16_Nr_1") still fail that regex and yield [] exactly as before,
+    # and the expansion stays keyed on the exact (vol, division, page) tuple,
+    # so widening the input cannot resolve to a different decision.
+    r = re.sub(r"^bge_(?:BGE_)?", "", r, flags=re.IGNORECASE).replace("_", " ")
     # Division = roman numeral + optional 'a'/'b' suffix (BGE 116 Ia 28). Roman
     # part upper-cased, suffix lower-cased, to match the stored 'Ia'/'III' form.
     m = re.match(r"(?:(?:BGE|ATF|DTF)\s+)?(\d+)\s+([IVX]+)([ab]?)\s+(\d+)\s*$",
@@ -6876,6 +6887,37 @@ def _build_query_strategies(
     return strategies, llm_terms
 
 
+# GitHub #88. "OR" is both the FTS5 disjunction operator and the standard Swiss
+# abbreviation for the Obligationenrecht, so the collision is unavoidable in
+# ordinary use rather than a corner case. QUERY_STATUTE_PATTERN masks only the
+# fully written form ("Art. 41 OR"); practitioners also write "OR 60" and
+# "Verjährung OR 60", where OR sits directly against a bare article number.
+# Reported case: search_laws("Verjährung OR 60") evaluated a disjunction and
+# returned five articles numbered 60 from unrelated acts, none from SR 220.
+_ARTICLE_SHAPED = re.compile(
+    r"\d{1,3}(?:bis|ter|quater|quinquies|sexies|septies|octies|novies|decies|[a-z])?",
+    re.IGNORECASE,
+)
+
+
+def _mask_or_as_statute(text: str) -> str:
+    """Mask an "OR" that reads as the Obligationenrecht, not as an operator.
+
+    Masks only when exactly ONE side is article-shaped. Requiring the asymmetry
+    is what keeps a genuine numeric disjunction working: "2020 OR 2021" has a
+    number on both sides and stays an operator, while "Verjährung OR 60" has one
+    and is a statute reference. Uppercase-only, mirroring the operator test.
+    """
+    def _repl(m: "re.Match") -> str:
+        left, right = m.group("l"), m.group("r")
+        if bool(_ARTICLE_SHAPED.fullmatch(left)) == bool(
+                _ARTICLE_SHAPED.fullmatch(right)):
+            return m.group(0)
+        return f"{left} __STATUTE__ {right}"
+
+    return re.sub(r"(?P<l>\S+)\s+OR\s+(?P<r>\S+)", _repl, text)
+
+
 def _has_explicit_fts_syntax(query: str) -> bool:
     """Detect advanced query syntax where raw execution should be prioritized.
 
@@ -6888,6 +6930,8 @@ def _has_explicit_fts_syntax(query: str) -> bool:
     # Mask statute references so "Art. 41 OR" (Obligationenrecht) doesn't
     # trigger FTS-operator detection for "OR".
     masked = QUERY_STATUTE_PATTERN.sub("__STATUTE__", query)
+    # …and the abbreviated forms the pattern above cannot see (#88).
+    masked = _mask_or_as_statute(masked)
     # OR counts as an operator only with operands on BOTH sides (mirrors the
     # sanitizer's rule for AND/NOT/NEAR): 'Miete OR Pacht' is syntax, a bare
     # trailing 'Obligationenrecht OR' is the statute abbreviation. AND/NOT/NEAR
@@ -11664,6 +11708,38 @@ def _handle_get_erwaegung(*, decision_id: str, e_number: str) -> dict:
         return {"error": f"No structured Erwägungen found for {decision_id!r}."}
     para_map = {p["e_number"]: p for p in paragraphs}
     target = para_map.get(e_clean)
+    composed_of: list[str] | None = None
+    composed_parts: list[dict] | None = None
+    if not target:
+        # GitHub #86: the official Regeste cites Erwägungen at parent level
+        # ("Begriff des Ordre public ... (E. 2)") but only leaf paragraphs are
+        # stored, so get_erwaegung could not resolve the very references
+        # get_regeste's own _note tells callers to follow. Compose the parent
+        # from its descendants when they exist.
+        #
+        # Prefix match on "<parent>." and not on the stored `parent` field:
+        # intermediate levels are frequently absent (2.2.1 exists while 2.2 does
+        # not), so a parent-field walk would miss most of the subtree. The
+        # trailing dot is what keeps E. 2 from swallowing E. 21.
+        kids = sorted(
+            (p for p in paragraphs if p["e_number"].startswith(e_clean + ".")),
+            key=lambda p: _e_number_sort_key(p["e_number"]),
+        )
+        if kids:
+            composed_of = [k["e_number"] for k in kids]
+            composed_parts = [
+                {"e_number": k["e_number"],
+                 "text": _auto_link_citations(k["text"])} for k in kids
+            ]
+            target = {
+                "e_number": e_clean,
+                "depth": e_clean.count(".") + 1,
+                "parent": e_clean.rsplit(".", 1)[0] if "." in e_clean else None,
+                # Plain concatenation, no injected headings: the text stays
+                # verbatim so it remains quotable under the citation contract.
+                # `composed_of` and `parts` carry the structure instead.
+                "text": "\n\n".join(k["text"] for k in kids if k.get("text")),
+            }
     if not target:
         # Sort siblings by numeric key for a useful error message
         all_nums = sorted(para_map.keys(), key=_e_number_sort_key)
@@ -11671,12 +11747,23 @@ def _handle_get_erwaegung(*, decision_id: str, e_number: str) -> dict:
             "error": f"E. {e_clean!r} not found in {decision_id!r}.",
             "available_e_numbers": all_nums,
         }
-    # Find siblings (same parent)
-    parent = target["parent"]
-    siblings = sorted(
-        [p["e_number"] for p in paragraphs if p["parent"] == parent],
-        key=_e_number_sort_key,
-    )
+    if composed_of:
+        # Siblings of a composed parent are the other subtrees at its level,
+        # derived from the leaves (E. 2 -> ['2', '3']); the stored `parent`
+        # field cannot answer this because the parent rows do not exist.
+        _lvl = e_clean.count(".")
+        siblings = sorted(
+            {".".join(p["e_number"].split(".")[: _lvl + 1])
+             for p in paragraphs if p["e_number"].count(".") >= _lvl},
+            key=_e_number_sort_key,
+        )
+    else:
+        # Find siblings (same parent)
+        parent = target["parent"]
+        siblings = sorted(
+            [p["e_number"] for p in paragraphs if p["parent"] == parent],
+            key=_e_number_sort_key,
+        )
     row = _fetch_structure_row(resolved)
     # Build canonical citation + URL + rule statement for the LLM to embed
     # verbatim. IMPORTANT: the structure DB stores decision_id in a legacy
@@ -11719,6 +11806,19 @@ def _handle_get_erwaegung(*, decision_id: str, e_number: str) -> dict:
            if _is_ecthr_court(decision_for_citation.get("court")) else {}),
         "rule_statement": _rule_statement(decision_for_citation, pinpoint_text=target["text"]),
         "_citation_format": citation["citation_string_de"],  # kept for backwards compat
+        # GitHub #86: present only when the requested E. is a parent level that
+        # the Regeste cites but the corpus stores only as leaves. `text` is the
+        # children concatenated in order; `parts` keeps them addressable so a
+        # caller can quote one sub-paragraph and pinpoint it correctly.
+        **({"composed_of": composed_of,
+            "parts": composed_parts,
+            "_composed_note": (
+                f"E. {target['e_number']} is not stored as a single paragraph. "
+                f"`text` is E. {', '.join(composed_of)} concatenated in order, "
+                f"verbatim and unmodified. Cite it as E. "
+                f"{target['e_number']} (as the Regeste does), or quote one entry "
+                f"from `parts` and cite that sub-number instead."
+            )} if composed_of else {}),
     }
 
 
@@ -11788,6 +11888,36 @@ def _claim_token_coverage(claim: str, text: str) -> tuple[int, int]:
     return (matched, len(claim_tokens))
 
 
+# Operators and syntax markers that mean the caller wrote a deliberate FTS5
+# query. Bag-of-words filtering must not touch those.
+_FTS_SYNTAX_MARKERS = ('"', "*", ":", " AND ", " OR ", " NOT ", " NEAR")
+
+
+def _drop_stopwords_for_fts(safe_query: str) -> str:
+    """Remove content-free tokens from a plain bag-of-words FTS5 query.
+
+    GitHub #89. A bare multi-term FTS5 query is an implicit AND, so every token
+    is *required* — including "du", "de" and "droit". Requiring those excludes
+    focused work that simply phrases things differently, and leaves standing
+    mainly long general documents that contain every common legal word. The
+    reported symptom was a query about bribery and contract nullity returning an
+    introduction to law for secondary-school pupils, matched on "de" and
+    "droit".
+
+    Two guards. A query carrying explicit syntax is passed through untouched, so
+    a deliberate phrase or operator query still means what it says. And a query
+    that is *entirely* stopwords keeps its original form rather than collapsing
+    to the empty string, which would otherwise turn a meaningless query into a
+    match-everything one.
+    """
+    q = (safe_query or "").strip()
+    if not q or any(marker in q for marker in _FTS_SYNTAX_MARKERS):
+        return safe_query
+    kept = [t for t in q.split()
+            if len(t) > 2 and t.lower() not in _LEGAL_STOPWORDS]
+    return " ".join(kept) if kept else safe_query
+
+
 def _score_pinpoint_confidence(
     scores: list[float],
     claim: str,
@@ -11795,6 +11925,7 @@ def _score_pinpoint_confidence(
     *,
     match_kind: str = "or",
     relaxed_coverage: bool = False,
+    reason_sink: dict | None = None,
 ) -> str | None:
     """Return "high" | "medium" | None for the top-1 BM25 row.
 
@@ -11819,9 +11950,23 @@ def _score_pinpoint_confidence(
       signal alone (coverage is trivially 1.0 when FTS5 matched).
 
     Returns ``None`` to suppress (caller treats as low / no_match).
+
+    ``reason_sink`` (GitHub #85): when a dict is passed, the specific gate that
+    suppressed the match is recorded under "reason", with the measured coverage
+    and score alongside. There are four independent suppression paths and the
+    caller previously reported all of them to the user as "BM25 gap < 1.2",
+    which is wrong for three of the four — a correct pinpoint suppressed on
+    coverage was reported as a gap problem, sending anyone debugging it to the
+    wrong knob.
     """
-    if not scores:
+    def _suppress(reason: str, **extra) -> None:
+        if reason_sink is not None:
+            reason_sink.clear()
+            reason_sink.update({"reason": reason, **extra})
         return None
+
+    if not scores:
+        return _suppress("no_candidate_paragraphs")
     s0 = abs(float(scores[0]))
     if len(scores) >= 2 and float(scores[1]) != 0.0:
         gap_ratio = s0 / max(abs(float(scores[1])), 1e-6)
@@ -11858,7 +12003,7 @@ def _score_pinpoint_confidence(
     # Bundesgericht Erwägung" would still produce a pinpoint via the
     # gap-only branch — coverage check skipped because total_n == 0.
     if total_n == 0:
-        return None
+        return _suppress("claim_has_no_semantic_tokens")
 
     if not gap_medium:
         # High-coverage rescue: when the top paragraphs all match similarly
@@ -11871,7 +12016,12 @@ def _score_pinpoint_confidence(
         # (most claim words present), absolute BM25 > 5.0 (strong hit).
         if total_n >= 2 and coverage >= 0.7 and s0 > 5.0:
             return "medium"
-        return None
+        return _suppress(
+            "weak_gap_and_partial_coverage",
+            coverage=round(coverage, 3), matched_tokens=matched_n,
+            claim_tokens=total_n, top_score=round(s0, 2),
+            gap_ratio=round(gap_ratio, 3) if len(scores) >= 2 else None,
+        )
 
     # Multi-token coverage gates — defence-in-depth against thin OR-fallback
     # matches (one of N tokens hitting the paragraph at all).
@@ -11883,16 +12033,93 @@ def _score_pinpoint_confidence(
         # more informative sample tokens anchoring one paragraph is a real
         # topical hit; one is thin. Never 'high' from this mode — the label
         # stays honest about the weaker evidentiary basis.
-        return "medium" if matched_n >= 2 else None
+        if matched_n >= 2:
+            return "medium"
+        return _suppress("relaxed_coverage_too_thin", matched_tokens=matched_n,
+                         claim_tokens=total_n, top_score=round(s0, 2))
     if total_n >= 2:
         if coverage < 0.5:
-            return None
+            return _suppress(
+                "low_token_coverage",
+                coverage=round(coverage, 3), matched_tokens=matched_n,
+                claim_tokens=total_n, top_score=round(s0, 2),
+            )
         if coverage < 0.7:
             # Cap at medium: gap may look strong but only because most
             # paragraphs in the decision didn't match the OR clause at all.
             return "medium"
 
     return "high" if gap_high else "medium"
+
+
+def _low_confidence_hint(suppression: dict, matches: list[dict]) -> str:
+    """Explain why find_relevant_erwaegung suppressed its rank-1 result.
+
+    GitHub #85. The old text named the BM25 gap unconditionally, so a pinpoint
+    suppressed on token coverage was reported as a gap problem. Worse, the
+    coverage gate is the one that misfires most often on exactly the queries
+    this tool is for: a claim written as a full proposition against an Erwägung
+    that states the same rule far more tersely scores low coverage while being
+    the right answer.
+
+    The verdict itself is unchanged — the tool still refuses to assert a match,
+    which is what stops the 'always cite E. 3.1' guessing it was built to
+    replace. What changes is that the caller is told which signal failed and
+    given a way to settle it (read the paragraph) rather than only being told
+    to discard it.
+    """
+    reason = (suppression or {}).get("reason", "unknown")
+    top = matches[0] if matches else None
+    where = ""
+    if top and top.get("e_number") is not None:
+        try:
+            where = (f" Rank-1 candidate: E. {top['e_number']} "
+                     f"(BM25 {float(top.get('score') or 0):.1f}).")
+        except (TypeError, ValueError):
+            where = f" Rank-1 candidate: E. {top['e_number']}."
+
+    verify = (
+        " best_low_confidence_match holds it. Do not cite it on this tool's "
+        "say-so; call get_erwaegung(decision_id, e_number) and read the "
+        "paragraph, then cite it only if it states what you claimed."
+    )
+
+    if reason in ("low_token_coverage", "weak_gap_and_partial_coverage"):
+        cov = suppression.get("coverage")
+        mt, ct = suppression.get("matched_tokens"), suppression.get("claim_tokens")
+        counted = f"{mt} of {ct}" if mt is not None and ct is not None else "few"
+        gap_note = ""
+        if reason == "weak_gap_and_partial_coverage":
+            gap_note = (" Several Erwägungen of this decision scored similarly, "
+                        "which is normal when they discuss one issue.")
+        return (
+            f"No Erwägung was confirmed. Reason: token coverage"
+            f"{f' ({cov})' if cov is not None else ''} — only {counted} "
+            f"substantive claim words appear verbatim in the best paragraph."
+            f"{gap_note} Note this is NOT necessarily a bad match: coverage is "
+            f"measured on whole words, so an Erwägung that states your rule "
+            f"more concisely, or inflects it differently ('Inhaltes' does not "
+            f"match 'Inhalt'), scores low while being correct.{where}{verify}"
+        )
+    if reason == "claim_has_no_semantic_tokens":
+        return (
+            "No Erwägung was confirmed. Reason: the claim contains only "
+            "generic procedural words, so there is nothing distinctive to "
+            "match on. Re-send the claim with the substantive legal terms in "
+            "it."
+        )
+    if reason == "relaxed_coverage_too_thin":
+        return (
+            "No Erwägung was confirmed. Reason: only one informative term from "
+            "the document sample anchored a paragraph, which is too thin to "
+            f"call a topical hit.{where}{verify}"
+        )
+    if reason == "no_candidate_paragraphs":
+        return ("No Erwägung matched the claim at all. Check the decision_id, "
+                "or search the decision text instead.")
+    return (
+        f"No Erwägung clearly matched the claim.{where}{verify}"
+    )
 
 
 def _compute_pinpoint(
@@ -12501,8 +12728,10 @@ def _handle_find_relevant_erwaegung(
         # any single result — including OR-fallback matches at score ≈ 1e-6 —
         # to be promoted to "high"; the shared scorer fixes that.
         scores = [float(r["score"]) for r in rows]
+        _suppression: dict = {}
         confidence = _score_pinpoint_confidence(
-            scores, claim, rows[0]["text"], match_kind=match_kind
+            scores, claim, rows[0]["text"], match_kind=match_kind,
+            reason_sink=_suppression,
         ) or "low"
 
         matches: list[dict] = []
@@ -12562,13 +12791,11 @@ def _handle_find_relevant_erwaegung(
                 "matches": [],
                 "best_low_confidence_match": matches[0] if matches else None,
                 "no_match": True,
-                "_hint": (
-                    "No Erwägung clearly matched the claim (BM25 gap < 1.2). "
-                    "best_low_confidence_match holds the rank-1 result — do "
-                    "NOT cite it as the relevant Erwägung. Tell the user no "
-                    "Erwägung clearly matches and ask for a more specific "
-                    "claim, or list the top-k as candidates without picking."
-                ),
+                # GitHub #85: report the gate that actually fired. Four
+                # independent paths reach this branch and only one of them is
+                # the BM25 gap, which every response used to name.
+                "suppression": _suppression or {"reason": "unknown"},
+                "_hint": _low_confidence_hint(_suppression, matches),
             }
 
         return {
@@ -13631,13 +13858,24 @@ def _handle_check_claim_support(
 
 # ── attest_response — mandatory closing audit ─────────────────────
 
+# Pinpoint capture (GitHub #81). Swiss decisions are routinely cited with a
+# letter on the Erwägung — "E. 4b", "consid. 6a" — and the group was [\d.]+, so
+# the letter fell outside the match. Two consequences, both reported: the span
+# ended mid-citation, so rebuilding the annotated text put the stray letter after
+# the status marker ("E. 4 ✓b"), and the pinpoint handed to the grounding judge
+# was the parent E. 4, which had it evaluate a different sub-paragraph and report
+# a correctly-cited claim as unsupported.
+#
+# The trailing (?![a-z]) declines multi-letter suffixes rather than truncating
+# them: "E. 4bis" yields no pinpoint instead of a confident, wrong "4b". Losing a
+# pinpoint costs precision; inventing one costs correctness.
 _CITATION_PATTERNS = [
     # BGE / ATF / DTF: volume, division, page, optional pinpoint
     (
         "bge",
         re.compile(
             r"\b(?:BGE|ATF|DTF)\s+(\d{1,3})\s+([IVX]+[ab]?)\s+(\d{1,4})"
-            r"(?:\s*,?\s*(?:E\.|consid\.)\s*([\d.]+))?",
+            r"(?:\s*,?\s*(?:E\.|consid\.)\s*([\d.]+[a-z]?(?![a-z])))?",
             re.I,
         ),
     ),
@@ -13648,7 +13886,7 @@ _CITATION_PATTERNS = [
         "bger",
         re.compile(
             r"\b(?:BGer|TF)\s+(\d+[A-Z]+_\d+/\d{4})"
-            r"(?:\s*,?\s*(?:E\.|consid\.)\s*([\d.]+))?",
+            r"(?:\s*,?\s*(?:E\.|consid\.)\s*([\d.]+[a-z]?(?![a-z])))?",
             re.I,
         ),
     ),
@@ -13660,7 +13898,7 @@ _CITATION_PATTERNS = [
         re.compile(
             r"\b(?:Urteil des Bundesgerichts|Arr[êe]t du Tribunal f[ée]d[ée]ral|"
             r"Sentenza del Tribunale federale)\s+(\d+[A-Z]+_\d+/\d{4})"
-            r"(?:\s*,?\s*(?:E\.|consid\.)\s*([\d.]+))?",
+            r"(?:\s*,?\s*(?:E\.|consid\.)\s*([\d.]+[a-z]?(?![a-z])))?",
             re.I,
         ),
     ),
@@ -13671,7 +13909,7 @@ _CITATION_PATTERNS = [
         "bger_old",
         re.compile(
             r"\b(?:BGer\s+|TF\s+)?(\d+[A-Z]\.\d+/\d{4})"
-            r"(?:\s*,?\s*(?:E\.|consid\.)\s*([\d.]+))?",
+            r"(?:\s*,?\s*(?:E\.|consid\.)\s*([\d.]+[a-z]?(?![a-z])))?",
             re.I,
         ),
     ),
@@ -13681,7 +13919,7 @@ _CITATION_PATTERNS = [
         "bger_bare",
         re.compile(
             r"(?<![A-Za-z0-9_])([1-9][A-Z]+_\d+/\d{4})"
-            r"(?:\s*,?\s*(?:E\.|consid\.)\s*([\d.]+))?",
+            r"(?:\s*,?\s*(?:E\.|consid\.)\s*([\d.]+[a-z]?(?![a-z])))?",
         ),
     ),
     # BVGer / BStGer / BPatGer / TAF / TPF / TFB docket
@@ -13689,7 +13927,7 @@ _CITATION_PATTERNS = [
         "federal_court",
         re.compile(
             r"\b(?:BVGer|BStGer|BPatGer|TAF|TPF|TFB)\s+([A-Z][A-Z.]*[-._]?[\d./_-]+)"
-            r"(?:\s*,?\s*(?:E\.|consid\.)\s*([\d.]+))?",
+            r"(?:\s*,?\s*(?:E\.|consid\.)\s*([\d.]+[a-z]?(?![a-z])))?",
             re.I,
         ),
     ),
@@ -13698,7 +13936,7 @@ _CITATION_PATTERNS = [
         "mkg",
         re.compile(
             r"\b(?:MKGE|ATMC|STMC)\s+(\d+)\s+(?:Nr\.?|n°|n\.)\s*(\d+)"
-            r"(?:\s*,?\s*(?:E\.|consid\.)\s*([\d.]+))?",
+            r"(?:\s*,?\s*(?:E\.|consid\.)\s*([\d.]+[a-z]?(?![a-z])))?",
             re.I,
         ),
     ),
@@ -14334,6 +14572,14 @@ def _audit_dates(
         return s.lower()
 
     issues: list[dict] = []
+    # GitHub #82: the trailing window below used to run a flat 60 characters
+    # past the citation, straight through any neighbouring citation. In
+    # "(BGE 119 II 380 E. 4b; BGer 4A_231/2014 vom 23. September 2014)" the date
+    # belongs to the docket that follows, but it fell inside the BGE citation's
+    # window and was reported as the BGE's date — a date error raised against a
+    # citation that never carried a date. Clip the window at the next citation
+    # so a "vom <date>" tail can only bind to the citation it actually follows.
+    _cit_starts = sorted(c["span"][0] for c in case_citations if c.get("span"))
     for cit in case_citations:
         if not cit.get("_decision_date"):
             continue  # only verified citations
@@ -14344,7 +14590,10 @@ def _audit_dates(
         # to find an adjacent date regardless of where the citation
         # regex draws its boundary.
         full_match = cit.get("full_match", "")
-        tail = draft_text[cit["span"][1]: cit["span"][1] + 60]
+        _end = cit["span"][1]
+        _next_start = next((s for s in _cit_starts if s >= _end), None)
+        _limit = _end + 60 if _next_start is None else min(_end + 60, _next_start)
+        tail = draft_text[_end:_limit]
         haystack = full_match + " " + tail
         m = _DATE_ADJACENT_PATTERN.search(haystack)
         if not m:
@@ -14393,7 +14642,33 @@ def _audit_dates(
 # Lookahead requires the next non-space character to be an uppercase
 # letter or opening quote/paren — never a digit, since "Art. 41" /
 # "Abs. 2" / "E. 2.3" / "Nr. 5" / "Bd. 16" are not sentence boundaries.
-_SENTENCE_END = re.compile(r"[.!?;]\s+(?=[A-ZÄÖÜ«„(])|\n\s*\n")
+# GitHub #82. The boundary rule keys on punctuation followed by a capital,
+# which already protects "Art. 28b" and "E. 3.4" because a digit follows. It
+# does NOT protect a date: German month names are always capitalised, so
+# "23. September 2014" looks exactly like the end of one sentence and the start
+# of another. The claim extractor then handed the grounding judge fragments like
+# "September 2014, E. 5.1;" instead of the proposition being cited.
+#
+# Only capitalised forms are listed. A lowercase month ("23. septembre 2014")
+# never reached the boundary rule in the first place, since it requires a
+# capital after the punctuation.
+_MONTH_WORDS_CAPITALISED = (
+    "Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|"
+    "November|Dezember|"
+    "Janvier|Février|Mars|Avril|Juin|Juillet|Août|Septembre|Octobre|"
+    "Novembre|Décembre|"
+    "Gennaio|Febbraio|Marzo|Aprile|Maggio|Giugno|Luglio|Agosto|Settembre|"
+    "Ottobre|Dicembre"
+)
+_SENTENCE_END = re.compile(
+    # Digit-preceded punctuation: a boundary only when no month name follows,
+    # so the day number of a date does not terminate the sentence.
+    r"(?<=\d)[.!?;](?!\s+(?:" + _MONTH_WORDS_CAPITALISED + r")\b)\s+(?=[A-ZÄÖÜ«„(])"
+    # Everything else keeps the original rule, so a genuine sentence that
+    # happens to be followed by a month name still ends where it should.
+    r"|(?<!\d)[.!?;]\s+(?=[A-ZÄÖÜ«„(])"
+    r"|\n\s*\n"
+)
 # "See-cite" markers — the LLM is just pointing at authority, not
 # making a strong assertion.  We skip grounding-audit on these.
 _SEE_CITE_MARKERS = re.compile(
@@ -16588,6 +16863,27 @@ def search_scholarship(
         return {"error": "Legal scholarship database not available."}
     limit = min(max(1, limit), 50)
     try:
+        # GitHub #89. _drop_stopwords_for_fts() is deliberately NOT applied here.
+        #
+        # MEASURED against the production index (25,073 publications, 2026-08-22)
+        # and it is a no-op. The reported query returned 12 results with the same
+        # rank-1 ("Le droit pour les lycéens") before and after filtering; the
+        # second reported query returned 40 either way, in near-identical order.
+        # Weighting the FTS columns (title/abstract/keywords >> full_text) does
+        # not shift rank 1 either. The apparent recall gain that motivated the
+        # filter (13->20, 11->63) came from a 650-row local corpus, where common
+        # tokens still excluded documents; at 25k their IDF is ~0 and they
+        # exclude nothing.
+        #
+        # The real cause is thin topical coverage meeting AND semantics: 322 docs
+        # mention "corruption" and 435 "nullité", but only 16 contain "pot de
+        # vin", so a six-term AND leaves ~12 documents and a general textbook
+        # wins on lexical grounds precisely because it mentions everything once.
+        # Query rewriting cannot fix that. The fix the reporter actually asked
+        # for is a weak-match signal, so a caller can distinguish a thin corpus
+        # from a ranking failure — the shape find_relevant_erwaegung already has.
+        #
+        # The helper and its tests are kept as the record of a tested negative.
         safe_query = _sanitize_fts5(query or "")
         # Structured filters — apply to both the full-text and the browse path.
         filt: list[str] = []
@@ -17812,6 +18108,26 @@ def _fetch_pending_changes(sr_number: str) -> list[dict]:
         return []
 
 
+# GitHub #87. Fedlex ordinals past "novies" were truncated to their first letter
+# when statutes.db was built, so StGB Art. 322decies and Art. 179decies are
+# stored under "322d" and "179d" — present in the mirror, unreachable by their
+# real number. search_stack/build_statutes_db.py parses them correctly now, but
+# the shipped mirror predates that fix, so these two pairs are aliased here.
+#
+# Deliberately an exact (sr_number, article) table rather than a general
+# "ordinal -> first letter" retry. OR Art. 322d is a real provision
+# (Gratifikation), so a general rule would answer a query for OR Art. 322decies,
+# which does not exist, with the text of a different article under the wrong
+# number. Silence is better than confident wrongness here.
+#
+# Self-neutralising: the exact-match lookup runs first, so once statutes.db is
+# rebuilt this table stops being reached and can be deleted.
+_TRUNCATED_ORDINAL_ALIASES = {
+    ("311.0", "179decies"): "179d",
+    ("311.0", "322decies"): "322d",
+}
+
+
 def get_law(
     sr_number: str | None = None,
     abbreviation: str | None = None,
@@ -17941,6 +18257,48 @@ def get_law(
                        AND (article_num = ? OR article_num LIKE ?)""",
                     (sr_number, language, article, f"{article}%"),
                 ).fetchall()
+            if not articles:
+                # GitHub #87: the shipped statutes.db stores a couple of Fedlex
+                # ordinals under a truncated number. Retry under the stored key
+                # and relabel the row to the number the caller asked for, which
+                # is the one the Fedlex anchor built above already points at.
+                _alias = _TRUNCATED_ORDINAL_ALIASES.get(
+                    (str(sr_number), (article or "").lower())
+                )
+                if _alias:
+                    for _lang in (language, "de", "fr", "it"):
+                        _rows = conn.execute(
+                            f"""SELECT {_art_cols} FROM articles
+                               WHERE sr_number = ? AND article_num = ? AND lang = ?""",
+                            (sr_number, _alias, _lang),
+                        ).fetchall()
+                        if not _rows:
+                            continue
+                        articles = [dict(r) | {"article_num": article}
+                                    for r in _rows]
+                        result["article_number_alias"] = {
+                            "requested": article,
+                            "stored_as": _alias,
+                            "note": (
+                                f"Article {article} is stored under the "
+                                f"truncated number '{_alias}' in the current "
+                                f"Fedlex mirror. The text below is "
+                                f"Art. {article}; only the stored number was "
+                                f"wrong, and it has been relabelled to match "
+                                f"the request."
+                            ),
+                        }
+                        if _lang != language:
+                            result["article_language_fallback"] = {
+                                "requested": language,
+                                "served": _lang,
+                                "note": (
+                                    f"Article {article} is not available in "
+                                    f"'{language}' in the current Fedlex "
+                                    f"mirror; showing '{_lang}'."
+                                ),
+                            }
+                        break
             if not articles:
                 # Issue #32: the article may exist only in another language (a gap
                 # in the Fedlex mirror — e.g. ZPO Art. 168 is present in fr/it but
@@ -19018,6 +19376,8 @@ def _format_get_law_response(result: dict) -> str:
         # One rendered link per response (the #art_ anchor already targets the
         # requested article). Bare URLs are what Copilot's sanitiser strips.
         text += f"Quelle: {_md_link(result.get('source_label') or 'Quelle', result['source_url'])}\n"
+    if result.get("article_number_alias"):
+        text += f"Note: {result['article_number_alias']['note']}\n"
     if result.get("article_language_fallback"):
         text += f"Note: {result['article_language_fallback']['note']}\n"
     text += "\n"
