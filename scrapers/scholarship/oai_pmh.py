@@ -259,6 +259,141 @@ def _record_matches_subject(record_dict: dict, subject_keywords: list[str]) -> b
     return any(k.lower() in haystack for k in subject_keywords)
 
 
+# ── Windowed harvesting (2026-08-22) ─────────────────────────────────
+#
+# Some repositories silently truncate long ListRecords chains: UNIGE ends
+# its chain after ~209 pages (~21k of ~124k records) with a clean "no more
+# token" — no error, nothing to distinguish it from a genuinely complete
+# harvest. The weekly harvest therefore "succeeded" at 1/6th coverage for
+# months, freezing the source at records datestamped ≤ 2012 (GitHub #89's
+# French-scholarship gap traces directly here).
+#
+# The countermeasure uses the one verifiable signal OAI gives us: the
+# first page of a chain carries resumptionToken/@completeListSize. Harvest
+# in datestamp windows; when a window's chain ends short of its declared
+# size — or declares more than MAX_WINDOW_RECORDS up front — bisect the
+# window and recurse. Windows small enough to finish in a few minutes also
+# stay comfortably inside short server-side token TTLs (UNIGE issues
+# ~minutes-scale expirationDate values).
+#
+# Datestamp caveat: OAI from/until filter on last-MODIFIED, not publication
+# date, and platform migrations re-stamp wholesale (UNIGE's Identify claims
+# earliestDatestamp 2016-04-01 while its oldest records carry 2008-10-29).
+# So the floor is a hard constant, not Identify's word.
+WINDOW_FLOOR = "1995-01-01"
+MAX_WINDOW_RECORDS = 8000
+_MAX_BISECT_DEPTH = 16
+_FETCH_RETRIES = 3
+_RETRY_BACKOFF_S = (5, 20)
+
+
+def _fetch_with_retry(url: str, *, user_agent: str, timeout: int,
+                      source: str, page: int) -> bytes:
+    """GET with retries — a transient 5xx must not end a harvest silently."""
+    last: Exception | None = None
+    for attempt in range(_FETCH_RETRIES):
+        try:
+            req = urllib.request.Request(
+                url, headers={"User-Agent": user_agent,
+                              "Accept": "application/xml"})
+            with urllib.request.urlopen(req, timeout=timeout) as r:
+                return r.read()
+        except Exception as e:                      # noqa: BLE001
+            last = e
+            if attempt < _FETCH_RETRIES - 1:
+                wait = _RETRY_BACKOFF_S[min(attempt, len(_RETRY_BACKOFF_S) - 1)]
+                log.warning("OAI fetch retry %d/%d (%s, page %d) in %ds: %s",
+                            attempt + 1, _FETCH_RETRIES, source, page, wait, e)
+                time.sleep(wait)
+    raise last  # type: ignore[misc]
+
+
+def _identify_granularity(base_url: str, *, user_agent: str,
+                          timeout: int) -> bool:
+    """True when the server declares seconds granularity via Identify.
+
+    Matters twice: SONAR (Invenio) rejects date-only from/until outright —
+    HTTP 422, not even an OAI badArgument — so windows must be sent as
+    full 'YYYY-MM-DDThh:mm:ssZ' there; and only seconds-granularity servers
+    can accept the sub-day bisection boundaries that migration-burst days
+    require. Defaults to False (date-only) when Identify is unreadable.
+    """
+    try:
+        qs = urllib.parse.urlencode({"verb": "Identify"})
+        req = urllib.request.Request(
+            f"{base_url}?{qs}",
+            headers={"User-Agent": user_agent, "Accept": "application/xml"})
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            root = ET.fromstring(r.read())
+        gran = root.findtext(f"{{{OAI_NS}}}Identify/{{{OAI_NS}}}granularity") or ""
+        return "hh:mm:ss" in gran.lower()
+    except Exception as e:                          # noqa: BLE001
+        log.warning("Identify/granularity probe failed (%s): %s — "
+                    "using date-only windows", base_url, e)
+        return False
+
+
+def _day_bounds(a: str | None, b: str | None,
+                seconds: bool) -> tuple[str | None, str | None]:
+    """Format window boundaries at the server's granularity."""
+    def lo(s):
+        if s is None or "T" in s or not seconds:
+            return s
+        return f"{s[:10]}T00:00:00Z"
+
+    def hi(s):
+        if s is None or "T" in s or not seconds:
+            return s
+        return f"{s[:10]}T23:59:59Z"
+    return lo(a), hi(b)
+
+
+def _bisect_window(a: str, b: str, *,
+                   seconds_granularity: bool = True) -> tuple[str, str, str] | None:
+    """Split [a, b] at its midpoint; None when it cannot split further.
+
+    Descends from date granularity into time-of-day when a window narrows
+    below two days — platform migrations re-stamp tens of thousands of
+    records onto a single day (UNIGE), so date-level splitting bottoms out
+    while the day itself still exceeds every cap. Sub-day boundaries use
+    the full OAI datetime form (UNIGE's Identify declares seconds
+    granularity); servers restricted to day granularity reject those with
+    badArgument, which surfaces as an aborted window rather than silence.
+    """
+    from datetime import datetime, timedelta, timezone
+
+    def _parse(s: str, *, end: bool) -> datetime:
+        if "T" in s:
+            return datetime.fromisoformat(s.replace("Z", "+00:00"))
+        d = datetime.fromisoformat(s[:10]).replace(tzinfo=timezone.utc)
+        return d.replace(hour=23, minute=59, second=59) if end else d
+
+    def _fmt(dt: datetime, *, date_only_ok: bool) -> str:
+        if date_only_ok and dt.hour == 0 and dt.minute == 0 and dt.second == 0:
+            return dt.date().isoformat()
+        return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    da = _parse(a, end=False)
+    db = _parse(b, end=True)
+    span = db - da
+    if span <= timedelta(minutes=2):
+        return None
+    mid = da + span / 2
+    mid = mid.replace(microsecond=0)
+    sub_day = span < timedelta(days=2)
+    if sub_day and not seconds_granularity:
+        return None                      # server can't address sub-day ranges
+    if not sub_day:
+        # Stay at date granularity while it still has room.
+        mid_date = da.date() + timedelta(days=span.days // 2)
+        return (a, mid_date.isoformat(),
+                (mid_date + timedelta(days=1)).isoformat())
+    nxt = mid + timedelta(seconds=1)
+    return (_fmt(da, date_only_ok=False) if "T" in a else a,
+            _fmt(mid, date_only_ok=False),
+            _fmt(nxt, date_only_ok=False))
+
+
 def harvest(
     base_url: str,
     source: str,
@@ -270,6 +405,8 @@ def harvest(
     output_dir: Path = DEFAULT_OUT,
     rate_limit: float = 1.0,
     max_records: int | None = None,
+    windowed: bool = False,
+    max_window_records: int = MAX_WINDOW_RECORDS,
     subject_filter: list[str] | None = None,
     fetch_timeout: int = 180,
     # If set, applied to records where dc:rights does NOT contain a CC URL
@@ -286,84 +423,113 @@ def harvest(
     """
     output_dir.mkdir(parents=True, exist_ok=True)
     out_path = output_dir / f"{source}.jsonl"
-
-    # Initial request parameters; subsequent requests use resumptionToken only.
-    params: dict[str, str] = {
-        "verb": "ListRecords",
-        "metadataPrefix": metadata_prefix,
-    }
-    if set_spec:
-        params["set"] = set_spec
-    if from_date:
-        params["from"] = from_date
-    if until_date:
-        params["until"] = until_date
+    tmp_path = output_dir / f"{source}.jsonl.tmp"
 
     total = 0
     deleted = 0
     pages = 0
-    token: str | None = None
+    windows_done = 0
+    aborted = False
+    hit_cap = False
+    seen_ids: set[str] = set()
     started = time.time()
 
-    with out_path.open("w", encoding="utf-8") as fh:
+    def _params_for(w_from: str | None, w_until: str | None) -> dict[str, str]:
+        p: dict[str, str] = {"verb": "ListRecords",
+                             "metadataPrefix": metadata_prefix}
+        if set_spec:
+            p["set"] = set_spec
+        if w_from:
+            p["from"] = w_from
+        if w_until:
+            p["until"] = w_until
+        return p
+
+    def _run_chain(fh, w_from: str | None, w_until: str | None):
+        """One resumption chain over [w_from, w_until].
+
+        Returns (scanned, complete_size, clean, oversize):
+          scanned       — record elements seen (kept + dupes + filtered + deleted)
+          complete_size — resumptionToken/@completeListSize from page 1, or None
+          clean         — chain ended without error
+          oversize      — windowed mode: page 1 declared more than
+                          max_window_records, chain abandoned for bisection
+                          (its page-1 records were NOT consumed)
+        """
+        nonlocal total, deleted, pages, aborted, hit_cap
+        token: str | None = None
+        scanned = 0
+        complete_size: int | None = None
         while True:
             pages += 1
             if token:
-                qs = urllib.parse.urlencode({"verb": "ListRecords", "resumptionToken": token})
+                qs = urllib.parse.urlencode(
+                    {"verb": "ListRecords", "resumptionToken": token})
             else:
-                qs = urllib.parse.urlencode(params)
+                qs = urllib.parse.urlencode(
+                    _params_for(*_day_bounds(w_from, w_until, seconds_gran)))
             url = f"{base_url}?{qs}"
             try:
-                req = urllib.request.Request(
-                    url, headers={"User-Agent": user_agent, "Accept": "application/xml"},
-                )
-                with urllib.request.urlopen(req, timeout=fetch_timeout) as r:
-                    raw = r.read()
-            except Exception as e:
-                log.error("OAI fetch failed (%s, page %d): %s", source, pages, e)
-                break
+                raw = _fetch_with_retry(url, user_agent=user_agent,
+                                        timeout=fetch_timeout,
+                                        source=source, page=pages)
+            except Exception as e:                  # noqa: BLE001
+                log.error("OAI fetch failed after %d retries (%s, page %d): %s",
+                          _FETCH_RETRIES, source, pages, e)
+                aborted = True
+                return scanned, complete_size, False, False
 
             try:
                 root = ET.fromstring(raw)
-            except ET.ParseError as e:
+            except ET.ParseError:
                 # Some IRs (e.g. ex-ante.ch as of 2026-05-27) emit control
                 # characters in dc:description that make the document not
-                # well-formed under XML 1.0. Strip XML-invalid control
-                # chars and retry once before giving up on the page.
+                # well-formed under XML 1.0. Strip and retry once.
                 cleaned = _STRIP_INVALID_XML.sub(b"", raw)
                 try:
                     root = ET.fromstring(cleaned)
-                    log.warning(
-                        "OAI XML had invalid control chars (%s, page %d) — "
-                        "stripped and retried",
-                        source, pages,
-                    )
+                    log.warning("OAI XML had invalid control chars "
+                                "(%s, page %d) — stripped and retried",
+                                source, pages)
                 except ET.ParseError as e2:
                     log.error("OAI XML parse failed (%s, page %d): %s",
                               source, pages, e2)
-                    break
+                    aborted = True
+                    return scanned, complete_size, False, False
 
-            # OAI error?
             err = root.find(f"{{{OAI_NS}}}error")
             if err is not None:
                 code = err.get("code", "?")
-                msg = (err.text or "").strip()
-                log.error("OAI error (%s, page %d) code=%s msg=%s",
-                          source, pages, code, msg)
                 if code == "noRecordsMatch":
-                    # Treat as empty harvest, not a failure
-                    pass
-                break
+                    return scanned, 0, True, False   # empty window, fine
+                log.error("OAI error (%s, page %d) code=%s msg=%s",
+                          source, pages, code, (err.text or "").strip())
+                aborted = True
+                return scanned, complete_size, False, False
 
             list_recs = root.find(f"{{{OAI_NS}}}ListRecords")
             if list_recs is None:
-                log.warning("OAI: no ListRecords element (%s, page %d)", source, pages)
-                break
+                log.warning("OAI: no ListRecords element (%s, page %d)",
+                            source, pages)
+                aborted = True
+                return scanned, complete_size, False, False
 
-            page_real = 0
+            rt = list_recs.find(f"{{{OAI_NS}}}resumptionToken")
+            if token is None and rt is not None:
+                cls = rt.get("completeListSize")
+                if cls and cls.isdigit():
+                    complete_size = int(cls)
+                # Oversize probe: don't walk a chain the server may truncate —
+                # one request spent, records re-arrive via the sub-windows.
+                if (windowed and complete_size
+                        and complete_size > max_window_records
+                        and (w_from or w_until)):
+                    return 0, complete_size, True, True
+
+            page_kept = 0
             page_filtered = 0
             for rec in list_recs.findall(f"{{{OAI_NS}}}record"):
-                # Surface deleted-record stats without writing them out
+                scanned += 1
                 hdr = rec.find(f"{{{OAI_NS}}}header")
                 if hdr is not None and (hdr.get("status") or "").lower() == "deleted":
                     deleted += 1
@@ -371,13 +537,12 @@ def harvest(
                 d = _record_to_dict(rec, source)
                 if d is None:
                     continue
+                rid = d.get("source_record_id") or ""
+                if rid and rid in seen_ids:
+                    continue                        # window-boundary duplicate
                 if subject_filter and not _record_matches_subject(d, subject_filter):
                     page_filtered += 1
                     continue
-                # Apply source-level license override when dc:rights didn't
-                # surface a CC license. Sources where the editorial license
-                # is documented externally use this to assert the correct
-                # per-record license.
                 if license_override and (
                     not d.get("license")
                     or not d["license"].upper().startswith("CC-")
@@ -385,24 +550,93 @@ def harvest(
                     d["license"] = license_override[0]
                     d["license_url"] = license_override[1]
                 fh.write(json.dumps(d, ensure_ascii=False) + "\n")
+                if rid:
+                    seen_ids.add(rid)
                 total += 1
-                page_real += 1
+                page_kept += 1
                 if max_records and total >= max_records:
                     break
 
             log.info(
-                "%s page %d: %d records (running total: %d, deleted: %d, subject-filtered: %d)",
-                source, pages, page_real, total, deleted, page_filtered,
+                "%s page %d [%s..%s]: %d records (running total: %d, "
+                "deleted: %d, subject-filtered: %d)",
+                source, pages, w_from or "*", w_until or "*",
+                page_kept, total, deleted, page_filtered,
             )
 
             if max_records and total >= max_records:
-                break
+                hit_cap = True
+                return scanned, complete_size, True, False
 
             rt = list_recs.find(f"{{{OAI_NS}}}resumptionToken")
             if rt is None or not (rt.text or "").strip():
-                break
+                return scanned, complete_size, True, False
             token = rt.text.strip()
             time.sleep(rate_limit)
+
+    # Window plan. LIFO stack, chronological-first; a window whose chain
+    # comes back short of its declared completeListSize (the silent-cap
+    # signature) or oversize is split and requeued.
+    seconds_gran = False
+    if windowed:
+        from datetime import date, timedelta
+        seconds_gran = _identify_granularity(
+            base_url, user_agent=user_agent, timeout=fetch_timeout)
+        w_start = (from_date or WINDOW_FLOOR)[:10]
+        w_end = (until_date or (date.today() + timedelta(days=1)).isoformat())[:10]
+        stack: list[tuple[str | None, str | None, int]] = [(w_start, w_end, 0)]
+    else:
+        stack = [(from_date, until_date, 0)]
+
+    with tmp_path.open("w", encoding="utf-8") as fh:
+        while stack and not hit_cap:
+            w_from, w_until, depth = stack.pop()
+            scanned, size, clean, oversize = _run_chain(fh, w_from, w_until)
+            windows_done += 1
+            truncated = (windowed and clean and not oversize
+                         and size is not None and size > 0 and scanned < size)
+            if oversize or truncated:
+                if truncated:
+                    log.warning(
+                        "%s window [%s..%s]: chain ended at %d of %d declared "
+                        "records (silent server cap) — bisecting",
+                        source, w_from, w_until, scanned, size)
+                split = _bisect_window(w_from or WINDOW_FLOOR,
+                                       w_until or "2100-01-01",
+                                       seconds_granularity=seconds_gran)
+                if split is None or depth >= _MAX_BISECT_DEPTH:
+                    log.error("%s window [%s..%s]: cannot bisect further — "
+                              "marking harvest aborted", source, w_from, w_until)
+                    aborted = True
+                else:
+                    a, mid, mid_next = split
+                    stack.append((mid_next, w_until, depth + 1))
+                    stack.append((a, mid, depth + 1))
+
+    # Atomic install — never let a broken harvest truncate last week's data
+    # (the old code opened the real file with mode "w" before the first
+    # request, so any mid-harvest death clobbered a good file).
+    prev_count = 0
+    if out_path.exists():
+        try:
+            with out_path.open("r", encoding="utf-8") as prev:
+                prev_count = sum(1 for _ in prev)
+        except OSError:
+            prev_count = 0
+    replaced = True
+    if aborted and total <= prev_count:
+        keep_as = output_dir / f"{source}.jsonl.aborted"
+        os.replace(tmp_path, keep_as)
+        replaced = False
+        log.error("%s harvest ABORTED with %d records (existing file has %d) "
+                  "— keeping existing file; partial saved to %s",
+                  source, total, prev_count, keep_as.name)
+    else:
+        os.replace(tmp_path, out_path)
+        if aborted:
+            log.warning("%s harvest aborted but yielded %d > %d existing "
+                        "records — installing the larger file",
+                        source, total, prev_count)
 
     elapsed = time.time() - started
     summary = {
@@ -413,6 +647,9 @@ def harvest(
         "pages": pages,
         "total_records": total,
         "deleted_records": deleted,
+        "windows": windows_done,
+        "aborted": aborted,
+        "replaced": replaced,
         "elapsed_seconds": round(elapsed, 1),
         "output_path": str(out_path),
     }

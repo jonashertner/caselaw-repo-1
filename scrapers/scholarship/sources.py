@@ -44,6 +44,13 @@ class ScholarshipSource:
     # User-facing homepage (linked from /docs/scholarship-licenses.html)
     homepage: Optional[str] = None
     notes: str = ""
+    # Adaptive datestamp-windowed harvesting (oai_pmh.harvest windowed=True).
+    # Required for repositories that silently truncate long resumption
+    # chains — UNIGE ends its chain ~21k records into ~124k with a clean
+    # "no token", indistinguishable from completion (found 2026-08-22, the
+    # source had been frozen at datestamp<=2012 for months). Enable for any
+    # IR with >20k records.
+    windowed: bool = False
     active: bool = True
     # For 'custom' kind: module path (e.g. "scrapers.scholarship.leges")
     custom_module: Optional[str] = None
@@ -352,7 +359,11 @@ SOURCES: list[ScholarshipSource] = [
         ),
         homepage="https://archive-ouverte.unige.ch/",
         notes="UNIGE full-text + metadata. Filtered post-hoc to law-keyword "
-              "subjects (~124k total records).",
+              "subjects (~124k total records). Their OAI silently truncates "
+              "chains at ~21k records (clean no-token end, no error) — the "
+              "source served only datestamp<=2012 content until windowed "
+              "harvesting (2026-08-22).",
+        windowed=True,
         active=True,
     ),
     ScholarshipSource(
@@ -537,12 +548,14 @@ SOURCES: list[ScholarshipSource] = [
             "and Archive (ZORA), University of Zurich. License per record."
         ),
         homepage="https://www.zora.uzh.ch/",
-        notes="UZH repository (DSpace 7). ~215k total records; filtered to "
-              "law-keyword subjects. UZH Faculty of Law is the largest in "
-              "Switzerland — expected highest single-IR yield. OAI returns "
-              "504 server-side timeout (2026-05-27) — needs DSpace REST API "
-              "or per-collection harvest.",
-        active=False,
+        notes="UZH repository (DSpace 7). completeListSize=217,930 "
+              "(2026-08-22); filtered to law-keyword subjects. UZH Faculty "
+              "of Law is the largest in Switzerland — expected highest "
+              "single-IR yield. The 2026-05-27 '504 server-side timeout' is "
+              "gone: Identify AND ListIdentifiers verified working "
+              "2026-08-22. Windowed as a precaution at this chain length.",
+        windowed=True,
+        active=True,
     ),
     ScholarshipSource(
         key="boris_law",
@@ -577,11 +590,66 @@ SOURCES: list[ScholarshipSource] = [
     ),
     ScholarshipSource(
         key="folia_law",
-        name="UniFR FOLIA — law faculty (endpoint TBD)",
+        name="UniFR FOLIA — superseded by unifr_law (SONAR)",
         kind="oai_pmh",
         base_url="https://folia.unifr.ch/oai2",
-        notes="University of Fribourg, bilingual (de/fr). Endpoint URL TBD.",
+        notes="RESOLVED 2026-08-22: folia.unifr.ch is a SONAR instance — "
+              "folia.unifr.ch/oai2d answers as 'Swiss Open Access "
+              "Repository' with SONAR's global sets. Fribourg content is "
+              "harvested as unifr_law below (sonar.rero.ch, set=unifr). "
+              "This placeholder stays inactive.",
         active=False,
+    ),
+
+    # ── SONAR (sonar.rero.ch) — one Invenio endpoint, many institutions ──
+    # ListSets verified 2026-08-22: unifr, usi, hesso, fernuni, hepbejune…
+    # Records carry per-record rights; treated like the other multi-faculty
+    # IRs (law-keyword filter post-hoc).
+    ScholarshipSource(
+        key="unifr_law",
+        name="UniFR via SONAR — law content",
+        kind="oai_pmh",
+        base_url="https://sonar.rero.ch/oai2d",
+        set_spec="unifr",
+        subject_filter=(
+            "340", "law", "Recht", "Rechtswiss", "droit", "diritto",
+            "jurisprudence", "Jura",
+        ),
+        rate_limit=1.0,
+        attribution=(
+            "© respective authors. Deposited in SONAR, the Swiss Open "
+            "Access Repository (set: Université de Fribourg). License per "
+            "record."
+        ),
+        homepage="https://sonar.rero.ch/",
+        notes="Fribourg is the bilingual (de/fr) law faculty — direct "
+              "target for the French private-law gap behind GitHub #89. "
+              "Endpoint + set verified live 2026-08-22.",
+        windowed=True,
+        active=True,
+    ),
+    ScholarshipSource(
+        key="usi_law",
+        name="USI via SONAR — law content",
+        kind="oai_pmh",
+        base_url="https://sonar.rero.ch/oai2d",
+        set_spec="usi",
+        subject_filter=(
+            "340", "law", "Recht", "droit", "diritto", "giurisprudenza",
+            "jurisprudence",
+        ),
+        rate_limit=1.0,
+        attribution=(
+            "© respective authors. Deposited in SONAR, the Swiss Open "
+            "Access Repository (set: Università della Svizzera italiana). "
+            "License per record."
+        ),
+        homepage="https://sonar.rero.ch/",
+        notes="First Italian-language academic source — the corpus held "
+              "~140 it-language records total before this. Endpoint + set "
+              "verified live 2026-08-22.",
+        windowed=True,
+        active=True,
     ),
     ScholarshipSource(
         key="libra_law",

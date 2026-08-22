@@ -37,6 +37,7 @@ def run_source(src, *, max_records: int | None = None) -> dict:
             set_spec=src.set_spec,
             metadata_prefix=src.metadata_prefix,
             rate_limit=src.rate_limit,
+            windowed=src.windowed,
             max_records=max_records,
             subject_filter=list(src.subject_filter) if src.subject_filter else None,
             license_override=license_override,
