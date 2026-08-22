@@ -1,10 +1,13 @@
 [Unit]
-Description=Monthly scholarly commentaries resync (2nd of the month, after laws)
+Description=Weekly scholarly commentaries resync (Mondays, after the crawl window)
 
 [Timer]
-# Runs at 13:00 UTC on the 2nd — well after the cantonal crawl's ~4h
-# window (07:00-11:00 UTC) so nothing competes for bandwidth.
-OnCalendar=*-*-02 13:00:00 UTC
+# Weekly since 2026-08-22 (was monthly on the 2nd). The whole OnlineKommentar
+# corpus is ~390 commentaries — a full resync is minutes of polite API calls —
+# while a monthly cadence left newly published commentaries invisible for up
+# to four weeks. 13:00 UTC keeps clear of the cantonal crawl's ~4h window
+# (07:00-11:00 UTC) so nothing competes for bandwidth.
+OnCalendar=Mon *-*-* 13:00:00 UTC
 Persistent=true
 RandomizedDelaySec=600
 

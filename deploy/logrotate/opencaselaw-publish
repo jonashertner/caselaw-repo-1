@@ -1,0 +1,29 @@
+# publish.log had no rotation — found 2026-08-22 at 1.1GB spanning six months
+# (2026-02-22 onward) on the root fs, while the nginx tier logs rotate daily.
+#
+# The writers are systemd (`StandardOutput=append:`): publish.log from
+# opencaselaw-publish.service, incremental_nightly.log from the Mon-Sat
+# incremental service. systemd holds an O_APPEND fd for the life of a run, so
+# `create` mode would rotate the name while the fd keeps writing to the old
+# inode — copytruncate is required. With O_APPEND, writes after truncation
+# land at the new EOF; no sparse-file artifact. The copy window can drop a few
+# in-flight lines when rotation coincides with a running build; accepted for an
+# operational log, and after the first (1.1GB) rotation the weekly copies are
+# ~40MB and sub-second.
+#
+# maxsize is a guard for pathologically chatty runs: checked daily, so a run
+# that logs gigabytes (e.g. a looping scraper) is cut at ~200MB rather than
+# discovered at 3.6GB the way tier3 was on 2026-07-30.
+#
+# Apply:  cp deploy/logrotate/opencaselaw-publish /etc/logrotate.d/opencaselaw-publish
+# Verify: logrotate -d /etc/logrotate.d/opencaselaw-publish
+/opt/caselaw/repo/logs/publish.log /opt/caselaw/repo/logs/incremental_nightly.log {
+    weekly
+    maxsize 200M
+    rotate 12
+    missingok
+    notifempty
+    compress
+    dateext
+    copytruncate
+}
