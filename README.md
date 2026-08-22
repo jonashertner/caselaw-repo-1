@@ -29,7 +29,7 @@ Open Swiss case law and legislation for legal research and AI.
 ```
 
 No sign-up, no API key, read-only. 42 tools; setup guides for individual
-clients are at [mcp.opencaselaw.ch](https://opencaselaw.ch/mcp/).
+clients are at [opencaselaw.ch/mcp](https://opencaselaw.ch/mcp/).
 
 ## A real result
 

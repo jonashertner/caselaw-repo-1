@@ -46,7 +46,7 @@ the paper snapshot predates this and reports the record count only. See
 |---|---:|---|---|
 | Citation edges extracted (paper snapshot) | 8,649,879 | `corpus_graph_stats.json::rg_citation_edges` | paper §4 |
 | Resolved edges (paper snapshot) | 8,089,112 (93.5 %) | same | paper |
-| **Resolved citation edges (live)** | **~9.65M** | `reference_graph.db::decision_citations` (= `stats.json::citation_edges`) | README, dataset_card, dashboards |
+| **Resolved citation edges (live)** | **~9.84M** | `reference_graph.db::decision_citations` (= `stats.json::citation_edges`) | README, dataset_card, dashboards |
 | **Extracted citations (live)** | **~10M** | `reference_graph.db::citation_targets` | README, dataset_card, dashboards |
 | Cited ≥ 100 times | 10,874 | `in_degree_buckets` | paper Table 2 |
 | Cited ≥ 1,000 times | 999 | same | paper |
@@ -92,8 +92,8 @@ the paper snapshot predates this and reports the record count only. See
 
 | Mode | Tools | Where used |
 |---|---:|---|
-| **Public / remote mode** (deployed at `mcp.opencaselaw.ch`) | **41** | public-facing dashboards, live API |
-| **Local mode** (running on operator's machine with `update_database` + `check_update_status`) | **43** | README internal docs, local dev guides |
+| **Public / remote mode** (deployed at `mcp.opencaselaw.ch`) | **42** | public-facing dashboards, live API |
+| **Local mode** (running on operator's machine with `update_database` + `check_update_status`) | **44** | README internal docs, local dev guides |
 | **Local-only delta** | 2 (`update_database`, `check_update_status`) | technical references |
 
 Standard phrasing: *"44 MCP tools (42 remote in public mode + 2 local-only)"* or simply *"42 tools"* when only the public surface matters.
