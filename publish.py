@@ -142,8 +142,17 @@ def run_cmd(
     timeout: int = 3600,
     stall_timeout: int | None = 5400,
     on_line=None,
+    outcome_sink: dict | None = None,
 ) -> bool:
     """Run a command, return True on success.
+
+    outcome_sink, when given, receives {"timed_out": bool, "stalled": bool,
+    "returncode": int|None} so a caller can distinguish "the command was
+    killed at its wall-clock cap" from "the command ran and said no". The
+    QC gate needs that distinction: a timeout says nothing about corpus
+    quality, but until 2026-08-22 it was indistinguishable from a CRITICAL
+    verdict and cascade-skipped the HF upload and both git pushes (08-18,
+    08-21 — both timeouts, zero regressions).
 
     Streams stdout/stderr line-by-line to the logger instead of buffering
     the full output in memory (avoids OOM on long-running steps like
@@ -269,6 +278,10 @@ def run_cmd(
             proc.wait()
         finally:
             wall_timer.cancel()
+        if outcome_sink is not None:
+            outcome_sink["timed_out"] = timed_out.is_set()
+            outcome_sink["stalled"] = stalled.is_set()
+            outcome_sink["returncode"] = proc.returncode
         if timed_out.is_set():
             logger.error(f"  timed out after {timeout}s (wall-clock)")
             return False
@@ -283,6 +296,10 @@ def run_cmd(
         return True
     except Exception as e:
         logger.error(f"  failed: {e}")
+        if outcome_sink is not None:
+            outcome_sink.setdefault("timed_out", False)
+            outcome_sink.setdefault("stalled", False)
+            outcome_sink.setdefault("returncode", None)
         return False
 
 
@@ -1105,9 +1122,41 @@ def step_7_publish_delta(dry_run: bool = False) -> bool:
     )
 
 
+def _sync_homepage_fallbacks(dry_run: bool = False) -> None:
+    """Rewrite docs/index.html's static numbers from docs/stats.json.
+
+    Never raises and never returns failure — the script itself is strict
+    (unknown markup or implausible values exit non-zero with nothing
+    written), and this wrapper degrades every failure to a WARN log line.
+    Runs at both push points (6a early, 6 final); the script is idempotent,
+    so the second invocation is a no-op when nothing changed in between.
+    """
+    script = REPO_DIR / "scripts" / "sync_homepage_fallbacks.py"
+    if not script.exists():
+        logger.warning("  sync_homepage_fallbacks.py missing — homepage "
+                       "fallbacks not refreshed this run")
+        return
+    if dry_run:
+        logger.info("  [dry-run] would sync docs/index.html from stats.json")
+        return
+    try:
+        proc = subprocess.run(
+            [sys.executable, str(script)],
+            capture_output=True, text=True, timeout=60, cwd=str(REPO_DIR),
+        )
+        line = (proc.stdout or proc.stderr or "").strip().splitlines()
+        logger.info("  homepage sync: %s", line[-1] if line else f"exit {proc.returncode}")
+        if proc.returncode != 0:
+            logger.warning("  homepage sync exited %s — docs/index.html "
+                           "left as committed (non-fatal)", proc.returncode)
+    except Exception as e:
+        logger.warning("  homepage sync failed (non-fatal): %s", e)
+
+
 def step_6_git_push(dry_run: bool = False) -> bool:
     """Step 6: Git commit + push docs/stats.json + docs/feed.xml + docs/feeds/
-    + docs/integrity/ (the daily Merkle root from Step 5f)."""
+    + docs/integrity/ (the daily Merkle root from Step 5f) + docs/index.html
+    (homepage fallbacks re-derived from stats.json)."""
     logger.info("Step 6: Git commit + push stats.json + feeds + integrity")
 
     stats_file = DOCS_DIR / "stats.json"
@@ -1115,10 +1164,18 @@ def step_6_git_push(dry_run: bool = False) -> bool:
         logger.warning("  docs/stats.json does not exist, skipping")
         return True
 
+    # Homepage static fallbacks: rewrite from the stats.json generated just
+    # above, so the numbers non-JS clients see (crawlers, ~76 % of traffic)
+    # can never drift again — found 2026-08-22 two months stale (991'298
+    # rendered against a live 1'054'206) because nothing regenerated them.
+    # Non-fatal by contract: a one-day-stale homepage is cosmetic, a failed
+    # publish is not. See docs/proposals/homepage-fallback-regeneration.md.
+    _sync_homepage_fallbacks(dry_run)
+
     # Files we publish on every cycle. The diff check below short-circuits
     # if none of them changed.
     paths = ["docs/stats.json", "docs/feed.xml", "docs/feeds",
-             "docs/quality.json", "docs/quality.html",
+             "docs/quality.json", "docs/quality.html", "docs/index.html",
              # docs/integrity/ = the daily RFC-6962 Merkle root (Step 5f). It
              # was omitted here, so the public integrity page froze at the
              # 2026-05-21 commit while the nightly kept regenerating it
@@ -1246,7 +1303,7 @@ def step_5g_generate_coverage(dry_run: bool = False) -> bool:
     )
 
 
-def step_5c_quality_gate(dry_run: bool = False) -> bool:
+def step_5c_quality_gate(dry_run: bool = False) -> bool | str:
     """Step 5c: Pre-push QC gate.
 
     Runs `python -m quality.cli run --critical-only --gate` against the
@@ -1254,6 +1311,17 @@ def step_5c_quality_gate(dry_run: bool = False) -> bool:
     failed; that propagates here as `return False`, which marks Step 5c
     as failed and (because 5c is in CRITICAL_STEPS) skips the guarded
     Step 6 git pushes — so a regression never reaches users.
+
+    A TIMEOUT is not a verdict. The gate runs AFTER the atomic swap, so
+    it guards distribution (HF upload, git pushes), not serving — and a
+    scan killed at its wall-clock cap says nothing about corpus quality.
+    Both recent gate failures (08-18, 08-21) were exactly-3600s timeouts
+    with zero regressions behind them, and each cost a full distribution
+    cycle. On timeout/stall this step now returns the WARN string below:
+    truthy, so no cascade — distribution proceeds; recorded in the
+    summary and last_publish_success.non_fatal_failures; alerted via
+    ntfy as DEGRADED so the slow scan still gets investigated. A genuine
+    CRITICAL verdict (exit 1) still returns False and still blocks.
 
     The gate ALSO writes the full report to docs/quality.json (for the
     public dashboard) and to quality/reports/latest.json + dated
@@ -1281,8 +1349,33 @@ def step_5c_quality_gate(dry_run: bool = False) -> bool:
     # Bumped 1800→3600 after the 2026-05-28 publish failure where the gate
     # timed out under disk-I/O contention from concurrent build_fts5 + graph
     # rebuild steps. The checks themselves passed (8/8) when given time;
-    # the limit was wall-clock, not a real regression.
-    ok = run_cmd(cmd, "QC gate", dry_run, timeout=3600)
+    # the limit was wall-clock, not a real regression. The ceiling is NOT
+    # raised further — timeout is now a WARN, so it no longer needs headroom
+    # to protect distribution, and keeping it tight preserves the signal
+    # that the scan is outgrowing its budget.
+    _gate = {}
+    ok = run_cmd(cmd, "QC gate", dry_run, timeout=3600, outcome_sink=_gate)
+    if not ok and (_gate.get("timed_out") or _gate.get("stalled")):
+        how = "timed out" if _gate.get("timed_out") else "stalled"
+        logger.warning(
+            "  Step 5c DEGRADED: gate %s before reaching a verdict — "
+            "distribution proceeds; corpus quality is UNVERIFIED this run. "
+            "Investigate the scan duration (qc-gate p90 has been creeping "
+            "toward the 3600s ceiling).", how,
+        )
+        try:
+            _notify(
+                "Publish DEGRADED — QC gate " + how,
+                "The gate hit its wall-clock cap without a verdict. "
+                "HF upload and git pushes are proceeding on the previous "
+                "night's green plus today's non-gate checks. This alert is "
+                "about scan runtime, not corpus quality — but tonight's "
+                "corpus is unverified until the next green gate.",
+                priority="high",
+            )
+        except Exception:
+            logger.exception("(failed to send gate-timeout alert)")
+        return f"WARN (gate {how} — distribution proceeded, verdict unknown)"
     if not ok:
         # Send a focused alert with the failing-check names so the
         # operator knows what triggered the block.
@@ -2054,6 +2147,12 @@ def main():
                 non_fatal_failures.append(f"{num} ({name})")
             else:
                 failed_steps.append(f"{num} ({name})")
+        elif isinstance(outcome, str) and outcome.startswith("WARN"):
+            # Degraded-but-not-blocking (today: a QC-gate timeout). Recorded
+            # in last_publish_success.non_fatal_failures so a run that shipped
+            # with an unverified corpus is visible in the marker, not only in
+            # a log line that scrolls away.
+            non_fatal_failures.append(f"{num} ({name}): {outcome}")
     logger.info(f"  Total time: {total_elapsed:.1f}s")
 
     # One summary line per run, success or failure alike. The failure
