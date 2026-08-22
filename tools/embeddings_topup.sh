@@ -48,18 +48,27 @@ done
 echo "[$(date -u +%FT%TZ)] window open — copying live DB to working copy"
 
 # ── copy (never write the immutable-held live file) ─────────────────────────
-rm -f "$WORK"
-cp "$LIVE" "$WORK" || { echo "copy failed"; exit 1; }
-echo "[$(date -u +%FT%TZ)] copy done ($(du -h "$WORK" | cut -f1)) — encoding"
+# Resume-aware: a WORK file from an earlier truncated run already holds its
+# encodes (idempotent upserts) — recopying would throw them away.
+if [ -f "$WORK" ]; then
+    echo "[$(date -u +%FT%TZ)] existing working copy found ($(du -h "$WORK" | cut -f1)) — resuming into it"
+else
+    cp "$LIVE" "$WORK" || { echo "copy failed"; exit 1; }
+    echo "[$(date -u +%FT%TZ)] copy done ($(du -h "$WORK" | cut -f1)) — encoding"
+fi
 
 # ── encode (idle I/O, low CPU priority; --restart because the offset
 #    watermark is meaningless across nightly structure rebuilds — the
 #    existing-key filter does the real dedup) ────────────────────────────────
 cd "$REPO"
+# 12 of 16 cores + batch 256: the first run used torch defaults (batch 64,
+# ~4 cores, 36 par/s) while the host idled — measured 2026-08-22 22:51,
+# 435% CPU of 1600% available. nice 15 keeps serving strictly ahead.
+export OMP_NUM_THREADS=12 MKL_NUM_THREADS=12 OPENBLAS_NUM_THREADS=12
 nice -n 15 ionice -c 3 python3 -m search_stack.build_paragraph_embeddings \
     --structure-db output/decision_structure.db \
     --output-db "$WORK" \
-    --restart --batch-size 64 &
+    --restart --batch-size 256 &
 BUILD_PID=$!
 
 ( while kill -0 "$BUILD_PID" 2>/dev/null; do
