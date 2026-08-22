@@ -55,6 +55,20 @@ from search_stack.reference_extraction import (  # noqa: E402
 
 EXTRACTOR_VERSION = 1
 
+# The version the state tables actually carry. Derived from the extraction
+# source, so a code change to reference_extraction.py or the full builder
+# (which owns the BGer↔BGE cross-ref pass, 48d213d4) forces a bootstrap
+# without anyone remembering to bump the integer above. c5edb71c shipping
+# without a bump is how the shadow spent ten weeks 13% short on
+# citation_targets. See search_stack/extractor_version.py.
+from search_stack.extractor_version import effective_version as _eff_ver  # noqa: E402
+
+EFFECTIVE_EXTRACTOR_VERSION = _eff_ver(
+    EXTRACTOR_VERSION,
+    Path(__file__).parent / "reference_extraction.py",
+    Path(__file__).parent / "build_reference_graph.py",
+)
+
 # Bootstrap streaming-batch size. Module-scoped so tests can monkey-patch
 # down to a small value to verify the streaming contract on a tiny corpus.
 BOOTSTRAP_BATCH_SIZE = 1000
@@ -152,7 +166,7 @@ def _select_diff_base(live_db: Path, output_path: Path,
     mismatches = []
     for cand in candidates:
         stored = _peek_extractor_version(cand)
-        if stored == str(EXTRACTOR_VERSION):
+        if stored == EFFECTIVE_EXTRACTOR_VERSION:
             return cand, None
         if stored is not None:
             mismatches.append(f"{cand.name}:{stored}")
@@ -438,7 +452,7 @@ def _bootstrap_via_full_rebuild(
                 _flush()
         _flush()
 
-        _set_meta(conn, "extractor_version", str(EXTRACTOR_VERSION))
+        _set_meta(conn, "extractor_version", EFFECTIVE_EXTRACTOR_VERSION)
         _set_meta(
             conn,
             "last_full_rebuild_at",
@@ -478,7 +492,7 @@ def build_graph_incremental(
         "decisions_db": str(decisions_db),
         "graph_db": str(graph_db),
         "output_path": str(output_path),
-        "extractor_version": EXTRACTOR_VERSION,
+        "extractor_version": EFFECTIVE_EXTRACTOR_VERSION,
     }
 
     base, bootstrap_reason = _select_diff_base(
@@ -551,7 +565,7 @@ def build_graph_incremental(
 
         _resolve_citation_targets(conn)
 
-        _set_meta(conn, "extractor_version", str(EXTRACTOR_VERSION))
+        _set_meta(conn, "extractor_version", EFFECTIVE_EXTRACTOR_VERSION)
         _set_meta(
             conn,
             "last_incremental_run_at",

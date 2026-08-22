@@ -76,7 +76,7 @@ def test_sibling_preferred_over_stateless_live(mod, tmp_path):
     live = tmp_path / "live.db"
     sibling = tmp_path / "live_incremental.db"
     _make_state_db(live, version=None)
-    _make_state_db(sibling, version=str(mod.EXTRACTOR_VERSION))
+    _make_state_db(sibling, version=mod.EFFECTIVE_EXTRACTOR_VERSION)
 
     base, reason = mod._select_diff_base(live, sibling, force_full=False)
     assert base == sibling
@@ -89,7 +89,7 @@ def test_falls_back_to_live_with_state(mod, tmp_path):
     a manually seeded base) → use live."""
     live = tmp_path / "live.db"
     sibling = tmp_path / "live_incremental.db"  # does not exist
-    _make_state_db(live, version=str(mod.EXTRACTOR_VERSION))
+    _make_state_db(live, version=mod.EFFECTIVE_EXTRACTOR_VERSION)
 
     base, reason = mod._select_diff_base(live, sibling, force_full=False)
     assert base == live
@@ -123,7 +123,7 @@ def test_version_mismatch_bootstraps_with_reason(mod, tmp_path):
 def test_force_full_overrides_valid_state(mod, tmp_path):
     live = tmp_path / "live.db"
     sibling = tmp_path / "live_incremental.db"
-    _make_state_db(sibling, version=str(mod.EXTRACTOR_VERSION))
+    _make_state_db(sibling, version=mod.EFFECTIVE_EXTRACTOR_VERSION)
 
     base, reason = mod._select_diff_base(live, sibling, force_full=True)
     assert base is None
@@ -135,7 +135,7 @@ def test_in_place_mode_collapses_to_live_only(mod, tmp_path):
     """When output == live (in-place), the selection degenerates to the
     original single-candidate behavior."""
     live = tmp_path / "live.db"
-    _make_state_db(live, version=str(mod.EXTRACTOR_VERSION))
+    _make_state_db(live, version=mod.EFFECTIVE_EXTRACTOR_VERSION)
 
     base, reason = mod._select_diff_base(live, live, force_full=False)
     assert base == live

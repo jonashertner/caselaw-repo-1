@@ -442,7 +442,11 @@ def test_extractor_version_bump_forces_full_rebuild(
     # bootstrap (i.e. re-run full builder).
     import search_stack.build_reference_graph_incremental as mod
 
-    monkeypatch.setattr(mod, "EXTRACTOR_VERSION", EXTRACTOR_VERSION + 1)
+    # A "bump" is any change to the effective version — manual integer
+    # or extraction-source edit both land here (the comparison sites
+    # read EFFECTIVE_EXTRACTOR_VERSION since the 2026-08-22 autobump).
+    monkeypatch.setattr(mod, "EFFECTIVE_EXTRACTOR_VERSION",
+                        mod.EFFECTIVE_EXTRACTOR_VERSION + ".bumped")
 
     incr_out = tmp_path / "graph_incremental.db"
     stats = build_graph_incremental(
@@ -457,7 +461,7 @@ def test_extractor_version_bump_forces_full_rebuild(
     conn = sqlite3.connect(incr_out)
     try:
         v = _get_meta(conn, "extractor_version")
-        assert v == str(EXTRACTOR_VERSION + 1)
+        assert v == mod.EFFECTIVE_EXTRACTOR_VERSION
     finally:
         conn.close()
 

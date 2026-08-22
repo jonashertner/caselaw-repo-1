@@ -307,7 +307,11 @@ def test_extractor_version_bump_forces_full(
     )
 
     import search_stack.extract_decision_structure_incremental as mod
-    monkeypatch.setattr(mod, "EXTRACTOR_VERSION", EXTRACTOR_VERSION + 1)
+    # A "bump" is any change to the effective version — manual integer
+    # or extraction-source edit both land here (the comparison sites
+    # read EFFECTIVE_EXTRACTOR_VERSION since the 2026-08-22 autobump).
+    monkeypatch.setattr(mod, "EFFECTIVE_EXTRACTOR_VERSION",
+                        mod.EFFECTIVE_EXTRACTOR_VERSION + ".bumped")
 
     incr_out = tmp_path / "structure_incremental.db"
     stats = build_structure_incremental(

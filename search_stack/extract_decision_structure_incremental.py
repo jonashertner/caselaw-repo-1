@@ -58,6 +58,18 @@ from search_stack.extract_decision_structure import (  # noqa: E402
 # full re-extract on the next run, healing the frozen backlog.
 EXTRACTOR_VERSION = 2
 
+# Derived version — the state tables carry this, so a change to the
+# structure extractor bootstraps the sidecar without a remembered bump.
+# 9cf68db5 shipping without one is how 3,995 decisions' coverage stayed
+# LOST vs the full rebuild despite this file's own comment narrating the
+# identical 2026-07-03 incident. See search_stack/extractor_version.py.
+from search_stack.extractor_version import effective_version as _eff_ver  # noqa: E402
+
+EFFECTIVE_EXTRACTOR_VERSION = _eff_ver(
+    EXTRACTOR_VERSION,
+    Path(__file__).parent / "extract_decision_structure.py",
+)
+
 # Schema additions on top of the existing decision_structure schema. The
 # triggers keep FTS5 lockstep so the post-build "rebuild" silent phase
 # isn't needed on incremental runs.
@@ -157,7 +169,7 @@ def _select_diff_base(live_db: Path, output_path: Path,
     mismatches = []
     for cand in candidates:
         stored = _peek_extractor_version(cand)
-        if stored == str(EXTRACTOR_VERSION):
+        if stored == EFFECTIVE_EXTRACTOR_VERSION:
             return cand, None
         if stored is not None:
             mismatches.append(f"{cand.name}:{stored}")
@@ -392,7 +404,7 @@ def _bootstrap_via_full(
         conn, rows_for_writes, hashes_by_id,
     )
 
-    _set_meta(conn, "extractor_version", str(EXTRACTOR_VERSION))
+    _set_meta(conn, "extractor_version", EFFECTIVE_EXTRACTOR_VERSION)
     _set_meta(
         conn,
         "last_full_rebuild_at",
@@ -438,7 +450,7 @@ def build_structure_incremental(
         "decisions_db": str(decisions_db),
         "structure_db": str(structure_db),
         "output_path": str(output_path),
-        "extractor_version": EXTRACTOR_VERSION,
+        "extractor_version": EFFECTIVE_EXTRACTOR_VERSION,
     }
 
     base, bootstrap_reason = _select_diff_base(
@@ -485,7 +497,7 @@ def build_structure_incremental(
         stats["decisions_written"] = decisions_n
         stats["paragraphs_written"] = paragraphs_n
 
-        _set_meta(conn, "extractor_version", str(EXTRACTOR_VERSION))
+        _set_meta(conn, "extractor_version", EFFECTIVE_EXTRACTOR_VERSION)
         _set_meta(
             conn,
             "last_incremental_run_at",
