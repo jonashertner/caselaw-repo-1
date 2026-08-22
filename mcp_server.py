@@ -11493,6 +11493,115 @@ def _build_citation_strings(decision: dict, pinpoint: str | None = None) -> dict
     }
 
 
+# Function words dense enough to identify prose language by counting. Used
+# only to decide "is this clearly NOT the language this record is in" — never
+# to assert what language something IS.
+_BLEED_LANG_MARKERS = {
+    "de": {"der", "die", "das", "und", "ist", "nicht", "den", "dem", "ein",
+           "eine", "von", "zu", "mit", "auf", "für", "sich", "dass", "wird",
+           "werden", "auch", "im", "aus", "bei", "nach", "als", "es", "hat",
+           "haben", "diese", "dieser", "wenn", "war"},
+    "fr": {"le", "la", "les", "de", "des", "du", "et", "est", "ne", "pas",
+           "que", "qui", "dans", "pour", "sur", "une", "par", "avec", "aux",
+           "cette", "il", "elle", "au", "son", "ses", "été", "être", "sont",
+           "ont", "mais", "leur", "plus", "ainsi"},
+    "it": {"il", "lo", "la", "le", "gli", "di", "del", "della", "che", "per",
+           "con", "una", "nel", "sono", "come", "si", "alla", "dei", "delle",
+           "ha", "anche", "non", "questa", "questo", "essere", "stato"},
+}
+
+# A first line that is nothing but a page number: the running head of a
+# printed law report, not the opening of a decision.
+_PAGE_HEADER_RE = re.compile(r"^\s*\d{1,4}\s*$")
+
+
+def _looks_like_page_bleed(text: str, decision: dict | None) -> bool:
+    """True when a full_text opening paragraph is the PREVIOUS decision's tail.
+
+    Internal task #49 / GitHub #84. Old volumes were OCR'd from printed
+    reports, and a record's full_text can begin mid-sentence in the prior
+    case, behind a running head ("346 \\n Obligationenrecht. N° 49."). That
+    text then reaches the caller as `rule_statement`, which cite() explicitly
+    offers as a verbatim quotable excerpt — so the citation contract passes
+    while the words belong to a different decision.
+
+    Two cheap signals, either sufficient:
+      (a) the paragraph opens with a bare page-number line;
+      (b) the prose is confidently in a language the record is not in.
+
+    Deliberately incomplete: a same-language bleed passes both checks. This
+    is the cheapest detector that catches the class, not a full solution —
+    the real repair is corpus-side (#48/#49) at the next structure rebuild.
+    """
+    if not text:
+        return False
+    first_line = text.split("\n", 1)[0]
+    if _PAGE_HEADER_RE.match(first_line):
+        return True
+
+    own = (decision or {}).get("language")
+    if own not in _BLEED_LANG_MARKERS:
+        return False
+    tokens = re.findall(r"[a-zà-öø-ÿ]+", text.lower())
+    if len(tokens) < 15:
+        return False
+    scores = {lang: sum(1 for t in tokens if t in marks)
+              for lang, marks in _BLEED_LANG_MARKERS.items()}
+    own_score = scores.get(own, 0)
+    best_other = max((s for l, s in scores.items() if l != own), default=0)
+    # Require both an absolute signal and clear dominance: a German decision
+    # quoting a French phrase must not trip this.
+    return best_other >= 5 and best_other >= own_score * 2
+
+
+# BGE volumes are annual: volume 1 is 1875, so volume N collects the year
+# N + 1874 (vol. 76 = 1950, vol. 150 = 2024). A stored decision_date whose
+# year is far off its own volume is a corpus defect, not an unusual case.
+_BGE_VOLUME_RE = re.compile(r"\b(?:BGE|ATF|DTF)\s+(\d{1,3})\s+[IVX]+\s+\d+",
+                            re.IGNORECASE)
+_BGE_VOLUME_EPOCH = 1874
+# ±1 absorbs the genuine edge: a decision taken late in one year and printed
+# in the next volume.
+_BGE_YEAR_TOLERANCE = 1
+
+
+def _bge_volume_year_mismatch(citation_text: str,
+                              iso_date: str | None) -> dict | None:
+    """Flag a BGE whose stored year contradicts its volume (#48 / GitHub #84).
+
+    Returns a dict describing the mismatch, or None when the reference is not
+    a BGE, carries no usable date, or checks out. Detection only — the year
+    implied by the volume is NOT a substitute date, because the volume says
+    nothing about month and day.
+    """
+    if not citation_text or not iso_date:
+        return None
+    m = _BGE_VOLUME_RE.search(citation_text)
+    if not m:
+        return None
+    try:
+        volume = int(m.group(1))
+        stored_year = int(str(iso_date)[:4])
+    except (TypeError, ValueError):
+        return None
+    if volume <= 0 or stored_year <= 0:
+        return None
+    expected = volume + _BGE_VOLUME_EPOCH
+    if abs(stored_year - expected) <= _BGE_YEAR_TOLERANCE:
+        return None
+    return {
+        "stored_date": str(iso_date)[:10],
+        "volume": volume,
+        "expected_year": expected,
+        "note": (
+            f"Stored date is {str(iso_date)[:10]}, but BGE volume {volume} "
+            f"collects {expected}. The stored date is unreliable for this "
+            "record; the volume year is the one to trust. Do not state the "
+            "full date without checking the published decision."
+        ),
+    }
+
+
 def _rule_statement(
     decision: dict | None,
     pinpoint_text: str | None = None,
@@ -11504,17 +11613,26 @@ def _rule_statement(
     Priority: explicit pinpoint text (e.g. an Erwägung body) > Regeste >
     first paragraph of full_text. Truncated at sentence boundary when
     possible to preserve verbatim-ness.
+
+    The full_text fallback is screened for page-bleed (#84); the other two
+    are not. A Regeste is legitimately trilingual on BGEs, so a language
+    check there would false-fire, and pinpoint_text is text the caller
+    already asked for by number.
     """
-    candidates = [pinpoint_text]
+    candidates: list[tuple[str | None, bool]] = [(pinpoint_text, False)]
     if decision:
-        candidates.append(decision.get("regeste"))
+        candidates.append((decision.get("regeste"), False))
         ft = decision.get("full_text") or ""
         if ft:
             # First paragraph only — anything longer risks the LLM pulling a
             # fragmented quote out of context.
-            candidates.append(ft.split("\n\n", 1)[0])
-    for c in candidates:
+            candidates.append((ft.split("\n\n", 1)[0], True))
+    for c, screen in candidates:
         if not c:
+            continue
+        if screen and _looks_like_page_bleed(c, decision):
+            # Serving nothing is correct here: every consumer treats this
+            # field as quotable, so a wrong quote is worse than no quote.
             continue
         c = c.strip()
         if not c:
@@ -11916,6 +12034,34 @@ def _drop_stopwords_for_fts(safe_query: str) -> str:
     kept = [t for t in q.split()
             if len(t) > 2 and t.lower() not in _LEGAL_STOPWORDS]
     return " ".join(kept) if kept else safe_query
+
+
+def _term_coverage(query: str, text: str) -> tuple[int, int, list[str]]:
+    """How many substantive query terms actually occur in `text`.
+
+    Accent- and inflection-tolerant by design: comparison is on a folded,
+    truncated stem, so "nullité" matches "nullite" and "corruption" matches
+    "corruptions". Returns (matched, total, missing_terms).
+    """
+    def _fold(s: str) -> str:
+        return "".join(
+            c for c in unicodedata.normalize("NFD", s.lower())
+            if unicodedata.category(c) != "Mn"
+        )
+    terms = [t for t in re.findall(r"[0-9A-Za-zÀ-ÖØ-öø-ÿ]+", query or "")
+             if len(t) > 2 and t.lower() not in _LEGAL_STOPWORDS]
+    terms = list(dict.fromkeys(terms))
+    if not terms:
+        return (0, 0, [])
+    hay = _fold(text or "")
+    matched, missing = 0, []
+    for t in terms:
+        stem = _fold(t)[:6]
+        if stem and stem in hay:
+            matched += 1
+        else:
+            missing.append(t)
+    return (matched, len(terms), missing)
 
 
 def _score_pinpoint_confidence(
@@ -13662,8 +13808,11 @@ def _handle_cite(
                 pinpoint_text = p["text"]
                 break
     rule = _rule_statement(decision, pinpoint_text=pinpoint_text)
+    _date_warning = _bge_volume_year_mismatch(
+        citation["citation_string_de"], decision.get("decision_date"),
+    )
 
-    return {
+    result = {
         "exists": True,
         "decision_id": decision.get("decision_id"),
         "court": decision.get("court"),
@@ -13689,6 +13838,19 @@ def _handle_cite(
             "excerpt — do not paraphrase inside quotation marks)."
         ),
     }
+    if _date_warning:
+        result["decision_date_warning"] = _date_warning
+    if rule is None and (decision.get("full_text") or decision.get("regeste")):
+        # #84: the field is absent rather than wrong. Say why, so a caller
+        # does not read the omission as "this decision has no holding".
+        result["rule_statement_note"] = (
+            "No rule_statement offered: the stored opening text for this "
+            "record did not pass the page-bleed check (it appears to carry "
+            "the preceding decision's text from the printed volume), so "
+            "quoting it would attribute another case's words to this one. "
+            "Use get_erwaegung / get_regeste for quotable text."
+        )
+    return result
 
 
 def _handle_check_claim_support(
@@ -14603,6 +14765,33 @@ def _audit_dates(
             continue
         # If we couldn't parse, only flag when both look ISO
         if not re.match(r"^\d{4}-\d{2}-\d{2}$", claimed_iso):
+            continue
+        # #48 / GitHub #84: some BGE records carry a decision_date that
+        # contradicts their own volume year. Blaming the draft for that is
+        # backwards — a correct date gets reported as a hallucination. Where
+        # the stored date fails volume sanity, say the corpus is the doubtful
+        # side.
+        _suspect = _bge_volume_year_mismatch(cit["full_match"], actual_iso)
+        if _suspect and abs(int(claimed_iso[:4]) - _suspect["expected_year"]) \
+                <= _BGE_YEAR_TOLERANCE:
+            # Draft agrees with the volume; the stored date is the outlier.
+            issues.append({
+                "category": "date",
+                "citation": cit["full_match"] + " " + m.group(0),
+                "position": cit["span"][0],
+                "problem": "stored_date_suspect",
+                "claimed_date": claimed_iso,
+                "actual_date": actual_iso,
+                "volume_year": _suspect["expected_year"],
+                "suggestion": (
+                    f"Draft says {claimed_iso}; the corpus has {actual_iso}, "
+                    f"but BGE volume {_suspect['volume']} collects "
+                    f"{_suspect['expected_year']}, so the STORED date is the "
+                    "unreliable one here and the draft's year is consistent "
+                    "with the volume. Keep the year; verify the exact day "
+                    "against the published decision before asserting it."
+                ),
+            })
             continue
         issues.append({
             "category": "date",
@@ -17375,6 +17564,26 @@ def _format_search_scholarship_response(result: dict) -> str:
     rs = result.get("results", [])
     text = f"# Scholarship Search: \"{result['query']}\"\n"
     text += f"Found {result['count']} results.\n\n"
+    # GitHub #89. A caller cannot otherwise tell a thin corpus from a ranking
+    # failure: both return a full page of plausible-looking titles. Measured
+    # on the top hit and reported, never used to reorder or suppress — that
+    # would need the search benchmark. The tested-negative stopword filter
+    # above is still off; this is the signal the reporter actually asked for.
+    if rs and result.get("query"):
+        _m, _t, _missing = _term_coverage(
+            result["query"],
+            " ".join(str(rs[0].get(k) or "")
+                     for k in ("title", "authors", "snippet")),
+        )
+        if _t and _m / _t < 0.5:
+            text += (
+                f"> **Weak match.** The top result matches {_m} of {_t} "
+                f"substantive query terms"
+                + (f" (missing: {', '.join(_missing[:6])})" if _missing else "")
+                + ". The corpus may hold little on this topic — treat the "
+                "ranking as unreliable rather than as evidence that these "
+                "are the leading works, and try fewer or broader terms.\n\n"
+            )
     for i, r in enumerate(rs, 1):
         text += f"**{i}.** [{r['source']}/{r.get('year') or '?'}] {r['title']}\n"
         if r.get("authors"):
@@ -18366,6 +18575,148 @@ def get_law(
         conn.close()
 
 
+# GitHub #50 / #88. A query that names one article — "Art. 60 OR",
+# "art. 190 al. 2 let. e LDIP" — is a lookup, not a topic search. Before this,
+# search_laws ran it as a bag of words, so the tokens "art", "60" and "or"
+# ranked the articles that *mention* Art. 60 OR (Art. 39 SchKG, Art. 13 VVG,
+# § 11 AI 721.301 …) while Art. 60 OR itself never appeared — a provision does
+# not repeat its own number in its body, so it cannot win its own query.
+#
+# The abbreviation pre-match below cannot cover this: it rejects any query
+# containing a space, so it only ever fires for a bare "OR".
+#
+# Federal only. Cantonal statutes rarely carry canonical abbreviations (see
+# get_law's own docs), so "§ 11 <something>" has nothing stable to resolve
+# against and keeps the FTS5 path.
+_ARTICLE_REF_RE = re.compile(
+    r"""^\s*
+        (?:art\.?|artikel|articolo|§)\s*
+        (?P<num>\d{1,3}
+            (?:bis|ter|quater|quinquies|sexies|septies|octies|novies|decies
+              |undecies|duodecies|terdecies|quaterdecies|quindecies)?
+            [a-z]?)
+        # Subdivisions (Abs./al./cpv./Ziff./lit./let.) are addressing detail;
+        # the article is the retrievable unit, so they are matched and dropped.
+        (?P<tail>(?:\s+(?:abs|al|cpv|ziff|ch|lit|let|lett|n)\.?\s*[0-9IVXivx]+
+                    |\s+(?:lit|let|lett)\.?\s*[a-z]\b)*)
+        \s+(?P<abbr>[A-Za-zÀ-ÖØ-öø-ÿ][A-Za-zÀ-ÖØ-öø-ÿ0-9\-./]{0,14})
+        \s*$""",
+    re.IGNORECASE | re.VERBOSE,
+)
+
+
+def _article_reference_lookup_federal(
+    raw_query: str,
+    language: str | None,
+    conn: sqlite3.Connection | None = None,
+) -> list[dict]:
+    """Resolve an explicit "Art. N ABBR" query to that very article.
+
+    Returns at most one synthetic result per matching law, shaped like the
+    other search_laws hits, or [] when the query does not name an article or
+    the abbreviation/article does not resolve. Gated on the pattern AND on
+    the abbreviation existing in `laws`, so ordinary topical queries are
+    untouched.
+
+    Article-number resolution deliberately mirrors get_law: exact match, then
+    the #87 truncated-ordinal alias. No LIKE-prefix fallback — that would
+    answer "Art. 60" with Art. 601.
+    """
+    if not raw_query:
+        return []
+    m = _ARTICLE_REF_RE.match(raw_query.strip())
+    if not m:
+        return []
+    article = (m.group("num") or "").lower()
+    abbr_q = (m.group("abbr") or "").strip(".").lower()
+    if not article or not abbr_q:
+        return []
+
+    owns_conn = conn is None
+    if conn is None:
+        conn = _get_statutes_conn()
+    if conn is None:
+        return []
+    try:
+        law_rows = conn.execute(
+            """SELECT sr_number, abbr_de, abbr_fr, abbr_it,
+                      title_de, title_fr, title_it
+               FROM laws
+               WHERE LOWER(abbr_de) = ? OR LOWER(abbr_fr) = ?
+                  OR LOWER(abbr_it) = ?
+               LIMIT 3""",
+            (abbr_q, abbr_q, abbr_q),
+        ).fetchall()
+        if not law_rows:
+            return []
+
+        display_lang = language if language in ("de", "fr", "it") else "de"
+        out: list[dict] = []
+        for lr in law_rows:
+            sr = str(lr["sr_number"])
+            lang_order = ([language] if language in ("de", "fr", "it")
+                          else []) + ["de", "fr", "it"]
+            art_row = None
+            stored_as = None
+            for lang in dict.fromkeys(lang_order):
+                rows = conn.execute(
+                    """SELECT article_num, heading, text
+                       FROM articles
+                       WHERE sr_number = ? AND LOWER(article_num) = ? AND lang = ?
+                       LIMIT 1""",
+                    (sr, article, lang),
+                ).fetchall()
+                if rows:
+                    art_row = rows[0]
+                    break
+            if art_row is None:
+                alias = _TRUNCATED_ORDINAL_ALIASES.get((sr, article))
+                if alias:
+                    for lang in dict.fromkeys(lang_order):
+                        rows = conn.execute(
+                            """SELECT article_num, heading, text
+                               FROM articles
+                               WHERE sr_number = ? AND article_num = ? AND lang = ?
+                               LIMIT 1""",
+                            (sr, alias, lang),
+                        ).fetchall()
+                        if rows:
+                            art_row, stored_as = rows[0], alias
+                            break
+            if art_row is None:
+                continue
+
+            abbr = lr[f"abbr_{display_lang}"] or lr["abbr_de"] or "?"
+            title = lr[f"title_{display_lang}"] or lr["title_de"] or ""
+            body = (art_row["text"] or "")[:240].replace("\n", " ").strip()
+            entry = {
+                "level": "federal",
+                "canton": "CH",
+                "sr_number": sr,
+                "abbreviation": abbr,
+                "title": title,
+                # Label with the number the caller asked for, not the stored
+                # one — same relabelling contract get_law uses for #87.
+                "article_num": m.group("num"),
+                "heading": art_row["heading"],
+                "snippet": (f">>>Art. {m.group('num')} {abbr}<<<: {body}..."
+                            if body else f">>>Art. {m.group('num')} {abbr}<<<"),
+                "matched_as": "article_reference",
+            }
+            if stored_as:
+                entry["article_number_alias"] = {
+                    "requested": m.group("num"), "stored_as": stored_as,
+                }
+            out.append(entry)
+        return out
+    except sqlite3.Error as e:
+        logger.error("Article-reference lookup error: %s", e)
+        return []
+    finally:
+        if owns_conn:
+            conn.close()
+
+
 def _abbreviation_lookup_federal(
     raw_query: str,
     language: str,
@@ -18518,6 +18869,20 @@ def _search_laws_federal(
     try:
         priority: list[dict] = []
         seen_keys: set[tuple] = set()
+
+        # Explicit article reference ("Art. 60 OR") outranks everything —
+        # the caller named the provision, so it is the answer, not a
+        # candidate (#50/#88). Runs before the abbreviation pre-match so a
+        # query naming an article gets the article, not the law's Art. 1.
+        if not sr_number and raw_query:
+            for entry in _article_reference_lookup_federal(
+                raw_query, language, conn=conn,
+            ):
+                key = (entry["sr_number"], entry["article_num"])
+                if key in seen_keys:
+                    continue
+                seen_keys.add(key)
+                priority.append(entry)
 
         # Abbreviation pre-match (federal-scope only). Reuse the conn we
         # already hold — opening a second handle to the immutable=1
@@ -18886,7 +19251,7 @@ def search_laws(
                 "query": raw_query,
                 "count": len(results),
                 "results": results,
-                "federal_hits": len(federal_abbrev),
+                "federal_hits": len(results),
                 "cantonal_hits": 0,
             }
         # Echo the user's original input, not the sanitised empty string,
@@ -18925,12 +19290,17 @@ def search_laws(
             merged.append(cantonal_results[ci])
             ci += 1
 
+    # Count within what was actually returned. These read as a breakdown of
+    # `count`, so they have to be one: reporting the pre-merge candidate
+    # totals made "Art. 60 OR" answer count=5, federal_hits=5, cantonal_hits=5
+    # for a payload of 3 federal + 2 cantonal. Same misleading-total family as
+    # #53 / #56 / #75. Field names kept — they are in the REST schema.
     return {
         "query": query,
         "count": len(merged),
         "results": merged,
-        "federal_hits": len(federal_results),
-        "cantonal_hits": len(cantonal_results),
+        "federal_hits": sum(1 for r in merged if r.get("level") == "federal"),
+        "cantonal_hits": sum(1 for r in merged if r.get("level") == "cantonal"),
     }
 
 
