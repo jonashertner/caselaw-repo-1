@@ -18,9 +18,12 @@ Exits 1 on any failure → systemd OnFailure → ntfy alert. Output JSON
 to /var/log/opencaselaw-smoke/<timestamp>.json (or stdout) for trend
 analysis.
 
-Cost budget: < 5 s wall time. Falls back to friendly error messages
-on network failure (won't fire false alerts during transient hiccups —
-3 consecutive failures escalate to "INVESTIGATE" tag).
+Cost budget: < 25 s wall time. Was "< 5 s" until 2026-08-22, when the search
+probe was added — search legitimately runs 2-7 s (the Haiku query-parse
+dominates), so the old budget described a probe set that no longer existed.
+Falls back to friendly error messages on network failure (won't fire false
+alerts during transient hiccups — 3 consecutive failures escalate to
+"INVESTIGATE" tag).
 """
 from __future__ import annotations
 
