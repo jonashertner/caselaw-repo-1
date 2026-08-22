@@ -12038,8 +12038,14 @@ def _drop_stopwords_for_fts(safe_query: str) -> str:
     return " ".join(kept) if kept else safe_query
 
 
-def _term_coverage(query: str, text: str) -> tuple[int, int, list[str]]:
+def _scholarship_term_coverage(query: str, text: str) -> tuple[int, int, list[str]]:
     """How many substantive query terms actually occur in `text`.
+
+    Distinct from `_term_coverage` above (line ~7173), which scores a
+    prepared term list for search reranking and returns a float. This one
+    takes a raw query string and reports the breakdown for #89's weak-match
+    signal. The names collided once already and silently shadowed the
+    reranker — hence the explicit prefix.
 
     Accent- and inflection-tolerant by design: comparison is on a folded,
     truncated stem, so "nullité" matches "nullite" and "corruption" matches
@@ -17572,7 +17578,7 @@ def _format_search_scholarship_response(result: dict) -> str:
     # would need the search benchmark. The tested-negative stopword filter
     # above is still off; this is the signal the reporter actually asked for.
     if rs and result.get("query"):
-        _m, _t, _missing = _term_coverage(
+        _m, _t, _missing = _scholarship_term_coverage(
             result["query"],
             " ".join(str(rs[0].get(k) or "")
                      for k in ("title", "authors", "snippet")),

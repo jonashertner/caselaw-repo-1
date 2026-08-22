@@ -288,7 +288,7 @@ def test_sound_records_keep_the_ordinary_mismatch_message():
 def test_reported_query_is_reported_as_weak():
     """The reported symptom: an introduction to law for schoolchildren as the
     top hit for a corruption/nullity query."""
-    matched, total, missing = m._term_coverage(
+    matched, total, missing = m._scholarship_term_coverage(
         "corruption pot-de-vin nullité du contrat droit suisse",
         "Le droit pour les lycéens — Müller, Christoph",
     )
@@ -298,7 +298,7 @@ def test_reported_query_is_reported_as_weak():
 
 
 def test_a_genuine_hit_is_not_flagged_weak():
-    matched, total, _ = m._term_coverage(
+    matched, total, _ = m._scholarship_term_coverage(
         "corruption nullité contrat",
         "La corruption et la nullité du contrat en droit suisse",
     )
@@ -308,10 +308,10 @@ def test_a_genuine_hit_is_not_flagged_weak():
 def test_coverage_is_accent_and_inflection_tolerant():
     """'nullité' must match 'nullite', and 'corruption' must match
     'corruptions' — the exact-match stopword bug's sibling."""
-    matched, total, _ = m._term_coverage(
+    matched, total, _ = m._scholarship_term_coverage(
         "nullité corruption", "Les corruptions et la nullite du contrat")
     assert (matched, total) == (2, 2)
 
 
 def test_empty_query_is_not_a_weak_match():
-    assert m._term_coverage("", "anything") == (0, 0, [])
+    assert m._scholarship_term_coverage("", "anything") == (0, 0, [])
