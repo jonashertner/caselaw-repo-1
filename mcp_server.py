@@ -380,6 +380,10 @@ def _llm_usage_log(*, model: str, feature: str, response_json: dict | None,
             pass
 
 GRAPH_DB_PATH = Path(os.environ.get("SWISS_CASELAW_GRAPH_DB", str(DATA_DIR / "reference_graph.db")))
+REPRESENTATION_MANIFEST_DB_PATH = Path(os.environ.get(
+    "SWISS_CASELAW_REPRESENTATION_MANIFEST",
+    str(DATA_DIR / "representation_manifest.db"),
+))
 # canonical_identity sidecar (derive-from-text enrichment): decision_id ->
 # corrected decision_date + provenance, publication_date, canonical_key.
 # See docs/superpowers/specs/2026-06-28-canonical-decision-identity-design.md.
@@ -4530,6 +4534,89 @@ def _canonical_for(decision_id: str | None) -> dict | None:
             "SELECT * FROM canonical_identity WHERE decision_id = ?", (decision_id,)
         ).fetchone()
         return dict(row) if row else None
+    except sqlite3.Error:
+        return None
+    finally:
+        conn.close()
+
+
+_manifest_warned = False
+
+
+def _get_manifest_conn() -> sqlite3.Connection | None:
+    """Open a read-only connection to the representation manifest, or None.
+
+    The manifest (scripts/build_representation_manifest.py, rebuilt nightly
+    via tmp+rename) maps duplicate representations — the same decision
+    published under two identifiers (GE procedure/decision numbers, VD dual
+    scrapes, SH twin courts; ~140k rows) — onto one canonical decision_id.
+    This is Phase-4 consumption per the 2026-07-15 design doc §7: link-only,
+    additive, reversible. No row is ever hidden or dropped here.
+    """
+    global _manifest_warned
+    if not REPRESENTATION_MANIFEST_DB_PATH.exists():
+        if not _manifest_warned:
+            logger.info(
+                "representation manifest not found at %s — representation links disabled",
+                REPRESENTATION_MANIFEST_DB_PATH)
+            _manifest_warned = True
+        return None
+    try:
+        conn = sqlite3.connect(
+            f"file:{REPRESENTATION_MANIFEST_DB_PATH}?immutable=1",
+            uri=True, timeout=0.5)
+        conn.row_factory = sqlite3.Row
+        return conn
+    except sqlite3.Error as e:
+        logger.warning("Failed to open representation manifest: %s", e)
+        return None
+
+
+def _representation_info(decision_id: str | None) -> dict | None:
+    """Representation links for one decision_id, or None when unlinked.
+
+    {"canonical_decision_id", "is_canonical", "members": [...]} — members are
+    the OTHER non-canonical representations (self-links excluded; the
+    canonical is named by its own field, not listed as a member). Additive
+    metadata only: the caller still serves whichever row was asked for.
+    Tolerant of the manifest being absent; never raises.
+    """
+    if not decision_id:
+        return None
+    conn = _get_manifest_conn()
+    if conn is None:
+        return None
+    try:
+        canonical = decision_id
+        row = conn.execute(
+            "SELECT canonical_decision_id FROM decision_representations "
+            "WHERE member_decision_id = ? "
+            "AND canonical_decision_id != member_decision_id",
+            (decision_id,),
+        ).fetchone()
+        if row:
+            canonical = row["canonical_decision_id"]
+        members = [
+            {"decision_id": r["member_decision_id"],
+             "relation_type": r["relation_type"],
+             "evidence_method": r["evidence_method"],
+             "confidence": r["confidence"]}
+            for r in conn.execute(
+                "SELECT member_decision_id, relation_type, evidence_method, "
+                "confidence FROM decision_representations "
+                "WHERE canonical_decision_id = ? "
+                "AND member_decision_id != canonical_decision_id "
+                "AND member_decision_id != ?",
+                (canonical, decision_id),
+            )
+        ]
+        if canonical == decision_id and not members:
+            return None
+        return {
+            "canonical_decision_id": canonical,
+            "is_canonical": canonical == decision_id,
+            "members": members,
+        }
     except sqlite3.Error:
         return None
     finally:
@@ -24097,6 +24184,45 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 text += f"\n**Source:** {_md_link('Originalquelle', result['source_url'])}\n"
             if result.get("pdf_url"):
                 text += f"**PDF:** {_md_link('PDF', result['pdf_url'])}\n"
+            # Representation links (Phase-4 canary, 2026-07-15 design §7):
+            # additive metadata — the requested row is served either way.
+            _repr = _representation_info(result.get("decision_id"))
+            if _repr:
+                result["representations"] = _repr
+                text += "\n## Representations\n"
+                if _repr["is_canonical"]:
+                    text += (
+                        "This decision is published under multiple identifiers; "
+                        "this is the canonical record. Other representations of "
+                        "the same decision (retained for archival completeness — "
+                        "portal publication pages can carry appeal-chain metadata "
+                        "the judgment copy lacks):\n")
+                    _mconn = get_db()
+                    try:
+                        for _m in _repr["members"]:
+                            _mrow = _mconn.execute(
+                                "SELECT docket_number, source_url FROM decisions "
+                                "WHERE decision_id = ?",
+                                (_m["decision_id"],)).fetchone()
+                            _mdocket = (_mrow["docket_number"] if _mrow else None) or "?"
+                            _msrc = (_mrow["source_url"] if _mrow else None) or ""
+                            text += (
+                                f"- `{_m['decision_id']}` (docket {_mdocket}, "
+                                f"evidence: {_m['evidence_method']}, "
+                                f"confidence {_m['confidence']:g})"
+                                + (f" — {_md_link('Quelle', _msrc)}" if _msrc else "")
+                                + "\n")
+                    finally:
+                        _mconn.close()
+                else:
+                    text += (
+                        f"⚠ This record is an alternative representation of the "
+                        f"same decision as `{_repr['canonical_decision_id']}` (its "
+                        f"canonical record). For citation-grade output call "
+                        f"get_decision(\"{_repr['canonical_decision_id']}\") and use "
+                        f"THAT record's citation block. This row is retained "
+                        f"deliberately: portal publication pages carry metadata "
+                        f"(appeal chain, descriptors) the judgment copy lacks.\n")
             _cited = _filter_self_citations(result.get("cited_decisions"), result)
             if _cited:
                 text += f"\n**Citations:** {', '.join(_cited)}\n"

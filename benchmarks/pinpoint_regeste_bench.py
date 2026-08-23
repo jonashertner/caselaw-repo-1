@@ -158,9 +158,15 @@ def run_bench(decisions_db: Path, limit: int, court: str | None,
           AND (regeste LIKE '%(E.%' OR regeste LIKE '%(consid.%')
           {where_court}
           {where_lang}
-        ORDER BY citation_count DESC NULLS LAST, decision_date DESC
+        ORDER BY decision_date DESC
         LIMIT ?
     """
+    # Ordering note: originally `citation_count DESC` (prefer leading cases),
+    # but that column no longer exists in decisions.db — citation counts live
+    # in reference_graph.db. Recency-only changes the candidate set; no
+    # historical runs exist to stay comparable with (the citation_count run
+    # crashed before producing output, 2026-08-23). If leading-case sampling
+    # matters later, ATTACH the graph DB rather than resurrecting the column.
     candidates = src.execute(sql, (limit * 3,)).fetchall()
     src.close()
 
