@@ -23140,6 +23140,13 @@ def _lookup_case_number(q: str, limit: int = 8) -> dict:
     qn = (q or "").strip()
     if not qn:
         return {"query": "", "is_case_number": False, "total": 0, "results": []}
+    # GitHub #43 (REST slice): ATF/DTF are the official French/Italian names
+    # of the same collection — a francophone typing "ATF 140 III 86" into the
+    # site search got is_case_number=false while "BGE 140 III 86" resolved.
+    # The corpus keys these decisions under BGE; normalise the prefix before
+    # the docket gate. Caught 2026-08-23 when the /search/ capabilities text
+    # promised the ATF form and verification showed it failing.
+    qn = re.sub(r"^(ATF|DTF)(?=\s+\d)", "BGE", qn, flags=re.IGNORECASE)
     if not _looks_like_docket_query(qn):
         return {"query": qn, "is_case_number": False, "total": 0, "results": [],
                 "hint": "Not a recognised Swiss case number — use full-text search for topics."}
