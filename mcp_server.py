@@ -72,6 +72,7 @@ from __future__ import annotations
 import asyncio
 import collections
 import contextvars
+import copy
 import hashlib
 import secrets
 import json
@@ -1843,6 +1844,8 @@ def _cache_clear():
     # after a rebuild.
     _LLM_EXPANSION_CACHE.clear()
     _STRUCTURED_PARSE_CACHE.clear()
+    # Result payloads embed snippets and totals from the pre-swap corpus.
+    _SEARCH_RESULT_CACHE.clear()
     logger.info("Query cache cleared")
 
 
@@ -1875,6 +1878,8 @@ _metrics = {
     # label scores an empty 200 as answered.
     "outcome_sources": collections.defaultdict(collections.Counter),
     "empty_reasons": collections.defaultdict(collections.Counter),
+    "search_result_cache_hits": 0,
+    "search_result_cache_misses": 0,
     "startup_time": datetime.now(timezone.utc).isoformat(),
 }
 
@@ -2854,6 +2859,11 @@ def _get_metrics() -> dict:
             "skipped": _metrics["haiku_rerank_skipped"],
             "changed_top": _metrics["haiku_rerank_changed_top"],
         },
+        "search_result_cache": {
+            "hits": _metrics["search_result_cache_hits"],
+            "misses": _metrics["search_result_cache_misses"],
+            "entries": len(_SEARCH_RESULT_CACHE),
+        },
         "zero_result_queries": [
             {"query": q, "count": n}
             for q, n in zero_agg.most_common(30)
@@ -3074,6 +3084,30 @@ def _exact_fts_total(conn, fts_query: str, where: str, params: list):
     return (total, is_capped)
 
 
+# ── Search-result cache ──────────────────────────────────────
+# Devdata 2026-08: ~30% of search queries are byte-identical repeats
+# (one integrator loop alone at ~8,900×/wk), each re-paying the full
+# FTS5 + hybrid + Haiku-rerank pipeline. Keyed on the sha256 of ALL
+# search args serialized verbatim: FTS5 operators are case-sensitive
+# ('Mietzins OR Pachtzins' ≠ 'mietzins or pachtzins', see c975ea1a),
+# so no strip/lower/truncation — a folded key would serve one query's
+# results for the other. Same privacy posture as the LLM caches: no
+# raw query text retained as a key, memory-only, cleared on DB swap
+# via _cache_clear() and by the nightly worker recycle. TTL is
+# belt-and-braces on top of the generation hook and bounds how long a
+# silently degraded entry (e.g. rerank timeout) can live.
+_SEARCH_RESULT_CACHE = _BoundedTTLCache(maxsize=256, ttl_s=3600.0)
+# Bulk/export calls (REST allows limit up to 2000) are rare, huge, and
+# not the repeat traffic — don't let one evict 50 real entries' worth
+# of memory.
+_SEARCH_RESULT_CACHE_LIMIT_GATE = 100
+
+
+def _search_result_cache_key(args: tuple) -> str:
+    payload = json.dumps(args, ensure_ascii=False, separators=(",", ":"))
+    return hashlib.sha256(payload.encode("utf-8", "replace")).hexdigest()
+
+
 def search_fts5(
     query: str,
     court: str | None = None,
@@ -3100,6 +3134,12 @@ def search_fts5(
     when total_count is a capped floor rather than an exact count (#53). Kept as
     an out-param so the 6 callers that discard total stay unchanged.
 
+    Results are served from _SEARCH_RESULT_CACHE for byte-identical repeat
+    calls (limit ≤ _SEARCH_RESULT_CACHE_LIMIT_GATE). Hits and misses are
+    deep-copied in both directions: callers mutate returned rows (the REST
+    `fields` stripping, handler annotations), and a shared reference would
+    poison the cache.
+
     The FTS5 query supports:
     - Simple words: verfassungsrecht
     - Phrases: "Treu und Glauben"
@@ -3107,14 +3147,36 @@ def search_fts5(
     - Prefix: verfassung*
     - Column filters: full_text:miete AND regeste:kündigung
     """
+    # get_db() BEFORE the cache lookup: its db_generation check clears the
+    # cache on a corpus swap, so a hit can never outlive the DB it came from.
     conn = get_db()
     try:
+        cache_key = None
+        if limit <= _SEARCH_RESULT_CACHE_LIMIT_GATE:
+            cache_key = _search_result_cache_key((
+                query, court, canton, language, date_from, date_to,
+                chamber, decision_type, legal_area, marked_for_publication,
+                limit, offset, sort,
+            ))
+            cached = _SEARCH_RESULT_CACHE.get(cache_key)
+            if cached is not None:
+                _metrics["search_result_cache_hits"] += 1
+                results, total, cached_meta = copy.deepcopy(cached)
+                if meta is not None:
+                    meta.update(cached_meta)
+                return results, total
+            _metrics["search_result_cache_misses"] += 1
+
+        # Always give the inner search a real dict, even when the caller
+        # passed None: cache entries must be meta-complete, or a later
+        # caller that DOES want meta would replay a hit with no flags.
+        inner_meta: dict = {}
         results, total = _search_fts5_inner(
             conn, query, court, canton, language,
             date_from, date_to, chamber, decision_type, legal_area,
             limit, offset, sort=sort,
             marked_for_publication=marked_for_publication,
-            meta=meta,
+            meta=inner_meta,
         )
         # Surface the BGE-bound flag on each result (BGer Neuheiten "*" =
         # "für die Publikation vorgesehen"). Single guarded lookup — the column
@@ -3135,6 +3197,14 @@ def search_fts5(
                     v = flags.get(r.get("decision_id"))
                     if v is not None:
                         r["marked_for_publication"] = bool(v)
+        if meta is not None:
+            meta.update(inner_meta)
+        # A deadline-partial pool is a degraded result the next identical
+        # call may well beat — never pin it for the TTL.
+        if cache_key is not None and not inner_meta.get("deadline_partial"):
+            _SEARCH_RESULT_CACHE.set(
+                cache_key, copy.deepcopy((results, total, inner_meta))
+            )
         return results, total
     finally:
         conn.close()
