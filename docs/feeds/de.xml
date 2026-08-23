@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/de.xml</link>
     <description>Latest published Swiss court decisions in Deutsch.</description>
     <language>de-CH</language>
-    <lastBuildDate>Sat, 22 Aug 2026 09:46:04 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 23 Aug 2026 09:38:19 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/de.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -852,6 +852,14 @@ Ver…</description>
       <category>bvger</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht F-4694/2026 vom 2026-08-10</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-4694_2026</link>
+      <description>Einreiseverbot</description>
+      <pubDate>Mon, 10 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-4694.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>Bundesverwaltungsgericht F-5098/2026 vom 2026-08-10</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-5098_2026</link>
       <description>Nichteintreten auf Asylgesuch und Wegweisung (Dublin-Verfahren - Art. 31a Abs. 1 Bst. b AsylG)</description>
@@ -865,14 +873,6 @@ Ver…</description>
       <description>Nichteintreten auf Asylgesuch und Wegweisung (Wiedererwägung)</description>
       <pubDate>Mon, 10 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-5229.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht F-6579/2025 vom 2026-08-10</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-6579_2025</link>
-      <description>Schengen-Visum</description>
-      <pubDate>Mon, 10 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-6579.2025</guid>
       <category>bvger</category>
     </item>
   </channel>

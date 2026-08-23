@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/bvger.xml</link>
     <description>Latest published Bundesverwaltungsgericht decisions.</description>
     <language>de-CH</language>
-    <lastBuildDate>Sat, 22 Aug 2026 09:46:03 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 23 Aug 2026 09:38:18 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/bvger.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -182,6 +182,14 @@
       <description>Protection des données</description>
       <pubDate>Mon, 10 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-4213.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht F-4694/2026 vom 2026-08-10</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-4694_2026</link>
+      <description>Einreiseverbot</description>
+      <pubDate>Mon, 10 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-4694.2026</guid>
       <category>bvger</category>
     </item>
     <item>
@@ -399,14 +407,6 @@ du marché du travail</description>
       <description>Eidgenössische Technische Hochschule (Ohne Personal)</description>
       <pubDate>Wed, 05 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:B-4179.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht B-4320/2026 vom 2026-08-05</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_B-4320_2026</link>
-      <description>Ecoles polytechniques fédérales (sans le personnel)</description>
-      <pubDate>Wed, 05 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:B-4320.2026</guid>
       <category>bvger</category>
     </item>
   </channel>
