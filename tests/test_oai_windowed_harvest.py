@@ -215,3 +215,116 @@ def test_clean_harvest_installs_atomically(serve, tmp_path):
     assert s["replaced"] is True
     rows = [json.loads(l) for l in (tmp_path / "src.jsonl").open()]
     assert len(rows) == 2 and not (tmp_path / "src.jsonl.tmp").exists()
+
+
+# ── Day-atomic fallback (2026-08-24, UNIGE postmortem) ────────────────
+
+IDENTIFY_DATEONLY = (b'<?xml version="1.0"?><OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/">'
+                     b'<Identify><granularity>YYYY-MM-DD</granularity></Identify></OAI-PMH>')
+
+
+def test_subday_lie_falls_back_to_day_atomic_walk(serve, tmp_path):
+    """UNIGE's server declares seconds granularity but ignores time-of-day
+    bounds: every sub-day child reports the PARENT's completeListSize. The
+    old code bisected to the floor and aborted the whole source; now the
+    lie is detected on the first child and the day is force-walked whole."""
+    recs = [_record(f"r{i}") for i in range(12)]
+
+    def handler(q):
+        if q.get("verb") == "Identify":
+            return IDENTIFY_SECONDS
+        if q.get("resumptionToken") == "t1":
+            return _page(recs[6:], None, 12)
+        # Every window — day or sub-day — declares 12 and serves the same
+        # full-day list from the start (the lie).
+        return _page(recs[:6], "t1", 12)
+
+    srv = serve(handler)
+    s = _run(tmp_path, windowed=True, max_window_records=5,
+             from_date="2023-03-14", until_date="2023-03-14")
+    assert s["aborted"] is False
+    assert s["gaps"] == []
+    assert s["total_records"] == 12
+    assert s["replaced"] is True
+    # The lie short-circuit must keep the probe count bounded: without it,
+    # bisection descends 16 levels. Identify + day probe + ≤2 child probes
+    # + 2 force-walks × 2 pages ≈ single digits.
+    assert len(srv.queries) <= 10
+
+
+def test_failed_window_becomes_gap_and_source_continues(serve, tmp_path):
+    """A window whose chain errors beyond retries — including its day-atomic
+    force attempts — is recorded as a gap; the remaining windows still
+    harvest and the file installs. One bad window must never veto a whole
+    repository again. (Date-only servers bottom out at ~2-day windows:
+    _bisect_window returns None below a 2-day span without seconds
+    granularity, so [01-01..01-02] is already the floor.)"""
+    def handler(q):
+        if q.get("verb") == "Identify":
+            return IDENTIFY_DATEONLY
+        f, u = q.get("from", ""), q.get("until", "")
+        if f.startswith("2020-01-01") and u.startswith("2020-01-04"):
+            return _page([_record("a")], "probe-tok", 99)   # oversize parent
+        if f.startswith("2020-01-01"):
+            return ConnectionError("floor window is broken")  # every attempt
+        return _page([_record("b"), _record("c")], None, 2)
+
+    serve(handler)
+    s = _run(tmp_path, windowed=True, max_window_records=10,
+             from_date="2020-01-01", until_date="2020-01-04")
+    assert s["aborted"] is False
+    assert len(s["gaps"]) == 1
+    assert s["gaps"][0]["reason"] == "fetch_error"
+    assert s["gaps"][0]["window"][0].startswith("2020-01-01")
+    rows = [json.loads(l) for l in (tmp_path / "src.jsonl").open()]
+    assert {r["source_record_id"] for r in rows} == {"b", "c"}
+    assert s["replaced"] is True
+
+
+def test_force_walk_runaway_is_capped(serve, tmp_path, monkeypatch):
+    """A forced chain that never ends (token loop / lying sizes) hits the
+    page ceiling and becomes a gap instead of eating the runtime budget."""
+    monkeypatch.setattr(oai_pmh, "_FORCE_MAX_PAGES", 3)
+
+    def handler(q):
+        if q.get("verb") == "Identify":
+            return IDENTIFY_DATEONLY
+        # Single-day window: always oversize, and the chain loops forever.
+        # The looping record is subject-filtered out so a wholesale failure
+        # (total == 0) is what reaches the installer.
+        return _page([_record("x", subject="cooking")], "loop-token", 9999)
+
+    serve(handler)
+    s = _run(tmp_path, windowed=True, max_window_records=5,
+             from_date="2020-06-01", until_date="2020-06-01")
+    assert len(s["gaps"]) == 1
+    assert s["gaps"][0]["reason"] == "force_walk_runaway"
+    assert s["aborted"] is True          # sole window gapped, total == 0
+
+
+def test_gapped_harvest_never_clobbers_larger_existing_file(serve, tmp_path):
+    """The install guard extends to gaps: a first full run that gapped its
+    way to fewer records than the existing file must keep the old file."""
+    existing = tmp_path / "src.jsonl"
+    existing.write_text("".join(f'{{"source_record_id": "old{i}"}}\n'
+                                for i in range(5)))
+
+    def handler(q):
+        if q.get("verb") == "Identify":
+            return IDENTIFY_DATEONLY
+        f, u = q.get("from", ""), q.get("until", "")
+        if f.startswith("2020-01-01") and u.startswith("2020-01-04"):
+            return _page([_record("a")], "probe-tok", 99)   # oversize parent
+        if f.startswith("2020-01-01"):
+            return ConnectionError("broken window")
+        return _page([_record("b"), _record("c")], None, 2)
+
+    serve(handler)
+    s = _run(tmp_path, windowed=True, max_window_records=10,
+             from_date="2020-01-01", until_date="2020-01-04")
+    assert len(s["gaps"]) == 1
+    assert s["total_records"] == 2                        # b, c
+    assert s["replaced"] is False                         # 2 <= 5 existing
+    rows = [json.loads(l) for l in existing.open()]
+    assert len(rows) == 5 and rows[0]["source_record_id"] == "old0"
+    assert (tmp_path / "src.jsonl.aborted").exists()

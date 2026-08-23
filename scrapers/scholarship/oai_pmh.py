@@ -284,6 +284,15 @@ WINDOW_FLOOR = "1995-01-01"
 MAX_WINDOW_RECORDS = 8000
 _MAX_BISECT_DEPTH = 16
 _FETCH_RETRIES = 3
+# Day-atomic fallback (2026-08-24, UNIGE postmortem): when a window can't
+# be shrunk — bisect floor, sub-day-lying server, or repeated chain
+# errors — walk it WHOLE (force=True skips the oversize probe), retrying
+# a bounded number of times, and record a gap instead of aborting the
+# source. A forced chain gets a hard page ceiling so the fix for one
+# pathology (abort spiral) can't hand the runtime budget to another
+# (token loop / lying completeListSize walking forever).
+_DAY_ATOMIC_ATTEMPTS = 2
+_FORCE_MAX_PAGES = 500
 _RETRY_BACKOFF_S = (5, 20)
 
 
@@ -431,6 +440,12 @@ def harvest(
     windows_done = 0
     aborted = False
     hit_cap = False
+    # Windows that could not be harvested after day-atomic retries. Each
+    # entry: {"window", "reason", "declared", "scanned"} — scanned is the
+    # LAST attempt's count (attempts re-scan already-written records, so a
+    # cumulative number would overstate coverage and mislead diagnosis).
+    gaps: list[dict] = []
+    chain_fail_reason: str | None = None
     seen_ids: set[str] = set()
     started = time.time()
 
@@ -445,7 +460,8 @@ def harvest(
             p["until"] = w_until
         return p
 
-    def _run_chain(fh, w_from: str | None, w_until: str | None):
+    def _run_chain(fh, w_from: str | None, w_until: str | None,
+                   force: bool = False):
         """One resumption chain over [w_from, w_until].
 
         Returns (scanned, complete_size, clean, oversize):
@@ -455,13 +471,27 @@ def harvest(
           oversize      — windowed mode: page 1 declared more than
                           max_window_records, chain abandoned for bisection
                           (its page-1 records were NOT consumed)
+
+        force=True walks the chain regardless of the oversize probe, with a
+        hard _FORCE_MAX_PAGES ceiling. In windowed mode chain failures no
+        longer poison the harvest-level `aborted` flag — the window loop
+        owns that decision (gap-and-continue semantics); non-windowed
+        harvests keep the original abort-on-error behavior.
         """
-        nonlocal total, deleted, pages, aborted, hit_cap
+        nonlocal total, deleted, pages, aborted, hit_cap, chain_fail_reason
         token: str | None = None
         scanned = 0
+        chain_pages = 0
         complete_size: int | None = None
         while True:
             pages += 1
+            chain_pages += 1
+            if force and chain_pages > _FORCE_MAX_PAGES:
+                chain_fail_reason = "force_walk_runaway"
+                log.error("%s window [%s..%s]: forced walk exceeded %d pages "
+                          "— giving up on this window", source, w_from,
+                          w_until, _FORCE_MAX_PAGES)
+                return scanned, complete_size, False, False
             if token:
                 qs = urllib.parse.urlencode(
                     {"verb": "ListRecords", "resumptionToken": token})
@@ -476,7 +506,9 @@ def harvest(
             except Exception as e:                  # noqa: BLE001
                 log.error("OAI fetch failed after %d retries (%s, page %d): %s",
                           _FETCH_RETRIES, source, pages, e)
-                aborted = True
+                chain_fail_reason = "fetch_error"
+                if not windowed:
+                    aborted = True
                 return scanned, complete_size, False, False
 
             try:
@@ -494,7 +526,9 @@ def harvest(
                 except ET.ParseError as e2:
                     log.error("OAI XML parse failed (%s, page %d): %s",
                               source, pages, e2)
-                    aborted = True
+                    chain_fail_reason = "xml_error"
+                    if not windowed:
+                        aborted = True
                     return scanned, complete_size, False, False
 
             err = root.find(f"{{{OAI_NS}}}error")
@@ -504,14 +538,18 @@ def harvest(
                     return scanned, 0, True, False   # empty window, fine
                 log.error("OAI error (%s, page %d) code=%s msg=%s",
                           source, pages, code, (err.text or "").strip())
-                aborted = True
+                chain_fail_reason = "oai_error_" + code
+                if not windowed:
+                    aborted = True
                 return scanned, complete_size, False, False
 
             list_recs = root.find(f"{{{OAI_NS}}}ListRecords")
             if list_recs is None:
                 log.warning("OAI: no ListRecords element (%s, page %d)",
                             source, pages)
-                aborted = True
+                chain_fail_reason = "no_listrecords"
+                if not windowed:
+                    aborted = True
                 return scanned, complete_size, False, False
 
             rt = list_recs.find(f"{{{OAI_NS}}}resumptionToken")
@@ -521,7 +559,8 @@ def harvest(
                     complete_size = int(cls)
                 # Oversize probe: don't walk a chain the server may truncate —
                 # one request spent, records re-arrive via the sub-windows.
-                if (windowed and complete_size
+                # force=True (day-atomic fallback) walks it regardless.
+                if (windowed and not force and complete_size
                         and complete_size > max_window_records
                         and (w_from or w_until)):
                     return 0, complete_size, True, True
@@ -584,34 +623,95 @@ def harvest(
             base_url, user_agent=user_agent, timeout=fetch_timeout)
         w_start = (from_date or WINDOW_FLOOR)[:10]
         w_end = (until_date or (date.today() + timedelta(days=1)).isoformat())[:10]
-        stack: list[tuple[str | None, str | None, int]] = [(w_start, w_end, 0)]
+        stack: list[tuple[str | None, str | None, int, int | None]] = [
+            (w_start, w_end, 0, None)]
     else:
-        stack = [(from_date, until_date, 0)]
+        stack = [(from_date, until_date, 0, None)]
 
     with tmp_path.open("w", encoding="utf-8") as fh:
         while stack and not hit_cap:
-            w_from, w_until, depth = stack.pop()
+            w_from, w_until, depth, parent_size = stack.pop()
+            chain_fail_reason = None
             scanned, size, clean, oversize = _run_chain(fh, w_from, w_until)
             windows_done += 1
             truncated = (windowed and clean and not oversize
                          and size is not None and size > 0 and scanned < size)
-            if oversize or truncated:
-                if truncated:
-                    log.warning(
-                        "%s window [%s..%s]: chain ended at %d of %d declared "
-                        "records (silent server cap) — bisecting",
-                        source, w_from, w_until, scanned, size)
+            failed = windowed and not clean
+            if not (oversize or truncated or failed):
+                continue
+            if not windowed:
+                continue        # non-windowed: _run_chain set `aborted`
+
+            if truncated:
+                log.warning(
+                    "%s window [%s..%s]: chain ended at %d of %d declared "
+                    "records (silent server cap)",
+                    source, w_from, w_until, scanned, size)
+
+            # Sub-day-lie short-circuit (UNIGE, probed 2026-08-23): a child
+            # window reporting its PARENT's completeListSize means the
+            # server accepted sub-day bounds but ignored the time-of-day
+            # component — descending further just burns probes on identical
+            # lies. Fall through to the day-atomic walk instead.
+            subday_lie = (size is not None and parent_size is not None
+                          and size == parent_size
+                          and ("T" in (w_from or "") or "T" in (w_until or "")))
+            split = None
+            if not subday_lie and depth < _MAX_BISECT_DEPTH:
                 split = _bisect_window(w_from or WINDOW_FLOOR,
                                        w_until or "2100-01-01",
                                        seconds_granularity=seconds_gran)
-                if split is None or depth >= _MAX_BISECT_DEPTH:
-                    log.error("%s window [%s..%s]: cannot bisect further — "
-                              "marking harvest aborted", source, w_from, w_until)
-                    aborted = True
-                else:
-                    a, mid, mid_next = split
-                    stack.append((mid_next, w_until, depth + 1))
-                    stack.append((a, mid, depth + 1))
+            if split is not None:
+                a, mid, mid_next = split
+                stack.append((mid_next, w_until, depth + 1, size))
+                stack.append((a, mid, depth + 1, size))
+                continue
+
+            # Day-atomic fallback: walk the window WHOLE. Windowing manages
+            # CHAIN LENGTH, not output correctness — subject_filter and
+            # seen_ids own the output — so force-walking a window the
+            # server mis-serves (out-of-range records, lying sizes) is
+            # content-safe; the worst case is re-scanning records already
+            # written. Bounded attempts; a window that still fails becomes
+            # a recorded gap and the SOURCE CONTINUES — one bad day must
+            # never veto a whole repository again (2026-08-23 postmortem).
+            gap_scanned = scanned
+            gap_reason: str | None = None
+            for _attempt in range(_DAY_ATOMIC_ATTEMPTS):
+                if hit_cap:
+                    gap_reason = None          # cap is an exit, not a failure
+                    break
+                chain_fail_reason = None
+                f_scanned, f_size, f_clean, _ = _run_chain(
+                    fh, w_from, w_until, force=True)
+                gap_scanned = f_scanned
+                if f_clean:
+                    if f_size and f_size > 0 and f_scanned < f_size:
+                        gap_reason = "residual_truncation"
+                        size = f_size
+                    else:
+                        gap_reason = None
+                        log.info("%s window [%s..%s]: day-atomic walk "
+                                 "recovered %d records", source, w_from,
+                                 w_until, f_scanned)
+                    break
+                gap_reason = chain_fail_reason or "force_walk_failed"
+            if gap_reason is not None:
+                gaps.append({
+                    "window": [w_from, w_until],
+                    "reason": gap_reason,
+                    "declared": size,
+                    "scanned": gap_scanned,
+                })
+                log.error("%s window [%s..%s]: GAP recorded (%s, %s of %s) "
+                          "— continuing with remaining windows",
+                          source, w_from, w_until, gap_reason,
+                          gap_scanned, size)
+
+    # A windowed harvest where nothing at all came back but gaps exist is
+    # a wholesale failure — keep the abort semantics for the installer.
+    if windowed and gaps and total == 0:
+        aborted = True
 
     # Atomic install — never let a broken harvest truncate last week's data
     # (the old code opened the real file with mode "w" before the first
@@ -624,19 +724,24 @@ def harvest(
         except OSError:
             prev_count = 0
     replaced = True
-    if aborted and total <= prev_count:
+    # Install protection now also covers gapped harvests: a first full run
+    # that gapped most days could otherwise replace a good file with a
+    # smaller one and look like success (advisor review, 2026-08-24).
+    if (aborted or gaps) and total <= prev_count:
         keep_as = output_dir / f"{source}.jsonl.aborted"
         os.replace(tmp_path, keep_as)
         replaced = False
-        log.error("%s harvest ABORTED with %d records (existing file has %d) "
+        log.error("%s harvest %s with %d records (existing file has %d) "
                   "— keeping existing file; partial saved to %s",
-                  source, total, prev_count, keep_as.name)
+                  source, "ABORTED" if aborted else "GAPPED",
+                  total, prev_count, keep_as.name)
     else:
         os.replace(tmp_path, out_path)
-        if aborted:
-            log.warning("%s harvest aborted but yielded %d > %d existing "
+        if aborted or gaps:
+            log.warning("%s harvest %s but yielded %d > %d existing "
                         "records — installing the larger file",
-                        source, total, prev_count)
+                        source, "aborted" if aborted else
+                        f"has {len(gaps)} gap(s)", total, prev_count)
 
     elapsed = time.time() - started
     summary = {
@@ -649,6 +754,7 @@ def harvest(
         "deleted_records": deleted,
         "windows": windows_done,
         "aborted": aborted,
+        "gaps": gaps,
         "replaced": replaced,
         "elapsed_seconds": round(elapsed, 1),
         "output_path": str(out_path),
