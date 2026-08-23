@@ -94,6 +94,10 @@
           <p class="tier-p" data-t="priv_logs_tier1_body"></p>
         </div>
         <div class="tier">
+          <p class="tier-h" data-t="priv_logs_cost_title"></p>
+          <p class="tier-p" data-t="priv_logs_cost_body"></p>
+        </div>
+        <div class="tier">
           <p class="tier-h" data-t="priv_logs_tier2_title"></p>
           <p class="tier-p" data-t="priv_logs_tier2_body"></p>
         </div>
@@ -204,10 +208,10 @@ OCL.init({
       priv_summary_bullet_ids:'<strong>Keine Nutzer-IDs.</strong> Wir können dieselbe Person nicht über zwei Besuche hinweg wiedererkennen — kryptographisch nicht, nicht nur als Richtlinie.',
       priv_summary_bullet_dp:'<strong>Alle publizierten Zahlen sind differentiell privat</strong> (ε = 1,0) und unterliegen einer k-Anonymitätsschwelle von k = 10.',
       priv_logs_heading:'Server-Logs in drei Stufen',
-      priv_logs_intro:'Jeder Webserver protokolliert Anfragen — das ist technisch unvermeidbar. Unsere Logs sind jedoch so strukturiert, dass sie innerhalb weniger Tage in harmlose Aggregate zerfallen.',
+      priv_logs_intro:'Jeder Webserver protokolliert Anfragen — das ist technisch unvermeidbar. Unsere Logs sind jedoch so strukturiert, dass sie innerhalb weniger Tage in harmlose Aggregate zerfallen. Eine Ausnahme (90 Tage) steht unten.',
       priv_logs_tier1_title:'Stufe 1 — access.log (72 Stunden)',
       priv_logs_tier1_body:'Enthält IP-Adresse und User-Agent. Rechtsgrundlage: berechtigtes Interesse an Abwehr von DDoS- und Missbrauchsangriffen. Retention: strikt 72 Stunden, danach kryptographisch geschreddert (<code>shred -u</code>). Wird nie für Analyse oder Statistik verwendet.',
-      priv_logs_tier2_title:'Stufe 2 — tier2.log (14 Tage, keine persönlichen Daten)',
+      priv_logs_cost_title:'Kosten- und Missbrauchskontrolle (90 Tage)',priv_logs_cost_body:'Für LLM-gestützte Endpunkte (<code>attest</code>, <code>verify-claim</code>, <code>check_claim_support</code>) werden IP-Adresse, Tool und Kosten pro Aufruf protokolliert. Aufbewahrung: 90 Tage. Zweck: Tageslimiten, Kostenkontrolle, Abwehr kommerziellen Missbrauchs. Höhere Limiten: <a href="mailto:team@jonashertner.com">team@jonashertner.com</a>.',priv_logs_tier2_title:'Stufe 2 — tier2.log (14 Tage, keine persönlichen Daten)',
       priv_logs_tier2_body:'Enthält ausschliesslich Klassenetiketten: Client-Klasse (z. B. „cursor“, „claude_hosted“, „word_addin“), Endpoint-Klasse (z. B. „rest_search_decisions“), HTTP-Status, Antwortzeit und Response-Grösse. <strong>Keine IP-Adressen. Keine User-Agents. Keine Query-Strings. Kein Referer.</strong> Diese Datei ist strukturell nicht in der Lage, eine Person zu identifizieren. Retention: 14 Tage zur Sicherheit, danach gelöscht.',
       priv_logs_tier3_title:'Stufe 3 — analytics.db (unbefristet, aggregiert & privat)',
       priv_logs_tier3_body:'Tagesaggregate pro (Client-Klasse, Endpoint-Klasse). Keine Zeilen pro Nutzer, keine Zeitachsen feiner als Tagesauflösung. Cells mit n < 10 sind in der öffentlichen Spalte unterdrückt. Veröffentlichte Zahlen tragen Laplace-Rauschen mit ε = 1,0 (formale (ε, 0)-differentielle Privatheit). Diese Datei darf und wird öffentlich gemacht — weil sie mathematisch bewiesen nichts über einzelne Personen preisgibt.',
@@ -265,10 +269,10 @@ OCL.init({
       priv_summary_bullet_ids:'<strong>Pas d’identifiants utilisateur.</strong> Nous ne pouvons pas reconnaître la même personne entre deux visites — cryptographiquement, pas seulement par politique.',
       priv_summary_bullet_dp:'<strong>Tous les chiffres publiés sont différentiellement privés</strong> (ε = 1,0) et soumis à un seuil d’anonymat k = 10.',
       priv_logs_heading:'Logs serveur en trois niveaux',
-      priv_logs_intro:'Tout serveur web journalise les requêtes — c’est techniquement inévitable. Nos logs sont cependant structurés de telle sorte qu’ils se désintègrent en agrégats inoffensifs en quelques jours.',
+      priv_logs_intro:'Tout serveur web journalise les requêtes — c’est techniquement inévitable. Nos logs sont cependant structurés de telle sorte qu’ils se désintègrent en agrégats inoffensifs en quelques jours. Une exception (90 jours) figure ci-dessous.',
       priv_logs_tier1_title:'Niveau 1 — access.log (72 heures)',
       priv_logs_tier1_body:'Contient l’adresse IP et le User-Agent. Base légale : intérêt légitime pour la réponse aux attaques DDoS et aux abus. Rétention : strictement 72 heures, puis déchiquetage cryptographique (<code>shred -u</code>). Jamais utilisé pour les statistiques.',
-      priv_logs_tier2_title:'Niveau 2 — tier2.log (14 jours, aucune donnée personnelle)',
+      priv_logs_cost_title:'Contrôle des coûts et des abus (90 jours)',priv_logs_cost_body:'Pour les endpoints LLM (<code>attest</code>, <code>verify-claim</code>, <code>check_claim_support</code>), l\'adresse IP, l\'outil et le coût par appel sont journalisés. Conservation : 90 jours. Finalité : limites journalières, contrôle des coûts, défense contre l\'abus commercial. Limites supérieures : <a href="mailto:team@jonashertner.com">team@jonashertner.com</a>.',priv_logs_tier2_title:'Niveau 2 — tier2.log (14 jours, aucune donnée personnelle)',
       priv_logs_tier2_body:'Contient exclusivement des étiquettes de classe : classe client (p. ex. «cursor», «claude_hosted», «word_addin»), classe de point d’accès (p. ex. «rest_search_decisions»), code HTTP, temps de réponse, taille de réponse. <strong>Aucune IP. Aucun User-Agent. Aucune chaîne de requête. Aucun referer.</strong> Ce fichier est structurellement incapable d’identifier une personne. Rétention : 14 jours par précaution, puis supprimé.',
       priv_logs_tier3_title:'Niveau 3 — analytics.db (illimité, agrégé & privé)',
       priv_logs_tier3_body:'Agrégats journaliers par (classe client, classe de point d’accès). Aucune ligne par utilisateur, aucune granularité plus fine que le jour. Les cellules avec n < 10 sont supprimées dans la colonne publique. Les chiffres publiés portent un bruit de Laplace avec ε = 1,0 (confidentialité différentielle formelle). Ce fichier peut et sera rendu public — parce qu’il est mathématiquement prouvé qu’il ne révèle rien sur des individus.',
@@ -326,10 +330,10 @@ OCL.init({
       priv_summary_bullet_ids:'<strong>Nessun identificativo utente.</strong> Non possiamo riconoscere la stessa persona tra due visite — crittograficamente, non solo come politica.',
       priv_summary_bullet_dp:'<strong>Tutti i numeri pubblicati sono differenzialmente privati</strong> (ε = 1,0) e soggetti a una soglia di k-anonimità k = 10.',
       priv_logs_heading:'Log del server a tre livelli',
-      priv_logs_intro:'Ogni server web registra le richieste — è tecnicamente inevitabile. I nostri log sono però strutturati in modo tale da decomporsi in aggregati innocui nel giro di pochi giorni.',
+      priv_logs_intro:'Ogni server web registra le richieste — è tecnicamente inevitabile. I nostri log sono però strutturati in modo tale da decomporsi in aggregati innocui nel giro di pochi giorni. Un\'eccezione (90 giorni) è indicata sotto.',
       priv_logs_tier1_title:'Livello 1 — access.log (72 ore)',
       priv_logs_tier1_body:'Contiene indirizzo IP e User-Agent. Base legale: interesse legittimo alla difesa da DDoS e abusi. Conservazione: rigorosamente 72 ore, poi triturato crittograficamente (<code>shred -u</code>). Mai usato per le statistiche.',
-      priv_logs_tier2_title:'Livello 2 — tier2.log (14 giorni, nessun dato personale)',
+      priv_logs_cost_title:'Controllo di costi e abusi (90 giorni)',priv_logs_cost_body:'Per gli endpoint LLM (<code>attest</code>, <code>verify-claim</code>, <code>check_claim_support</code>) vengono registrati indirizzo IP, strumento e costo per chiamata. Conservazione: 90 giorni. Finalità: limiti giornalieri, controllo dei costi, difesa dall\'abuso commerciale. Limiti superiori: <a href="mailto:team@jonashertner.com">team@jonashertner.com</a>.',priv_logs_tier2_title:'Livello 2 — tier2.log (14 giorni, nessun dato personale)',
       priv_logs_tier2_body:'Contiene esclusivamente etichette di classe: classe client (p. es. «cursor», «claude_hosted», «word_addin»), classe di endpoint (p. es. «rest_search_decisions»), codice HTTP, tempo di risposta, dimensione della risposta. <strong>Nessun IP. Nessun User-Agent. Nessuna query string. Nessun referer.</strong> Questo file è strutturalmente incapace di identificare una persona. Conservazione: 14 giorni per sicurezza, poi eliminato.',
       priv_logs_tier3_title:'Livello 3 — analytics.db (illimitato, aggregato & privato)',
       priv_logs_tier3_body:'Aggregati giornalieri per (classe client, classe di endpoint). Nessuna riga per utente, nessuna granularità più fine del giorno. Le celle con n < 10 sono soppresse nella colonna pubblica. I numeri pubblicati portano rumore di Laplace con ε = 1,0 (privacy differenziale formale). Questo file può ed è reso pubblico — perché è matematicamente provato che non rivela nulla sugli individui.',
@@ -387,10 +391,10 @@ OCL.init({
       priv_summary_bullet_ids:'<strong>Naginas IDs d’utilisader.</strong> Nus na pudain betg reconuscher la medema persuna tranter duas visitas — cryptograficamain, betg mo sco reglament.',
       priv_summary_bullet_dp:'<strong>Tut las cifras publitgadas èn a privezza differenziala</strong> (ε = 1,0) e suttastan ad ina saida da k-anonimitad k = 10.',
       priv_logs_heading:'Logs dal server en trais nivels',
-      priv_logs_intro:'Mintga server da web protocolleschia las dumondas — quai è tecnicamain inevitabel. Noss logs èn però structurads uschia ch’els sa dissolvan en aggregats nunnuschaivels en pauc pli paucs dis.',
+      priv_logs_intro:'Mintga server da web protocolleschia las dumondas — quai è tecnicamain inevitabel. Noss logs èn però structurads uschia ch’els sa dissolvan en aggregats nunnuschaivels en pauc pli paucs dis. Ina excepziun (90 dis) stat sutvart.',
       priv_logs_tier1_title:'Nivel 1 — access.log (72 uras)',
       priv_logs_tier1_body:'Cuntegna l’adressa IP ed il User-Agent. Basa legala: interess legitim per la defensiun cunter DDoS e malduvrada. Retenziun: stretgamain 72 uras, lura shredà cryptograficamain (<code>shred -u</code>). Mai duvrà per statisticas.',
-      priv_logs_tier2_title:'Nivel 2 — tier2.log (14 dis, naginas datas persunalas)',
+      priv_logs_cost_title:'Controlla da custs e d\'abus (90 dis)',priv_logs_cost_body:'Per endpoints LLM (<code>attest</code>, <code>verify-claim</code>, <code>check_claim_support</code>) vegnan protocollads l\'adressa IP, l\'utensil ed ils custs per clom. Conservaziun: 90 dis. Intent: limitas dal di, controlla da custs, defensiun cunter abus commerzial. Limitas pli autas: <a href="mailto:team@jonashertner.com">team@jonashertner.com</a>.',priv_logs_tier2_title:'Nivel 2 — tier2.log (14 dis, naginas datas persunalas)',
       priv_logs_tier2_body:'Cuntegna exclusivamain etichettas da classa: classa client, classa d’endpoint, code HTTP, temp da resposta, grondezza da la resposta. <strong>Nagina IP. Nagin User-Agent. Nagina query string. Nagin referer.</strong> Questa datoteca è structuralmain betg en cas d’identifitgar ina persuna. Retenziun: 14 dis per segirtad, lura stizzà.',
       priv_logs_tier3_title:'Nivel 3 — analytics.db (senza temp, aggregà & privà)',
       priv_logs_tier3_body:'Aggregats dal di per (classa client, classa d’endpoint). Naginas lingias per utilisader, nagina granularitad pli fina ch’il di. Cellas cun n < 10 èn suttastàs en la colonna publica. Las cifras publitgadas portan rumur da Laplace cun ε = 1,0 (privezza differenziala formala). Questa datoteca po e sa vegnir publitgada — perquai ch’ella è matematicamain demussada da betg revelar nagut davart singulas persunas.',
@@ -448,10 +452,10 @@ OCL.init({
       priv_summary_bullet_ids:'<strong>No user IDs.</strong> We cannot recognise the same person across two visits — cryptographically, not just as a policy.',
       priv_summary_bullet_dp:'<strong>All published numbers are differentially private</strong> (ε = 1.0) and subject to a k-anonymity threshold of k = 10.',
       priv_logs_heading:'Server logs in three tiers',
-      priv_logs_intro:'Every web server logs requests — that is technically unavoidable. Our logs are structured so that they decay into harmless aggregates within days.',
+      priv_logs_intro:'Every web server logs requests — that is technically unavoidable. Our logs are structured so that they decay into harmless aggregates within days. One exception (90 days) is below.',
       priv_logs_tier1_title:'Tier 1 — access.log (72 hours)',
       priv_logs_tier1_body:'Contains IP address and User-Agent. Legal basis: legitimate interest in defending against DDoS and abuse. Retention: strictly 72 hours, then cryptographically shredded (<code>shred -u</code>). Never used for analytics.',
-      priv_logs_tier2_title:'Tier 2 — tier2.log (14 days, no personal data)',
+      priv_logs_cost_title:'Cost and abuse control (90 days)',priv_logs_cost_body:'For LLM-backed endpoints (<code>attest</code>, <code>verify-claim</code>, <code>check_claim_support</code>), IP address, tool and per-call cost are logged. Retention: 90 days. Purpose: daily limits, cost control, defence against commercial abuse. Higher limits: <a href="mailto:team@jonashertner.com">team@jonashertner.com</a>.',priv_logs_tier2_title:'Tier 2 — tier2.log (14 days, no personal data)',
       priv_logs_tier2_body:'Contains only class labels: client class (e.g. “cursor”, “claude_hosted”, “word_addin”), endpoint class (e.g. “rest_search_decisions”), HTTP status, response time, response size. <strong>No IPs. No User-Agents. No query strings. No referer.</strong> This file is structurally incapable of identifying a person. Retention: 14 days as a safety net, then deleted.',
       priv_logs_tier3_title:'Tier 3 — analytics.db (forever, aggregated & private)',
       priv_logs_tier3_body:'Daily aggregates per (client class, endpoint class). No per-user rows, no finer-than-daily granularity. Cells with n < 10 are suppressed in the public column. Published numbers carry Laplace noise at ε = 1.0 (formal (ε, 0)-differential privacy). This file may be and will be published publicly — because it is mathematically proven to reveal nothing about individuals.',

@@ -291,6 +291,13 @@ LLM_USAGE_LOG_PATH = Path(os.environ.get(
     "OCL_LLM_USAGE_LOG",
     str(Path(__file__).resolve().parent / "logs" / "llm_usage.jsonl"),
 ))
+# Per-IP LLM cost ledger (90-day retention via logrotate; disclosed at
+# /datenschutz/). Separate file from llm_usage.jsonl so the append-only
+# cost audit stays free of personal data.
+LLM_LEDGER_LOG_PATH = Path(os.environ.get(
+    "OCL_LLM_LEDGER_LOG",
+    str(Path(__file__).resolve().parent / "logs" / "llm_cost_by_ip.jsonl"),
+))
 
 # Anthropic public pricing (USD per 1M tokens). Update when rates change.
 # (input_per_1m, output_per_1m). Cache reads bill at 10% of input rate;
@@ -328,10 +335,20 @@ def _llm_usage_log(*, model: str, feature: str, response_json: dict | None,
             + cache_write * rate_in * 1.25
             + out_tok     * rate_out
         ) / 1_000_000
+        # Attribution (2026-08-23). Answering "who is using this feature"
+        # previously took a forensic elimination across four log systems —
+        # llm_usage carried no source. `source` = mcp | rest | internal
+        # (contextvar set at the request layers; batch scripts inherit the
+        # default). `client` is the class label only — no personal data in
+        # this append-only file.
+        _src = _ctx_llm_source.get("internal")
+        _ua = _ctx_client_ua.get("")
         record = {
             "ts":        datetime.now(timezone.utc).isoformat(),
             "model":     model,
             "feature":   feature,
+            "source":    _src,
+            "client":    _client_class(_ua) if _ua else "-",
             "in":        in_tok,
             "out":       out_tok,
             "cache_r":   cache_read,
@@ -344,6 +361,17 @@ def _llm_usage_log(*, model: str, feature: str, response_json: dict | None,
         LLM_USAGE_LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
         with open(LLM_USAGE_LOG_PATH, "a", encoding="utf-8") as f:
             f.write(json.dumps(record, ensure_ascii=False) + "\n")
+        # Per-IP cost ledger — the disclosed 90-day cost/abuse dataset
+        # (/datenschutz/, "Kosten- & Missbrauchskontrolle"). Written only for
+        # edge-originated calls; internal batches carry no IP. Retention is
+        # enforced by logrotate (deploy/logrotate/ocl-llm-ledger, maxage 90).
+        _ip = _ctx_client_ip.get("")
+        if _ip and _src in ("mcp", "rest"):
+            with open(LLM_LEDGER_LOG_PATH, "a", encoding="utf-8") as f:
+                f.write(json.dumps({
+                    "ts": record["ts"], "ip": _ip, "feature": feature,
+                    "source": _src, "cost_usd": record["cost_usd"],
+                }, ensure_ascii=False) + "\n")
     except Exception as e:  # noqa: BLE001
         try:
             logger.debug("llm_usage_log failed: %s", e)
@@ -1852,6 +1880,22 @@ _metrics = {
 
 # ── Per-request context (ASGI → handle_call_tool) ──
 _ctx_client_ip = contextvars.ContextVar("client_ip", default="")
+# LLM-call provenance: mcp | rest | internal (default). Set by the MCP
+# dispatch and the REST LLM endpoints; anything else (batch scripts,
+# maintenance sessions) inherits "internal" — which is precisely the
+# attribution that was missing on 2026-08-18/20.
+_ctx_llm_source = contextvars.ContextVar("llm_source", default="internal")
+
+# Quota for the MCP dispatch gate. The REST layer does its own import
+# inside the app factory; the dispatch runs outside that scope, so it
+# needs a module-level binding — referencing the factory's names raised
+# NameError at runtime (caught in review before deploy, 2026-08-23).
+try:
+    from web_api import ocl_quota as _mcp_quota
+    _MCP_QUOTA_AVAILABLE = True
+except Exception as _mcp_quota_err:                     # noqa: BLE001
+    _mcp_quota = None
+    _MCP_QUOTA_AVAILABLE = False
 _ctx_client_ua = contextvars.ContextVar("client_ua", default="")
 _ctx_session_id = contextvars.ContextVar("session_id", default="")
 
@@ -23654,6 +23698,33 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
         if REMOTE_MODE and name in ("update_database", "check_update_status"):
             return [TextContent(type="text", text="This tool is not available on the remote server.")]
 
+        # Per-IP daily quota on the Sonnet-backed tools (2026-08-23). The REST
+        # twins (/verify-claim, /attest) have been 429-gated for months; the
+        # MCP path had NO cap, so one integrator loop could burn ~$0.01/call
+        # without limit — the 08-20 burst pattern, reachable by anyone. Same
+        # ocl_quota buckets as REST, so an actor cannot double-dip transports.
+        # attest_response is gated only when grounding is requested — the
+        # ungrounded audit costs no LLM call. Fail-open on quota errors:
+        # availability over accounting, matching the REST dependency.
+        _quota_bucket = None
+        if name == "check_claim_support":
+            _quota_bucket = "verify_claim"
+        elif name == "attest_response" and arguments.get("audit_grounding"):
+            _quota_bucket = "attest"
+        if _quota_bucket and _call_ip and _MCP_QUOTA_AVAILABLE:
+            try:
+                _qr = _mcp_quota.check_and_increment(
+                    ip=_call_ip, endpoint=_quota_bucket, api_key=None)
+            except Exception as _qe:  # noqa: BLE001
+                logger.error("mcp quota check exception (fail-open): %s", _qe)
+                _qr = None
+            if _qr is not None and not _qr.allowed:
+                return [TextContent(type="text", text=(
+                    f"Daily limit reached for {name} "
+                    f"({_qr.calls}/{_qr.limit} calls today from this address). "
+                    "Resets 00:00 UTC. For sustained or commercial use, email "
+                    "team@jonashertner.com for an access key."))]
+
         if name == "search":
             # ChatGPT deep-research search shim → (content JSON, structuredContent)
             _qerr = _query_length_error(arguments.get("query"))
@@ -24674,6 +24745,7 @@ def main_remote(host: str, port: int):
         )
         _ip = (headers.get(b"x-real-ip", b"") or headers.get(b"x-forwarded-for", b"")).decode("utf-8", errors="ignore").split(",")[0].strip()
         _ctx_client_ip.set(_ip)
+        _ctx_llm_source.set("mcp")
         async with sse.connect_sse(
             request.scope, request.receive, request._send
         ) as streams:
@@ -24701,6 +24773,7 @@ def main_remote(host: str, port: int):
             # Set context vars for downstream (handle_call_tool)
             _ctx_client_ip.set(ip)
             _ctx_client_ua.set(ua)
+            _ctx_llm_source.set("mcp")
 
             # Extract and track session_id
             qs = scope.get("query_string", b"").decode("utf-8", errors="ignore")
@@ -25390,6 +25463,13 @@ setInterval(load, 30000);
         """FastAPI dependency factory: increments + checks per-IP daily quota.
         Raises HTTPException 429 when exceeded. No-op if quota module missing."""
         async def _dep(request: Request):
+            # Every LLM-backed REST endpoint carries this dependency, so it
+            # doubles as the provenance + identity capture for the cost
+            # ledger: without it, REST-originated Sonnet calls logged as
+            # "internal" and per-IP attribution was impossible.
+            _ctx_llm_source.set("rest")
+            _ctx_client_ip.set(_client_ip(request))
+            _ctx_client_ua.set(request.headers.get("user-agent", ""))
             if not _quota_available:
                 return None
             ip = _client_ip(request)

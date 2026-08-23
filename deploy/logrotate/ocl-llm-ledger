@@ -1,0 +1,15 @@
+# Per-IP LLM cost ledger — the 90-day retention promised at /datenschutz/
+# ("Kosten- und Missbrauchskontrolle"). Writer appends per call
+# (mcp_server.LLM_LEDGER_LOG_PATH); copytruncate for the open handle.
+# maxage IS the privacy commitment: rotated files past 90 days are deleted.
+# Apply: cp deploy/logrotate/ocl-llm-ledger /etc/logrotate.d/
+/opt/caselaw/repo/logs/llm_cost_by_ip.jsonl {
+    daily
+    rotate 90
+    maxage 90
+    missingok
+    notifempty
+    compress
+    dateext
+    copytruncate
+}
