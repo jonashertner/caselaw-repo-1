@@ -49,7 +49,12 @@
   .r-title a{text-decoration:none;color:var(--t1)}
   .r-title a:hover{text-decoration:underline;text-underline-offset:2px}
   .r-regeste{font-size:14px;color:var(--t2);line-height:1.55;margin:0;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
-  .r-meta{margin-top:12px;font-family:var(--f-mono);font-size:11.5px;color:var(--t3);display:flex;gap:14px;flex-wrap:wrap}
+  .r-meta{margin-top:12px;font-family:var(--f-mono);font-size:11.5px;color:var(--t3);display:flex;gap:14px;flex-wrap:wrap;align-items:baseline}
+  .r-badge{font-family:var(--f-mono);font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--red);border:1px solid var(--red);border-radius:999px;padding:2px 8px;flex:0 0 auto}
+  .r-badge.dim{color:var(--t3);border-color:var(--line)}
+  .r-pin{color:var(--red);text-decoration:none;border-bottom:1px dotted var(--red);padding-bottom:1px}
+  .r-pin:hover{border-bottom-style:solid}
+  .s-filters .sep{flex:0 0 100%;height:0;margin:-2px 0 0}
   .empty,.error{padding:56px 16px;text-align:center;color:var(--t2)}
   .empty strong{color:var(--t1);display:block;margin-bottom:8px;font-size:18px;font-weight:600}
   .error{color:var(--red)}
@@ -96,7 +101,7 @@
       <a href="?q=Mietrecht+K%C3%BCndigung+Form">Mietrecht Kündigung Form</a>
       <a href="?q=Art.+41+OR+Schadenersatz">Art. 41 OR Schadenersatz</a>
       <a href="?q=BGE+140+III+86">BGE 140 III 86</a>
-      <a href="?q=6B_1234%2F2025">6B_1234/2025</a>
+      <a href="?q=6B_607%2F2024">6B_607/2024</a>
       <a href="?q=protection+des+donn%C3%A9es&amp;lang=fr">protection des données</a>
     </p>
     <div class="s-filters" id="filters" hidden>
@@ -104,6 +109,13 @@
       <button data-filter="de" type="button">DE</button>
       <button data-filter="fr" type="button">FR</button>
       <button data-filter="it" type="button">IT</button>
+      <span class="sep" aria-hidden="true"></span>
+      <button data-court="" class="active" type="button" data-t="s_allCourts">All courts</button>
+      <button data-court="bge" type="button">BGE</button>
+      <button data-court="bger" type="button">BGer</button>
+      <span class="sep" aria-hidden="true"></span>
+      <button data-sort="" class="active" type="button" data-t="s_sortRel">Relevance</button>
+      <button data-sort="date_desc" type="button" data-t="s_sortNew">Newest first</button>
     </div>
     <div class="s-meta" id="meta" hidden></div>
     <div class="exact" id="exact" hidden></div>
@@ -118,34 +130,34 @@
 OCL.init({
   active:'search',
   i18n:{
-    de:{s_kick:'Suche',s_h1:'Den offenen Schweizer Korpus durchsuchen',s_lede:'Volltextsuche über jeden publizierten Schweizer Gerichtsentscheid, auf Deutsch, Französisch und Italienisch. Ohne Konto, ohne API-Key.',
-      s_submit:'Suchen',s_try:'Versuchen Sie:',s_allLangs:'Alle Sprachen',s_ph:'z. B. "Art. 41 OR Schadenersatz" · 6B_1234/2025 · Mietrecht Kündigung',
+    de:{r_leading:'Leitentscheid',r_cited:'{n}× zitiert',s_allCourts:'Alle Gerichte',s_sortRel:'Relevanz',s_sortNew:'Neueste zuerst',s_kick:'Suche',s_h1:'Den offenen Schweizer Korpus durchsuchen',s_lede:'Volltextsuche über jeden publizierten Schweizer Gerichtsentscheid, auf Deutsch, Französisch und Italienisch. Ohne Konto, ohne API-Key.',
+      s_submit:'Suchen',s_try:'Versuchen Sie:',s_allLangs:'Alle Sprachen',s_ph:'z. B. "Art. 41 OR Schadenersatz" · 6B_607/2024 · Mietrecht Kündigung',
       m_searching:'Suche nach "{q}" …',m_matching:'{total} passende Entscheide · {ms} ms',
-      r_no:'Keine Treffer für "{q}"',r_noHint:'Versuchen Sie allgemeinere Begriffe, lassen Sie Akzente weg oder prüfen Sie das Format der Aktennummer (z. B. 6B_1234/2025).',r_untitled:'(Entscheid ohne Titel)',x_exact:'Treffer Aktennummer',x_open:'Entscheid öffnen →',
+      r_no:'Keine Treffer für "{q}"',r_noHint:'Versuchen Sie allgemeinere Begriffe, lassen Sie Akzente weg oder prüfen Sie das Format der Aktennummer (z. B. 6B_607/2024).',r_untitled:'(Entscheid ohne Titel)',x_exact:'Treffer Aktennummer',x_open:'Entscheid öffnen →',
       p_prev:'← Zurück',p_next:'Weiter →',p_showing:'Zeige {from}–{to} von {total}',
       e_stale:'Die API hat den ungefilterten Korpus zurückgegeben ({total} Zeilen). Meist ist das Seiten-JS veraltet — laden Sie hart neu (⌘⇧R / Strg+Umschalt+R).',e_failed:'Suche fehlgeschlagen: {msg}. Bitte erneut versuchen.'},
-    fr:{s_kick:'Recherche',s_h1:'Rechercher dans le corpus suisse ouvert',s_lede:'Recherche plein texte sur chaque décision publiée des tribunaux suisses, en allemand, français et italien. Sans compte, sans clé API.',
-      s_submit:'Rechercher',s_try:'Essayez :',s_allLangs:'Toutes les langues',s_ph:'p. ex. "Art. 41 OR Schadenersatz" · 6B_1234/2025 · Mietrecht Kündigung',
+    fr:{r_leading:'Arrêt de principe',r_cited:'cité {n}×',s_allCourts:'Tous les tribunaux',s_sortRel:'Pertinence',s_sortNew:'Plus récents',s_kick:'Recherche',s_h1:'Rechercher dans le corpus suisse ouvert',s_lede:'Recherche plein texte sur chaque décision publiée des tribunaux suisses, en allemand, français et italien. Sans compte, sans clé API.',
+      s_submit:'Rechercher',s_try:'Essayez :',s_allLangs:'Toutes les langues',s_ph:'p. ex. "Art. 41 OR Schadenersatz" · 6B_607/2024 · Mietrecht Kündigung',
       m_searching:'Recherche de "{q}" …',m_matching:'{total} décisions correspondantes · {ms} ms',
-      r_no:'Aucun résultat pour "{q}"',r_noHint:'Essayez des termes plus généraux, supprimez les diacritiques ou vérifiez le format du numéro de dossier (p. ex. 6B_1234/2025).',r_untitled:'(décision sans titre)',x_exact:'Correspondance exacte',x_open:'Ouvrir la décision →',
+      r_no:'Aucun résultat pour "{q}"',r_noHint:'Essayez des termes plus généraux, supprimez les diacritiques ou vérifiez le format du numéro de dossier (p. ex. 6B_607/2024).',r_untitled:'(décision sans titre)',x_exact:'Correspondance exacte',x_open:'Ouvrir la décision →',
       p_prev:'← Précédent',p_next:'Suivant →',p_showing:'Affichage de {from}–{to} sur {total}',
       e_stale:'L\'API a renvoyé le corpus non filtré ({total} lignes). Le JS de la page est probablement obsolète — actualisez de force (⌘⇧R / Ctrl+Maj+R).',e_failed:'Échec de la recherche : {msg}. Réessayez.'},
-    it:{s_kick:'Ricerca',s_h1:'Cerca nel corpus svizzero aperto',s_lede:'Ricerca a testo pieno su ogni decisione pubblicata dei tribunali svizzeri, in tedesco, francese e italiano. Senza account, senza chiave API.',
-      s_submit:'Cerca',s_try:'Provate:',s_allLangs:'Tutte le lingue',s_ph:'p. es. "Art. 41 OR Schadenersatz" · 6B_1234/2025 · Mietrecht Kündigung',
+    it:{r_leading:'Decisione di principio',r_cited:'citata {n}×',s_allCourts:'Tutti i tribunali',s_sortRel:'Rilevanza',s_sortNew:'Più recenti',s_kick:'Ricerca',s_h1:'Cerca nel corpus svizzero aperto',s_lede:'Ricerca a testo pieno su ogni decisione pubblicata dei tribunali svizzeri, in tedesco, francese e italiano. Senza account, senza chiave API.',
+      s_submit:'Cerca',s_try:'Provate:',s_allLangs:'Tutte le lingue',s_ph:'p. es. "Art. 41 OR Schadenersatz" · 6B_607/2024 · Mietrecht Kündigung',
       m_searching:'Ricerca di "{q}" …',m_matching:'{total} decisioni corrispondenti · {ms} ms',
-      r_no:'Nessun risultato per "{q}"',r_noHint:'Provate termini più generici, eliminate i segni diacritici o verificate il formato del numero di pratica (p. es. 6B_1234/2025).',r_untitled:'(decisione senza titolo)',x_exact:'Corrispondenza esatta',x_open:'Apri la decisione →',
+      r_no:'Nessun risultato per "{q}"',r_noHint:'Provate termini più generici, eliminate i segni diacritici o verificate il formato del numero di pratica (p. es. 6B_607/2024).',r_untitled:'(decisione senza titolo)',x_exact:'Corrispondenza esatta',x_open:'Apri la decisione →',
       p_prev:'← Precedente',p_next:'Successivo →',p_showing:'Risultati {from}–{to} di {total}',
       e_stale:'L\'API ha restituito il corpus non filtrato ({total} righe). Di solito il JS della pagina è obsoleto — ricaricate forzatamente (⌘⇧R / Ctrl+Maiusc+R).',e_failed:'Ricerca non riuscita: {msg}. Riprovate.'},
-    rm:{s_kick:'Tschertga',s_h1:'Tschertgar en il corpus svizzer avert',s_lede:'Tschertga da text cumplet sur mintga decisiun publitgada dals tribunals svizzers, en tudestg, franzos e talian. Nagin conto, nagina clav API.',
-      s_submit:'Tschertgar',s_try:'Empruvai:',s_allLangs:'Tut las linguas',s_ph:'p. ex. "Art. 41 OR Schadenersatz" · 6B_1234/2025 · Mietrecht Kündigung',
+    rm:{r_leading:'Decisiun da princip',r_cited:'citada {n}×',s_allCourts:'Tut ils tribunals',s_sortRel:'Relevanza',s_sortNew:'Las pli novas',s_kick:'Tschertga',s_h1:'Tschertgar en il corpus svizzer avert',s_lede:'Tschertga da text cumplet sur mintga decisiun publitgada dals tribunals svizzers, en tudestg, franzos e talian. Nagin conto, nagina clav API.',
+      s_submit:'Tschertgar',s_try:'Empruvai:',s_allLangs:'Tut las linguas',s_ph:'p. ex. "Art. 41 OR Schadenersatz" · 6B_607/2024 · Mietrecht Kündigung',
       m_searching:'Tschertga da "{q}" …',m_matching:'{total} decisiuns correspundentas · {ms} ms',
-      r_no:'Nagins resultats per "{q}"',r_noHint:'Empruvai noziuns pli generalas, laschai davent ils accents u controllai il format dal numer dal dossier (p. ex. 6B_1234/2025).',r_untitled:'(decisiun senza titel)',x_exact:'Resultat exact',x_open:'Avrir la decisiun →',
+      r_no:'Nagins resultats per "{q}"',r_noHint:'Empruvai noziuns pli generalas, laschai davent ils accents u controllai il format dal numer dal dossier (p. ex. 6B_607/2024).',r_untitled:'(decisiun senza titel)',x_exact:'Resultat exact',x_open:'Avrir la decisiun →',
       p_prev:'← Enavos',p_next:'Enavant →',p_showing:'Mussar {from}–{to} da {total}',
       e_stale:'L\'API ha returnà il corpus betg filtrà ({total} lingias). Per ordinari è il JS da la pagina antiquà — rechargiai cun forza (⌘⇧R / Ctrl+Maiusc+R).',e_failed:'La tschertga è fallida: {msg}. Empruvai anc ina giada.'},
-    en:{s_kick:'Search',s_h1:'Search the open Swiss corpus',s_lede:'Free full-text search over every published Swiss court decision, in German, French and Italian. No account, no API key.',
-      s_submit:'Search',s_try:'Try:',s_allLangs:'All languages',s_ph:'e.g. "Art. 41 OR Schadenersatz" · 6B_1234/2025 · Mietrecht Kündigung',
+    en:{r_leading:'Leading case',r_cited:'cited {n}×',s_allCourts:'All courts',s_sortRel:'Relevance',s_sortNew:'Newest first',s_kick:'Search',s_h1:'Search the open Swiss corpus',s_lede:'Free full-text search over every published Swiss court decision, in German, French and Italian. No account, no API key.',
+      s_submit:'Search',s_try:'Try:',s_allLangs:'All languages',s_ph:'e.g. "Art. 41 OR Schadenersatz" · 6B_607/2024 · Mietrecht Kündigung',
       m_searching:'Searching for "{q}"…',m_matching:'{total} matching decisions · {ms} ms',
-      r_no:'No matches for "{q}"',r_noHint:'Try broader terms, drop diacritics, or check the docket-number format (e.g. 6B_1234/2025).',r_untitled:'(untitled decision)',x_exact:'Exact case match',x_open:'Open decision →',
+      r_no:'No matches for "{q}"',r_noHint:'Try broader terms, drop diacritics, or check the docket-number format (e.g. 6B_607/2024).',r_untitled:'(untitled decision)',x_exact:'Exact case match',x_open:'Open decision →',
       p_prev:'← Previous',p_next:'Next →',p_showing:'Showing {from}–{to} of {total}',
       e_stale:'The API returned the unfiltered corpus ({total} rows). This usually means the page JS is stale — hard-refresh (⌘⇧R / Ctrl+Shift+R).',e_failed:'Search failed: {msg}. Try again.'}
   },
@@ -162,14 +174,48 @@ OCL.init({
     function el(tag,props,kids){var n=document.createElement(tag);if(props)for(var k in props){if(k==='class')n.className=props[k];else if(k==='text')n.textContent=props[k];else if(k==='href')n.setAttribute('href',props[k]);else if(k.indexOf('aria-')===0||k==='role'||k==='rel'||k==='target')n.setAttribute(k,props[k]);else n[k]=props[k];}if(kids)kids.forEach(function(c){if(c==null)return;n.appendChild(typeof c==='string'?document.createTextNode(c):c);});return n;}
     function clear(n){while(n.firstChild)n.removeChild(n.firstChild);}
     function safeUrl(u){try{var p=new URL(u,location.href);return (p.protocol==='http:'||p.protocol==='https:')?p.href:'#';}catch(e){return '#';}}
+    function cleanRegeste(t){return t?t.replace(/^\s*Regeste\s*\n?/i,'').replace(/\s+/g,' ').trim():'';}
+    function firstSentence(t,max){
+      // Sentence-split aware of legal abbreviations — Swiss headnotes are
+      // dense with "Art." / "Abs." / "Ziff." / "consid.", and a naive split
+      // yields headlines like "Art. 42 Abs. 2 BGG, Art."
+      if(!t)return'';
+      var abbr=/(?:Art|Abs|Ziff|Bst|lit|bzw|vgl|Nr|resp|evtl|inkl|insb|al|cpv|cons|consid|art|ch|let|lett|cf|ecc|pag|seg|p|n|S|E|i\.S|z\.B)$/i;
+      var clamp=function(x){x=x.trim();return x.length>max?x.slice(0,max-1).replace(/\s+\S*$/,'')+'…':x;};
+      var i=0;
+      while(i<t.length){
+        var rest=t.slice(i);var m=rest.match(/[.!?](\s|$)/);
+        if(!m)break;
+        var end=i+m.index+1;
+        var lastWord=(t.slice(0,end-1).match(/[0-9A-Za-zÀ-ÖØ-öø-ÿ.]+$/)||[''])[0];
+        if(end>=20&&lastWord.length>1&&!abbr.test(lastWord)&&!/^[0-9.]+$/.test(lastWord))return clamp(t.slice(0,end));
+        i=end+1;
+      }
+      return clamp(t);}
     function buildLi(r){
-      var title=unesc(r.title)||T('r_untitled'); var cite=pickCite(r,r.language);
+      // BGE records carry no title by design — their identity is the citation
+      // and the Regeste. A results page full of "(untitled decision)" reads as
+      // broken, so derive a headline: title → Regeste lead → snippet → cite.
+      var cite=pickCite(r,r.language);
+      var regeste=cleanRegeste(unesc(r.regeste));
+      var snippet=(unesc(r.snippet)||'').replace(/\s+/g,' ').trim();
+      var title=unesc(r.title)||firstSentence(regeste,110)||firstSentence(snippet,90)||cite;
       var url=safeUrl(r.canonical_url||('https://mcp.opencaselaw.ch/entscheid/'+encodeURIComponent(r.decision_id)));
-      var regeste=unesc(r.regeste)||''; var date=fmtDate(r.decision_date);
-      var head=el('div',{class:'r-head'},[el('span',{class:'r-cite'},[el('a',{href:url,target:'_blank',rel:'noopener',text:cite})]),el('span',{class:'r-lang',text:(r.language||'').toUpperCase()})]);
+      var date=fmtDate(r.decision_date);
+      var badges=[];
+      if(r.is_leading_case)badges.push(el('span',{class:'r-badge',text:T('r_leading')}));
+      if(r.citation_count>=25)badges.push(el('span',{class:'r-badge dim',text:T('r_cited',{n:O.fmt(r.citation_count)})}));
+      var head=el('div',{class:'r-head'},[el('span',{class:'r-cite'},[el('a',{href:url,target:'_blank',rel:'noopener',text:cite})])].concat(badges,[el('span',{class:'r-lang',text:(r.language||'').toUpperCase()})]));
       var titleH2=el('h2',{class:'r-title'},[el('a',{href:url,target:'_blank',rel:'noopener',text:title})]);
-      var meta=el('div',{class:'r-meta'},[r.court?el('span',{text:r.court}):null,date?el('span',{text:date}):null,r.canton?el('span',{text:r.canton}):null]);
-      return el('li',{class:'result'},[head,titleH2,regeste?el('p',{class:'r-regeste',text:regeste}):null,meta]);
+      var body=regeste||snippet;
+      // Don't repeat the headline as the body when they are the same text.
+      if(body&&title!==cite&&body.indexOf(title.replace(/…$/,''))===0&&body.length-title.length<40)body='';
+      var metaKids=[el('span',{text:r.court_name||r.court||''}),date?el('span',{text:date}):null,r.canton?el('span',{text:r.canton}):null];
+      if(r.pinpoint&&r.pinpoint.e_number){
+        var panchor=url.split('#')[0]+'#e-'+String(r.pinpoint.e_number).replace(/\./g,'-');
+        metaKids.push(el('a',{class:'r-pin',href:safeUrl(panchor),target:'_blank',rel:'noopener',text:'→ E. '+r.pinpoint.e_number,title:r.pinpoint.matched_sentence||''}));
+      }
+      return el('li',{class:'result'},[head,titleH2,body?el('p',{class:'r-regeste',text:body}):null,el('div',{class:'r-meta'},metaKids)]);
     }
     function renderResults(data,q){var list=$('#results');clear(list);var rs=data.results||[];
       if(!rs.length){list.appendChild(el('li',{class:'empty'},[el('strong',{text:T('r_no',{q:q})}),T('r_noHint')]));return;}
@@ -198,31 +244,43 @@ OCL.init({
       fetch(url,{cache:'no-store',headers:{Accept:'application/json'}}).then(function(r){return r.ok?r.json():null;}).then(function(data){
         if(data&&data.is_case_number&&(data.results||[]).length){renderExact(data.results);}else{clearExact();}
       }).catch(clearExact);}
-    function renderPager(total,offset,q,lang){var pager=$('#pager');clear(pager);if(total<=PAGE_SIZE){pager.hidden=true;return;}pager.hidden=false;
+    function renderPager(total,offset,q,lang,court,sort){var pager=$('#pager');clear(pager);if(total<=PAGE_SIZE){pager.hidden=true;return;}pager.hidden=false;
       var prev=Math.max(0,offset-PAGE_SIZE),next=offset+PAGE_SIZE,hasPrev=offset>0,hasNext=next<total;
-      var url=function(off){var p=new URLSearchParams({q:q});if(lang)p.set('lang',lang);if(off)p.set('offset',off);return '?'+p;};
+      var url=function(off){var p=new URLSearchParams({q:q});if(lang)p.set('lang',lang);if(court)p.set('court',court);if(sort)p.set('sort',sort);if(off)p.set('offset',off);return '?'+p;};
       pager.appendChild(hasPrev?el('a',{href:url(prev),text:T('p_prev')}):el('span',{class:'disabled',text:T('p_prev')}));
       pager.appendChild(el('span',{class:'pager-info',text:T('p_showing',{from:offset+1,to:Math.min(offset+PAGE_SIZE,total),total:O.fmt(total)})}));
       pager.appendChild(hasNext?el('a',{href:url(next),text:T('p_next')}):el('span',{class:'disabled',text:T('p_next')}));}
     function setMeta(txt){var m=$('#meta');m.hidden=false;m.textContent=txt;}
     function skeleton(){var list=$('#results');clear(list);for(var i=0;i<6;i++)list.appendChild(el('li',{class:'skeleton','aria-hidden':'true'}));}
-    function runSearch(q,lang,offset){
+    function runSearch(q,lang,offset,court,sort){
       if(!q){clear($('#results'));clearExact();$('#meta').hidden=true;$('#pager').hidden=true;$('#filters').hidden=true;return;}
       if(!offset){lookupExact(q);}else{clearExact();}
       $('#filters').hidden=false;skeleton();setMeta(T('m_searching',{q:q}));
       var url=new URL(API);url.searchParams.set('query',q);url.searchParams.set('limit',String(PAGE_SIZE));
       if(offset)url.searchParams.set('offset',String(offset));if(lang)url.searchParams.set('language',lang);
+      if(court)url.searchParams.set('court',court);if(sort)url.searchParams.set('sort',sort);
       var t0=performance.now();
       fetch(url,{cache:'no-store',headers:{Accept:'application/json'}}).then(function(r){if(!r.ok)throw new Error('API '+r.status);return r.json();}).then(function(data){
         var ms=Math.round(performance.now()-t0);var total=(data.total!=null)?data.total:(data.results||[]).length;
         if(total>=500000&&q.length>0){var list=$('#results');clear(list);list.appendChild(el('li',{class:'error',text:T('e_stale',{total:O.fmt(total)})}));$('#meta').hidden=true;$('#pager').hidden=true;return;}
-        setMeta(T('m_matching',{total:O.fmt(total),ms:ms}));renderResults(data,q);renderPager(total,offset||0,q,lang);
+        // A capped total is a floor, not a count — render it as one (#75).
+        var totalStr=O.fmt(total)+(data.total_is_lower_bound?'+':'');
+        setMeta(T('m_matching',{total:totalStr,ms:ms}));renderResults(data,q);renderPager(total,offset||0,q,lang,court,sort);
       }).catch(function(e){var list=$('#results');clear(list);list.appendChild(el('li',{class:'error',text:T('e_failed',{msg:e.message})}));$('#meta').hidden=true;$('#pager').hidden=true;});
     }
-    function setLangBtns(lang){document.querySelectorAll('#filters button').forEach(function(b){b.classList.toggle('active',(b.dataset.filter||'')===(lang||''));});}
-    function init(){var p=params();var q=p.get('q')||'';var lang=p.get('lang')||'';var offset=parseInt(p.get('offset')||'0',10)||0;$('#q').value=q;setLangBtns(lang);if(q)runSearch(q,lang,offset);}
-    $('#form').addEventListener('submit',function(e){e.preventDefault();var q=$('#q').value.trim();var p=new URLSearchParams();if(q)p.set('q',q);history.pushState({q:q},'',q?'?'+p:location.pathname);runSearch(q,'',0);setLangBtns('');});
-    document.querySelectorAll('#filters button').forEach(function(btn){btn.addEventListener('click',function(){var lang=btn.dataset.filter||'';var q=$('#q').value.trim();var p=new URLSearchParams({q:q});if(lang)p.set('lang',lang);history.pushState({q:q,lang:lang},'','?'+p);runSearch(q,lang,0);setLangBtns(lang);});});
+    function setBtns(attr,val){document.querySelectorAll('#filters button[data-'+attr+']').forEach(function(b){b.classList.toggle('active',(b.dataset[attr]||'')===(val||''));});}
+    function stateFromUrl(){var p=params();return{q:p.get('q')||'',lang:p.get('lang')||'',court:p.get('court')||'',sort:p.get('sort')||'',offset:parseInt(p.get('offset')||'0',10)||0};}
+    function pushAndRun(st){var p=new URLSearchParams();if(st.q)p.set('q',st.q);if(st.lang)p.set('lang',st.lang);if(st.court)p.set('court',st.court);if(st.sort)p.set('sort',st.sort);
+      history.pushState(st,'',st.q?'?'+p:location.pathname);
+      setBtns('filter',st.lang);setBtns('court',st.court);setBtns('sort',st.sort);
+      runSearch(st.q,st.lang,0,st.court,st.sort);}
+    function init(){var st=stateFromUrl();$('#q').value=st.q;setBtns('filter',st.lang);setBtns('court',st.court);setBtns('sort',st.sort);if(st.q)runSearch(st.q,st.lang,st.offset,st.court,st.sort);}
+    $('#form').addEventListener('submit',function(e){e.preventDefault();var st=stateFromUrl();st.q=$('#q').value.trim();pushAndRun(st);});
+    document.querySelectorAll('#filters button').forEach(function(btn){btn.addEventListener('click',function(){var st=stateFromUrl();st.q=$('#q').value.trim();
+      if(btn.dataset.filter!==undefined)st.lang=btn.dataset.filter||'';
+      if(btn.dataset.court!==undefined)st.court=btn.dataset.court||'';
+      if(btn.dataset.sort!==undefined)st.sort=btn.dataset.sort||'';
+      pushAndRun(st);});});
     window.addEventListener('popstate',function(){init();});
     init();
   }
