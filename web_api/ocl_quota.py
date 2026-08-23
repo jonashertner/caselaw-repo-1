@@ -78,6 +78,45 @@ ALLOWLIST = set(
     if ip.strip()
 )
 
+# ── Operator alerting ─────────────────────────────────────────
+# quota_alerts rows are an audit trail nobody watches in real time; this
+# push is the delivery channel. Found missing 2026-08-23: a client burned
+# through the verify_claim quota at 09:43 UTC and the first human notice
+# was an evening ledger review. Pushed WITHOUT the offending IP — ntfy.sh
+# topics are public-by-name, so an IP there would leak personal data to
+# anyone who guesses the topic. The IP lives in the quota_alerts row.
+NTFY_URL = os.environ.get("NTFY_URL", "https://ntfy.sh")
+NTFY_TOPIC = os.environ.get("NTFY_TOPIC", "opencaselaw-prod")
+QUOTA_NTFY_ENABLED = os.environ.get(
+    "OCL_QUOTA_NTFY", "1"
+).lower() not in {"0", "false", "no"}
+
+
+def _notify_quota_alert(endpoint: str, calls: int, limit: int) -> None:
+    """Fire-and-forget ntfy push on a FRESH quota breach. Never raises;
+    a failed push must not affect the request being throttled."""
+    if not QUOTA_NTFY_ENABLED:
+        return
+    try:
+        import urllib.request
+        req = urllib.request.Request(
+            f"{NTFY_URL}/{NTFY_TOPIC}",
+            data=(
+                f"quota exceeded: {endpoint} at {calls} calls "
+                f"(limit {limit}). Offending IP: see quota_alerts "
+                f"(output/quota.db) or the per-IP ledger."
+            ).encode("utf-8"),
+            headers={
+                "Title": "OpenCaseLaw quota alert",
+                "Tags": "no_entry",
+                "Priority": "high",
+            },
+            method="POST",
+        )
+        urllib.request.urlopen(req, timeout=3).close()
+    except Exception as e:  # noqa: BLE001
+        log.warning("quota ntfy push failed: %s", e)
+
 
 # ── Schema ─────────────────────────────────────────────────────────
 
@@ -234,13 +273,17 @@ def check_and_increment(
         # Emit one alert per (day, endpoint, ip) so logs don't flood.
         try:
             with _connect() as conn:
-                conn.execute(
+                cur = conn.execute(
                     """INSERT OR IGNORE INTO quota_alerts
                        (day, endpoint, ip, calls, alerted_at)
                        VALUES (?, ?, ?, ?, ?)""",
                     (day, endpoint, ip, n, datetime.now(timezone.utc).isoformat()),
                 )
                 conn.commit()
+            # rowcount 1 ⇔ the OR IGNORE actually inserted ⇔ first breach
+            # of this (day, endpoint, ip) — push exactly once, not per call.
+            if cur.rowcount == 1:
+                _notify_quota_alert(endpoint, n, effective_limit)
             log.warning(
                 "quota.exceeded ip=%s endpoint=%s calls=%d limit=%d label=%s",
                 ip, endpoint, n, effective_limit, label,
