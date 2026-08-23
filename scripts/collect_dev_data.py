@@ -19,8 +19,10 @@ while the guard file is absent.
 
 Privacy is enforced structurally, not by care: every record written is
 scanned for identifier keys (IP, user agent, session id, cohort) and the
-run ABORTS on the first hit. The collector only reads; it never deletes
-or modifies a source.
+run ABORTS on the first hit. ONE dataset is exempt by explicit decision
+(2026-08-23): the per-IP LLM cost ledger, archived raw — see
+IDENTIFIER_EXEMPT_DATASETS for the disclosure trail. The collector only
+reads; it never deletes or modifies a source.
 
 Usage (VPS, via systemd timer; also runnable by hand):
     python3 scripts/collect_dev_data.py --dest /opt/caselaw/data-private
@@ -47,6 +49,23 @@ REPO = Path(__file__).resolve().parents[1]
 FORBIDDEN_KEYS = {"ip", "client_ip", "remote_addr", "user_id", "session_id",
                   "sid", "ua", "user_agent", "cohort", "install_cohort",
                   "email", "stripe_customer"}
+
+# The ONE dataset exempt from the identifier scan: the per-IP LLM cost
+# ledger, archived RAW (incl. IP addresses) into the private repo by
+# explicit owner decision, 2026-08-23. Disclosed at /datenschutz/
+# ("Kosten- und Missbrauchskontrolle": 90 days on the serving systems
+# plus an access-restricted private archive for the lifetime of the
+# service). Everything else stays structurally identifier-free — adding
+# a name here is a privacy-notice amendment, not a code change, and the
+# test suite pins this set to exactly one member.
+IDENTIFIER_EXEMPT_DATASETS = {"llm_cost_by_ip"}
+
+# Ledger records written BEFORE the /datenschutz/ amendment was live were
+# collected under the plain 90-day promise and are never archived — they
+# age off the VPS as promised. The amendment ships during 2026-08-23, so
+# the archive starts at the first full post-amendment day; the boundary
+# is a day, not a push-moment, precisely so it cannot be argued about.
+LEDGER_ARCHIVE_SINCE = "2026-08-24"
 
 # The 0c guard: trace export stays off until the amendment is live. The
 # deploy step that publishes the amended /datenschutz/ creates this file;
@@ -83,12 +102,13 @@ class Collector:
         if not records:
             log.info("[%s] nothing to collect", dataset)
             return
-        for rec in records:
-            bad = _scan(rec)
-            if bad:
-                raise SystemExit(
-                    f"PRIVACY ABORT: identifier key(s) {bad} in dataset "
-                    f"'{dataset}' — nothing was written")
+        if dataset not in IDENTIFIER_EXEMPT_DATASETS:
+            for rec in records:
+                bad = _scan(rec)
+                if bad:
+                    raise SystemExit(
+                        f"PRIVACY ABORT: identifier key(s) {bad} in dataset "
+                        f"'{dataset}' — nothing was written")
         d = self.dest / "datasets" / dataset
         out = d / f"{self.today}.jsonl.gz"
         if self.dry:
@@ -216,6 +236,26 @@ class Collector:
                              since=yesterday),
             "One record per LLM call: model, feature, token counts, "
             "cost_usd, ok. No prompt or completion text.")
+
+        # Per-IP LLM cost ledger: the sole RAW identifier-bearing archive
+        # (see IDENTIFIER_EXEMPT_DATASETS). The serving copy rotates out at
+        # 90 days (logrotate maxage); these shards are the permanent record.
+        # First run bootstraps from LEDGER_ARCHIVE_SINCE, then daily
+        # increments (consumer dedups on ts — µs-precision ISO — + ip,
+        # like every other overlapping stream).
+        ledger_dir = self.dest / "datasets" / "llm_cost_by_ip"
+        self._write_jsonl_gz(
+            "llm_cost_by_ip",
+            self._read_jsonl(
+                REPO / "logs" / "llm_cost_by_ip.jsonl",
+                since=yesterday if ledger_dir.exists() else LEDGER_ARCHIVE_SINCE),
+            "RAW per-IP LLM cost ledger: ts, ip, feature, source (mcp|rest), "
+            "cost_usd — one record per edge-originated LLM call. CONTAINS IP "
+            "ADDRESSES: the single dataset exempt from the identifier scan, "
+            "by owner decision 2026-08-23, disclosed at /datenschutz/ "
+            "('Kosten- und Missbrauchskontrolle': 90 days on serving "
+            "systems + this access-restricted private archive). NEVER "
+            "leaves the private repo.")
 
         # Scraper health: today's snapshot, kept per-day (the source file
         # is overwritten every run, so history exists only here).
