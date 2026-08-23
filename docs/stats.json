@@ -2384,7 +2384,7 @@
     "2026-07": 1934,
     "2026-08": 311
   },
-  "generated_at": "2026-08-23T09:33:32.011996+00:00",
+  "generated_at": "2026-08-23T17:53:09.863201+00:00",
   "scraper_health": {
     "run_at": "2026-08-23T03:03:44.231048+00:00",
     "run_duration_s": 7363.2,
@@ -2812,7 +2812,7 @@
         "note": null,
         "state_count": 98504,
         "jsonl_size_mb": 1487.6,
-        "jsonl_mtime": "2026-08-23T01:15:43.902954+00:00"
+        "jsonl_mtime": "2026-08-23T10:34:34.363366+00:00"
       },
       "gl_gerichte": {
         "success": true,
@@ -2846,7 +2846,7 @@
         "note": null,
         "state_count": 21343,
         "jsonl_size_mb": 490.4,
-        "jsonl_mtime": "2026-08-23T09:18:24.895203+00:00"
+        "jsonl_mtime": "2026-08-23T10:38:23.932798+00:00"
       },
       "mkg": {
         "success": true,
@@ -2880,7 +2880,7 @@
         "note": null,
         "state_count": 1141,
         "jsonl_size_mb": 39.9,
-        "jsonl_mtime": "2026-08-23T01:20:43.237440+00:00"
+        "jsonl_mtime": "2026-08-23T10:25:00.103318+00:00"
       },
       "ne_jurisprudence_adm": {
         "success": true,
@@ -2897,7 +2897,7 @@
         "note": null,
         "state_count": 1611,
         "jsonl_size_mb": 32.6,
-        "jsonl_mtime": "2026-08-23T01:26:13.569754+00:00"
+        "jsonl_mtime": "2026-08-23T10:26:03.197994+00:00"
       },
       "nw_gerichte": {
         "success": true,
@@ -3407,7 +3407,7 @@
         "note": null,
         "state_count": 7656,
         "jsonl_size_mb": 190.5,
-        "jsonl_mtime": "2026-08-23T02:00:35.658722+00:00"
+        "jsonl_mtime": "2026-08-23T10:58:28.660629+00:00"
       },
       "zh_verwaltungsgericht": {
         "success": true,
@@ -3582,22 +3582,22 @@
       "ZH": 135
     },
     "commentaries": 1170,
-    "scholarship_publications": 25073,
+    "scholarship_publications": 25077,
     "scholarship_by_source": {
       "boris_law": 7319,
       "e_periodica_polsci": 3089,
       "e_periodica_law": 3041,
       "zhaw_digitalcollection": 3040,
-      "libra_unine": 1992,
+      "libra_unine": 1994,
       "eth_research_collection": 1760,
       "unige_law": 1115,
       "e_periodica_pubadmin": 855,
       "fhnw_irf": 496,
       "onlinekommentar": 390,
       "edoc_unibas_law": 324,
-      "sui_generis": 293,
+      "sui_generis": 294,
       "medialex": 275,
-      "eizpublishing": 267,
+      "eizpublishing": 268,
       "leges": 204,
       "ex_ante": 176,
       "thegoodboard": 140,
@@ -3609,8 +3609,8 @@
       "alexandria_law": 13
     },
     "scholarship_by_type": {
-      "article": 19202,
-      "book": 4166,
+      "article": 19205,
+      "book": 4167,
       "dissertation": 565,
       "report": 434,
       "commentary": 420,
@@ -3619,8 +3619,8 @@
       "reference_article": 40,
       "bachelor_thesis": 3
     },
-    "citation_edges": 9837756,
-    "statute_edges": 12466986
+    "citation_edges": 9838038,
+    "statute_edges": 12467327
   },
   "interesting_stats": {
     "most_cited_decision": {
@@ -3631,7 +3631,7 @@
     "most_cited_statute": {
       "law_code": "LTF",
       "article": "100",
-      "ref_count": 184157
+      "ref_count": 184168
     },
     "oldest_decision": {
       "docket": "1_I_26",
@@ -3643,17 +3643,17 @@
       "de_pct": 47.6,
       "fr_pct": 43.8,
       "it_pct": 8.6,
-      "total": 1054206
+      "total": 1054225
     },
     "regeste_coverage": {
       "pct": 38.5,
-      "with_regeste": 405512,
-      "total": 1054206
+      "with_regeste": 405513,
+      "total": 1054225
     },
     "graph_size": {
-      "decision_edges": 11530199,
-      "statute_edges": 12466986,
-      "total": 23997185
+      "decision_edges": 11530524,
+      "statute_edges": 12467327,
+      "total": 23997851
     },
     "echr_switzerland": {
       "total": 3032,
@@ -3702,12 +3702,12 @@
       {
         "law_code": "LTF",
         "article": "100",
-        "ref_count": 184157
+        "ref_count": 184168
       },
       {
         "law_code": "LTF",
         "article": "113",
-        "ref_count": 113483
+        "ref_count": 113487
       },
       {
         "law_code": "LTF",
@@ -3717,7 +3717,7 @@
       {
         "law_code": "BGG",
         "article": "42",
-        "ref_count": 96426
+        "ref_count": 96431
       },
       {
         "law_code": "BGG",
@@ -4370,7 +4370,10 @@
       "VD": 12,
       "BS": 4
     },
-    "corpus": {},
+    "corpus": {
+      "citation_edges": 282,
+      "statute_edges": 341
+    },
     "previous_generated_at": "2026-08-22T16:37:38.373854+00:00"
   }
 }
