@@ -25444,6 +25444,19 @@ setInterval(load, 30000);
         redoc_url="/redoc",
     )
 
+    @rest_api.middleware("http")
+    async def _rest_llm_provenance(request: Request, call_next):
+        # Every REST request stamps provenance + identity contextvars, so
+        # Haiku/Sonnet calls made while serving it (rerank, query-parse,
+        # grounding) attribute to source=rest and land in the per-IP cost
+        # ledger. Without this, only /mcp traffic attributed — and the
+        # crawler-facing /api/decisions surface, the biggest rerank
+        # spender, logged as "internal".
+        _ctx_llm_source.set("rest")
+        _ctx_client_ip.set(_client_ip(request))
+        _ctx_client_ua.set(request.headers.get("user-agent", ""))
+        return await call_next(request)
+
     # ── Per-IP daily quota for expensive (LLM-backed) endpoints ────
     # Defense against commercial-tool inner-loop integration costs (see
     # docs/fair-use.html). Fail-open: if the sidecar DB is unavailable
