@@ -22401,6 +22401,19 @@ def _list_tools() -> list[Tool]:
                             "proposition would mislead a Swiss lawyer."
                         ),
                     },
+                    "audit_quotes": {
+                        "type": "boolean",
+                        "description": (
+                            "When true, runs the whole-document quote audit: "
+                            "every quoted passage of 30+ chars is checked "
+                            "verbatim against the cited sources. Off by "
+                            "default since 2026-05-11 because it flagged "
+                            "legitimate non-legal quotations (witness "
+                            "statements, contract excerpts, scholarly "
+                            "commentary). Set to true when the draft quotes "
+                            "case text directly and the wording matters."
+                        ),
+                    },
                 },
                 "required": ["draft_text"],
             },
