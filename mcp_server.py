@@ -6808,8 +6808,19 @@ def _build_query_strategies(
     quoted = f'"{cleaned}"' if cleaned else ""
 
     if has_explicit_syntax:
+        # The raw strategy must carry the user's OPERATORS, not the sanitised
+        # text: _sanitize_fts5 quotes even operand-flanked OR (right for
+        # natural language — the Obligationenrecht — wrong once the user
+        # wrote boolean syntax), so 'Mietzins OR Pachtzins' executed as three
+        # required tokens and returned FEWER hits than either operand (52 vs
+        # 2000/568, caught 2026-08-23 while verifying the /search/
+        # capabilities panel). _explicit_laws_match is the corpus-agnostic
+        # raw→safe-explicit transform built for exactly this (#60); fall back
+        # to the sanitised form when it yields nothing.
+        explicit_raw = _explicit_laws_match(
+            original_query if original_query is not None else raw) or raw
         candidates = [
-            {"name": "raw", "query": raw, "weight": SCORING_CONFIG["sw_raw"]},
+            {"name": "raw", "query": explicit_raw, "weight": SCORING_CONFIG["sw_raw"]},
             {"name": "quoted", "query": quoted, "weight": SCORING_CONFIG["sw_quoted_explicit"]},
             {"name": "regeste_focus", "query": regeste_focus, "weight": SCORING_CONFIG["sw_regeste_focus_explicit"]},
             {"name": "title_focus", "query": title_focus, "weight": SCORING_CONFIG["sw_title_focus_explicit"]},
