@@ -39,7 +39,13 @@ REPORT_JSON = Path(os.environ.get("OCL_CITATION_ANOMALY_REPORT",
 PRIVATE_REPO = Path(os.environ.get("OCL_ANOMALY_PRIVATE_REPO",
                                    "/opt/caselaw/confidential-reports"))
 DECISIONS_DB = Path(os.environ.get("SWISS_CASELAW_DB", "output/decisions.db"))
-NTFY_URL = os.environ.get("OCL_ANOMALY_NTFY", "https://ntfy.sh/opencaselaw-publish")
+# OCL_ANOMALY_NTFY (full URL) wins; else the unified operator topic via
+# NTFY_TOPIC (2026-08-24, /opt/caselaw/ops.env); else the legacy topic.
+NTFY_URL = os.environ.get("OCL_ANOMALY_NTFY") or (
+    os.environ.get("NTFY_URL", "https://ntfy.sh").rstrip("/")
+    + "/"
+    + os.environ.get("NTFY_TOPIC", "opencaselaw-publish")
+)
 DEPLOY_KEY = os.environ.get("OCL_ANOMALY_DEPLOY_KEY",
                             "/root/.ssh/anomaly_reports_ed25519")
 SNIPPET_RADIUS = 240

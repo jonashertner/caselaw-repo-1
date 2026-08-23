@@ -41,9 +41,15 @@ from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 # ── ntfy push channel ─────────────────────────────────────────────
-# Topic is unique per-deployment; subscribe in the ntfy app to get
-# push alerts. Mirrors scripts/publish_failure_alert.py pattern.
-NTFY_URL = "https://ntfy.sh/opencaselaw-scrapers"
+# Env-driven since 2026-08-24: the operator subscribes to ONE topic
+# (NTFY_TOPIC, set via /opt/caselaw/ops.env in the service drop-ins) —
+# the previous per-purpose topic had no subscribers, ever. The legacy
+# topic stays as fallback so an unconfigured run keeps old behavior.
+NTFY_URL = (
+    os.environ.get("NTFY_URL", "https://ntfy.sh").rstrip("/")
+    + "/"
+    + os.environ.get("NTFY_TOPIC", "opencaselaw-scrapers")
+)
 
 REPO = Path(__file__).resolve().parent.parent
 

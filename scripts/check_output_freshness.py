@@ -28,13 +28,20 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import subprocess
 import sys
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
-NTFY_URL = "https://ntfy.sh/opencaselaw-publish"  # same topic as publish failure alerts
+# Env-driven since 2026-08-24 (one operator topic via NTFY_TOPIC in
+# /opt/caselaw/ops.env drop-ins); legacy publish topic as fallback.
+NTFY_URL = (
+    os.environ.get("NTFY_URL", "https://ntfy.sh").rstrip("/")
+    + "/"
+    + os.environ.get("NTFY_TOPIC", "opencaselaw-publish")
+)
 REPO = Path(__file__).resolve().parent.parent
 HF_API = "https://huggingface.co/api/datasets/voilaj/swiss-caselaw"
 
