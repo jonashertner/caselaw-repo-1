@@ -96,7 +96,7 @@
     <div class="wrap">
       <p class="page-kicker"><b data-t="kicker">AI · MCP server</b></p>
       <h1 class="page-h1" data-t="mcp_h1">Connect AI agents</h1>
-      <p class="page-lead" data-t="mcp_sub">OpenCaseLaw's public MCP server gives language models direct access to 1,050,000+ Swiss court decisions, the citation graph, federal laws and cantonal acts. 41 specialized tools, no sign-up, no API keys.</p>
+      <p class="page-lead" data-t="mcp_sub">OpenCaseLaw's public MCP server gives language models direct access to 1,050,000+ Swiss court decisions, the citation graph, federal laws and cantonal acts. 42 specialized tools, no sign-up, no API keys.</p>
       <nav class="toc" aria-label="On this page">
         <span class="toc-label" data-t="page_toc">On this page</span>
         <a href="#modes" data-t="mcp_toc_modes">Operating modes</a>
@@ -184,7 +184,7 @@
     <!-- ── Tool catalogue ──────────────────────────────────────── -->
     <div id="tools" class="blk">
       <p class="sec-tag"><span class="n">§03</span> <span data-t="mcp_toc_tools">Tools</span></p>
-      <h2 class="sec-h" data-t="mcp_tools_heading">41 public tools at a glance (+ 2 local admin tools)</h2>
+      <h2 class="sec-h" data-t="mcp_tools_heading">42 public tools at a glance (+ 2 local admin tools)</h2>
       <p class="page-lead" style="margin-top:14px;font-size:16px" data-t="mcp_tools_desc">Each tool is optimised for a specific research use case. Full schemas via the MCP protocol <code>tools/list</code>, grouped here by function.</p>
 
       <div class="toolgrid">
@@ -193,6 +193,7 @@
           <ul>
             <li>search_decisions</li>
             <li>get_decision</li>
+            <li>get_decisions</li>
             <li>get_case_brief</li>
             <li>list_courts</li>
             <li>get_statistics</li>
@@ -320,7 +321,7 @@ OCL.init({
     de:{
       kicker:'KI · MCP-Server',
       mcp_h1:'KI-Agenten verbinden',
-      mcp_sub:'Der öffentliche MCP-Server von OpenCaseLaw gibt Sprachmodellen direkten Zugriff auf 1’050’000+ Schweizer Gerichtsentscheide, den Zitationsgraph, Bundesgesetze und kantonale Erlasse. 41 spezialisierte Tools, keine Anmeldung, keine API-Keys.',
+      mcp_sub:'Der öffentliche MCP-Server von OpenCaseLaw gibt Sprachmodellen direkten Zugriff auf 1’050’000+ Schweizer Gerichtsentscheide, den Zitationsgraph, Bundesgesetze und kantonale Erlasse. 42 spezialisierte Tools, keine Anmeldung, keine API-Keys.',
       page_toc:'Auf dieser Seite',
       mcp_toc_modes:'Betriebsmodi', mcp_toc_setup:'Einrichtung', mcp_toc_tools:'Tools', mcp_toc_tech:'Technisches',
       mcp_modes_heading:'Zwei Betriebsmodi',
@@ -337,7 +338,7 @@ OCL.init({
       mcp_copilot_step:'Agent → Tools → Add a tool → New tool → „Model Context Protocol". Server-Name „Swiss Caselaw" + URL eintragen, Auth: None. Nur Streamable HTTP (SSE seit August 2025 nicht mehr unterstützt).',
       mcp_other_heading:'Andere MCP-Clients',
       mcp_other_step:'Funktioniert mit jedem MCP-fähigen Client (Continue, Zed, Cody, Windsurf, …) über Streamable HTTP an <code>https://mcp.opencaselaw.ch</code>. SSE ist ebenfalls unter <code>/sse</code> erreichbar, aber MCP-spec-seitig veraltet.',
-      mcp_tools_heading:'41 öffentliche Tools (+ 2 lokale Admin-Tools)',
+      mcp_tools_heading:'42 öffentliche Tools (+ 2 lokale Admin-Tools)',
       mcp_tools_desc:'Jedes Tool ist für einen spezifischen Rechercheanwendungsfall optimiert. Volle Schemas via MCP-Protokoll-<code>tools/list</code>, hier gruppiert nach Funktion.',
       mcp_grp_search:'Entscheide suchen & abrufen',
       mcp_grp_structure:'Entscheidstruktur (Bund)',
@@ -362,10 +363,10 @@ OCL.init({
     fr:{
       kicker:'IA · serveur MCP',
       mcp_h1:'Connecter des agents IA',
-      mcp_sub:'Le serveur MCP public d\'OpenCaseLaw donne aux modèles de langage un accès direct à plus de 1’050’000 décisions judiciaires suisses, au graphe de citations, aux lois fédérales et aux actes cantonaux. 41 outils spécialisés, aucune inscription, aucune clé API.',
+      mcp_sub:'Le serveur MCP public d\'OpenCaseLaw donne aux modèles de langage un accès direct à plus de 1’050’000 décisions judiciaires suisses, au graphe de citations, aux lois fédérales et aux actes cantonaux. 42 outils spécialisés, aucune inscription, aucune clé API.',
       page_toc:'Sur cette page',
       mcp_remote_desc:'Immédiatement disponible, toujours à jour. Aucun téléchargement requis. Endpoint serveur :',
-      mcp_tools_heading:'Aperçu des 41 outils publics (+ 2 outils locaux d\'administration)',
+      mcp_tools_heading:'Aperçu des 42 outils publics (+ 2 outils locaux d\'administration)',
       mcp_tools_desc:'Chaque outil est optimisé pour un cas d\'usage de recherche spécifique. Schémas complets via <code>tools/list</code> du protocole MCP, regroupés ici par fonction.',
       mcp_tech_heading:'Détails techniques',
       mcp_tech_transport:'Transport : Server-Sent Events (SSE) + Streamable HTTP, compatible avec tous les clients MCP courants',
@@ -378,10 +379,10 @@ OCL.init({
     it:{
       kicker:'IA · server MCP',
       mcp_h1:'Collegare agenti IA',
-      mcp_sub:'Il server MCP pubblico di OpenCaseLaw dà ai modelli linguistici accesso diretto a oltre 1’050’000 decisioni giudiziarie svizzere, al grafo delle citazioni, alle leggi federali e agli atti cantonali. 41 strumenti specializzati, nessuna registrazione, nessuna chiave API.',
+      mcp_sub:'Il server MCP pubblico di OpenCaseLaw dà ai modelli linguistici accesso diretto a oltre 1’050’000 decisioni giudiziarie svizzere, al grafo delle citazioni, alle leggi federali e agli atti cantonali. 42 strumenti specializzati, nessuna registrazione, nessuna chiave API.',
       page_toc:'In questa pagina',
       mcp_remote_desc:'Immediatamente disponibile, sempre aggiornato. Nessun download richiesto. Endpoint server:',
-      mcp_tools_heading:'41 strumenti pubblici in sintesi (+ 2 strumenti locali di amministrazione)',
+      mcp_tools_heading:'42 strumenti pubblici in sintesi (+ 2 strumenti locali di amministrazione)',
       mcp_tools_desc:'Ogni strumento è ottimizzato per uno specifico caso d\'uso di ricerca. Schemi completi via <code>tools/list</code> del protocollo MCP, qui raggruppati per funzione.',
       mcp_tech_heading:'Dettagli tecnici',
       mcp_tech_transport:'Trasporto: Server-Sent Events (SSE) + Streamable HTTP, compatibile con tutti i client MCP comuni',
@@ -394,10 +395,10 @@ OCL.init({
     rm:{
       kicker:'IA · server MCP',
       mcp_h1:'Connectar agents AI',
-      mcp_sub:'Il server MCP public da OpenCaseLaw dà als models linguistics access direct a passa 1’050’000 decisiuns giudizialas svizras, al grafic da citaziuns, a las leschas federalas ed als acts chantunals. 41 utensils specialisàs, nagina registraziun, nagins API keys.',
+      mcp_sub:'Il server MCP public da OpenCaseLaw dà als models linguistics access direct a passa 1’050’000 decisiuns giudizialas svizras, al grafic da citaziuns, a las leschas federalas ed als acts chantunals. 42 utensils specialisàs, nagina registraziun, nagins API keys.',
       page_toc:'Sin questa pagina',
       mcp_remote_desc:'Immediat disponibel, adina actual. Nagin download necessari. Endpoint dal server:',
-      mcp_tools_heading:'41 utensils publics (+ 2 utensils locals d\'administraziun)',
+      mcp_tools_heading:'42 utensils publics (+ 2 utensils locals d\'administraziun)',
       mcp_tools_desc:'Mintga utensil è optimà per in cas spezific da retschertga. Schemas cumplets via <code>tools/list</code> dal protocol MCP, qua gruppads tenor funcziun.',
       mcp_tech_heading:'Detagls tecnics',
       mcp_tech_transport:'Transport: Server-Sent Events (SSE) + Streamable HTTP, cumpatibel cun tut ils clients MCP usitads',
@@ -410,7 +411,7 @@ OCL.init({
     en:{
       kicker:'AI · MCP server',
       mcp_h1:'Connect AI agents',
-      mcp_sub:'OpenCaseLaw\'s public MCP server gives language models direct access to 1,050,000+ Swiss court decisions, the citation graph, federal laws and cantonal acts. 41 specialized tools, no sign-up, no API keys.',
+      mcp_sub:'OpenCaseLaw\'s public MCP server gives language models direct access to 1,050,000+ Swiss court decisions, the citation graph, federal laws and cantonal acts. 42 specialized tools, no sign-up, no API keys.',
       page_toc:'On this page',
       mcp_toc_modes:'Operating modes', mcp_toc_setup:'Setup', mcp_toc_tools:'Tools', mcp_toc_tech:'Technical',
       mcp_modes_heading:'Two operating modes',
@@ -427,7 +428,7 @@ OCL.init({
       mcp_copilot_step:'Agent → Tools → Add a tool → New tool → "Model Context Protocol". Server name "Swiss Caselaw" and URL, auth: None. Streamable HTTP only (SSE no longer supported since August 2025).',
       mcp_other_heading:'Other MCP clients',
       mcp_other_step:'Works with any MCP-capable client (Continue, Zed, Cody, Windsurf, …) over Streamable HTTP at <code>https://mcp.opencaselaw.ch</code>. SSE is also reachable at <code>/sse</code> but is deprecated by the MCP spec.',
-      mcp_tools_heading:'41 public tools at a glance (+ 2 local admin tools)',
+      mcp_tools_heading:'42 public tools at a glance (+ 2 local admin tools)',
       mcp_tools_desc:'Each tool is optimised for a specific research use case. Full schemas via the MCP protocol <code>tools/list</code>, grouped here by function.',
       mcp_grp_search:'Search & retrieve decisions',
       mcp_grp_structure:'Decision structure (federal)',

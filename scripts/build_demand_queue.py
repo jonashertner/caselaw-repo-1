@@ -33,6 +33,24 @@ from pathlib import Path
 
 log = logging.getLogger("demand_queue")
 
+# Extraction artifacts, not acquirable decisions. "Urk. N" is an exhibit
+# reference (Urkunde) in Zurich court practice that the reference extractor
+# misreads as a docket — the top two rows of the 2026-08-22 queue were URK_
+# variants cited 1,816× and 1,158×, all from zh_sozialversicherungsgericht.
+# Fixing the extractor is pipeline-gated (build_reference_graph, step 2c);
+# until then the queue must not price exhibits as missing decisions. A
+# control character inside a ref ("URK_ \n2") is never legitimate either —
+# it marks a normalization failure, not a citable target. Plain spaces are
+# NOT filtered: BGE-shaped refs legitimately carry them.
+_ARTIFACT_PREFIXES = ("URK_",)
+
+
+def _is_extraction_artifact(ref: str) -> bool:
+    up = ref.upper()
+    if any(up.startswith(p) for p in _ARTIFACT_PREFIXES):
+        return True
+    return "\n" in ref or "\t" in ref or "\r" in ref
+
 
 def build(db: Path, limit: int | None = None,
           min_citations: int = 2) -> list[dict]:
@@ -49,6 +67,8 @@ def build(db: Path, limit: int | None = None,
         typ: dict[str, str] = {}
         examples: dict[str, list] = defaultdict(list)
         scanned = 0
+        artifact_rows = 0
+        artifact_refs: set = set()
         for row in con.execute(
                 "SELECT source_decision_id, target_ref, target_type "
                 "FROM decision_citations"):
@@ -56,12 +76,17 @@ def build(db: Path, limit: int | None = None,
             ref = row["target_ref"]
             if not ref or ref in resolved:
                 continue
+            if _is_extraction_artifact(ref):
+                artifact_rows += 1
+                artifact_refs.add(ref)
+                continue
             count[ref] += 1
             typ.setdefault(ref, row["target_type"] or "")
             if len(examples[ref]) < 3:
                 examples[ref].append(row["source_decision_id"])
-        log.info("scanned %d citation rows; %d distinct unresolved targets",
-                 scanned, len(count))
+        log.info("scanned %d citation rows; %d distinct unresolved targets; "
+                 "excluded %d artifact rows over %d refs (URK_/control-char)",
+                 scanned, len(count), artifact_rows, len(artifact_refs))
     finally:
         con.close()
 
