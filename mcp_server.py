@@ -3153,7 +3153,21 @@ def _exact_fts_total(conn, fts_query: str, where: str, params: list):
 # via _cache_clear() and by the nightly worker recycle. TTL is
 # belt-and-braces on top of the generation hook and bounds how long a
 # silently degraded entry (e.g. rerank timeout) can live.
-_SEARCH_RESULT_CACHE = _BoundedTTLCache(maxsize=256, ttl_s=3600.0)
+# maxsize raised 256 -> 1024 (2026-08-24). Replaying three days of captured
+# traffic showed 1024 saturates the hit rate (2048/4096 are identical) with an
+# observed peak of ~1,513 entries per shard. Rows carry no full_text and
+# snippets are capped at MAX_SNIPPET_LEN, so this is ~42KB/entry, ~43MB per
+# worker, ~350MB across the 8 — acceptable.
+#
+# TTL deliberately LEFT AT 1h. Raising it to 6-24h would buy more, but the
+# probe that would benefit most is quality/smoke.py's own canary, which uses a
+# real German query specifically so it reaches _rerank_rows — "precisely the
+# code that broke" on 2026-08-22. A longer TTL turns that canary into a cache
+# hit and pushes rerank-breakage detection from minutes to hours. Cheaper and
+# safer to stop paying for our own monitoring at source: the ops-dashboard
+# probe fires every 60s (~1,323 pipeline runs/day). If the TTL is ever raised,
+# make smoke.py vary its query first.
+_SEARCH_RESULT_CACHE = _BoundedTTLCache(maxsize=1024, ttl_s=3600.0)
 # Bulk/export calls (REST allows limit up to 2000) are rare, huge, and
 # not the repeat traffic — don't let one evict 50 real entries' worth
 # of memory.
