@@ -1,0 +1,35 @@
+OpenCaseLaw — bulk access notice
+================================
+
+You are requesting individual export files at high volume and have been
+rate-limited.
+
+This is not a refusal. The corpus is CC0 — public domain, no conditions —
+and you are welcome to all of it. We would just rather you took it in one
+piece than a million at a time:
+
+    https://huggingface.co/datasets/voilaj/swiss-caselaw
+
+That mirror carries the full corpus (1,000,000+ Swiss court decisions,
+federal and cantonal statutes) as Parquet, rebuilt daily. For citation
+metadata in particular it is strictly better than scraping per-record
+exports: consistent fields, no HTML, no rate limit, one download.
+
+Why the limit exists: per-record export reads compete for database page
+cache with the nightly corpus rebuild. At sustained volume they degrade
+the service for interactive users and have, at least once, disrupted our
+own publication pipeline.
+
+If the mirror does not fit what you are building — you need a format we
+do not publish, a live feed, or a higher interactive rate — please write
+to us. We are a public research project and we would rather help you than
+throttle you, and identified users can be granted higher limits:
+
+    team@jonashertner.com
+
+Other access paths, all free and unauthenticated:
+  - REST API + MCP server:  https://mcp.opencaselaw.ch
+  - Documentation:          https://opencaselaw.ch
+  - Source code (MIT):      https://github.com/jonashertner/opencaselaw
+
+— OpenCaseLaw
