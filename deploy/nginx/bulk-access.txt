@@ -1,12 +1,13 @@
 OpenCaseLaw — bulk access notice
 ================================
 
-You are requesting individual export files at high volume and have been
-rate-limited.
+You have been rate-limited after a large number of individual export
+requests. If you only wanted one or two files, this should not have
+happened — please write to us and we will fix it.
 
-This is not a refusal. The corpus is CC0 — public domain, no conditions —
-and you are welcome to all of it. We would just rather you took it in one
-piece than a million at a time:
+This is not a refusal. The corpus is CC0 — public domain, no conditions,
+no attribution required — and you are welcome to all of it. We would just
+rather you took it in one piece than a million at a time:
 
     https://huggingface.co/datasets/voilaj/swiss-caselaw
 
@@ -15,17 +16,29 @@ federal and cantonal statutes) as Parquet, rebuilt daily. For citation
 metadata in particular it is strictly better than scraping per-record
 exports: consistent fields, no HTML, no rate limit, one download.
 
-Why the limit exists: per-record export reads compete for database page
-cache with the nightly corpus rebuild. At sustained volume they degrade
-the service for interactive users and have, at least once, disrupted our
-own publication pipeline.
 
-If the mirror does not fit what you are building — you need a format we
-do not publish, a live feed, or a higher interactive rate — please write
-to us. We are a public research project and we would rather help you than
-throttle you, and identified users can be granted higher limits:
+Commercial and high-volume users
+--------------------------------
+If you are building a product on this data, or need volume beyond what
+the mirror gives you, please get in touch and we will agree an
+arrangement that works for you — higher or unmetered limits, a different
+format, a live feed, or a direct data transfer:
 
     team@jonashertner.com
+
+We would genuinely rather negotiate something that fits than throttle
+you. Identified users get better access than anonymous ones, and the
+conversation costs you one email.
+
+
+Why the limit exists
+--------------------
+Per-record export reads compete for database page cache with our nightly
+corpus rebuild. At sustained volume they degrade the service for
+interactive users and have, at least once, disrupted our own publication
+pipeline. The mirror exists precisely so that bulk consumers never need
+to do this.
+
 
 Other access paths, all free and unauthenticated:
   - REST API + MCP server:  https://mcp.opencaselaw.ch

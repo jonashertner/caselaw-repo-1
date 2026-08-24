@@ -218,7 +218,7 @@ server {
         # one forged Chrome/120 UA, ~2.6M req in 4 days. They ran at
         # ~1.5 r/s per IP, under the 5 r/s limit below, so it never
         # fired. 429 carries the bulk-access notice (error_page below).
-        if ($ocl_known_harvester) { return 429; }
+        limit_req zone=ocl_export burst=30 nodelay;
         limit_req zone=mcp_expensive burst=5 nodelay;
         proxy_hide_header Access-Control-Allow-Origin;
         proxy_hide_header Access-Control-Allow-Methods;
