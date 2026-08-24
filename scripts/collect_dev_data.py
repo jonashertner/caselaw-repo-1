@@ -35,6 +35,7 @@ import datetime as _dt
 import gzip
 import json
 import logging
+import re
 import shutil
 import sqlite3
 import subprocess
@@ -379,7 +380,22 @@ class Collector:
     # ── traces: 0c-gated ─────────────────────────────────────────────
 
     def collect_traces(self) -> None:
-        """Search-trace export. Runs ONLY once the amendment marker exists."""
+        """Search-trace export — EXACTLY ONCE per source day.
+
+        Runs only once the amendment marker exists. Two skips make the
+        export idempotent so it can run on the daily timer (2026-08-24):
+
+        * **today's file** is still being appended to by the workers, so
+          exporting it would capture a partial day and then never revisit
+          it — the source day is exported the day AFTER it closes;
+        * **an already-exported source day** is skipped. Shards are named
+          by COLLECTION date inside a per-SOURCE-day directory, so without
+          this the 30-day retention window would be re-exported nightly:
+          ~280k records × 30 copies a month, all duplicates.
+
+        Net effect: each source day lands in the archive once, the day
+        after it closes, and the archive grows by one day per day.
+        """
         marker = self.dest / TRACES_ALLOWED_MARKER
         if not marker.exists():
             raise SystemExit(
@@ -387,14 +403,27 @@ class Collector:
                 "the /datenschutz/ amendment publication date) only after the "
                 "amendment is live in all five languages.")
         src_dir = REPO / "output" / "research_logs"
+        exported = skipped_open = skipped_done = 0
         for p in sorted(src_dir.glob("search_traces_*.jsonl")):
+            mt = re.match(r"search_traces_(\d{4}-\d{2}-\d{2})", p.name)
+            if mt and mt.group(1) >= self.today:
+                skipped_open += 1
+                continue
+            dest_dir = self.dest / "datasets" / "search_traces" / p.stem
+            if any(dest_dir.glob("*.jsonl.gz")):
+                skipped_done += 1
+                continue
             self._write_jsonl_gz(
                 f"search_traces/{p.stem}",
                 self._read_jsonl(p),
                 "Search traces incl. rerank labels (query ≤200 chars, "
                 "candidate_ids, llm_order), CE scores, structured parse, "
-                "per-signal contributions. Collected under the amended "
-                "notice; never leaves the private repo.")
+                "per-signal contributions. One shard per source day, "
+                "exported once, the day after that day closes. Collected "
+                "under the amended notice; never leaves the private repo.")
+            exported += 1
+        log.info("[search_traces] %d exported, %d already archived, "
+                 "%d still open", exported, skipped_done, skipped_open)
 
 
 def _git_commit_push(dest: Path, today: str, dry: bool) -> None:

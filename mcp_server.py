@@ -303,12 +303,20 @@ LLM_LEDGER_LOG_PATH = Path(os.environ.get(
 # Anthropic public pricing (USD per 1M tokens). Update when rates change.
 # (input_per_1m, output_per_1m). Cache reads bill at 10% of input rate;
 # cache writes at 125%.
+#
+# CORRECTED 2026-08-24 against current list prices. The Haiku row had been
+# (0.80, 4.00) — 20 % under the real $1.00/$5.00 — so every Haiku cost in
+# llm_usage.jsonl, in /metrics and in the per-IP ledger was UNDER-REPORTED
+# for as long as that row stood. Haiku is the bulk of spend, so any
+# historical daily total read from those files is a floor, not a figure.
+# Opus 4.7 was (15.00, 75.00) against a real $5.00/$25.00 — 3× the other
+# way, but unused here so it never showed up.
 _LLM_PRICING = {
     "claude-sonnet-4-6":          (3.00, 15.00),
     "claude-sonnet-4-6-1m":       (6.00, 22.50),
-    "claude-haiku-4-5":           (0.80, 4.00),
-    "claude-haiku-4-5-20251001":  (0.80, 4.00),
-    "claude-opus-4-7":            (15.00, 75.00),
+    "claude-haiku-4-5":           (1.00, 5.00),
+    "claude-haiku-4-5-20251001":  (1.00, 5.00),
+    "claude-opus-4-7":            (5.00, 25.00),
 }
 
 
@@ -863,7 +871,21 @@ def _parse_query_structured(query: str) -> dict:
                 json={
                     "model": "claude-haiku-4-5-20251001",
                     "max_tokens": 300,
-                    "system": STRUCTURED_PARSE_PROMPT,
+                    # Prompt caching (2026-08-24). This is the ONE call site
+                    # where it can pay: STRUCTURED_PARSE_PROMPT is ~1.2k
+                    # tokens and the user query is ~20, so the static prefix
+                    # is ~98% of the input. Cache reads bill at 10% of the
+                    # input rate. Minimum cacheable prefix is ~1024 tokens —
+                    # this prompt sits just above it, so if the prompt is
+                    # ever trimmed the cache silently stops engaging.
+                    # VERIFY with usage.cache_read_input_tokens (logged
+                    # below as cache_r): zero across repeated queries means
+                    # it is not caching and this block is dead weight.
+                    "system": [{
+                        "type": "text",
+                        "text": STRUCTURED_PARSE_PROMPT,
+                        "cache_control": {"type": "ephemeral"},
+                    }],
                     "messages": [{"role": "user", "content": query}],
                 },
             )
