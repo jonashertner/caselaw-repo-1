@@ -2901,6 +2901,35 @@ def _sanitize_fts5(query: str) -> str:
             return f" \ue000{len(_phrases) - 1}\ue000 "
 
         q = re.sub(r'"([^"]*)"', _stash_phrase, q)
+    # FTS3/4-style proximity "a NEAR/5 b" \u2192 FTS5 "NEAR(a b, 5)" (#78).
+    # Users porting queries from other engines type the slash form; FTS5
+    # rejects it and the error surfaced as a silent no-match. Chains
+    # (a NEAR/3 b NEAR/7 c) collapse into ONE group with the largest
+    # distance \u2014 nested NEAR is not valid FTS5. The construct is stashed
+    # as a placeholder (like phrases) because the transforms below strip
+    # its parens and slash; terms are mini-cleaned here, multi-token terms
+    # become quoted phrases inside the group. Runs after phrase-stashing,
+    # so a quoted operand arrives as a placeholder and stays a phrase.
+    _nears: list[str] = []
+
+    def _fold_near_chain(m: "re.Match") -> str:
+        parts = re.split(r"\s+NEAR/(\d+)\s+", m.group(0), flags=re.IGNORECASE)
+        terms: list[str] = []
+        for raw_term in parts[0::2]:
+            cleaned = re.sub(r"[^\w\s\ue000]", " ", raw_term)
+            toks = cleaned.split()
+            if not toks:
+                continue
+            terms.append(" ".join(toks) if len(toks) == 1
+                         else f'"{" ".join(toks)}"')
+        if len(terms) < 2:
+            return " ".join(terms) + " "     # degenerate \u2014 plain terms
+        dist = min(max(int(d) for d in parts[1::2]), 999)
+        _nears.append(f"NEAR({' '.join(terms)}, {dist})")
+        return f" \ue001{len(_nears) - 1}\ue001 "
+
+    q = re.sub(r"\S+(?:\s+NEAR/\d+\s+\S+)+", _fold_near_chain, q,
+               flags=re.IGNORECASE)
     # Replace apostrophes (French: l'obligation)
     q = q.replace("\u2019", " ").replace("'", " ")
     # Replace ALL dots with spaces — FTS5 query parser rejects bare
@@ -2979,9 +3008,13 @@ def _sanitize_fts5(query: str) -> str:
         else:
             out_tokens.append(t)
     result = " ".join(out_tokens)
-    # Re-insert the preserved phrases as FTS5 quoted phrases (issue #42). Done
-    # after the operator loop so a phrase's interior can't be mistaken for a
-    # boolean operator (e.g. a literal "OR" inside the phrase stays literal).
+    # Re-insert translated NEAR groups (#78) FIRST — a group can carry a
+    # stashed-phrase marker as an operand, and the phrase loop below is
+    # what resolves it to its quoted form. (Both run after the operator
+    # loop so interiors can't be mistaken for boolean operators.)
+    for _i, _ng in enumerate(_nears):
+        result = result.replace(f"\ue001{_i}\ue001", _ng)
+    # Re-insert the preserved phrases as FTS5 quoted phrases (issue #42).
     for _i, _ph in enumerate(_phrases):
         result = result.replace(f"\ue000{_i}\ue000", f'"{_ph}"')
     return result
@@ -17327,8 +17360,11 @@ def search_scholarship(
                 "p.language, p.year, p.journal, p.doi, p.url, p.pdf_url, p.license")
         if safe_query:
             # Topical full-text search, optionally narrowed by the filters above.
+            # Over-fetch: the zero-substantive-match gate below may drop rows,
+            # and the page should refill from the next-ranked real matches.
+            fetch_limit = min(limit * 2, 60)
             where = " AND ".join(["f.publications_fts MATCH ?"] + filt)
-            params = [safe_query] + filt_params + [limit]
+            params = [safe_query] + filt_params + [fetch_limit]
             rows = conn.execute(
                 f"""SELECT {cols},
                            snippet(publications_fts, 2, '>>>', '<<<', '...', 30) AS snippet
@@ -17356,7 +17392,25 @@ def search_scholarship(
         results = []
         sources_seen: set[str] = set()
         licenses_seen: set[str] = set()
+        suppressed_zero_match = 0
         for r in rows:
+            # GitHub #89, second half: "require at least one substantive
+            # query term to match before returning a record." A row whose
+            # only overlap with the query is function words (snippet
+            # highlighting 'de', 'du', 'droit'…) is noise wearing a
+            # plausible title. Coverage is measured over the fields the
+            # caller sees; FTS5's snippet() surfaces the matching region,
+            # so a genuine full_text match carries its term into the
+            # snippet. Browse rows (no query) are never gated.
+            if safe_query and query:
+                _m, _t, _ = _scholarship_term_coverage(
+                    query, " ".join(str(r[k] or "")
+                                    for k in ("title", "authors", "snippet")))
+                if _t and _m == 0:
+                    suppressed_zero_match += 1
+                    continue
+            if len(results) >= limit:
+                break
             results.append({
                 "pub_id": r["pub_id"],
                 "source": r["source"],
@@ -17380,6 +17434,7 @@ def search_scholarship(
         return {
             "query": query or "",
             "count": len(results),
+            "suppressed_zero_match": suppressed_zero_match,
             "results": results,
             # CC-BY / CC-BY-SA attribution requirement — every consumer of
             # this corpus (LLM, REST client, web UI) MUST surface this block.
@@ -17784,6 +17839,21 @@ def _format_search_scholarship_response(result: dict) -> str:
     rs = result.get("results", [])
     text = f"# Scholarship Search: \"{result['query']}\"\n"
     text += f"Found {result['count']} results.\n\n"
+    _suppressed = result.get("suppressed_zero_match") or 0
+    if _suppressed and not rs:
+        # #89: "Returning nothing would be more useful than returning
+        # unrelated records" — the reporter's own words.
+        text += (
+            f"> All {_suppressed} retrieved records matched only function "
+            "words of the query (de, du, la, …) and were suppressed. The "
+            "corpus likely holds nothing substantive on this exact "
+            "combination — try fewer or broader terms.\n\n"
+        )
+    elif _suppressed:
+        text += (
+            f"> {_suppressed} additional record(s) matched only function "
+            "words and were suppressed (#89).\n\n"
+        )
     # GitHub #89. A caller cannot otherwise tell a thin corpus from a ranking
     # failure: both return a full page of plausible-looking titles. Measured
     # on the top hit and reported, never used to reorder or suppress — that
