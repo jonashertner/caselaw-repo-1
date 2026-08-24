@@ -218,6 +218,12 @@ server {
         # one forged Chrome/120 UA, ~2.6M req in 4 days. They ran at
         # ~1.5 r/s per IP, under the 5 r/s limit below, so it never
         # fired. 429 carries the bulk-access notice (error_page below).
+        # Tell every bulk consumer where the one-download mirror is,
+        # not only the ones who trip the limit. The 2026-08-24 fleet
+        # self-throttled to ~5.5 req/min/IP against a 10 r/m limit, so
+        # a 429-only notice would never have reached them.
+        add_header Link '<https://huggingface.co/datasets/voilaj/swiss-caselaw>; rel="alternate"; title="bulk corpus"' always;
+        add_header X-OpenCaseLaw-Bulk "Full CC0 corpus in one download at the Link header. High-volume or commercial use: team@jonashertner.com" always;
         limit_req zone=ocl_export burst=30 nodelay;
         limit_req zone=mcp_expensive burst=5 nodelay;
         proxy_hide_header Access-Control-Allow-Origin;
