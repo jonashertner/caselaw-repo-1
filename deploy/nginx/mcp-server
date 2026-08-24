@@ -183,6 +183,22 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
     }
 
+    # Bulk-access notice served as the body of every 429 in this server
+    # block — including the pre-existing mcp_expensive throttles, which
+    # until now returned nginx's default page. `internal` keeps it from
+    # being fetched directly; `always` keeps the headers on a 4xx.
+    error_page 429 /_bulk-access.txt;
+    location = /_bulk-access.txt {
+        internal;
+        root /opt/caselaw/static-notices;
+        try_files /bulk-access.txt =404;
+        default_type text/plain;
+        charset utf-8;
+        add_header Link '<https://huggingface.co/datasets/voilaj/swiss-caselaw>; rel="alternate"; title="bulk corpus"' always;
+        add_header Retry-After 3600 always;
+        add_header X-OpenCaseLaw-Contact "team@jonashertner.com" always;
+    }
+
     # Per-decision export renderers (.pdf/.docx render via reportlab/python-docx
     # on the shared thread pool) are a crawler magnet. robots.txt disallows them
     # (2026-06-25); this is the enforcement floor for bots that ignore robots.
@@ -198,6 +214,11 @@ server {
             add_header Content-Length 0 always;
             return 204;
         }
+        # Distributed harvesting fleet, 2026-08-24: ten GCP IPs sharing
+        # one forged Chrome/120 UA, ~2.6M req in 4 days. They ran at
+        # ~1.5 r/s per IP, under the 5 r/s limit below, so it never
+        # fired. 429 carries the bulk-access notice (error_page below).
+        if ($ocl_known_harvester) { return 429; }
         limit_req zone=mcp_expensive burst=5 nodelay;
         proxy_hide_header Access-Control-Allow-Origin;
         proxy_hide_header Access-Control-Allow-Methods;
