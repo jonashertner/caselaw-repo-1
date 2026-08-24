@@ -871,21 +871,19 @@ def _parse_query_structured(query: str) -> dict:
                 json={
                     "model": "claude-haiku-4-5-20251001",
                     "max_tokens": 300,
-                    # Prompt caching (2026-08-24). This is the ONE call site
-                    # where it can pay: STRUCTURED_PARSE_PROMPT is ~1.2k
-                    # tokens and the user query is ~20, so the static prefix
-                    # is ~98% of the input. Cache reads bill at 10% of the
-                    # input rate. Minimum cacheable prefix is ~1024 tokens —
-                    # this prompt sits just above it, so if the prompt is
-                    # ever trimmed the cache silently stops engaging.
-                    # VERIFY with usage.cache_read_input_tokens (logged
-                    # below as cache_r): zero across repeated queries means
-                    # it is not caching and this block is dead weight.
-                    "system": [{
-                        "type": "text",
-                        "text": STRUCTURED_PARSE_PROMPT,
-                        "cache_control": {"type": "ephemeral"},
-                    }],
+                    # DO NOT add prompt caching here. Tried and reverted
+                    # 2026-08-24, measured in production: 12 consecutive
+                    # calls, zero cache reads.
+                    #
+                    # The minimum cacheable prefix is MODEL-DEPENDENT and
+                    # NOT monotonic across generations: 512 tokens on the
+                    # newest models, 1024 on Sonnet 4.6/5, but **4096 on
+                    # Haiku 4.5**. STRUCTURED_PARSE_PROMPT is ~1050 tokens,
+                    # so a cache_control marker here is silently ignored —
+                    # no error, just cache_creation_input_tokens: 0.
+                    # Caching would need either a 4x longer prompt (absurd)
+                    # or a different model (defeats the point of Haiku).
+                    "system": STRUCTURED_PARSE_PROMPT,
                     "messages": [{"role": "user", "content": query}],
                 },
             )
