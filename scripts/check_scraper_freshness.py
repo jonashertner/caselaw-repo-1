@@ -231,6 +231,44 @@ KNOWN_GAP_OFFSETS: dict[str, dict] = {
                     "the offset held at exactly 51 while 35 decisions were "
                     "added over three weeks, which a real backlog would not do",
     },
+    "gr_gerichte": {
+        "gap": 50,
+        "verified": "2026-08-25",
+        "evidence": "OCL_SCRAPER_RESCAN_ALL=1 covered ALL 14856 portal rows "
+                    "in 743 pages, 31.1 min, 0 errors, 0 NoneReturns, and "
+                    "returned +0 new against 14806 known ids — i.e. every "
+                    "portal row resolved to a decision we already hold, so "
+                    "the 50 are duplicate listings, not missing decisions",
+    },
+    "vs_gerichte": {
+        "gap": 399,
+        "verified": "2026-08-25",
+        "evidence": "OCL_SCRAPER_RESCAN_ALL=1 walked every offset to 4995 in "
+                    "batches of 500 ('discovered 0 new' at each), 2.5 min, "
+                    "0 errors, +0 new against 4596 known ids — same duplicate-"
+                    "listing signature as gr_gerichte, on a different scraper "
+                    "implementation",
+    },
+    # NOT added, deliberately: ju_gerichte (29), ne_gerichte (45) and
+    # ne_jurisprudence_adm (37) also returned +0 new on 2026-08-25, but their
+    # logs show urllib3 retries EXHAUSTING against the portals through the
+    # SOCKS tunnel. A +0 that might mean "could not fetch" is not evidence of
+    # a structural offset, and suppressing an alert on that basis would hide a
+    # real shortfall. Re-test when the tunnel is quiet.
+}
+
+# Gaps that are REAL but that a rescan provably cannot close. Without this the
+# alert keeps prescribing a remedy that has already been measured not to work,
+# which is how an operator learns to ignore the whole channel.
+KNOWN_GAP_REMEDIES: dict[str, str] = {
+    "be_verwaltungsgericht": (
+        "ein Rescan hilft NICHT (2026-08-25 verifiziert: voller RESCAN_ALL, "
+        "33.5 min, 0 Fehler, +0 neu). Die Trefferquote bricht ab Jahrgang 2013 "
+        "ein — 2013: 82/674, 2012: 53/130, 2011: 2/12 — waehrend 2017-2024 bei "
+        "97-99 % liegen. Das Portal liefert seine aelteren Datensaetze ueber "
+        "den aktuellen GWT-loadTable-Pfad nicht aus; noetig ist ein "
+        "Scraper-Fix (GitHub #68), kein Nachlauf."
+    ),
 }
 
 
@@ -273,10 +311,13 @@ def check_persistent_gaps(health: dict, today: str,
         if len(days) >= GAP_PERSIST_DAYS:
             ours = row.get("our_count")
             portal = row.get("portal_count")
+            remedy = KNOWN_GAP_REMEDIES.get(court)
+            if remedy is None:
+                remedy = ("einmaliger Nachlauf mit OCL_SCRAPER_RESCAN_ALL=1 "
+                          f"python3 run_scraper.py {court}")
             alerts.append(
                 f"GAP {court}: {gap} Entscheide fehlen seit {len(days)} Tagen "
-                f"(portal={portal}, ours={ours}) — einmaliger Nachlauf mit "
-                f"OCL_SCRAPER_RESCAN_ALL=1 python3 run_scraper.py {court}")
+                f"(portal={portal}, ours={ours}) — {remedy}")
     try:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(cur, indent=1, sort_keys=True))
