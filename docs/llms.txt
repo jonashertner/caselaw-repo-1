@@ -80,6 +80,16 @@ Public explainer: [opencaselaw.ch/#verification](https://opencaselaw.ch/#verific
 - [Cantonal laws + commentary modules](https://opencaselaw.ch/#corpus) — local-first lookup for 19 cantonal portals, OnlineKommentar.ch (CC-BY-4.0).
 - [LLM usage receipts](https://github.com/jonashertner/caselaw-repo-1/blob/main/scripts/llm_usage_report.py) — every Anthropic API call logged with token counts + cost; auditable spend dashboard.
 
+## What we collect when you use the hosted server
+
+- [Privacy notice](https://opencaselaw.ch/datenschutz/) — the full, binding version in DE/FR/IT/RM/EN.
+- Queries are recorded. Tool name, parameters **including your query text**, timestamp, client class and a rotating session identifier are logged, and query text is retained indefinitely in an access-restricted private research archive used to improve search and to train our own models.
+- **No IP address is stored with a query**, there is no account and no login, and the session identifier changes with every connection, so queries cannot be tied to a person by us.
+- IP addresses are stored separately and only for operations: 72 hours in the web-server log for abuse defence, and 90 days plus a private archive for the LLM-backed endpoints (`attest`, `verify-claim`, `check_claim_support`) to control cost and abuse.
+- Word add-in document text is never stored, only its length.
+- The collection code is open source: `mcp_server.py`, `scripts/collect_dev_data.py`.
+- If you are sending queries on behalf of others, or your users would not expect this, run the corpus locally instead — the full CC0 dataset is at <https://huggingface.co/datasets/voilaj/swiss-caselaw> and nothing leaves your machine.
+
 ## Contact
 
 - Email: <mailto:team@jonashertner.com>

@@ -205,6 +205,8 @@ The dataset comes with an [MCP server](https://modelcontextprotocol.io) whose ex
 
 Connect directly to the hosted MCP server — no data download, no local database, instant access to 1,050,000+ decisions.
 
+> **What the hosted server records.** Your queries are logged: tool, parameters **including the query text**, timestamp, client class and a rotating session identifier, and query text is kept indefinitely in an access-restricted private research archive used to improve search and train our own models. **No IP address is stored with a query**, there is no account or login, and the session identifier changes with every connection. Full details, in five languages: **[Privacy notice](https://opencaselaw.ch/datenschutz/)**. If your queries are confidential — or you are sending them on behalf of clients — use Option B below and run the corpus locally, where nothing leaves your machine.
+
 **Claude.ai / Claude Desktop** (easiest):
 
 1. Open **Settings** → **Connectors**
