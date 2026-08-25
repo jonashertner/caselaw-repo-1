@@ -271,7 +271,24 @@ def _log_phase_summary() -> None:
 
 # ── Text cleaning ────────────────────────────────────────────
 
-_HTML_TAG_RE = re.compile(r"<[^>]+>")
+# Bounded and newline-anchored — 2026-08-25. The previous form was
+# `<[^>]+>`, and `[^>]` matches newlines: in OCR'd text a single stray "<"
+# swallowed everything up to the next ">", across thousands of characters
+# and many lines, and replaced it with one space. Measured against the
+# source shards before the fix:
+#     bge_historical_14_I_192  12,159 -> 2,317 chars served  (80.9% lost)
+#     bge_historical_11_I_5    13,081 -> 6,585               (49.7% lost)
+#     bge_historical_15_I_79   13,004 -> 8,645               (33.5% lost)
+# Each of those files contained 1-6 stray "<" and NO real HTML at all; the
+# "<" are scanner misreads — "1<r" is OCR for "1er". In force since
+# f3a087f7 (2026-02-22), and _clean_text is applied to full_text, regeste
+# AND title, so headnotes were truncated too.
+#
+# `[^>\n]` stops a run at the first newline; `{1,200}` bounds it to a
+# plausible tag length. Both narrow what is deleted, so this can only ever
+# preserve MORE text than before — it cannot lose anything that survives
+# today. Real tags (<b>, <span class="x">, </p>) are still stripped.
+_HTML_TAG_RE = re.compile(r"<[^>\n]{1,200}>")
 _MULTI_SPACE_RE = re.compile(r"[ \t]+")
 _HTML_ENTITIES = {
     "&nbsp;": " ",
