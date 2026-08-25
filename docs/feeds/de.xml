@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/de.xml</link>
     <description>Latest published Swiss court decisions in Deutsch.</description>
     <language>de-CH</language>
-    <lastBuildDate>Mon, 24 Aug 2026 10:08:05 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 25 Aug 2026 10:48:16 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/de.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -264,6 +264,24 @@ zieht die Aufsi…</description>
       <category>so_gerichte</category>
     </item>
     <item>
+      <title>ag_handelsgericht HSU.2026.32 vom 2026-08-14</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ag_handelsgericht_HSU.2026.32</link>
+      <description>Handelsgericht
+2. Kammer
+HSU.2026.32 / as / mv
+Entscheid vom 14. August 2026
+Besetzung Oberrichter Vetter, Präsident
+Gerichtsschreiber Schneuwly
+Gesuchstellerin C._____ AG, _____
+Zustelladresse: c._____
+Gesuchsgegne- D._____ AG, _____
+rin
+Gegenstand …</description>
+      <pubDate>Fri, 14 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ag_handelsgericht_HSU.2026.32</guid>
+      <category>ag_handelsgericht</category>
+    </item>
+    <item>
       <title>bs_appellationsgericht AUS.2026.68 vom 2026-08-14</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bs_appellationsgericht_AUS.2026.68</link>
       <description>Appellationsgericht
@@ -356,6 +374,24 @@ Gerichtsschreiberin Rode…</description>
       <pubDate>Wed, 12 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ag_verwaltungsgericht_WBE.2025.114</guid>
       <category>ag_verwaltungsgericht</category>
+    </item>
+    <item>
+      <title>be_verwaltungsgericht 200 2026 183 vom 2026-08-12</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/be_verwaltungsgericht_200%202026%20183</link>
+      <description>ALV 200 2026 183
+KOJ/FRJ/SEE
+Verwaltungsgericht des Kantons Bern
+Sozialversicherungsrechtliche Abteilung
+Urteil des Einzelrichters vom 12. August 2026
+Verwaltungsrichter Kölliker
+Gerichtsschreiberin Frésard
+A.________
+Beschwerdeführer
+gegen
+Amt für A…</description>
+      <pubDate>Wed, 12 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">be_verwaltungsgericht_200 2026 183</guid>
+      <category>be_verwaltungsgericht</category>
     </item>
     <item>
       <title>Bundesgericht 5A_733/2026 vom 2026-08-12</title>
@@ -857,22 +893,6 @@ Ver…</description>
       <description>Einreiseverbot</description>
       <pubDate>Mon, 10 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-4694.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht F-5098/2026 vom 2026-08-10</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-5098_2026</link>
-      <description>Nichteintreten auf Asylgesuch und Wegweisung (Dublin-Verfahren - Art. 31a Abs. 1 Bst. b AsylG)</description>
-      <pubDate>Mon, 10 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-5098.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht F-5229/2026 vom 2026-08-10</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-5229_2026</link>
-      <description>Nichteintreten auf Asylgesuch und Wegweisung (Wiedererwägung)</description>
-      <pubDate>Mon, 10 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-5229.2026</guid>
       <category>bvger</category>
     </item>
   </channel>

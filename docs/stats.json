@@ -2385,7 +2385,7 @@
     "2026-07": 1951,
     "2026-08": 331
   },
-  "generated_at": "2026-08-25T10:30:15.059237+00:00",
+  "generated_at": "2026-08-25T10:43:07.455328+00:00",
   "scraper_health": {
     "run_at": "2026-08-25T02:13:44.651182+00:00",
     "run_duration_s": 4364.0,
@@ -2796,7 +2796,7 @@
         "note": null,
         "state_count": 98521,
         "jsonl_size_mb": 1488.0,
-        "jsonl_mtime": "2026-08-25T10:01:36.739999+00:00"
+        "jsonl_mtime": "2026-08-25T10:31:13.506959+00:00"
       },
       "gl_gerichte": {
         "success": true,
@@ -2898,7 +2898,7 @@
         "note": null,
         "state_count": 21343,
         "jsonl_size_mb": 490.4,
-        "jsonl_mtime": "2026-08-25T09:18:25.407381+00:00"
+        "jsonl_mtime": "2026-08-25T10:38:23.453838+00:00"
       },
       "nw_gerichte": {
         "success": true,

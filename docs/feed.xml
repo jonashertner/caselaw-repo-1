@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feed.xml</link>
     <description>Latest published decisions across all Swiss courts indexed by OpenCaseLaw.</description>
     <language>de-CH</language>
-    <lastBuildDate>Mon, 24 Aug 2026 10:04:25 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 25 Aug 2026 10:45:32 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feed.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -678,6 +678,24 @@ zieht die Aufsi…</description>
       <category>so_gerichte</category>
     </item>
     <item>
+      <title>ag_handelsgericht HSU.2026.32 vom 2026-08-14</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ag_handelsgericht_HSU.2026.32</link>
+      <description>Handelsgericht
+2. Kammer
+HSU.2026.32 / as / mv
+Entscheid vom 14. August 2026
+Besetzung Oberrichter Vetter, Präsident
+Gerichtsschreiber Schneuwly
+Gesuchstellerin C._____ AG, _____
+Zustelladresse: c._____
+Gesuchsgegne- D._____ AG, _____
+rin
+Gegenstand …</description>
+      <pubDate>Fri, 14 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ag_handelsgericht_HSU.2026.32</guid>
+      <category>ag_handelsgericht</category>
+    </item>
+    <item>
       <title>bs_appellationsgericht AUS.2026.68 vom 2026-08-14</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bs_appellationsgericht_AUS.2026.68</link>
       <description>Appellationsgericht
@@ -964,37 +982,6 @@ Gerichtsschreiberin Rode…</description>
       <pubDate>Wed, 12 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ag_verwaltungsgericht_WBE.2025.114</guid>
       <category>ag_verwaltungsgericht</category>
-    </item>
-    <item>
-      <title>Bundesgericht 5A_733/2026 vom 2026-08-12</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_733_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-5A_733/2026
-
-Urteil vom 12. August 2026
-
-II. zivilrechtliche Abteilung
-
-Besetzung
-
-Bundesrichter Bovey, Präsident,
-
-Gerichtsschreiber Zingg.
-
-Verfahrensbeteiligte
-
-A.________ AG,
-…</description>
-      <pubDate>Wed, 12 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_733.2026</guid>
-      <category>bger</category>
     </item>
   </channel>
 </rss>
