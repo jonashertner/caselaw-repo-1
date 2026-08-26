@@ -2995,6 +2995,19 @@ def _sanitize_fts5(query: str) -> str:
     q = q.replace("(", " ").replace(")", " ").replace("{", " ").replace("}", " ")
     q = q.replace("[", " ").replace("]", " ").replace("^", " ").replace("~", " ")
     q = q.replace("/", " ").replace("\\", " ")
+    # Characters with no FTS5 meaning that its parser rejects outright.
+    # Measured in production 2026-08-26: search_scholarship logged 176
+    # "fts5: syntax error" in TWO HOURS — 131 on ",", 30 on "%", 15 on the
+    # backtick, 2 on "=" — because these reached the engine raw. A query as
+    # ordinary as "Haftung, Vertrag" returned a database error to the user.
+    # search_decisions was insulated only because the Haiku query-parse
+    # normalises text first; search_scholarship goes straight to FTS5.
+    #
+    # Safe at this point in the pipeline: stashed phrases (\ue000) and folded
+    # NEAR groups (\ue001) are re-inserted AFTER the operator loop below, so
+    # the comma inside NEAR(a b, 5) and every phrase interior are untouched.
+    # "*" (prefix) and ":" (column filter) are deliberately NOT in this class.
+    q = re.sub(r"[,%`=;!?&|<>@#$]", " ", q)
     # Collapse multiple spaces
     q = re.sub(r'\s+', ' ', q).strip()
     if not q:
