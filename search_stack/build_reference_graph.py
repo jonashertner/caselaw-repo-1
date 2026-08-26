@@ -542,11 +542,20 @@ def build_graph(
     limit: int | None = None,
     source_db: Path | None = None,
     courts: list[str] | None = None,
+    compare_against: Path | None = None,
 ) -> dict:
     t0 = time.time()
     # Resolve symlinks so temp file is on same filesystem (atomic rename)
     db_path = db_path.resolve()
     db_path.parent.mkdir(parents=True, exist_ok=True)
+    # The resolution-rate guard below normally compares the new graph
+    # against the one it is about to overwrite. A caller that stages the
+    # build somewhere else (see _bootstrap_via_full_rebuild in
+    # build_reference_graph_incremental.py) must be able to point the
+    # guard at the real previous graph, otherwise db_path does not exist
+    # yet and the guard silently no-ops.
+    prev_path = (compare_against.resolve() if compare_against is not None
+                 else db_path)
     tmp_path = db_path.with_name(f".{db_path.name}.tmp")
     if tmp_path.exists():
         tmp_path.unlink()
@@ -724,9 +733,9 @@ def build_graph(
         # because absolute row counts naturally drop with the corpus
         # without indicating a resolver-quality regression. Rate is
         # corpus-size-invariant.
-        if db_path.exists() and total_citations > 0:
+        if prev_path.exists() and total_citations > 0:
             try:
-                with sqlite3.connect(f"file:{db_path}?mode=ro", uri=True) as prev:
+                with sqlite3.connect(f"file:{prev_path}?mode=ro", uri=True) as prev:
                     prev_total = prev.execute(
                         "SELECT COUNT(*) FROM decision_citations"
                     ).fetchone()[0]

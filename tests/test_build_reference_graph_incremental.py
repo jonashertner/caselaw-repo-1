@@ -652,3 +652,158 @@ def test_bootstrap_streams_rows_and_does_not_materialize(
         f"peak rows-in-flight = {counters['peak_in_flight']} "
         f"(expected 1 for streaming consumer)"
     )
+
+
+# ── bootstrap atomicity (invariant #1) ────────────────────────────────
+
+
+def test_bootstrap_never_mutates_the_destination_in_place(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Regression for the in-place bootstrap seed.
+
+    ``_bootstrap_via_full_rebuild`` used to build straight into the
+    destination and then open it read-write to seed
+    ``processed_decisions``. Under ``--in-place`` the destination IS the
+    live sidecar, which every MCP worker opens ``immutable=1`` — a promise
+    that the bytes never change and that no hot journal exists. Seeding on
+    top of it can hand a reader a torn page or SQLITE_CORRUPT on an
+    otherwise successful run.
+
+    The contract now: the destination inode is only ever published by a
+    single ``os.replace``. We prove it by recording every read-write
+    ``sqlite3.connect`` and asserting none of them targeted the live path.
+    """
+    decisions_db = _make_decisions_db(tmp_path / "src", BASE_ROWS)
+    live = tmp_path / "reference_graph.db"
+
+    # A pre-existing "live" graph, so this is a real overwrite, not a
+    # first build — and so the destination has an inode to compare.
+    build_graph(input_dir=tmp_path / "src", db_path=live, source_db=decisions_db)
+    assert live.exists()
+    live_inode_before = live.stat().st_ino
+
+    import search_stack.build_reference_graph_incremental as inc
+
+    rw_targets: list[str] = []
+    real_connect = sqlite3.connect
+
+    def _spy(target, *a, **kw):  # type: ignore[no-untyped-def]
+        # uri=True read-only opens are fine; bare path opens are read-write.
+        if not kw.get("uri") and isinstance(target, (str, Path)):
+            rw_targets.append(str(target))
+        return real_connect(target, *a, **kw)
+
+    monkeypatch.setattr(inc.sqlite3, "connect", _spy)
+
+    stats = inc._bootstrap_via_full_rebuild(
+        decisions_db=decisions_db, output_path=live
+    )
+
+    assert stats["mode"] == "full_bootstrap"
+    assert stats["seeded_processed_decisions"] == len(BASE_ROWS)
+
+    assert str(live.resolve()) not in rw_targets, (
+        "bootstrap opened the live destination read-write; it must stage "
+        f"in a private file and publish with one os.replace. Saw: {rw_targets}"
+    )
+    # Published by rename => new inode, and no staging file left behind.
+    assert live.stat().st_ino != live_inode_before
+    assert not list(tmp_path.glob(".*bootstrap*"))
+
+    # And the state tables the whole cutover depends on are actually there.
+    conn = sqlite3.connect(f"file:{live}?mode=ro", uri=True)
+    try:
+        tables = {r[0] for r in conn.execute(
+            "SELECT name FROM sqlite_master WHERE type='table'"
+        )}
+        assert {"meta", "processed_decisions"} <= tables
+        assert conn.execute(
+            "SELECT COUNT(*) FROM processed_decisions"
+        ).fetchone()[0] == len(BASE_ROWS)
+    finally:
+        conn.close()
+    assert _get_meta(sqlite3.connect(live), "extractor_version") is not None
+
+
+def test_bootstrap_leaves_destination_untouched_when_the_build_fails(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A failed bootstrap must not damage or truncate the live sidecar."""
+    decisions_db = _make_decisions_db(tmp_path / "src", BASE_ROWS)
+    live = tmp_path / "reference_graph.db"
+    build_graph(input_dir=tmp_path / "src", db_path=live, source_db=decisions_db)
+    before = live.read_bytes()
+
+    import search_stack.build_reference_graph_incremental as inc
+
+    def _boom(**kwargs):  # type: ignore[no-untyped-def]
+        raise RuntimeError("resolution-rate regression")
+
+    monkeypatch.setattr(inc, "build_graph", _boom)
+
+    with pytest.raises(RuntimeError, match="resolution-rate regression"):
+        inc._bootstrap_via_full_rebuild(
+            decisions_db=decisions_db, output_path=live
+        )
+
+    assert live.read_bytes() == before
+    assert not list(tmp_path.glob(".*bootstrap*"))
+
+
+def test_bootstrap_regression_guard_still_compares_against_the_live_graph(
+    tmp_path: Path,
+) -> None:
+    """Staging the build must not silently disable the resolution-rate guard.
+
+    ``build_graph`` compares the new graph against the DB it is about to
+    overwrite. Now that the bootstrap writes to a staging path that does
+    not exist yet, the guard has to be pointed at the destination
+    explicitly (``compare_against``) — otherwise it never fires.
+    """
+    good_db = _make_decisions_db(tmp_path / "good", BASE_ROWS)
+    live = tmp_path / "reference_graph.db"
+    build_graph(input_dir=tmp_path / "good", db_path=live, source_db=good_db)
+
+    # A corpus whose citations no longer resolve: same referring texts,
+    # but the targets are gone, so resolved/raw collapses.
+    broken = [r for r in BASE_ROWS if not r["decision_id"].startswith("BGE_")]
+    broken_db = _make_decisions_db(tmp_path / "broken", broken)
+
+    import search_stack.build_reference_graph_incremental as inc
+
+    with pytest.raises(RuntimeError, match="[Rr]esolution-rate regression"):
+        inc._bootstrap_via_full_rebuild(
+            decisions_db=broken_db, output_path=live
+        )
+
+
+def test_incremental_tmp_name_cannot_collide_with_the_full_builder(
+    tmp_path: Path
+) -> None:
+    """The full builder unlinks '.{name}.tmp' unconditionally, no age guard.
+
+    Under --in-place both builders used to derive the same tmp path, so an
+    overlapping manual full rebuild could let the incremental's os.replace
+    publish the full builder's half-written graph. The two must differ.
+    """
+    from search_stack import build_reference_graph as full
+
+    dest = tmp_path / "reference_graph.db"
+    full_tmp = dest.with_name(f".{dest.name}.tmp")
+
+    decisions_db = _make_decisions_db(tmp_path / "src", BASE_ROWS)
+    build_graph(input_dir=tmp_path / "src", db_path=dest, source_db=decisions_db)
+
+    # Plant a sentinel where the full builder would stage its work.
+    full_tmp.write_bytes(b"half-written full rebuild")
+
+    build_graph_incremental(
+        decisions_db=decisions_db, graph_db=dest, output_path=dest
+    )
+
+    assert full_tmp.exists(), (
+        "the incremental builder consumed the full builder's tmp path"
+    )
+    assert full_tmp.read_bytes() == b"half-written full rebuild"
+    assert full.__name__  # keep the import meaningful

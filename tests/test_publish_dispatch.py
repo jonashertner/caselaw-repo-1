@@ -122,3 +122,46 @@ def test_append_run_record_is_durable_and_never_raises(tmp_path, monkeypatch):
     # A broken filesystem must not become a broken pipeline.
     monkeypatch.setattr(p, "REPO_DIR", tmp_path / "nope" / "\0bad")
     p._append_run_record({"type": "step"})   # must not raise
+
+
+def test_step_2c_uses_the_incremental_builder_and_seeds_state(monkeypatch, tmp_path):
+    """Step 2c must leave `meta` + `processed_decisions` on the live graph.
+
+    The full builder (build_reference_graph.py) never writes those tables,
+    so a subsequent --in-place incremental run finds no diff base and
+    bootstraps the whole graph (~3h22m on production) instead of applying
+    a delta. That is the concrete blocker for the weekday-incremental
+    cutover, so pin the invocation.
+    """
+    import publish
+
+    captured = {}
+
+    def _fake_run_cmd(cmd, desc, dry_run=False, **kwargs):
+        captured["cmd"] = cmd
+        captured["kwargs"] = kwargs
+        return True
+
+    db = tmp_path / "decisions.db"
+    db.write_bytes(b"")
+    script = tmp_path / "search_stack" / "build_reference_graph_incremental.py"
+    script.parent.mkdir(parents=True)
+    script.write_text("# stub\n")
+
+    monkeypatch.setattr(publish, "run_cmd", _fake_run_cmd)
+    monkeypatch.setattr(publish, "REPO_DIR", tmp_path)
+    monkeypatch.setattr(publish, "DB_PATH", db)
+    monkeypatch.setattr(publish, "OUTPUT_DIR", tmp_path)
+
+    assert publish.step_2c_build_reference_graph(dry_run=False) is True
+
+    cmd = captured["cmd"]
+    assert str(script) in cmd, f"2c did not call the incremental builder: {cmd}"
+    assert "--force-full" in cmd, "2c must force a full rebuild, not a delta"
+    assert "--in-place" in cmd, "2c must publish onto the live graph"
+    assert "--decisions-db" in cmd and "--graph-db" in cmd
+    # The old full-builder flags must be gone — they are not accepted by
+    # the incremental builder's argparse and would fail at runtime.
+    assert "--source-db" not in cmd and "--db" not in cmd
+    # Keep the measured headroom: bootstrap was 12,140s on production.
+    assert captured["kwargs"].get("timeout", 0) >= 18000

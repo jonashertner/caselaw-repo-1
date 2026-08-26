@@ -574,9 +574,20 @@ def step_2c_build_reference_graph(dry_run: bool = False, full_rebuild: bool = Fa
     """Step 2c: Build reference graph (citations + statutes)."""
     logger.info("Step 2c: Build reference graph")
 
-    script = REPO_DIR / "search_stack" / "build_reference_graph.py"
+    # Use the INCREMENTAL builder in forced-full mode rather than
+    # build_reference_graph.py directly. Same inputs (both read
+    # decisions.db), same full rebuild — but this one also writes the
+    # `meta` and `processed_decisions` state tables.
+    #
+    # Without that state a subsequent --in-place incremental run finds no
+    # diff base (_select_diff_base -> "no_state") and bootstraps the whole
+    # graph from scratch, ~3h22m measured on production, instead of
+    # applying a delta in ~50min. That is what blocks the weekday-
+    # incremental cutover. The step comment below has said "Real fix:
+    # build_reference_graph_incremental.py" since 2026-06-03; this is it.
+    script = REPO_DIR / "search_stack" / "build_reference_graph_incremental.py"
     if not script.exists():
-        logger.info("  build_reference_graph.py not found, skipping")
+        logger.info("  build_reference_graph_incremental.py not found, skipping")
         return True
 
     if not DB_PATH.exists():
@@ -586,8 +597,10 @@ def step_2c_build_reference_graph(dry_run: bool = False, full_rebuild: bool = Fa
     graph_db = OUTPUT_DIR / "reference_graph.db"
     return run_cmd(
         [sys.executable, str(script),
-         "--source-db", str(DB_PATH),
-         "--db", str(graph_db)],
+         "--decisions-db", str(DB_PATH),
+         "--graph-db", str(graph_db),
+         "--force-full",
+         "--in-place"],
         "Build reference graph",
         dry_run,
         # Bumped 7200→10800 (2026-05-01), then 10800→18000 (2026-06-03 STOPGAP):

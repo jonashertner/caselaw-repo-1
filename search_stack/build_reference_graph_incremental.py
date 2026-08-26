@@ -415,15 +415,42 @@ def _bootstrap_via_full_rebuild(
     output_path = output_path.resolve()
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    stats = build_graph(
-        input_dir=Path("output/decisions"),  # ignored when source_db given
-        db_path=output_path,
-        source_db=decisions_db,
-    )
+    # Stage the whole bootstrap in a private file and publish it with ONE
+    # os.replace at the end.
+    #
+    # Building into output_path directly — and then opening it read-write
+    # to seed processed_decisions — mutates the live sidecar whenever this
+    # runs under --in-place. Every MCP worker opens these DBs with
+    # immutable=1, which promises SQLite that the bytes never change and
+    # that no hot journal exists; a reader that connects mid-seed can get
+    # a torn page or SQLITE_CORRUPT on an otherwise successful run. That
+    # is invariant #1. The diff path below has always staged through a
+    # .tmp; the bootstrap path did not.
+    staging = output_path.with_name(f".{output_path.name}.bootstrap.tmp")
+    if staging.exists():
+        staging.unlink()
+    _cleanup_sidecars(staging)
+
+    try:
+        stats = build_graph(
+            input_dir=Path("output/decisions"),  # ignored when source_db given
+            db_path=staging,
+            source_db=decisions_db,
+            # Keep the resolution-rate regression guard pointed at the
+            # real previous graph; staging does not exist yet, so without
+            # this the guard would never fire on a bootstrap.
+            compare_against=output_path,
+        )
+    except BaseException:
+        if staging.exists():
+            staging.unlink()
+        _cleanup_sidecars(staging)
+        raise
+
     # Seed state table. We stream rows from disk (NOT ``list(...)``):
     # the corpus is ~60 GB on production and full_text is in every row,
     # so materialising would OOM on the typical 8-16 GB instance.
-    conn = sqlite3.connect(str(output_path))
+    conn = sqlite3.connect(str(staging))
     try:
         _ensure_state_tables(conn)
         cur = conn.cursor()
@@ -460,9 +487,20 @@ def _bootstrap_via_full_rebuild(
         )
         conn.commit()
         stats["seeded_processed_decisions"] = seeded
+    except BaseException:
+        # finally: below still closes the connection.
+        if staging.exists():
+            staging.unlink()
+        _cleanup_sidecars(staging)
+        raise
     finally:
         conn.close()
 
+    # Single publish point. Everything above touched only `staging`.
+    _cleanup_sidecars(staging)
+    os.replace(staging, output_path)
+
+    stats["db_path"] = str(output_path)
     stats["mode"] = "full_bootstrap"
     return stats
 
@@ -510,7 +548,13 @@ def build_graph_incremental(
 
     # Copy base → tmp; remove any sidecars that came along.
     stats["diff_base"] = str(base)
-    tmp_path = output_path.with_name(f".{output_path.name}.tmp")
+    # Distinct from build_reference_graph.py's ".{name}.tmp": under
+    # --in-place both resolve to the same path, and the full builder
+    # unlinks its tmp unconditionally with no age guard. The timers are
+    # day-disjoint after the cutover, but a manual full rebuild overlapping
+    # this one could otherwise let our os.replace rename the full
+    # builder's half-written graph over the live DB.
+    tmp_path = output_path.with_name(f".{output_path.name}.incremental.tmp")
     if tmp_path.exists():
         tmp_path.unlink()
     output_path.parent.mkdir(parents=True, exist_ok=True)
