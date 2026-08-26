@@ -92,3 +92,7 @@ tools/word-addin/partner-center-resubmission-*.txt
 # as agent context; gitignored so they can never be committed by accident.
 CLAUDE.md
 TECHNICAL_OVERVIEW.txt
+
+# Generated at scraper start by deploy/certs/build-ca-bundle.sh (certifi +
+# the intermediates in extra/). Never commit the assembled bundle.
+deploy/certs/ca-bundle.pem
