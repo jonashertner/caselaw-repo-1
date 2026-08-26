@@ -46,6 +46,12 @@ class CheckResult:
                    or a manual instruction.
     court          Optional per-court scoping for drift / per-court checks.
     extra          Additional structured detail (e.g. per-bucket counts).
+    elapsed_s      Wall time of the check that produced this result, set by
+                   runner._run_one. Note the runner is parallel
+                   (MAX_WORKERS=4), so these overlap and do NOT sum to the
+                   run duration — use `quality.cli run --no-parallel` when
+                   you need attributable per-check cost. None when the
+                   result was built outside the runner (tests, ad-hoc use).
     """
     name: str
     severity: Severity
@@ -57,6 +63,7 @@ class CheckResult:
     fix_advice: str | None = None
     court: str | None = None
     extra: dict[str, Any] = field(default_factory=dict)
+    elapsed_s: float | None = None
 
     def to_dict(self) -> dict[str, Any]:
         """JSON-serialisable form. Severity rendered as its string value."""

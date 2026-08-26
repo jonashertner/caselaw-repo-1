@@ -16,9 +16,11 @@ optionally appends to `quality/history.db` for drift detection.
 from __future__ import annotations
 
 import importlib
+import json
 import logging
 import pkgutil
 import sqlite3
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
@@ -32,6 +34,60 @@ logger = logging.getLogger(__name__)
 DEFAULT_DB = Path("output/decisions.db")
 DEFAULT_REPORT_DIR = Path("quality/reports")
 MAX_WORKERS = 4
+
+# Per-check progress trail, written as the run proceeds.
+#
+# This exists because a timed-out gate previously left NOTHING behind. The
+# publish gate runs `python -m quality.cli run --critical-only --gate` with a
+# 3600 s cap and no --verbose, so cli.main configures logging at WARNING and
+# any INFO line is discarded; when the cap fires, the subprocess is killed
+# before `run()` returns, so no report is written, no history row is appended,
+# and docs/quality.json still holds the PREVIOUS day's result. Working out
+# which check was in flight then requires an investigation rather than a query
+# (2026-08-26).
+#
+# One `start` line and one `done` line per check, flushed immediately. After a
+# kill, any check with a `start` and no `done` was in flight. Best-effort
+# throughout: a failure to write progress must never affect a verdict.
+PROGRESS_FILENAME = "gate-progress.jsonl"
+_progress_lock = threading.Lock()
+_progress_path: Path | None = None
+
+
+def _progress_begin(report_dir: Path | None) -> None:
+    """Truncate the progress trail at the start of a run, or disable it.
+
+    ``None`` disables. Writing unconditionally would give every library and
+    test caller of ``run()`` a filesystem side effect in the repo, which is
+    how the first version of this leaked a 17 KB gate-progress.jsonl into a
+    working tree during a test run.
+    """
+    global _progress_path
+    _progress_path = None
+    if report_dir is None:
+        return
+    try:
+        report_dir.mkdir(parents=True, exist_ok=True)
+        path = report_dir / PROGRESS_FILENAME
+        path.write_text("", encoding="utf-8")
+        _progress_path = path
+    except Exception:
+        logger.debug("progress trail unavailable (non-fatal)", exc_info=True)
+
+
+def _progress(event: str, name: str, **fields) -> None:
+    if _progress_path is None:
+        return
+    rec = {"event": event, "check": name,
+           "ts": datetime.now(timezone.utc).isoformat(timespec="seconds")}
+    rec.update(fields)
+    try:
+        with _progress_lock:
+            with open(_progress_path, "a", encoding="utf-8") as fh:
+                fh.write(json.dumps(rec, ensure_ascii=False) + "\n")
+                fh.flush()
+    except Exception:
+        logger.debug("progress write failed (non-fatal)", exc_info=True)
 
 
 def _open_db(db_path: Path) -> sqlite3.Connection:
@@ -77,34 +133,49 @@ def _run_one(fn: Callable, db_path: Path, ctx: dict) -> list[CheckResult]:
     so a buggy check never silently disappears from the report."""
     name = f"{fn.__module__.split('.')[-1]}.{fn.__name__[len('check_'):]}"
     conn = None
+    results: list[CheckResult] = []
+    started = time.monotonic()
+    _progress("start", name)
     try:
-        conn = _open_db(db_path)
-        out = fn(conn, **ctx)
-        if isinstance(out, CheckResult):
-            return [out]
-        if out is None:
-            return []
-        results = list(out)
-        if not all(isinstance(r, CheckResult) for r in results):
-            raise TypeError(f"check {name} returned non-CheckResult")
+        try:
+            conn = _open_db(db_path)
+            out = fn(conn, **ctx)
+            if isinstance(out, CheckResult):
+                results = [out]
+            elif out is None:
+                results = []
+            else:
+                results = list(out)
+                if not all(isinstance(r, CheckResult) for r in results):
+                    raise TypeError(f"check {name} returned non-CheckResult")
+        except Exception as e:
+            logger.exception("check %s raised", name)
+            results = [CheckResult(
+                name=name,
+                severity=Severity.CRITICAL,
+                passed=False,
+                metric_value=-1,
+                threshold=None,
+                message=f"check raised exception: {type(e).__name__}: {e}",
+                fix_advice="investigate the check itself; bug in the QC code",
+            )]
+        finally:
+            if conn is not None:
+                try:
+                    conn.close()
+                except Exception:
+                    pass
         return results
-    except Exception as e:
-        logger.exception("check %s raised", name)
-        return [CheckResult(
-            name=name,
-            severity=Severity.CRITICAL,
-            passed=False,
-            metric_value=-1,
-            threshold=None,
-            message=f"check raised exception: {type(e).__name__}: {e}",
-            fix_advice="investigate the check itself; bug in the QC code",
-        )]
     finally:
-        if conn is not None:
-            try:
-                conn.close()
-            except Exception:
-                pass
+        elapsed = round(time.monotonic() - started, 3)
+        # Stamped here rather than at each return so the per-court fan-out
+        # behaves like the single-result case: every result carries the cost
+        # of the call that produced it, so a 118-result fan-out reports the
+        # same elapsed 118 times.
+        for r in results:
+            r.elapsed_s = elapsed
+        _progress("done", name, elapsed_s=elapsed, n_results=len(results))
+        logger.info("check %s finished in %.2fs", name, elapsed)
 
 
 def gate_visible_results(results: list[CheckResult]) -> list[CheckResult]:
@@ -132,6 +203,7 @@ def run(
     critical_only: bool = False,
     record_history: bool = True,
     parallel: bool = True,
+    progress_dir: Path | str | None = None,
 ) -> CheckRunReport:
     """Run all (or filtered) checks and return aggregate report.
 
@@ -144,6 +216,11 @@ def run(
         record_history: Append measurements to quality/history.db for
               drift detection. Disable in tests / dry runs.
         parallel: Run checks in a thread pool. Disable for debugging.
+        progress_dir: Where to write the per-check progress trail. Opt-in:
+              when None, nothing is written. The publish gate passes it (via
+              quality.cli) because that is the run that gets killed at a
+              wall-clock cap and needs to leave a trail; library and test
+              callers get no filesystem side effect.
     """
     db_path = Path(db_path)
     if not db_path.exists():
@@ -161,6 +238,7 @@ def run(
         checks = [c for c in checks if matches(c)]
 
     ctx: dict = {"critical_only": critical_only, "db_path": str(db_path)}
+    _progress_begin(Path(progress_dir) if progress_dir else None)
     started = time.monotonic()
     results: list[CheckResult] = []
 

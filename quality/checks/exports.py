@@ -14,25 +14,102 @@ long Erwägungen).
 """
 from __future__ import annotations
 
+import random
 import sqlite3
+import threading
+from datetime import date
 
 from quality.types import CheckResult, Severity
 
 
-SAMPLE_SIZE = 25  # number of random decisions per format
+SAMPLE_SIZE = 25          # decisions rendered per format
+MIN_TEXT_CHARS = 500      # skip stubs; a 200-char row exercises nothing
+_FORMAT_SLOTS = 4         # docx, pdf, bibtex, ris
+_POOL_SIZE = SAMPLE_SIZE * _FORMAT_SLOTS
+
+# Bounded work: with rowid gaps and rows under MIN_TEXT_CHARS, some probes
+# miss. 12x the pool is far more than the observed miss rate needs and still
+# caps the check at ~1,200 point lookups in the pathological case.
+_MAX_PROBES = _POOL_SIZE * 12
+
+_ROW_SQL = (
+    "SELECT decision_id, court, court AS court_name, decision_date, "
+    "docket_number, language, regeste, full_text, "
+    "regeste AS citation_string_de "
+    "FROM decisions WHERE rowid = ?"
+)
+
+_pool_lock = threading.Lock()
+_pool_cache: dict[str, list[dict]] = {}
 
 
-def _sample_decisions(conn: sqlite3.Connection) -> list[dict]:
-    """Pick N decisions stratified by court (catch per-court bugs)."""
-    rows = conn.execute(
-        "SELECT decision_id, court, court AS court_name, decision_date, "
-        "docket_number, language, regeste, full_text, "
-        "regeste AS citation_string_de "
-        "FROM decisions WHERE length(full_text) > 500 "
-        "ORDER BY random() LIMIT ?",
-        (SAMPLE_SIZE,),
-    ).fetchall()
-    return [dict(r) for r in rows]
+def _draw_pool(conn: sqlite3.Connection) -> list[dict]:
+    """Draw the shared sample by random rowid probe — point lookups only.
+
+    This replaced
+        SELECT ... full_text ... WHERE length(full_text) > 500
+        ORDER BY random() LIMIT 25
+    which SQLite answers with `SCAN decisions` + `USE TEMP B-TREE FOR ORDER
+    BY`: a full pass over a 70 GB table plus a full sort, to keep 25 rows.
+    `full_text` is ordinal 22 of 36 in the record, so reading it walks every
+    row's overflow-page chain — and this query ran FOUR times per gate, once
+    per format, concurrently at MAX_WORKERS=4. `length()` on a TEXT column
+    does not get SQLite's stored-length shortcut either; that fires only for
+    BLOBs (measured: 0.641 s vs 0.003 s for `typeof()` on a 20k-row fixture).
+
+    The distribution is unchanged in the way that matters: probing rowids
+    uniformly and rejecting rows below MIN_TEXT_CHARS is still uniform over
+    qualifying rows. The docstring this replaces claimed the sample was
+    "stratified by court"; it never was — `ORDER BY random()` is a flat draw
+    — so no stratification is lost here.
+
+    Seeded per day, like text_integrity._sample_by_rowid, so a gate run is
+    reproducible within the day.
+    """
+    max_rowid = conn.execute("SELECT max(rowid) FROM decisions").fetchone()[0] or 0
+    if not max_rowid:
+        return []
+    rng = random.Random(f"exports:{date.today().isoformat()}")
+    out: list[dict] = []
+    seen: set[int] = set()
+    probes = 0
+    while len(out) < _POOL_SIZE and probes < _MAX_PROBES:
+        probes += 1
+        rid = rng.randint(1, max_rowid)
+        if rid in seen:
+            continue
+        seen.add(rid)
+        row = conn.execute(_ROW_SQL, (rid,)).fetchone()
+        if row is None:
+            continue
+        if len(row["full_text"] or "") <= MIN_TEXT_CHARS:
+            continue
+        out.append(dict(row))
+    return out
+
+
+def _sample_decisions(conn: sqlite3.Connection, slot: int = 0,
+                      db_path: str | None = None) -> list[dict]:
+    """The `slot`-th disjoint slice of the shared per-run sample.
+
+    The four format checks each get their own rows, as before — but from one
+    draw instead of four independent full scans. Interleaved rather than
+    block-sliced so a short pool degrades evenly across formats instead of
+    starving the last two.
+    """
+    key = db_path or ""
+    with _pool_lock:
+        pool = _pool_cache.get(key)
+        if pool is None:
+            pool = _draw_pool(conn)
+            _pool_cache[key] = pool
+    return pool[slot::_FORMAT_SLOTS][:SAMPLE_SIZE]
+
+
+def _reset_sample_cache() -> None:
+    """Drop the memoised pool. For tests — the gate is a fresh process."""
+    with _pool_lock:
+        _pool_cache.clear()
 
 
 def _check_format(
@@ -83,7 +160,8 @@ def _check_format(
     )
 
 
-def check_docx_export(conn: sqlite3.Connection, **_) -> CheckResult:
+def check_docx_export(conn: sqlite3.Connection, db_path: str | None = None,
+                       **_) -> CheckResult:
     """A sample of 25 decisions must render to valid .docx."""
     try:
         import exports as _exports
@@ -96,7 +174,7 @@ def check_docx_export(conn: sqlite3.Connection, **_) -> CheckResult:
             threshold=None,
             message="exports module unavailable — skipped",
         )
-    decisions = _sample_decisions(conn)
+    decisions = _sample_decisions(conn, slot=0, db_path=db_path)
     if not decisions:
         return CheckResult(
             name="exports.docx_render",
@@ -114,7 +192,8 @@ def check_docx_export(conn: sqlite3.Connection, **_) -> CheckResult:
     )
 
 
-def check_pdf_export(conn: sqlite3.Connection, **_) -> CheckResult:
+def check_pdf_export(conn: sqlite3.Connection, db_path: str | None = None,
+                       **_) -> CheckResult:
     """A sample of 25 decisions must render to valid .pdf."""
     try:
         import exports as _exports
@@ -127,7 +206,7 @@ def check_pdf_export(conn: sqlite3.Connection, **_) -> CheckResult:
             threshold=None,
             message="exports module unavailable — skipped",
         )
-    decisions = _sample_decisions(conn)
+    decisions = _sample_decisions(conn, slot=1, db_path=db_path)
     if not decisions:
         return CheckResult(
             name="exports.pdf_render",
@@ -147,7 +226,8 @@ def check_pdf_export(conn: sqlite3.Connection, **_) -> CheckResult:
     )
 
 
-def check_bibtex_export(conn: sqlite3.Connection, **_) -> CheckResult:
+def check_bibtex_export(conn: sqlite3.Connection, db_path: str | None = None,
+                       **_) -> CheckResult:
     """All sample decisions must render to a parseable @misc{...}."""
     try:
         import exports as _exports
@@ -160,7 +240,7 @@ def check_bibtex_export(conn: sqlite3.Connection, **_) -> CheckResult:
             threshold=None,
             message="exports module unavailable — skipped",
         )
-    decisions = _sample_decisions(conn)
+    decisions = _sample_decisions(conn, slot=2, db_path=db_path)
     if not decisions:
         return CheckResult(
             name="exports.bibtex_render",
@@ -193,7 +273,8 @@ def check_bibtex_export(conn: sqlite3.Connection, **_) -> CheckResult:
     )
 
 
-def check_ris_export(conn: sqlite3.Connection, **_) -> CheckResult:
+def check_ris_export(conn: sqlite3.Connection, db_path: str | None = None,
+                       **_) -> CheckResult:
     """All sample decisions must render to a TY-CASE … ER- record."""
     try:
         import exports as _exports
@@ -206,7 +287,7 @@ def check_ris_export(conn: sqlite3.Connection, **_) -> CheckResult:
             threshold=None,
             message="exports module unavailable — skipped",
         )
-    decisions = _sample_decisions(conn)
+    decisions = _sample_decisions(conn, slot=3, db_path=db_path)
     if not decisions:
         return CheckResult(
             name="exports.ris_render",

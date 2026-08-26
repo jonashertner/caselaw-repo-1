@@ -23,6 +23,11 @@ def _cmd_run(args: argparse.Namespace) -> int:
         critical_only=args.critical_only,
         record_history=not args.no_history,
         parallel=not args.serial,
+        # Always the audit-trail directory, never Path(args.output).parent:
+        # the publish gate passes --output docs/quality.json, and the trail
+        # is operational debris that has no business in the published docs
+        # tree. quality/reports/ is where write_report already archives.
+        progress_dir=runner.DEFAULT_REPORT_DIR,
     )
     out_path = runner.write_report(
         report,
