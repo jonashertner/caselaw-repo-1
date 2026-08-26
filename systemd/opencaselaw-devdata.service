@@ -7,14 +7,7 @@ After=network-online.target
 [Service]
 Type=oneshot
 WorkingDirectory=/opt/caselaw/repo
-# --include-traces: without it collect_traces() is never called, so the daily
-# commit lands every other dataset and silently omits search traces. That is
-# what happened 2026-08-20..26 — seven days, 69,400 records, absent from the
-# private repo while the nightly "collect <date>" commits looked healthy.
-# The flag still refuses to run unless the TRACES_EXPORT_APPROVED marker is
-# present (collect_dev_data.py:399-404), and the export is idempotent per
-# source day, so enabling it backfills every closed day exactly once.
-ExecStart=/usr/bin/python3 /opt/caselaw/repo/scripts/collect_dev_data.py --dest /opt/caselaw/data-private --include-traces
+ExecStart=/usr/bin/python3 /opt/caselaw/repo/scripts/collect_dev_data.py --dest /opt/caselaw/data-private
 StandardOutput=append:/opt/caselaw/repo/logs/devdata_collect.log
 StandardError=append:/opt/caselaw/repo/logs/devdata_collect.log
 TimeoutStartSec=1800
