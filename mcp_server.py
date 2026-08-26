@@ -295,11 +295,52 @@ LLM_USAGE_LOG_PATH = Path(os.environ.get(
 ))
 # Per-IP LLM cost ledger (90-day retention via logrotate; disclosed at
 # /datenschutz/). Separate file from llm_usage.jsonl so the append-only
-# cost audit stays free of personal data.
+# cost audit stays free of personal data. Since 2026-08-26 the address is
+# replaced by a daily-rotating pseudonym (_ip_pseudonym) — the raw address
+# was the identifying half of a timestamp join against the query-bearing
+# search traces, which reconstructed address + query for 86.6% of searches.
 LLM_LEDGER_LOG_PATH = Path(os.environ.get(
     "OCL_LLM_LEDGER_LOG",
     str(Path(__file__).resolve().parent / "logs" / "llm_cost_by_ip.jsonl"),
 ))
+
+# Per-process fallback salt. Random per worker, so an absent shared secret
+# degrades grouping rather than privacy.
+_IP_PSEUDONYM_FALLBACK_SALT = secrets.token_hex(32)
+
+
+def _ip_pseudonym(ip: str) -> str:
+    """Daily-rotating pseudonym for the per-IP cost ledger.
+
+    The ledger exists for cost control and for detecting/documenting abuse
+    (/datenschutz/, "Kosten- & Missbrauchskontrolle"). None of that needs the
+    address itself: grouping calls by the same actor within a day is enough,
+    and the 72-hour tier-1 nginx log is where a real address briefly lives for
+    genuine incident response. Daily limits are NOT served from this file —
+    they run off web_api/ocl_quota.py's own SQLite store — so pseudonymising
+    here costs no enforcement capability.
+
+    Why it matters (measured 2026-08-26): the ledger held 10,413 raw IPv4
+    addresses for that day alone, while search traces hold query text with no
+    address. Neither file identifies anyone by itself, but they share
+    microsecond timestamps: joining them within ±0.5 s matched 86.6 % of
+    rerank rows one-to-one, reconstructing address + query text for most
+    searches. Replacing the address with a rotating pseudonym leaves the join
+    intact but makes what it yields useless for identifying a person.
+
+    A bare hash would not do: IPv4 is 32 bits, so an unsalted digest is
+    reversible by exhaustive search in seconds. The salt is secret AND rotates
+    daily, which also breaks linkage across days.
+
+    Set OCL_IP_PSEUDONYM_SECRET so all 8 workers agree within a day. Without
+    it we fall back to a per-process random salt: strictly more private, but
+    the same address appears under up to 8 pseudonyms, so abuse grouping
+    degrades. We never fall back to writing the address.
+    """
+    secret = os.environ.get("OCL_IP_PSEUDONYM_SECRET") or _IP_PSEUDONYM_FALLBACK_SALT
+    day = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    return hashlib.sha256(f"{secret}|{day}|{ip}".encode("utf-8")).hexdigest()[:16]
+
 
 # Anthropic public pricing (USD per 1M tokens). Update when rates change.
 # (input_per_1m, output_per_1m). Cache reads bill at 10% of input rate;
@@ -379,7 +420,8 @@ def _llm_usage_log(*, model: str, feature: str, response_json: dict | None,
         if _ip and _src in ("mcp", "rest"):
             with open(LLM_LEDGER_LOG_PATH, "a", encoding="utf-8") as f:
                 f.write(json.dumps({
-                    "ts": record["ts"], "ip": _ip, "feature": feature,
+                    "ts": record["ts"], "ip_pseudonym": _ip_pseudonym(_ip),
+                    "feature": feature,
                     "source": _src, "cost_usd": record["cost_usd"],
                 }, ensure_ascii=False) + "\n")
     except Exception as e:  # noqa: BLE001

@@ -15,6 +15,7 @@ requested, and fails open.
 from __future__ import annotations
 
 import json
+import re
 import sys
 import types
 from pathlib import Path
@@ -62,7 +63,13 @@ def test_mcp_call_lands_in_both_files_with_attribution(logs):
     assert u["source"] == "mcp" and u["client"] != "-"
     assert "ip" not in u                       # usage file stays impersonal
     l = _rows(ledger)[-1]
-    assert l["ip"] == "203.0.113.7" and l["cost_usd"] > 0
+    # The ledger carries a daily-rotating pseudonym, never the address
+    # (2026-08-26): it was the address half of a timestamp join against the
+    # query-bearing search traces. See tests/test_ip_pseudonym_ledger.py.
+    assert "ip" not in l, "ledger must not persist a raw address"
+    assert re.fullmatch(r"[0-9a-f]{16}", l["ip_pseudonym"])
+    assert "203.0.113.7" not in json.dumps(l)
+    assert l["cost_usd"] > 0
 
 
 def test_internal_call_never_reaches_the_ledger(logs):
