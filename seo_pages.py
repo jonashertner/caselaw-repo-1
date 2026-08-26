@@ -18,6 +18,8 @@ import re
 import sqlite3
 from pathlib import Path
 
+import ecthr_docket
+
 logger = logging.getLogger("swiss-caselaw-mcp")
 
 DATA_DIR = Path(os.environ.get("SWISS_CASELAW_DIR", str(Path.home() / ".swiss-caselaw")))
@@ -192,6 +194,9 @@ def _paragraphs_html(text: str, *, classname: str | None = None) -> str:
 _COURT_NAMES = {
     "bger": "Bundesgericht", "bge": "Bundesgericht (BGE)",
     "bge_historical": "Bundesgericht (historisch)",
+    "ecthr_chamber": "EGMR (Kammer)",
+    "ecthr_grand_chamber": "EGMR (Grosse Kammer)",
+    "ecthr_committee": "EGMR (Ausschuss)",
     "bvger": "Bundesverwaltungsgericht", "bstger": "Bundesstrafgericht",
     "bpatger": "Bundespatentgericht",
     "ag_gerichte": "Aargau", "ai_gerichte": "Appenzell I.Rh.",
@@ -376,6 +381,8 @@ _COURT_SHORT = {
     "bger": "BGer", "bvger": "BVGer", "bstger": "BStGer", "bpatger": "BPatGer",
     "bge": "BGE", "bge_historical": "BGE", "bge_egmr": "EGMR",
     "ch_bundesrat": "BR", "mkg": "MKG", "hudoc_ch": "EGMR",
+    "ecthr_chamber": "EGMR", "ecthr_grand_chamber": "EGMR (GK)",
+    "ecthr_committee": "EGMR",
     "finma": "FINMA", "finma_versicherungsrecht": "FINMA-VR", "weko": "WEKO",
     "edoeb": "EDÖB", "ubi": "UBI", "elcom": "ElCom", "postcom": "PostCom",
     "comcom": "ComCom", "ta_sst": "TA-SST", "emark": "EMARK",
@@ -572,7 +579,9 @@ def _render_decision(
     court = row["court"] or ""
     court_name = _COURT_NAMES.get(court, court.replace("_", " ").title())
     canton = row["canton"] or ""
-    docket = row["docket_number"] or did
+    # ECtHR dockets carry a _yyyymmdd key suffix that must never reach a page
+    # title, an og:title or the Schema.org LegalCase name.
+    docket = ecthr_docket.display_docket(row["court"], row["docket_number"]) or did
     date = row["decision_date"] or ""
     language = row["language"] or "de"
     title = row["title"] or ""

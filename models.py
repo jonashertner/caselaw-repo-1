@@ -64,7 +64,15 @@ class Decision(BaseModel):
 
     # === Content ===
     language: str = Field(
-        ..., description="Language code: de, fr, it, rm", pattern=r"^(de|fr|it|rm)$"
+        ...,
+        description=(
+            "Language code: de, fr, it, rm — plus en, which is reserved for "
+            "European Court of Human Rights judgments whose only authoritative "
+            "text is English (HUDOC publishes no French version for roughly "
+            "half the corpus). No Swiss court may write 'en'; the quality gate "
+            "enforces that (quality/checks/languages.py)."
+        ),
+        pattern=r"^(de|fr|it|rm|en)$",
     )
     title: Optional[str] = Field(None, description="Subject/Gegenstand/Objet")
     legal_area: Optional[str] = Field(

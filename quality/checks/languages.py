@@ -3,6 +3,13 @@
 Every Swiss decision is in DE, FR, IT, or RM (Rumantsch). Anything
 else is a scraper bug — the field was populated from the wrong
 column or character-set decoded badly.
+
+EN is the one exception, and only for Strasbourg: HUDOC publishes about
+half the ECtHR corpus with English as the sole authoritative text (the
+French listing row exists but carries no document — `isplaceholder`).
+Those judgments are ingested as `en`. An `en` row on any *Swiss* court is
+still the same scraper bug it always was, so the check is court-scoped
+rather than simply widened.
 """
 from __future__ import annotations
 
@@ -12,28 +19,53 @@ from quality.types import CheckResult, Severity
 
 
 VALID_LANGUAGES = {"de", "fr", "it", "rm"}
+# Courts that reproduce Strasbourg text, the only ones allowed to carry `en`.
+ECTHR_COURTS = {
+    "ecthr_chamber", "ecthr_committee", "ecthr_grand_chamber",
+    "hudoc_ch", "bge_egmr",
+}
 NULL_LANGUAGE_FLOOR_PCT = 0.5  # WARNING if >0.5% of rows have no language
 
 
 def check_unexpected_language_values(conn: sqlite3.Connection, **_) -> CheckResult:
-    """Language must be in {de, fr, it, rm} or NULL."""
-    rows = conn.execute(
+    """Language must be in {de, fr, it, rm}, or `en` on an ECtHR court, or NULL."""
+    # Two queries on purpose. The first stays on idx_decisions_language as a
+    # covering scan; adding `court` to it would drop the index cover and make
+    # the gate seek into a 62 GB table ~1M times, and the gate has already had
+    # its wall-clock ceiling raised twice (600 -> 1800 -> 3600 s). The second
+    # runs only for language values that are not unconditionally valid, which
+    # in a healthy corpus means `en` alone.
+    distribution = dict(conn.execute(
         "SELECT language, COUNT(*) FROM decisions "
         "WHERE language IS NOT NULL AND language != '' "
         "GROUP BY language"
-    ).fetchall()
-    bad = [(lang, n) for lang, n in rows if lang not in VALID_LANGUAGES]
+    ).fetchall())
+    suspect = [lang for lang in distribution if lang not in VALID_LANGUAGES]
+    bad: list[tuple[str, str, int]] = []
+    if suspect:
+        placeholders = ",".join("?" * len(suspect))
+        for lang, court, n in conn.execute(
+            f"SELECT language, court, COUNT(*) FROM decisions "
+            f"WHERE language IN ({placeholders}) GROUP BY language, court",
+            suspect,
+        ):
+            if lang == "en" and court in ECTHR_COURTS:
+                continue
+            bad.append((lang, court, n))
     return CheckResult(
         name="languages.unexpected_values",
         severity=Severity.CRITICAL,
         passed=(not bad),
-        metric_value=sum(n for _, n in bad),
+        metric_value=sum(n for _, _, n in bad),
         threshold=0,
-        message=f"{len(bad)} unexpected language codes" if bad else
-                f"all language codes ∈ {{de, fr, it, rm}}",
-        sample_rows=[{"language": repr(l), "count": n} for l, n in bad[:5]],
-        extra={"distribution": dict(rows)},
-        fix_advice="language must be a 2-letter ISO code. Investigate the "
+        message=f"{len(bad)} unexpected language/court combinations" if bad else
+                "all language codes ∈ {de, fr, it, rm} (+ en on ECtHR courts)",
+        sample_rows=[
+            {"language": repr(l), "court": c, "count": n} for l, c, n in bad[:5]
+        ],
+        extra={"distribution": distribution},
+        fix_advice="language must be a 2-letter ISO code, and `en` is reserved "
+                   "for English-authoritative ECtHR judgments. Investigate the "
                    "scraper that wrote this row's language column.",
     )
 

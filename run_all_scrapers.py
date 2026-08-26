@@ -72,6 +72,14 @@ SLOW_SCRAPERS = {
 # Scrapers to skip by default (broken, redundant, or handled separately)
 SKIP_BY_DEFAULT: set[str] = {
     "be_steuerrekurs",  # Portal DB disconnected (Feb 2026), returns 0 results
+    # ecthr has its own timer (opencaselaw-ecthr.timer, 14:00 UTC) which
+    # chains quick_publish so fresh Strasbourg judgments are searchable within
+    # minutes. Running it here too meant scraping HUDOC twice a day for the
+    # same rows, and — worse — the 01:00 monolithic run is not covered by the
+    # backfill guard on opencaselaw-ecthr.service, so it would collide with a
+    # long one-shot backfill on state/ecthr.jsonl. Still runnable explicitly:
+    # `run_all_scrapers.py --courts ecthr` or `run_scraper.py ecthr`.
+    "ecthr",
 }
 
 # Scrapers that route through the Mac reverse-SOCKS tunnel (127.0.0.1:1080) via
@@ -97,18 +105,12 @@ def _socks_tunnel_up(host: str = "127.0.0.1", port: int = 1080) -> bool:
 
 # Scrapers where a high none_count (>=200) is expected and not a portal failure.
 #
-# ecthr (HUDOC): the listing exposes ~88k judgments across all Council of
-# Europe member states; the scraper's discovery skips entries without an
-# authoritative-language version (German / French / Italian) at the listing
-# stage (~6k+/day "skipped_translations" — these never enter the fetch
-# pipeline). On top of that, fetch_decision routinely returns None for
-# judgments whose authoritative text isn't downloadable (commercial-only
-# translations, in-progress publications, etc.). These NoneReturns are
-# expected behaviour, not a portal outage; the trustworthy failure signal
-# for ecthr is the Errors: count in the per-run summary, not none_count.
-NONE_RETURN_TOLERANT_SCRAPERS: set[str] = {
-    "ecthr",
-}
+# Empty as of 2026-08-26. `ecthr` used to live here: HUDOC lists a row per
+# language but only stores the authoritative text, so roughly 1,622 fetches
+# a night came back empty and the none_count signal was worthless. Discovery
+# now filters those out server-side with `isplaceholder:False`, so a None
+# return from ecthr is a real failure again and should alert like any other.
+NONE_RETURN_TOLERANT_SCRAPERS: set[str] = set()
 
 # Disk usage thresholds (percent)
 DISK_WARN_PERCENT = 85

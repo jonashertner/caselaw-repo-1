@@ -28,6 +28,8 @@ from __future__ import annotations
 import argparse
 import sqlite3
 import urllib.parse
+
+import ecthr_docket
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 from email.utils import format_datetime
@@ -46,6 +48,9 @@ COURT_NAMES = {
     "bstger": "Bundesstrafgericht",
     "bpatger": "Bundespatentgericht",
     "bge_egmr": "EGMR (Schweiz)",
+    "ecthr_chamber": "EGMR (Kammer)",
+    "ecthr_grand_chamber": "EGMR (Grosse Kammer)",
+    "ecthr_committee": "EGMR (Ausschuss)",
 }
 
 LANG_NAMES = {"de": "Deutsch", "fr": "Français", "it": "Italiano"}
@@ -94,7 +99,9 @@ def make_item(row: dict) -> ET.Element:
 
     court = row.get("court") or ""
     court_label = COURT_NAMES.get(court, court)
-    docket = (row.get("docket_number") or "").strip() or row.get("decision_id", "")
+    # Strip the ECtHR _yyyymmdd key suffix — the RSS title is reader-facing.
+    docket = ecthr_docket.display_docket(
+        court, row.get("docket_number")) or row.get("decision_id", "")
     date = row.get("decision_date") or ""
 
     title = f"{court_label} {docket}".strip()

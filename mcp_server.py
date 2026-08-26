@@ -221,6 +221,7 @@ class ReflectRequest(BaseModel):
 sys.path.insert(0, str(Path(__file__).parent))
 from db_schema import SCHEMA_SQL, INSERT_OR_IGNORE_SQL, INSERT_COLUMNS  # noqa: E402
 import docket_aliases  # noqa: E402  (joined-docket resolution, issue #41)
+import ecthr_docket  # noqa: E402  (shared ECtHR docket display form)
 
 # Set to True when running with --remote (SSE transport).
 # Gates off update_database / check_update_status for remote clients.
@@ -6122,6 +6123,40 @@ def _lookup_docket_alias(conn: sqlite3.Connection, reference: str | None) -> lis
     return [r[0] for r in rows]
 
 
+def _lookup_ecthr_appno(conn: sqlite3.Connection, reference: str | None) -> list[str]:
+    """Resolve a bare ECtHR application number to its judgment(s).
+
+    ECtHR dockets carry the judgment date ("47358/20_20220830") because 158
+    application numbers in the corpus name more than one judgment — merits,
+    then just satisfaction or revision, years apart. A practitioner types the
+    bare number, which after the re-keying no longer matches docket_number
+    exactly, and would otherwise fall through to the `LIKE '%x%'` full scan.
+
+    Uses a range predicate rather than LIKE so it stays on
+    idx_decisions_docket: SQLite disables its prefix-LIKE optimisation as soon
+    as ESCAPE is used, and the underscore has to be escaped to be literal.
+    '_' is 0x5F and '`' is 0x60, so ["47358/20_", "47358/20`") is exactly the
+    set of dockets beginning "47358/20_".
+
+    Returns every match, earliest first. Callers resolve only when there is
+    exactly one — an ambiguous application number is left to fall through
+    rather than silently picking a judgment.
+    """
+    ref = (reference or "").strip()
+    if not _ECTHR_APP_NO.match(ref):
+        return []
+    try:
+        rows = conn.execute(
+            "SELECT decision_id FROM decisions "
+            "WHERE docket_number >= ? AND docket_number < ? "
+            "ORDER BY decision_date ASC",
+            (ref + "_", ref + "`"),
+        ).fetchall()
+    except sqlite3.OperationalError:
+        return []
+    return [r[0] for r in rows]
+
+
 def _resolve_decision_id(decision_id: str) -> str:
     """Resolve a user-supplied decision_id to the actual stored decision_id.
 
@@ -6165,6 +6200,11 @@ def _resolve_decision_id(decision_id: str) -> str:
             ).fetchone()
             if row:
                 return row[0]
+        # Bare ECtHR application number -> the judgment carrying it. Indexed,
+        # and unique-only for the same reason as the alias step below.
+        _appno_ids = _lookup_ecthr_appno(conn, decision_id)
+        if len(_appno_ids) == 1:
+            return _appno_ids[0]
         # Joined-docket alias (#41): a secondary docket of a consolidated
         # decision. Only a UNIQUE alias resolves; an ambiguous one falls through.
         alias_ids = _lookup_docket_alias(conn, decision_id)
@@ -8388,6 +8428,7 @@ def _split_passages(full_text: str) -> list[str]:
 
 _CANONICAL_ID_PREFIX_RE = re.compile(
     r"^(?:bge|bger|bvger|bstger|bpatger|mkg|hudoc|bge_egmr|bge_historical|"
+    r"ecthr_chamber|ecthr_committee|ecthr_grand_chamber|"
     r"finma|finma_versicherungsrecht|weko|edoeb|ubi|elcom|postcom|comcom|"
     r"emark|ta_sst|ch_bundesrat|"
     r"zh|be|lu|ur|sz|ow|nw|gl|zg|fr|so|bs|bl|sh|ar|ai|sg|gr|ag|tg|ti|vd|vs|ne|ge|ju)"
@@ -8448,6 +8489,14 @@ def get_decision_by_id(decision_id: str) -> dict | None:
             ).fetchone()
 
     _via_alias = False
+    if not row:
+        # Bare ECtHR application number -> the judgment carrying it.
+        _appno_ids = _lookup_ecthr_appno(conn, decision_id)
+        if len(_appno_ids) == 1:
+            row = conn.execute(
+                "SELECT * FROM decisions WHERE decision_id = ?", (_appno_ids[0],)
+            ).fetchone()
+
     if not row:
         # Joined-docket alias (#41): resolve a secondary docket of a
         # consolidated decision to its lead. Unique aliases only.
@@ -10739,9 +10788,11 @@ server = Server(
     "swiss-caselaw",
     instructions=(
         "Swiss legal research platform: 1,050,000+ published decisions from "
-        "federal + cantonal courts, ~2,800 European Court of Human Rights "
-        "decisions concerning Switzerland (BGE-published EGMR translations, "
-        "HUDOC.CH, plus ECtHR Chamber / Committee / Grand Chamber direct), "
+        "federal + cantonal courts, ~9,600 European Court of Human Rights "
+        "judgments — the Swiss-respondent material (BGE-published EGMR "
+        "translations, HUDOC.CH) plus every ECtHR Chamber and Grand Chamber "
+        "judgment of importance 1-3 against any of the 46 respondent states, "
+        "in French or English, "
         "5,525 federal laws (Fedlex SPARQL), 15,600 cantonal laws (direct "
         "portal scraping for 19 cantons + LexFind fallback for the rest), "
         "1,100+ scholarly commentaries, a verbatim Federal Council Botschaft "
@@ -11000,12 +11051,19 @@ server = Server(
         "• 'Has the ECHR ruled against CH on X?'   → search_decisions(court='ecthr_chamber') or court='hudoc_ch'\n"
         "• 'BGE-published EGMR translation?'       → search_decisions(court='bge_egmr')\n\n"
 
-        "ECHR / EGMR coverage: ~2,870 decisions, Swiss-respondent and beyond.\n"
+        "ECHR / EGMR coverage: every ECtHR judgment of importance 1-3 (the "
+        "Court's own scale, where 1 = Key cases), from all 46 respondent "
+        "states, in its authoritative language — French where the Court "
+        "published a French text, otherwise English. Low-importance / "
+        "repetitive judgments (importance 4, which is the whole Committee "
+        "docket) and admissibility decisions are out of scope.\n"
         "  - bge_egmr           — Swiss BGE-published translations (487, since 1969)\n"
         "  - hudoc_ch           — HUDOC cases tagged Switzerland (847)\n"
-        "  - ecthr_chamber      — ECtHR Chamber judgments (1,194)\n"
-        "  - ecthr_grand_chamber — Grand Chamber (98, the highest authority)\n"
-        "  - ecthr_committee    — Committee judgments (245)\n"
+        "  - ecthr_chamber      — ECtHR Chamber judgments (~7,760)\n"
+        "  - ecthr_grand_chamber — Grand Chamber (~514, the highest authority)\n"
+        "  - ecthr_committee    — EMPTY. The Committee decides repetitive\n"
+        "      cases and every one of its judgments is importance 4, so none\n"
+        "      is in scope. Do not filter on it; use ecthr_chamber.\n"
         "All searchable via search_decisions with the court= filter. Note that "
         "the ECHR is interpreted uniformly, so leading authority on a Convention "
         "article often arises against ANOTHER contracting state and is no less "
@@ -11379,6 +11437,13 @@ _ECTHR_TITLE_NOTE = re.compile(r"\s*\[[^\]]*\]\s*$")
 # ECtHR application number, e.g. '30696/09'. Multi-application judgments join
 # them with '_' in our docket field.
 _ECTHR_APP_NO = re.compile(r"^\d{1,6}/\d{2}$")
+# ecthr_* dockets end in the judgment date ('47358/20_20220830'). The date is
+# there because 158 application numbers in the corpus carry more than one
+# judgment (merits, then just satisfaction) and the bare number collides. It
+# is not part of the case's application numbers, so strip it before parsing.
+# Shared with seo_pages / generate_feeds via ecthr_docket so the three display
+# sites cannot drift apart.
+_ECTHR_DOCKET_DATE_SUFFIX = ecthr_docket.DATE_SUFFIX_RE
 # bge_egmr dockets are 'YYYYMMDD_<appno>_<yy>' (487/487 conform), not raw
 # application numbers — reconstruct rather than print the internal key.
 _BGE_EGMR_DOCKET = re.compile(r"^(\d{8})_(\d{1,6})_(\d{2})$")
@@ -11439,7 +11504,8 @@ def _ecthr_app_numbers(court: str, docket: str, lang: str) -> str:
     if m:
         return f"{label} {m.group(2)}/{m.group(3)}"
 
-    parts = [p for p in (docket or "").split("_") if p]
+    bare = _ECTHR_DOCKET_DATE_SUFFIX.sub("", docket or "")
+    parts = [p for p in bare.split("_") if p]
     if not parts or not all(_ECTHR_APP_NO.match(p) for p in parts):
         return ""
     if len(parts) == 1:
@@ -21708,10 +21774,13 @@ def _list_tools() -> list[Tool]:
                         "description": (
                             "Filter by court code. "
                             "Federal: bger, bge, bvger, bstger, bpatger, mkg. "
-                            "European Court of Human Rights (Switzerland): "
-                            "bge_egmr (BGE-published DE translations), "
-                            "hudoc_ch (HUDOC Switzerland-tagged), "
-                            "ecthr_chamber, ecthr_grand_chamber, ecthr_committee. "
+                            "European Court of Human Rights: "
+                            "bge_egmr (BGE-published DE translations, Swiss "
+                            "cases), hudoc_ch (HUDOC Switzerland-tagged), "
+                            "ecthr_chamber and ecthr_grand_chamber (all "
+                            "respondent states, importance 1-3, FR or EN). "
+                            "ecthr_committee is empty by design — the "
+                            "Committee's docket is entirely importance 4. "
                             "Cantonal: zh_obergericht, be_verwaltungsgericht, etc."
                         ),
                     },
@@ -21729,9 +21798,12 @@ def _list_tools() -> list[Tool]:
                             "language filter silently excludes valid hits in "
                             "the other two. Set ONLY when the user explicitly "
                             "asks for a single-language result; do NOT auto-"
-                            "apply based on the conversation's language."
+                            "apply based on the conversation's language. "
+                            "'en' reaches only ECtHR judgments whose sole "
+                            "authoritative text is English — there is no "
+                            "English Swiss case law."
                         ),
-                        "enum": ["de", "fr", "it", "rm"],
+                        "enum": ["de", "fr", "it", "rm", "en"],
                     },
                     "date_from": {
                         "type": "string",
@@ -26719,7 +26791,12 @@ setInterval(load, 30000);
         q: str = Query(None, description="Alias for `query` (the short name used in the public docs / by most clients). `query` wins if both are given."),
         court: str = Query(None, description="Filter by court code (e.g., bger, bvger, zh_obergericht)"),
         canton: str = Query(None, description="Filter by canton (CH, ZH, BE, GE, etc.)"),
-        language: str = Query(None, description="Filter by language: de, fr, it, rm"),
+        language: str = Query(
+            None,
+            description="Filter by language: de, fr, it, rm — plus en, which "
+                        "reaches ECtHR judgments only (no Swiss case law is "
+                        "in English)",
+        ),
         date_from: str = Query(None, description="Start date (YYYY-MM-DD)"),
         date_to: str = Query(None, description="End date (YYYY-MM-DD)"),
         chamber: str = Query(None, description="Filter by chamber/division (substring match)"),

@@ -50,8 +50,8 @@ The largest open collection of Swiss court decisions: 1,050,000+ decision record
 
 - **20+ federal courts and bodies**: BGer, BVGer, BStGer, BPatGer, BGE, FINMA, WEKO, EDÖB, MKG (Militärkassationsgericht), VPB, Sports Tribunal, and more
 - **80+ cantonal courts** across all 26 cantons
-- **ECHR/EGMR**: 834 Swiss-respondent judgments (HUDOC) + general ECtHR Grand Chamber / Chamber / Committee (1,421 judgments live; full-corpus backfill in progress)
-- **Current decision languages**: German (463,012; 46.7%), French (446,869; 45.1%), Italian (81,796; 8.2%); the export schema also reserves `rm`
+- **ECHR/EGMR**: 847 Swiss-respondent judgments (HUDOC) + every ECtHR Chamber and Grand Chamber judgment of importance 1–3 against any respondent state (8,275 judgments, French or English). Not part of this CC0 dedication — see the note below.
+- **Current decision languages**: German (463,012; 46.7%), French (446,869; 45.1%), Italian (81,796; 8.2%); the export schema also reserves `rm`, and `en` for the ECtHR judgments whose only authoritative text is English (those rows are excluded from this export)
 - **Temporal range**: 1875–present (BGE historical vol. 1 from 1875)
 - **10 million extracted case-citation references** (9.65 million resolved, with confidence scores)
 - **12.4 million statute-decision links** in `graph/statute_references.parquet` (e.g., which decisions cite Art. 41 OR)
@@ -272,7 +272,7 @@ Full 34-field Parquet export schema: [`export_parquet.py`](https://github.com/jo
 | Sports Tribunal | `ta_sst` | ~49 | 2024–present |
 
 > **Not included: European Court of Human Rights decisions.** The corpus behind
-> `mcp.opencaselaw.ch` also carries ~2,870 ECtHR decisions (`ecthr_chamber`,
+> `mcp.opencaselaw.ch` also carries ~9,600 ECtHR decisions (`ecthr_chamber`,
 > `ecthr_committee`, `ecthr_grand_chamber`, `hudoc_ch`, `bge_egmr`). That text is
 > © ECHR-CEDH, reproduced from HUDOC under the Court's own reuse terms
 > (<https://www.echr.coe.int/copyright-and-disclaimer>), and is therefore **not

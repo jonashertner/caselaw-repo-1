@@ -64,7 +64,7 @@ curl -sG https://mcp.opencaselaw.ch/api/decisions \
 | Resource | Coverage |
 |---|---|
 | Court decisions | 1,050,000+ records, 118 court and source collections, 1875–today |
-| Languages | German, French, Italian |
+| Languages | German, French, Italian (plus English, for the ECtHR judgments whose only authoritative text is English) |
 | Legislation | 5,525 federal laws, 15,600 cantonal laws (all 26 cantons) |
 | Citation graph | ~10M resolved decision-to-decision edges, 12.4M statute references |
 | Interpretive layers | Federal Council dispatches, commentaries, open-access scholarship, federal administrative practice |
@@ -106,7 +106,7 @@ OpenCaseLaw fixes this. **Every published Swiss court decision, every federal an
 - Federal military court (Militärkassationsgericht / MKG, 1,244 decisions 1915–2025)
 - All 26 cantonal court systems (first, second, and third instance)
 - Regulatory decisions (FINMA, ComCo, FDPIC, IndepBC, ElCom, PostCom, ComCom)
-- **ECHR/EGMR**: 841 Swiss-respondent (HUDOC) + general ECtHR Grand Chamber/Chamber/Committee — 2,840 judgments live (481 BGE-published EGMR translations, 841 HUDOC, 1,186 Chamber, 237 Committee, 95 Grand Chamber)
+- **ECHR/EGMR**: the Swiss-respondent material (487 BGE-published EGMR translations, 847 HUDOC Switzerland-tagged) plus every ECtHR Chamber and Grand Chamber judgment of importance 1–3 against any of the 46 respondent states — 8,275 judgments, in French where the Court published a French text and English otherwise. Importance 4 (low-importance and repetitive, which is the entire Committee docket) and admissibility decisions are out of scope.
 - Three official languages: German 463,012 (46.7%), French 446,869 (45.1%), Italian 81,796 (8.2%); schema reserves `rm` for Romansh
 - Deduplicated via docket normalisation + content-length-aware merge
 - Updated daily; BGer decisions available within ~15 minutes of court publication
@@ -1122,9 +1122,9 @@ Full 34-field Parquet export schema: [`export_parquet.py`](export_parquet.py)
 | FINMA | `finma` | ~1,200 | 2008–2024 | finma.ch |
 | ECHR (Swiss cases, BGer-published) | `bge_egmr` | ~475 | 1974–present | bger.ch CLIR |
 | ECHR Switzerland (HUDOC) | `hudoc_ch` | 834 | 1959–present | HUDOC API |
-| ECtHR Chamber judgments | `ecthr_chamber` | 193 (growing) | 1959–present (FR; EN v2) | HUDOC API |
-| ECtHR Committee judgments | `ecthr_committee` | 30 (growing) | | HUDOC API |
-| ECtHR Grand Chamber | `ecthr_grand_chamber` | 13 (growing) | | HUDOC API |
+| ECtHR Chamber judgments | `ecthr_chamber` | 7,761 | 1960–present (FR or EN) | HUDOC API |
+| ECtHR Grand Chamber | `ecthr_grand_chamber` | 514 | 1960–present (FR or EN) | HUDOC API |
+| ECtHR Committee judgments | `ecthr_committee` | 0 — importance 4, out of scope | | HUDOC API |
 | Militärkassationsgericht (MKG) | `mkg` | 1,244 | 1915–2025 | oa.admin.ch + alexandria.ch |
 | Federal Patent Court (BPatGer) | `bpatger` | ~190 | 2012–present | bpatger.ch |
 | Competition Commission (WEKO) | `weko` | ~120 | 2009–present | weko.admin.ch |

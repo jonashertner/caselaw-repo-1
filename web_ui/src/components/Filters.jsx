@@ -46,6 +46,8 @@ export default function Filters({ filters, onChange }) {
             <option value="fr">Fran&ccedil;ais</option>
             <option value="it">Italiano</option>
             <option value="rm">Rumantsch</option>
+            {/* ECtHR judgments only — no Swiss case law is in English. */}
+            <option value="en">English (EGMR)</option>
           </select>
         </label>
       </div>
