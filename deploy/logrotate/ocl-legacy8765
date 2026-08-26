@@ -1,0 +1,17 @@
+# Instrumentation for the legacy cleartext port 8765 (2026-08-26).
+# 14 days: long enough to see a weekly-cadence client, short enough to match
+# the tier-2 posture. Carries no address and no query string.
+/var/log/nginx/legacy8765.log {
+    daily
+    rotate 14
+    maxage 14
+    missingok
+    notifempty
+    compress
+    delaycompress
+    create 0640 www-data adm
+    sharedscripts
+    postrotate
+        [ -f /var/run/nginx.pid ] && kill -USR1 `cat /var/run/nginx.pid`
+    endscript
+}

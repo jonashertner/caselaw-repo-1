@@ -419,6 +419,7 @@ server {
     listen [::]:8765;
 
     # ocl-privacy-analytics: tier1/tier2 also for legacy 8765
+    access_log /var/log/nginx/legacy8765.log legacy8765;
     access_log /var/log/nginx/tier1.log tier1;
     access_log /var/log/nginx/tier2.log tier2;
     access_log /var/log/nginx/tier3.log tier3;
