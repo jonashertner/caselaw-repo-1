@@ -101,7 +101,14 @@ class FRAnwaltsaufsichtScraper(BaseScraper):
 
     def _is_pdf_url(self, url: str) -> bool:
         path = urlparse(url).path.lower()
-        return path.endswith(".pdf")
+        # fr.ch serves the Commission-du-barreau decisions from extension-less
+        # Drupal document nodes (/document/446096 302s to a 182,892-byte
+        # application/pdf), so an endswith(".pdf") test rejected every real
+        # decision and the scraper reported 142 consecutive zero-yield runs.
+        # The domain filter in discover_new still drops the admin.ch LLCA
+        # statute; content-type is asserted in fetch_decision.
+        return (path.endswith(".pdf")
+                or re.fullmatch(r"/document/\d+", path) is not None)
 
     # ------------------------------------------------------------------
     # Discovery
@@ -170,6 +177,14 @@ class FRAnwaltsaufsichtScraper(BaseScraper):
 
         try:
             resp = self.get(url)
+            ctype = resp.headers.get("content-type", "")
+            if not ctype.startswith("application/pdf"):
+                # /document/<id> nodes are only PDFs by redirect; a node that
+                # resolves to HTML is a landing page, not a decision.
+                logger.info(
+                    f"[fr_anwaltsaufsicht] Skipping {slug}: content-type {ctype!r}"
+                )
+                return None
             full_text = _extract_pdf_text(resp.content)
 
             if not full_text or len(full_text.strip()) < 50:

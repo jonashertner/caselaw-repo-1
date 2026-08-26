@@ -25,7 +25,9 @@ class BEVerwaltungsgerichtScraper(TribunaBaseScraper):
     COURT_FILTER = "VG"  # Verwaltungsgericht
     LOCALE = "de"
     REQUEST_DELAY = 4.0  # Increased from 2.5 to avoid 503 rate limit
-    VERIFY_SSL = False  # SSL verification issues
+    # VERIFY_SSL removed 2026-08-26: www.vg-urteile.apps.be.ch verifies cleanly against
+    # the scraper CA bundle (deploy/certs). The old opt-out silently did
+    # nothing anyway once REQUESTS_CA_BUNDLE shipped — see base_scraper._build_session.
     SEARCH_FIELD_COUNT = 21  # New Tribuna version (47-param search)
 
     # Defeat the deep-offset under-fill: field[16]="YYYY" partitions the corpus

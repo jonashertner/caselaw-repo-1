@@ -214,3 +214,91 @@ def test_tunnel_dependent_sources_cover_proxied_courts():
 
     assert {"bger", "bge", "ju_gerichte", "ne_gerichte"} <= csf.TUNNEL_DEPENDENT_SOURCES
     assert csf.TUNNEL_DEPENDENT_SOURCES == ras.TUNNEL_DEPENDENT
+
+
+def _run_checker(tmp_path, health_file, alert_log, coverage_db):
+    return subprocess.run(
+        [
+            sys.executable, "scripts/check_scraper_freshness.py",
+            "--health-file", str(health_file),
+            "--alert-log", str(alert_log),
+            "--state-dir", str(tmp_path),
+            "--no-ntfy",
+        ],
+        cwd=Path(__file__).resolve().parent.parent,
+        env={**os.environ, "OCL_COVERAGE_DB": str(coverage_db)},
+        text=True, capture_output=True, check=False,
+    )
+
+
+def test_null_our_count_does_not_abort_the_health_block(tmp_path):
+    """Regression: a failed discovery stores our_count/duration_s as null.
+
+    `v.get("our_count", 0)` returns that None (the default only applies when the
+    KEY is absent), and `None > 1000` raised TypeError. That aborted the health
+    block before health_run_dt was assigned, which un-gated the STALE loop into
+    a 35-line alert storm — six nights in July 2026, each logged as
+    'CRITICAL: cannot parse scraper_health.json'.
+
+    The dangerous row is a SUCCESSFUL one carrying nulls: `success: false`
+    short-circuits the `and` chain and hides the bug.
+    """
+    coverage_db = tmp_path / "coverage.db"
+    health_file = tmp_path / "scraper_health.json"
+    alert_log = tmp_path / "alerts.log"
+    now = datetime.now(timezone.utc)
+
+    _write_snapshot_db(coverage_db, court="test_court",
+                       snapshot_date=now.date().isoformat())
+    _write_health(health_file, run_at=now, scrapers={
+        "test_court": {
+            "success": True,
+            "new_count": 0,
+            "our_count": None,      # <- the killer
+            "portal_count": None,
+            "duration_s": None,
+        }
+    })
+
+    result = _run_checker(tmp_path, health_file, alert_log, coverage_db)
+
+    assert "cannot parse scraper_health.json" not in result.stdout + result.stderr
+    assert "TypeError" not in result.stderr
+    assert "not supported between instances" not in result.stdout + result.stderr
+    assert result.returncode in (0, 1)
+
+
+def test_stall_history_survives_a_failed_night(tmp_path):
+    """A failed run carries no growth evidence — it must not reset the clock.
+
+    check_stalled_corpus rebuilt its state from scratch and skipped any court
+    that was absent or success:false, then overwrote the file with only the
+    survivors. bger failed all three runs on 2026-08-25 and its 98,532-decision
+    history collapsed to a single day, which also structurally prevents the
+    tunnel-dependent sources from ever reaching the 90-entry threshold.
+
+    Driven through the function's own state_path injection point: STALL_STATE_PATH
+    is a repo-relative constant with no CLI flag, so a subprocess test would
+    write into the real logs/ directory and assert nothing.
+    """
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+    from scripts.check_scraper_freshness import check_stalled_corpus
+
+    state = tmp_path / "scraper_stall_state.json"
+    state.write_text(json.dumps({
+        "bger": {"count": 98532, "days": ["2026-08-01", "2026-08-02"], "grew": True}
+    }))
+
+    # bger failed this run; a second court reported normally so the state file
+    # is definitely rewritten.
+    health = {"scrapers": {
+        "bger": {"success": False, "our_count": None},
+        "other_court": {"success": True, "our_count": 10},
+    }}
+
+    check_stalled_corpus(health, "2026-08-03", state_path=state)
+
+    after = json.loads(state.read_text())
+    assert "bger" in after, "a failed night wiped the court's stall history"
+    assert after["bger"]["days"] == ["2026-08-01", "2026-08-02"]
+    assert after["bger"]["count"] == 98532

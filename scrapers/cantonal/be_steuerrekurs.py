@@ -23,5 +23,7 @@ class BESteuerrekursScraper(TribunaBaseScraper):
     COURT_FILTER = "STRK"  # Steuerrekurskommission
     LOCALE = "de"
     REQUEST_DELAY = 2.5
-    VERIFY_SSL = False
+    # VERIFY_SSL removed 2026-08-26: www.strk-entscheide.apps.be.ch verifies cleanly against
+    # the scraper CA bundle (deploy/certs). The old opt-out silently did
+    # nothing anyway once REQUESTS_CA_BUNDLE shipped — see base_scraper._build_session.
     SEARCH_FIELD_COUNT = 21  # New Tribuna version (47-param search)

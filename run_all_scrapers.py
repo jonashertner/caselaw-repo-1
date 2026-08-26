@@ -370,7 +370,11 @@ def run_single_scraper(court: str, timeout: int) -> dict:
             "error_count": 0,
             "none_count": 0,
             "duration": duration,
-            "error": None,
+            # Not None: check_scraper_freshness renders `v.get("error") or
+            # "unknown"`, so a timeout used to alert as `FAIL <court>: unknown`
+            # (observed 2026-08-23 for ecthr) — the one failure mode whose cause
+            # is already known exactly.
+            "error": f"timed out after {duration:.0f}s (cap {timeout}s)",
             "note": None,
         }
     except Exception as e:

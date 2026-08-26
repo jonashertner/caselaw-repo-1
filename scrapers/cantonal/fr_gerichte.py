@@ -22,5 +22,7 @@ class FRGerichteScraper(TribunaBaseScraper):
     COURT_FILTER = "TC"  # Tribunal cantonal
     LOCALE = "fr"
     REQUEST_DELAY = 2.5
-    VERIFY_SSL = False  # Self-signed certificate
+    # VERIFY_SSL removed 2026-08-26: publicationtc.fr.ch verifies cleanly against
+    # the scraper CA bundle (deploy/certs). The old opt-out silently did
+    # nothing anyway once REQUESTS_CA_BUNDLE shipped — see base_scraper._build_session.
     SEARCH_FIELD_COUNT = 21  # New Tribuna version (47-param search)

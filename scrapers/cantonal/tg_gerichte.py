@@ -34,6 +34,7 @@ from datetime import date
 from typing import Iterator
 from urllib.parse import urljoin
 
+import requests
 from bs4 import BeautifulSoup
 
 from base_scraper import BaseScraper
@@ -260,12 +261,24 @@ class TGGerichteScraper(BaseScraper):
         url = f"{BASE_URL}/{section_path}/{series_slug}-{year}"
         try:
             r = self.get(url)
+        except requests.HTTPError as e:
+            # RBOG/TVR are ANNUAL volumes: the loop always probes a year that
+            # has not been published yet, and base_scraper.raise_for_status()
+            # turns that 404 into an exception. 632 of this log's 824 ERROR
+            # lines were this expected condition. It self-heals — rbog-2025
+            # 404'd nightly 02-23 -> 06-18, then the volume appeared and the
+            # same run ingested +81. Note the PRIOR year 404s for months too
+            # (rbog-2025 x126), so this is not keyed on "current year".
+            status = getattr(e.response, "status_code", None)
+            if status == 404:
+                logger.info(
+                    f"TG/{series_prefix}: volume {year} not published yet (404)")
+            else:
+                logger.error(
+                    f"TG/{series_prefix}: year page {year} returned {status}: {e}")
+            return
         except Exception as e:
             logger.error(f"TG/{series_prefix}: failed to fetch year page {year}: {e}")
-            return
-
-        if r.status_code != 200:
-            logger.debug(f"TG/{series_prefix}: year page {year} returned {r.status_code}")
             return
 
         soup = BeautifulSoup(r.text, "html.parser")

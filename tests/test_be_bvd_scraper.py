@@ -42,6 +42,11 @@ def test_be_bvd_config():
     assert s.TRIBUNA_PATH == "tribunavtplus"
     assert s.COURT_FILTER == "BVD"
     assert s.LOCALE == "de"
-    assert s.VERIFY_SSL is False
+    # VERIFY_SSL was removed 2026-08-26: bvd-entscheide.apps.be.ch verifies
+    # cleanly against the scraper CA bundle, and the opt-out had silently
+    # stopped working once REQUESTS_CA_BUNDLE shipped. Assert it stays gone —
+    # reinstating it would genuinely disable verification now that
+    # BaseScraper.get/post honour it.
+    assert getattr(s, "VERIFY_SSL", True) is not False
     # service URL composes as BASE_URL/TRIBUNA_PATH (base_tribuna convention)
     assert f"{s.BASE_URL}/{s.TRIBUNA_PATH}" == "https://www.bvd-entscheide.apps.be.ch/tribunavtplus"

@@ -38,5 +38,7 @@ class BEBvdScraper(TribunaBaseScraper):
     COURT_FILTER = "BVD"            # read verbatim from the live DLAConfig
     LOCALE = "de"
     REQUEST_DELAY = 4.0            # match the BE siblings; avoid 503 rate-limit
-    VERIFY_SSL = False             # apps.be.ch SSL-chain issues (same as BE siblings)
+    # VERIFY_SSL removed 2026-08-26: www.bvd-entscheide.apps.be.ch verifies cleanly against
+    # the scraper CA bundle (deploy/certs). The old opt-out silently did
+    # nothing anyway once REQUESTS_CA_BUNDLE shipped — see base_scraper._build_session.
     SEARCH_FIELD_COUNT = 20        # classic Tribuna (matches the WORKING be_zivilstraf/be_anwaltsaufsicht; nf=21 yielded a GWT IncompatibleRemoteServiceException on live validation 2026-06-17)

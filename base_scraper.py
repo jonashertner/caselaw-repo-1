@@ -287,7 +287,16 @@ class BaseScraper(ABC):
             session.proxies = {"http": proxy, "https": proxy}
             logger.info(f"[{self.court_code}] Using proxy: {_redact_proxy_url(proxy)}")
 
-        # SSL verification (can be disabled per scraper for self-signed certs)
+        # SSL verification (can be disabled per scraper for self-signed certs).
+        #
+        # NB: session.verify alone is NOT enough. requests promotes
+        # REQUESTS_CA_BUNDLE over it whenever the per-request verify is None
+        # (Session.merge_environment_settings), and merge_setting then returns
+        # the request-level value. When the CA-bundle drop-in shipped on
+        # 2026-08-25 that silently re-enabled verification for every scraper
+        # here, and fr_gerichte broke on its very next run. get()/post()
+        # therefore pass verify explicitly. verify=True is still promoted to
+        # the bundle, so scrapers that DO verify are unaffected.
         if hasattr(self, "VERIFY_SSL") and not self.VERIFY_SSL:
             session.verify = False
             import urllib3
@@ -317,6 +326,7 @@ class BaseScraper(ABC):
         """Rate-limited GET request."""
         self._rate_limit()
         kwargs.setdefault("timeout", self.TIMEOUT)
+        kwargs.setdefault("verify", self.session.verify)
         logger.debug(f"GET {url}")
         response = self.session.get(url, **kwargs)
         response.raise_for_status()
@@ -326,6 +336,7 @@ class BaseScraper(ABC):
         """Rate-limited POST request."""
         self._rate_limit()
         kwargs.setdefault("timeout", self.TIMEOUT)
+        kwargs.setdefault("verify", self.session.verify)
         logger.debug(f"POST {url}")
         response = self.session.post(url, **kwargs)
         response.raise_for_status()

@@ -306,8 +306,9 @@ def check_persistent_gaps(health: dict, today: str,
         if known and gap <= known["gap"]:
             continue                      # structural offset, not a shortfall
         seen = prev.get(court, {})
-        days = sorted(set(seen.get("days", [])) | {today})
-        cur[court] = {"gap": gap, "days": days[-10:]}
+        # d[:10] collapses legacy minute-resolution keys on first load.
+        days = sorted({d[:10] for d in seen.get("days", [])} | {today})
+        cur[court] = {"gap": gap, "days": days[-400:]}
         if len(days) >= GAP_PERSIST_DAYS:
             ours = row.get("our_count")
             portal = row.get("portal_count")
@@ -391,7 +392,7 @@ def check_stalled_corpus(health: dict, today: str,
             cur[court] = {"count": count, "days": [today],
                           "grew": grew or "count" in seen}
             continue
-        days = sorted(set(seen.get("days", [])) | {today})
+        days = sorted({d[:10] for d in seen.get("days", [])} | {today})
         cur[court] = {"count": count, "days": days[-120:], "grew": grew}
         limit = STALL_TIGHT_DAYS.get(court, STALL_DEFAULT_DAYS)
         if grew and len(days) >= limit:
@@ -399,6 +400,14 @@ def check_stalled_corpus(health: dict, today: str,
                 f"STALL {court}: Bestand seit {len(days)} Tagen unveraendert "
                 f"bei {count} Entscheiden trotz erfolgreicher Laeufe — "
                 f"Portal oder Discovery pruefen")
+    # A failed or absent run carries no growth evidence either way, so it must
+    # not reset the clock. Without this, one tunnel-down night wiped bger's
+    # entire history (observed 2026-08-25), and the five TUNNEL_DEPENDENT
+    # sources could never reach the 90-entry threshold at all.
+    # check_persistent_gaps deliberately does NOT do this: there, dropping a
+    # court whose gap closed is the correct behaviour.
+    for _k, _v in prev.items():
+        cur.setdefault(_k, _v)
     try:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(cur, indent=1, sort_keys=True))
@@ -568,7 +577,15 @@ def main():
 
     alerts: list[str] = []
     now = datetime.now(timezone.utc)
-    today = now.strftime("%Y-%m-%d %H:%M UTC")
+    # Date-only. Minute resolution made every RUN a distinct "day": three runs
+    # on 2026-08-25 counted as three, and "seit 11 Tagen" printed on 14
+    # consecutive alerts while the true age was 21. Both counters now run
+    # slower, so this can never manufacture an alert that was not already due.
+    today = now.strftime("%Y-%m-%d")
+    # Display/log stamp keeps minute resolution so scraper_alerts.log still
+    # distinguishes the 03:00, 07:55 and 08:36 runs of the same day. Only the
+    # day COUNTERS use the date-only `today` — that was the bug.
+    stamp = now.strftime("%Y-%m-%d %H:%M UTC")
 
     # ── 1. Read scraper_health.json ──
     health_path = Path(args.health_file)
@@ -639,10 +656,19 @@ def main():
             for k, v in scrapers.items():
                 if k in KNOWN_DEAD_SOURCES or k in SILENT_SKIP_EXEMPT_SOURCES:
                     continue
+                # isinstance, NOT `(... or 0)`: our_count/duration_s are stored
+                # as null for a failed discovery, so .get(k, 0) returns None and
+                # `None > 1000` raises TypeError. That aborted the whole health
+                # block before health_run_dt was assigned, un-gating the STALE
+                # loop into a 35-line storm — six nights in July 2026. The alert
+                # body also formats duration_s with :.0f, which `or 0` would not
+                # save. Matches the file's own idiom at :304.
                 if (v.get("success")
                         and v.get("new_count", 0) == 0
-                        and v.get("our_count", 0) > 1000  # large active corpus
-                        and v.get("duration_s", 0) < 30):
+                        and isinstance(v.get("our_count"), int)
+                        and v["our_count"] > 1000  # large active corpus
+                        and isinstance(v.get("duration_s"), (int, float))
+                        and v["duration_s"] < 30):
                     portal_n = v.get("portal_count")
                     our_n = v.get("our_count", 0)
                     if _portal_count_confirms_caught_up(portal_n, our_n):
@@ -699,7 +725,12 @@ def main():
             if last_dt < cutoff:
                 age_d = (now - last_dt).days
                 tag = "ES-only" if court in ENTSCHEIDSUCHE_ONLY else "direct"
-                alerts.append(f"STALE {court} ({tag}): last_scraped {last} ({age_d}d ago)")
+                # get_last_scraped() reads MAX(source_snapshots.snapshot_date),
+                # which only advances when a year's CONTENT changed — not when
+                # a run succeeded. Naming it "last_scraped" reported fr_gerichte
+                # as 33 days stale for a breakage that began that morning.
+                alerts.append(
+                    f"STALE {court} ({tag}): last content change {last} ({age_d}d ago)")
 
     # ── 3. ES cron health ──
     es_ok, es_msg = check_es_cron_health()
@@ -724,21 +755,21 @@ def main():
     log_path = Path(args.alert_log)
     log_path.parent.mkdir(parents=True, exist_ok=True)
     if alerts:
-        line_set = [f"{today}  {alert}" for alert in alerts]
+        line_set = [f"{stamp}  {alert}" for alert in alerts]
         with log_path.open("a") as f:
             for line in line_set:
                 f.write(line + "\n")
         if not args.quiet:
-            print(f"=== {len(alerts)} alert(s) at {today} ===")
+            print(f"=== {len(alerts)} alert(s) at {stamp} ===")
             for line in line_set:
                 print(line)
 
     if not args.no_ntfy:
-        verdict = maybe_dispatch_ntfy(alerts, today, Path(args.state_dir))
+        verdict = maybe_dispatch_ntfy(alerts, stamp, Path(args.state_dir))
         if not args.quiet:
             print(f"ntfy: {verdict}")
     elif not alerts and not args.quiet:
-        print(f"All checks passed at {today}")
+        print(f"All checks passed at {stamp}")
 
     # Always exit 0 on a successful run. The exit-1-on-alert semantics
     # were never wired to a notification path; the dispatch is now
