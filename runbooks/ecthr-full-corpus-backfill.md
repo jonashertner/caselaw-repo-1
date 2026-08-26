@@ -56,20 +56,27 @@ The backfill re-fetches everything, so discarding costs nothing but time.
   `opencaselaw-publish.service`. That is the gate's documented
   court-retirement escape hatch; unset it again straight afterwards.
 
-- **Confirm the delta and snapshot publishers are off, or that they honour
-  the licence carve-out.** `export_parquet.EXCLUDED_COURTS` keeps ECtHR text
-  out of the CC0 HuggingFace export, but `search_stack/publish_delta.py`
-  does not consult it: `snapshot_all_ids` and `build_sqlite_snapshot` take
-  every row. ECtHR full text has already reached the CC0-tagged repo through
-  that path. This backfill would multiply that by ~24×.
+- **HuggingFace publication of ECtHR text is an accepted decision, taken by
+  Jonas on 2026-08-26.** Recording the facts so the decision stays traceable:
+  `export_parquet.EXCLUDED_COURTS` keeps ECtHR out of the per-court parquets,
+  but two other paths do not consult it, and both are left as they are —
 
-  ```bash
-  systemctl show -p Environment opencaselaw-publish.service | tr ' ' '\n' | grep -i 'OCL_PUBLISH_DELTA\|OCL_PUBLISH_SNAPSHOT'
-  ```
+  * `search_stack/publish_delta.py` (`snapshot_all_ids`,
+    `build_sqlite_snapshot`). Because every ECtHR `decision_id` changes shape,
+    the id-set diff sees all 8,275 judgments as new and ships them, full text,
+    in one delta. Verified beforehand:
+    `artifacts/parquet/deltas/2026-08-25.parquet` already carries 350 ECtHR
+    rows, median 40,226 characters.
+  * `export_parquet.export_decision_structure` (`export_parquet.py:602`)
+    selects `FROM structure` with no court filter;
+    `structure/erwaegungen_paragraphs.parquet` holds ~47,801 paragraphs of
+    Strasbourg text and re-uploads every Sunday. Note this one shrinks as a
+    side effect of the structure gate below, since `ecthr_*` rows will stop
+    producing paragraphs.
 
-  If either is enabled, **fix the carve-out in `publish_delta.py` first** or
-  disable those steps for the cutover. This is a licensing precondition, not
-  a nice-to-have.
+  The dataset card still tells readers ECtHR material is excluded from the CC0
+  dedication. That statement and these two paths disagree; reconciling them is
+  part of the licence question Jonas has taken on, not a code precondition.
 
 - The scope change is deployed to the VPS. **The backfill runs the VPS's
   checkout**, so it must be deployed first — but stop the ECtHR timer before
@@ -270,6 +277,16 @@ expected here.
   sitemap on the next `seo_pages` run. No redirects are emitted. Lookups by
   bare application number still work — `mcp_server._lookup_ecthr_appno`
   resolves those against the new dockets — but the old id strings do not.
+- **No Sachverhalt / Erwägungen / Dispositiv, and no pinpoint citations.**
+  `search_stack/extract_decision_structure.py` is gated off the three
+  `ecthr_*` courts, because running Strasbourg judgments through Swiss German
+  patterns produced colliding paragraph numbers on the English half and, on
+  the French half, plausible-looking wrong pinpoints — `cite(pinpoint='3')`
+  over text that was the Court's §§ 174ff. `get_decision_structure` and
+  `find_relevant_erwaegung` therefore return nothing for these rows and
+  `cite()` offers no pinpoint. Full text, regeste, search and citation strings
+  are unaffected. A real ECtHR extractor keyed on § numbering is the
+  follow-up; the empirical groundwork is in the gate's own comment.
 - **Semantic rescue is language-partitioned** (`vec_decisions.language`), so
   the 3,949 English judgments are unreachable by DE/FR/IT semantic queries.
   FTS5 keyword search reaches them, and the regeste now carries the German
@@ -278,8 +295,29 @@ expected here.
 
 ## Follow-ups this backfill does not do
 
-- **`search_stack/publish_delta.py` does not honour `EXCLUDED_COURTS`** — see
-  Preconditions. This is a live licensing defect independent of this change.
+- **`attest_response` cannot see Strasbourg citations.** The rail the server's
+  own prompt declares mandatory is blind to every EGMR / CourEDH / CorteEDU
+  form: `_parse_citations_in_text` (mcp_server.py:14533) knows only the six
+  Swiss ones. Tested against production — a fabricated *"EGMR ERFUNDEN gegen
+  NIRGENDWO, Nr. 99999/99 vom 1. Januar 2099, § 412"* passed unflagged while
+  the fake BGE in the same sentence was caught. Doing this needs three things
+  together, or it makes matters worse by flagging real citations as
+  unsupported: a pattern capturing the application number and the §; the
+  indexed application-number lookup wired into `_resolve_decision_id_strict`
+  as well as `_resolve_decision_id`; and § pinpoints treated as
+  not-verifiable rather than wrong, since these rows now carry no structure.
+- **An ECtHR structure extractor.** Groundwork from a 28-judgment stratified
+  sample: the paragraph number sits alone on its own line (`41.\n`), sometimes
+  with the dot on the following line; PROCEDURE / THE FACTS / THE LAW / FOR
+  THESE REASONS (EN FAIT / EN DROIT / PAR CES MOTIFS) are reliable from about
+  1998 on and vary before that (`AS TO THE FACTS`, lowercase
+  `For these reasons`). A conservative marker-plus-monotonic-run parser
+  accepted 15 of 28 with one false accept covering 8% of its block, which is
+  why the current change gates rather than guesses.
+- **Audit `hudoc_ch` structure.** Those rows are raw Strasbourg text but in
+  DE/FR/IT, so they never hit the language fallback that corrupted the
+  `ecthr_*` rows. Whether the Swiss markers mis-anchor on them anyway has not
+  been measured.
 - **`scl` and `extractedappno`** in the HUDOC listing give ECtHR-to-ECtHR
   citation edges as structured data (present on 99% of rows). The citation
   graph currently gets nothing from these judgments, since

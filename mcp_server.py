@@ -1367,6 +1367,10 @@ COURT_DISPLAY_NAMES: dict[str, str] = {
     "bge_historical": "Bundesgericht (historisch)",
     "bvger": "Bundesverwaltungsgericht", "bstger": "Bundesstrafgericht",
     "bpatger": "Bundespatentgericht", "bge_egmr": "EGMR (Schweiz)",
+    "hudoc_ch": "EGMR (Schweiz, HUDOC)",
+    "ecthr_chamber": "EGMR (Kammer)",
+    "ecthr_grand_chamber": "EGMR (Grosse Kammer)",
+    "ecthr_committee": "EGMR (Ausschuss)",
     "ch_bundesrat": "Bundesrat", "ch_vb": "Bundesverwaltung",
     "finma": "FINMA", "finma_versicherungsrecht": "FINMA Versicherungsrecht",
     "weko": "WEKO", "edoeb": "EDÖB", "ubi": "UBI",
@@ -1405,6 +1409,12 @@ COURT_LEVELS: dict[str, str] = {
     "bge_historical": "federal_supreme",
     "bvger": "federal_appellate", "bstger": "federal_appellate",
     "bpatger": "federal_appellate", "bge_egmr": "international",
+    # Without these three the default kicks in and Strasbourg judgments are
+    # served as court_level "cantonal".
+    "hudoc_ch": "international",
+    "ecthr_chamber": "international",
+    "ecthr_grand_chamber": "international",
+    "ecthr_committee": "international",
     "ch_bundesrat": "federal_executive", "ch_vb": "federal_executive",
     "finma": "regulatory", "finma_versicherungsrecht": "regulatory",
     "weko": "regulatory", "edoeb": "regulatory", "ubi": "regulatory",

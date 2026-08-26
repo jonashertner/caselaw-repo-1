@@ -308,8 +308,68 @@ def _split_dispositiv_orders(disp_text: str) -> list[str]:
     return items
 
 
+# Strasbourg judgments are not Swiss decisions and must never be run through
+# these patterns.
+#
+# The `lang not in DISPOSITIV_PATTERNS -> lang = "de"` fallback below was
+# written when every decision in the corpus was DE/FR/IT. An ECtHR judgment
+# reaching it is parsed with SWISS GERMAN markers, and the result is not empty
+# — it is wrong. Measured 2026-08-26 on production rows:
+#
+#   * English judgments (48% of the ECtHR corpus) yield no Sachverhalt, no
+#     Dispositiv, and an Erwägungen block whose paragraph numbers COLLIDE —
+#     e_numbers ['1','1','2','2'], where one '2' is the Court's § 2 and the
+#     other an operative order. `erwaegungen_paragraph` is keyed
+#     (decision_id, e_number), so one of each pair is silently overwritten.
+#   * French ones fail worse, because they look right:
+#     cite('ecthr_chamber_15783_21', pinpoint='3') returned
+#     "EGMR A.R.E. c. GRÈCE ... § 3" over text that is the Court's §§ 174ff.
+#     A correctly-formatted citation string pointing at the wrong paragraph
+#     is precisely what invariant R1/R2 exists to prevent.
+#
+# Returning an empty structure is honest degradation: get_decision_structure
+# and find_relevant_erwaegung report nothing for these rows and cite() offers
+# no pinpoint, while full text, regeste, search and citation strings are
+# unaffected.
+#
+# A real ECtHR extractor is a separate piece of work, not a pattern to bolt on
+# here. Strasbourg structure is genuinely different — PROCEDURE / THE FACTS /
+# THE LAW / FOR THESE REASONS (EN FAIT / EN DROIT / PAR CES MOTIFS), with
+# sequential § numbering that runs across the whole judgment rather than the
+# Swiss 1., 1.1, 1.1.2 hierarchy. Empirically, on a 28-judgment stratified
+# sample: the paragraph number sits alone on its own line ("41.\n"), sometimes
+# with the dot on the following line; the markers are reliable from ~1998 on
+# and vary before that ("AS TO THE FACTS", lowercase "For these reasons"); and
+# a conservative marker+monotonic-run parser accepted only 15 of 28, with one
+# false accept covering 8% of its block. That last number is why this is a
+# gate and not a heuristic.
+# Deliberately only the three direct-from-HUDOC courts.
+#
+# `bge_egmr` is NOT here: those are the German and French translations the
+# Federal Supreme Court publishes in the BGE, so they carry Swiss BGE
+# structure (Regeste, Erwägungen, hierarchical 1. / 1.1 numbering) and this
+# extractor is correct for them. Adding them would delete 487 rows of good
+# structure to fix a problem they do not have.
+#
+# `hudoc_ch` is not here either, for a narrower reason: its rows are raw
+# Strasbourg text, so the same doubt applies — but they are DE/FR/IT, so they
+# never hit the language fallback that causes the corruption above, and their
+# current extraction has not been measured. Auditing them is a follow-up;
+# silently dropping their structure on an unverified suspicion is not.
+_ECTHR_COURT_PREFIXES = (
+    "ecthr_chamber_", "ecthr_committee_", "ecthr_grand_chamber_",
+)
+
+
+def is_ecthr_decision(decision_id: str) -> bool:
+    """True for direct-from-HUDOC rows, which this extractor must not touch."""
+    return (decision_id or "").startswith(_ECTHR_COURT_PREFIXES)
+
+
 def extract(full_text: str, language: str = "de", decision_id: str = "") -> DecisionStructure:
     out = DecisionStructure(decision_id=decision_id, language=language)
+    if is_ecthr_decision(decision_id):
+        return out
     lang = (language or "de").lower()
     if lang not in DISPOSITIV_PATTERNS:
         lang = "de"

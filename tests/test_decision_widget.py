@@ -73,9 +73,13 @@ def test_payload_citations_come_from_the_builder():
 
 def test_ecthr_rows_flag_their_level_and_carry_attribution():
     p = mcp_server._decision_hits_structured(rows(), "EMRK", "de")
-    # COURT_LEVELS has no ECtHR entry and defaults to "cantonal"; the widget
-    # level must not inherit that, or Strasbourg renders as a cantonal court.
-    assert mcp_server._get_court_level("ecthr_chamber") == "cantonal"
+    # The corpus taxonomy now names Strasbourg explicitly. It used to fall
+    # through COURT_LEVELS' cantonal default, and this test pinned that
+    # default as the premise for the widget's own override — the override is
+    # still what produces the renderer's 3-value `level`, but it is no longer
+    # compensating for a wrong court_level underneath it.
+    assert mcp_server._get_court_level("ecthr_chamber") == "international"
+    assert mcp_server._get_court_level("zh_obergericht") == "cantonal"
     assert p["decisions"][1]["level"] == "ecthr"
     assert p["attribution"] == mcp_server._ECHR_ATTRIBUTION
 

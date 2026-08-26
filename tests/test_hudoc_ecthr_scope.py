@@ -644,3 +644,94 @@ def test_ecthr_is_not_in_the_nightly_monolithic_scrape():
     from run_all_scrapers import SKIP_BY_DEFAULT
 
     assert "ecthr" in SKIP_BY_DEFAULT
+
+
+# ============ the Swiss structure extractor must not touch Strasbourg =======
+#
+# extract_decision_structure.extract() fell back to SWISS GERMAN patterns for
+# any language outside {de, fr, it}. An ECtHR judgment run through it does not
+# come out empty — it comes out wrong. Measured on production 2026-08-26:
+# English judgments yielded colliding e_numbers ['1','1','2','2'] (and
+# erwaegungen_paragraph is keyed (decision_id, e_number), so one of each pair
+# is silently overwritten), and cite('ecthr_chamber_15783_21', pinpoint='3')
+# returned "§ 3" over text that is the Court's §§ 174ff.
+
+
+def test_strasbourg_rows_get_no_structure_rather_than_wrong_structure():
+    from search_stack.extract_decision_structure import extract
+
+    # Swiss markers embedded in a text that is nominally an ECtHR judgment:
+    # the extractor must refuse it on the court, not on the content.
+    bait = (
+        "THE LAW\n1.\nThe applicant complained.\n2.\nThe Court finds.\n"
+        "Demnach erkennt das Bundesgericht:\n1. Die Beschwerde wird abgewiesen.\n"
+    )
+    for did in ("ecthr_chamber_47358_20_20220830",
+                "ecthr_grand_chamber_1_20200101",
+                "ecthr_committee_1_20200101"):
+        s = extract(bait, "en", did)
+        assert s.erwaegungen is None, did
+        assert s.dispositiv is None, did
+        assert s.erwaegungen_paragraphs == [], did
+        assert s.sachverhalt is None, did
+
+
+def test_the_gate_is_keyed_on_the_court_not_the_language():
+    """An English judgment is the obvious case, but the French ones fail
+    worse — they hit the marker patterns rather than the language fallback
+    and produce plausible-looking wrong pinpoints."""
+    from search_stack.extract_decision_structure import extract
+
+    for lang in ("en", "fr", "de", "it", ""):
+        s = extract("EN DROIT\n40.\nLa Cour rappelle.\n", lang,
+                    "ecthr_chamber_47358_20_20220830")
+        assert s.erwaegungen_paragraphs == [], lang
+
+
+def test_bge_egmr_and_hudoc_ch_keep_their_structure():
+    """bge_egmr rows are the Federal Supreme Court's own BGE-published
+    translations and carry Swiss BGE structure, so the extractor is correct
+    for them. Gating them would delete good structure to fix a problem they
+    do not have."""
+    from search_stack.extract_decision_structure import is_ecthr_decision
+
+    assert not is_ecthr_decision("bge_egmr_20201020_78630_12")
+    assert not is_ecthr_decision("hudoc_ch_16279_90")
+    assert not is_ecthr_decision("bger_6B_1234_2025")
+    for did in ("ecthr_chamber_1_2", "ecthr_committee_1_2",
+                "ecthr_grand_chamber_1_2"):
+        assert is_ecthr_decision(did), did
+
+
+def test_swiss_decisions_are_completely_unaffected():
+    from search_stack.extract_decision_structure import extract
+
+    swiss = ("Erwägungen:\n1.\nDie Beschwerde ist zulässig.\n"
+             "2.\nSie ist unbegründet.\n"
+             "Demnach erkennt das Bundesgericht:\n"
+             "1. Die Beschwerde wird abgewiesen.\n")
+    s = extract(swiss, "de", "bger_6B_1234_2025")
+    assert s.dispositiv, "the Swiss path must still extract a Dispositiv"
+
+
+# ---- Strasbourg judgments are not cantonal ----
+
+
+def test_ecthr_courts_have_a_display_name_and_an_international_level():
+    """Without these the default applies and Strasbourg judgments are served
+    as court_level 'cantonal' under the name 'Ecthr Chamber'."""
+    import mcp_server as m
+
+    for court in ("ecthr_chamber", "ecthr_grand_chamber", "ecthr_committee",
+                  "hudoc_ch", "bge_egmr"):
+        assert court in m.COURT_DISPLAY_NAMES, court
+        assert "EGMR" in m.COURT_DISPLAY_NAMES[court], court
+        assert m.COURT_LEVELS.get(court) == "international", court
+
+
+def test_swiss_court_levels_are_unchanged():
+    import mcp_server as m
+
+    assert m.COURT_LEVELS.get("bger") == "federal_supreme"
+    assert m.COURT_LEVELS.get("bvger") == "federal_appellate"
+    assert m.COURT_LEVELS.get("zh_obergericht") is None  # cantonal default
