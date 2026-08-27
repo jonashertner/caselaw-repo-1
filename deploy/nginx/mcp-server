@@ -415,207 +415,47 @@ server {
 
 # ── Legacy port 8765 (keep for backward compat, will deprecate) ─
 server {
+    # ── Legacy port 8765 — RETIRED 2026-08-27 ──────────────────────────
+    #
+    # This was the MCP server's own default listening port (mcp_server.py
+    # --port), kept as a compatibility listener from before nginx fronted
+    # everything on 443, and labelled "will deprecate" ever since.
+    #
+    # It proxied the FULL MCP surface — /, /sse, /mcp, /messages/, /api/ —
+    # over plain HTTP, so tool arguments crossed the public internet in
+    # cleartext, and responses had no integrity protection at all: an on-path
+    # attacker could rewrite a returned Erwaegung or citation string, which
+    # defeats cite()/attest_response/the Merkle roots, since all of them
+    # travel over the same channel they are meant to protect.
+    #
+    # It also lacked the 443 block's protections: 0 deny rules vs 2, no bulk
+    # export budget vs 7 directives, 6 limit_req zones vs 9, no scanner
+    # blocklist. The export-harvesting fleet was metered on 443 and unmetered
+    # here.
+    #
+    # Instrumented 2026-08-26 (log_format legacy8765). In the first 12 hours:
+    # 6 real POST /mcp calls from two automated clients (python-requests/2.31,
+    # aiohttp/3.14.1) and 2 hits from ModatScanner — i.e. it was in live use
+    # AND already indexed by an internet-wide scanner.
+    #
+    # Nothing user-facing ever pointed here: opencaselaw.ch #connect, the
+    # /mcp/ guide, llms.txt and README all publish the bare host
+    # mcp.opencaselaw.ch, which every client resolves to https/443. The only
+    # mention anywhere was docs/ops/vps-handover.md.
+    #
+    # Left listening, rather than firewalled, so the two clients get an
+    # actionable 410 instead of a hanging socket, and so we keep seeing who
+    # knocks. Nothing is proxied: no request reaches a worker, no data is
+    # returned. Drop it at the firewall once the log is quiet.
     listen 8765;
     listen [::]:8765;
 
-    # ocl-privacy-analytics: tier1/tier2 also for legacy 8765
     access_log /var/log/nginx/legacy8765.log legacy8765;
-    access_log /var/log/nginx/tier1.log tier1;
-    access_log /var/log/nginx/tier2.log tier2;
-    access_log /var/log/nginx/tier3.log tier3;
-    access_log syslog:server=127.0.0.1:5141,tag=ocluniq,nohostname uniq;
 
-    proxy_buffering off;
-    proxy_cache off;
-    proxy_read_timeout 86400s;
-    proxy_send_timeout 86400s;
-
-    location /dev {
-        proxy_pass http://mcp_workers_api;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-    }
-
-    location /metrics {
-        proxy_pass http://mcp_workers_api;
-    }
-
-
-    location /health {
-
-
-        limit_req zone=mcp_api burst=50 nodelay;
-
-
-        proxy_pass http://mcp_workers_api;
-
-
-        proxy_http_version 1.1;
-
-
-        proxy_set_header Host $host;
-
-
-        proxy_set_header X-Real-IP $remote_addr;
-
-
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-
-
-    }
-
-
-
-    # SEO pages: decision pages, sitemaps, robots
-    # Redirect old bge_historical URLs to fused bge IDs
-    location ~ ^/entscheid/bge_historical_(.+)$ {
-        return 301 /entscheid/bge_$1;
-    }
-
-    location /entscheid/ {
-        proxy_pass http://mcp_workers_api;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    }
-
-    location /sitemap {
-        proxy_pass http://mcp_workers_api;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
-
-    location = /robots.txt {
-        proxy_pass http://mcp_workers_api;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
-
-    location = /llms.txt {
-        proxy_pass http://mcp_workers_api;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
-
-    location = /google-verify {
-        proxy_pass http://mcp_workers_api;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
-
-    location /api/ {
-        add_header Access-Control-Allow-Origin "*" always;
-        add_header Access-Control-Expose-Headers "*" always;
-
-        if ($request_method = OPTIONS) {
-            add_header Access-Control-Allow-Origin "*" always;
-            add_header Access-Control-Allow-Methods "GET, POST, DELETE, OPTIONS" always;
-            add_header Access-Control-Allow-Headers "Content-Type, Authorization, Mcp-Session-Id, Accept, X-Install-Cohort, X-Client" always;
-            add_header Access-Control-Max-Age 600 always;
-            add_header Content-Length 0 always;
-            return 204;
-        }
-        limit_req zone=mcp_api burst=50 nodelay;
-        # Strip CORS headers emitted by the FastAPI backend so nginx is
-        # the single source of CORS. Without this, browsers see two
-        # `Access-Control-Allow-Origin` values and reject the response
-        # (issue first hit by the Word add-in on 2026-04-22).
-        proxy_hide_header Access-Control-Allow-Origin;
-        proxy_hide_header Access-Control-Allow-Methods;
-        proxy_hide_header Access-Control-Allow-Headers;
-        proxy_hide_header Access-Control-Expose-Headers;
-        proxy_hide_header Access-Control-Max-Age;
-        proxy_pass http://mcp_workers_api;
-        # Fail fast on the API: nothing legitimate on /api runs 60s+ now that
-        # queries are bounded server-side; hanging connectors got 86400s before.
-        proxy_read_timeout 60s;
-        proxy_send_timeout 60s;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    }
-
-    location = / {
-        add_header Access-Control-Allow-Origin "*" always;
-        add_header Access-Control-Expose-Headers "*" always;
-        limit_req zone=mcp_sse burst=50 nodelay;
-        proxy_pass http://mcp_workers;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header Connection "";
-        proxy_set_header Cache-Control no-cache;
-        proxy_set_header X-Accel-Buffering no;
-    }
-
-    location /sse {
-        if ($request_method = OPTIONS) {
-            add_header Access-Control-Allow-Origin "*" always;
-            add_header Access-Control-Allow-Methods "GET, POST, DELETE, OPTIONS" always;
-            add_header Access-Control-Allow-Headers "Content-Type, Authorization, Mcp-Session-Id, Accept, X-Install-Cohort, X-Client" always;
-            add_header Access-Control-Max-Age 600 always;
-            add_header Content-Length 0 always;
-            return 204;
-        }
-        add_header Access-Control-Allow-Origin "*" always;
-        add_header Access-Control-Expose-Headers "*" always;
-        limit_req zone=mcp_sse burst=50 nodelay;
-        proxy_pass http://mcp_workers;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header Connection "";
-        proxy_set_header Cache-Control no-cache;
-        proxy_set_header X-Accel-Buffering no;
-    }
-    location /mcp {
-        if ($request_method = OPTIONS) {
-            add_header Access-Control-Allow-Origin "*" always;
-            add_header Access-Control-Allow-Methods "GET, POST, DELETE, OPTIONS" always;
-            add_header Access-Control-Allow-Headers "Content-Type, Authorization, Mcp-Session-Id, Accept, X-Install-Cohort, X-Client" always;
-            add_header Access-Control-Max-Age 600 always;
-            add_header Content-Length 0 always;
-            return 204;
-        }
-        add_header Access-Control-Allow-Origin "*" always;
-        add_header Access-Control-Expose-Headers "*" always;
-        limit_req zone=mcp_sse burst=50 nodelay;
-        proxy_pass http://mcp_workers;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header Connection "";
-        proxy_set_header Cache-Control no-cache;
-        proxy_set_header X-Accel-Buffering no;
-        proxy_read_timeout 120s;
-    }
-
-    location /messages/ {
-        if ($request_method = OPTIONS) {
-            add_header Access-Control-Allow-Origin "*" always;
-            add_header Access-Control-Allow-Methods "GET, POST, DELETE, OPTIONS" always;
-            add_header Access-Control-Allow-Headers "Content-Type, Authorization, Mcp-Session-Id, Accept, X-Install-Cohort, X-Client" always;
-            add_header Access-Control-Max-Age 600 always;
-            add_header Content-Length 0 always;
-            return 204;
-        }
-        add_header Access-Control-Allow-Origin "*" always;
-        add_header Access-Control-Expose-Headers "*" always;
-        limit_req zone=mcp_api burst=50 nodelay;
-        proxy_pass http://mcp_workers;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header Connection "";
+    location / {
+        default_type text/plain;
+        add_header Link "<https://mcp.opencaselaw.ch>; rel=\"successor-version\"" always;
+        add_header X-OpenCaseLaw-Contact "team@jonashertner.com" always;
+        return 410 "Gone. This cleartext port is retired: it carried MCP traffic without TLS.\nUse https://mcp.opencaselaw.ch (port 443) - same endpoint, same tools.\nSee https://opencaselaw.ch/#connect\n";
     }
 }
