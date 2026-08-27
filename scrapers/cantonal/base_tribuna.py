@@ -350,7 +350,9 @@ class TribunaBaseScraper(BaseScraper):
         """Parse GWT-RPC search response.
 
         Returns (total_count, list_of_stubs).
-        Each stub has: doc_id, docket_number, decision_date, enc_path, title.
+        Each stub has: docket_number, decision_date, enc_path, title.
+        (doc_id was dropped 2026-08-27 — optional upstream, never read,
+        and gating on it silently discarded rows. See GitHub #68.)
         """
         if text.startswith("//EX"):
             # GWT-RPC server-side exception (typically
@@ -377,55 +379,91 @@ class TribunaBaseScraper(BaseScraper):
         m = _RE_TOTAL.match(text)
         total = int(m.group(1)) if m else 0
 
-        # Extract all strings from the response
+        # Extract all strings from the response, KEEPING their positions —
+        # the row a value belongs to is determined by where it sits, not by
+        # how many values of its kind came before it.
         all_strings = re.findall(r'"([^"]*)"', text)
 
-        # Group fields into decisions
-        # Each decision in the response has: doc_id (32-char hex), docket_number,
-        # decision_date, enc_path (long hex), title/subject, court, etc.
+        # Group fields into decisions.
+        #
+        # Response layout, confirmed against a live be_verwaltungsgericht
+        # page on 2026-08-27: each row is doc_id -> docket -> date(s) ->
+        # enc_path, and the doc_id PRECEDES its own docket.
+        #
+        # Two defects came from zipping parallel lists by ordinal:
+        #
+        # 1. Rows vanished. The loop ran `min(len(doc_ids), len(dockets))`,
+        #    but doc_id is an OPTIONAL per-row field that older records
+        #    mostly lack — a 2011 window returns 12 dockets and 2 doc_ids,
+        #    so ten real decisions were silently dropped. Per-year recovery
+        #    tracked the doc_id adoption curve exactly (2017: 987/988,
+        #    2013: 82/674, 2011: 2/12), which is GitHub #68. doc_id was
+        #    written into the stub and never read again by any Tribuna
+        #    scraper, so it is gone entirely now. (bvger/bstger have their
+        #    own doc_id, but they extend BaseScraper, not this class.)
+        #
+        # 2. Dates shifted. A row can emit more than one date — the
+        #    Rechtskraft sentinel "0000-00-00" and a later createDate — so
+        #    `dates_list[i]` slid every subsequent row along. Measured on
+        #    that same live page: 20 dockets, 22 dates, and 19 of the 20
+        #    rows carried another row's date. That is the source of the
+        #    "No date for" warnings and the null decision_date rows.
+        #
+        # Both are fixed by anchoring on the docket: row i owns everything
+        # from its own docket up to the next docket. The preceding doc_id
+        # falls outside the span, which is exactly why a forward span must
+        # not be used to recover it.
         decisions = []
-        doc_ids = []
-        dockets = []
-        dates_list = []
-        enc_paths = []
-        titles = []
-
-        for s in all_strings:
+        kinds: list[tuple[int, str, str]] = []
+        for idx, s in enumerate(all_strings):
             if _RE_DOC_ID.match(s):
-                doc_ids.append(s)
+                kinds.append((idx, "doc_id", s))
             elif _RE_DOCKET.match(s):
-                dockets.append(s)
+                kinds.append((idx, "docket", s))
             elif _RE_DATE.match(s):
-                dates_list.append(s)
+                kinds.append((idx, "date", s))
             elif _RE_ENC_PATH.match(s):
-                enc_paths.append(s)
+                kinds.append((idx, "enc_path", s))
 
         # Find titles: strings that are >10 chars, not hex, not dates, not types
         skip_prefixes = ("java.", "tribuna", "[B/", "[L", "com.", "viewtype",
                          "reportpath", "reportexport", "reporttitle", "reportname")
-        for s in all_strings:
+        for idx, s in enumerate(all_strings):
             if (len(s) > 10
                 and not _RE_DOC_ID.match(s)
                 and not _RE_DATE.match(s)
                 and not _RE_DOCKET.match(s)
                 and not _RE_ENC_PATH.match(s)
                 and not _RE_HEX.match(s)
+                # An all-digit run is an internal row id, not a subject line.
+                # Measured 2026-08-27: the span for be_verwaltungsgericht
+                # "200 2011 322" holds '113347081404410' immediately before
+                # the real title 'Einspracheentscheid vom 22. August 2011',
+                # so a first-match rule picks the id without this.
+                and not s.isdigit()
                 and not any(s.startswith(p) for p in skip_prefixes)):
-                titles.append(s)
+                kinds.append((idx, "title", s))
+        kinds.sort(key=lambda t: t[0])
 
-        # Match doc_ids with dockets and dates by position proximity
-        # The response lists entries sequentially — doc_ids, dockets, dates appear
-        # in the same order and can be zipped
-        n = min(len(doc_ids), len(dockets))
-        for i in range(n):
-            stub = {
-                "doc_id": doc_ids[i],
-                "docket_number": dockets[i],
-                "decision_date": dates_list[i] if i < len(dates_list) else "",
-                "enc_path": enc_paths[i] if i < len(enc_paths) else "",
-                "title": titles[i] if i < len(titles) else "",
-            }
-            decisions.append(stub)
+        # One row per docket. Row i spans [its own index, next docket's index).
+        docket_positions = [i for i, (_, k, _) in enumerate(kinds) if k == "docket"]
+        for n, ki in enumerate(docket_positions):
+            end = docket_positions[n + 1] if n + 1 < len(docket_positions) else len(kinds)
+            span = kinds[ki:end]
+
+            def _first(kind: str, skip: set[str] = frozenset()) -> str:
+                for _, k, v in span:
+                    if k == kind and v not in skip:
+                        return v
+                return ""
+
+            decisions.append({
+                "docket_number": kinds[ki][2],
+                # "0000-00-00" is the Rechtskraft sentinel, not a date.
+                "decision_date": _first("date", {"0000-00-00"}),
+                "enc_path": _first("enc_path"),
+                "title": _first("title"),
+            })
 
         return total, decisions
 

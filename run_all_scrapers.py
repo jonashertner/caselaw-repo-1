@@ -67,6 +67,14 @@ SLOW_SCRAPERS = {
     "zh_gerichte": 10800,   # 3h — 34k decisions
     "zh_sozialversicherungsgericht": 10800,  # 3h — 34k decisions
     "finma_versicherungsrecht": 14400,  # 4h — 2.6k PDFs, first run downloads all
+    # 4h — GitHub #68. The docket-span fix in base_tribuna makes discovery
+    # return the rows the old ordinal zip dropped, so the first runs walk
+    # ~580 pages and fetch a ~2,159-decision backlog at REQUEST_DELAY=4.0.
+    # That is ~3h against the previous 7200s default, which would SIGKILL it
+    # mid-catch-up and report red for several nights. Progress survives a
+    # kill — run_scraper appends and flushes per decision, marking state only
+    # after the durable write — but the cap has to allow the drain.
+    "be_verwaltungsgericht": 14400,
 }
 
 # Scrapers to skip by default (broken, redundant, or handled separately)

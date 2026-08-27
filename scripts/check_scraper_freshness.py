@@ -286,12 +286,16 @@ KNOWN_GAP_OFFSETS: dict[str, dict] = {
 # which is how an operator learns to ignore the whole channel.
 KNOWN_GAP_REMEDIES: dict[str, str] = {
     "be_verwaltungsgericht": (
-        "ein Rescan hilft NICHT (2026-08-25 verifiziert: voller RESCAN_ALL, "
-        "33.5 min, 0 Fehler, +0 neu). Die Trefferquote bricht ab Jahrgang 2013 "
-        "ein — 2013: 82/674, 2012: 53/130, 2011: 2/12 — waehrend 2017-2024 bei "
-        "97-99 % liegen. Das Portal liefert seine aelteren Datensaetze ueber "
-        "den aktuellen GWT-loadTable-Pfad nicht aus; noetig ist ein "
-        "Scraper-Fix (GitHub #68), kein Nachlauf."
+        "ein Rescan half NICHT, solange der Parser defekt war (2026-08-25: "
+        "voller RESCAN_ALL, 33.5 min, 0 Fehler, +0 neu). URSACHE GEFUNDEN "
+        "2026-08-27 (GitHub #68): nicht das Portal, sondern base_tribuna. Der "
+        "Parser zippte doc_id und Geschaeftsnummer nach Position und brach bei "
+        "min(len(doc_ids), len(dockets)) ab — doc_id ist aber optional und "
+        "fehlt bei aelteren Datensaetzen. Die Trefferquote folgte exakt der "
+        "doc_id-Einfuehrungskurve (2013: 82/674, 2012: 53/130, 2011: 2/12; "
+        "2017-2024: 97-99 %). Behoben durch docket-verankerte Spans. Der "
+        "Rueckstand wird ueber die naechsten Laeufe abgebaut (Timeout auf 4h "
+        "erhoeht); diese Meldung verschwindet von selbst), kein Nachlauf."
     ),
 }
 
