@@ -134,8 +134,25 @@ def main() -> int:
     p.add_argument(
         "--in-place",
         action="store_true",
-        help="Swap incremental outputs into the live DBs. Default is "
-             "shadow mode (sibling files only).",
+        help="Swap BOTH incremental outputs into the live DBs. Shorthand for "
+             "--in-place-graph --in-place-structure. Default is shadow mode "
+             "(sibling files only).",
+    )
+    # The two pairs are independent and have never been equally ready: the
+    # reference_graph pair went green 2026-08-24, while decision_structure has
+    # never passed once. A single flag forced the healthy half to wait for the
+    # sick one — worth ~1h50m per night. Splitting them lets each cut over on
+    # its own evidence, which is also why publish_drift_check.py now counts a
+    # streak per pair rather than one run-level boolean.
+    p.add_argument(
+        "--in-place-graph",
+        action="store_true",
+        help="Swap only the reference_graph output into the live DB.",
+    )
+    p.add_argument(
+        "--in-place-structure",
+        action="store_true",
+        help="Swap only the decision_structure output into the live DB.",
     )
     p.add_argument(
         "--skip-quick-publish",
@@ -166,13 +183,27 @@ def main() -> int:
     )
     p.add_argument("-v", "--verbose", action="store_true")
     args = p.parse_args()
+    # --in-place stays the both-pairs shorthand so existing invocations and
+    # the runbook keep working unchanged.
+    in_place_graph = args.in_place or args.in_place_graph
+    in_place_structure = args.in_place or args.in_place_structure
+    any_in_place = in_place_graph or in_place_structure
 
     logging.basicConfig(
         level=logging.DEBUG if args.verbose else logging.INFO,
         format="%(asctime)s %(name)s %(levelname)s %(message)s",
     )
 
-    mode = "in-place" if args.in_place else "shadow"
+    if in_place_graph and in_place_structure:
+        mode = "in-place"
+    elif not any_in_place:
+        mode = "shadow"
+    else:
+        # Partial cutover — name the pairs, so a summary line is never
+        # ambiguous about which half was writing live that night.
+        mode = "in-place:" + ",".join(
+            (["graph"] if in_place_graph else [])
+            + (["structure"] if in_place_structure else []))
     logger.info("=== incremental_nightly start (mode=%s) ===", mode)
 
     run = {
@@ -212,7 +243,7 @@ def main() -> int:
             "--decisions-db", str(DECISIONS_DB),
             "--graph-db", str(REFERENCE_GRAPH_DB),
         ]
-        if args.in_place:
+        if in_place_graph:
             graph_argv.append("--in-place")
         rec = _run_step("reference_graph", graph_argv, args.dry_run)
         run["steps"].append(rec)
@@ -234,7 +265,7 @@ def main() -> int:
             "--decisions-db", str(DECISIONS_DB),
             "--structure-db", str(DECISION_STRUCTURE_DB),
         ]
-        if args.in_place:
+        if in_place_structure:
             struct_argv.append("--in-place")
         rec = _run_step("decision_structure", struct_argv, args.dry_run)
         run["steps"].append(rec)
@@ -254,15 +285,20 @@ def main() -> int:
     # (row delta < 0.5%, top-30 cited identical). Drift is a VERDICT on
     # the night, not a crash: the builders already succeeded, so the run
     # keeps ok=true and the gate reads drift_ok from the summary jsonl.
-    if not args.in_place:
+    shadow_pairs = ([] if in_place_graph else ["reference_graph"]) + \
+                   ([] if in_place_structure else ["decision_structure"])
+    if shadow_pairs:
         drift_script = REPO_ROOT / "scripts" / "publish_drift_check.py"
         if drift_script.exists():
-            rec = _run_step(
-                "drift_check",
-                [sys.executable, "scripts/publish_drift_check.py",
-                 "--tolerance-pct", "0.5"],
-                args.dry_run,
-            )
+            # Check ONLY the pairs still in shadow. A pair that has cut over
+            # writes the live DB directly, so its sibling is stale or absent
+            # and comparing it would report a permanent false failure that
+            # buries the pair still being evaluated.
+            drift_argv = [sys.executable, "scripts/publish_drift_check.py",
+                          "--tolerance-pct", "0.5"]
+            if any_in_place:
+                drift_argv += ["--pairs", ",".join(shadow_pairs)]
+            rec = _run_step("drift_check", drift_argv, args.dry_run)
             run["steps"].append(rec)
             run["drift_ok"] = rec["exit_code"] == 0
             if rec["exit_code"] != 0:

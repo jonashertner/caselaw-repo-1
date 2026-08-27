@@ -60,6 +60,9 @@ DECISIONS_DB = DATA_DIR / "decisions.db"
 
 # Each (display_name, live_path, shadow_path) triple. Add more here as
 # the orchestrator grows new shadow targets.
+# docs/incremental_nightly_runbook.md, "Phase 3 — Cutover".
+GATE_GREEN_NIGHTS = 7
+
 PAIRS = [
     (
         "reference_graph",
@@ -401,6 +404,58 @@ def _compare_pair(display_name: str, live: Path, shadow: Path,
     return record
 
 
+def _green_streaks(history_path: Path, upto: dict) -> dict[str, int]:
+    """Consecutive green nights per pair, ending with THIS run.
+
+    The cutover gate in docs/incremental_nightly_runbook.md is "7 consecutive
+    green nights", but nothing ever counted them: `drift_ok` is written to
+    logs/incremental_nightly.jsonl by scripts/incremental_nightly.py and read
+    by no code in the repo (repo-wide grep: two hits, both writes). Worse, it
+    is a RUN-level boolean, so a green reference_graph was invisible behind a
+    red decision_structure for months.
+
+    Counting per pair is what lets the two halves cut over independently.
+
+    A night is green for a pair iff that pair's record has ok=true. Runs that
+    did not check a pair (see --pairs) are transparent: they neither extend
+    nor break a streak, because a pair already switched to --in-place has no
+    shadow to compare and its absence says nothing about the other one.
+    """
+    streaks: dict[str, int] = {}
+    prior: list[dict] = []
+    try:
+        with history_path.open(encoding="utf-8") as fh:
+            for line in fh:
+                line = line.strip()
+                if line:
+                    try:
+                        prior.append(json.loads(line))
+                    except Exception:
+                        continue          # a torn line must not break the gate
+    except FileNotFoundError:
+        pass
+
+    for pair_rec in upto.get("pairs", []):
+        name = pair_rec.get("pair")
+        if not name:
+            continue
+        if not pair_rec.get("ok"):
+            streaks[name] = 0
+            continue
+        n = 1                              # this run is green
+        for rec in reversed(prior):
+            match = next((p for p in rec.get("pairs", [])
+                          if p.get("pair") == name), None)
+            if match is None:
+                continue                   # not checked that night — transparent
+            if match.get("ok"):
+                n += 1
+            else:
+                break
+        streaks[name] = n
+    return streaks
+
+
 def _append_summary(run_record: dict) -> None:
     LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
     with LOG_FILE.open("a", encoding="utf-8") as fh:
@@ -409,6 +464,14 @@ def _append_summary(run_record: dict) -> None:
 
 def main() -> int:
     p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument(
+        "--pairs",
+        default="",
+        help="Comma-separated pair names to check (default: all). A pair that "
+             "has already cut over to --in-place has no shadow sibling to "
+             "compare, so the orchestrator excludes it here rather than "
+             "letting it report a permanent false failure.",
+    )
     p.add_argument(
         "--tolerance-pct",
         type=float,
@@ -451,8 +514,21 @@ def main() -> int:
         "drift_pairs": 0,
     }
 
+    selected = [x.strip() for x in args.pairs.split(",") if x.strip()]
+    if selected:
+        known = {name for name, _, _ in PAIRS}
+        unknown = [x for x in selected if x not in known]
+        if unknown:
+            logger.error("unknown pair(s): %s (known: %s)",
+                         ", ".join(unknown), ", ".join(sorted(known)))
+            return 2
+        pairs_to_check = [t for t in PAIRS if t[0] in selected]
+    else:
+        pairs_to_check = list(PAIRS)
+    run["checked_pairs"] = [t[0] for t in pairs_to_check]
+
     any_missing = False
-    for display_name, live, shadow in PAIRS:
+    for display_name, live, shadow in pairs_to_check:
         logger.info("Checking pair: %s (decisions_db=%s)",
                     display_name,
                     decisions_db if decisions_db else "OFF (raw mode)")
@@ -504,11 +580,20 @@ def main() -> int:
                 )
 
     run["ended_at"] = datetime.now(timezone.utc).isoformat()
+    # Streaks are computed against the history BEFORE this run is appended,
+    # then stored on this record — so each line carries the streak as of
+    # itself and the gate can be read with `tail -1`.
+    run["green_streaks"] = _green_streaks(LOG_FILE, run)
     _append_summary(run)
 
+    for _pair, _n in sorted(run["green_streaks"].items()):
+        logger.info("  streak %s: %d consecutive green night(s)%s",
+                    _pair, _n, "  ← GATE MET" if _n >= GATE_GREEN_NIGHTS else "")
+
     logger.info(
-        "=== drift check done — ok=%s, missing=%d, drift=%d ===",
+        "=== drift check done — ok=%s, missing=%d, drift=%d, streaks=%s ===",
         run["ok"], run["missing_pairs"], run["drift_pairs"],
+        run["green_streaks"],
     )
 
     if any_missing:
