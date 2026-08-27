@@ -302,3 +302,54 @@ def test_stall_history_survives_a_failed_night(tmp_path):
     assert "bger" in after, "a failed night wiped the court's stall history"
     assert after["bger"]["days"] == ["2026-08-01", "2026-08-02"]
     assert after["bger"]["count"] == 98532
+
+
+def test_independently_scheduled_scraper_is_not_reported_as_never_run(tmp_path):
+    """Regression 2026-08-27.
+
+    ecthr runs on its own systemd timer, not through run_all_scrapers.py, so
+    it is correctly absent from a full scraper_health.json run. The registry
+    reconciliation reported it as "silently skipped or never ran" on the very
+    night it had completed a 216-minute full-corpus backfill (+8,270
+    judgments, 0 errors). An alert that asserts the opposite of the truth is
+    worse than no alert — it trains the operator to ignore the channel.
+    """
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+    from scripts.check_scraper_freshness import (
+        INDEPENDENTLY_SCHEDULED_SOURCES,
+        KNOWN_DEAD_SOURCES,
+        ENTSCHEIDSUCHE_ONLY,
+    )
+    from run_scraper import SCRAPERS as REGISTERED
+
+    assert "ecthr" in INDEPENDENTLY_SCHEDULED_SOURCES
+
+    # A full run of everything that goes through run_all_scrapers.py.
+    ran = set(REGISTERED) - set(INDEPENDENTLY_SCHEDULED_SOURCES)
+    missing = sorted(
+        set(REGISTERED) - ran
+        - KNOWN_DEAD_SOURCES - ENTSCHEIDSUCHE_ONLY
+        - set(INDEPENDENTLY_SCHEDULED_SOURCES)
+    )
+    assert missing == [], f"would still cry wolf for: {missing}"
+
+
+def test_independently_scheduled_scraper_is_still_checked_for_staleness():
+    """Exempting them from one check must not exempt them from all checks.
+
+    The point of the reconciliation is that a scraper which quietly stops
+    should not just vanish from every check. Independently-scheduled ones are
+    checked on their state file instead.
+    """
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+    from scripts.check_scraper_freshness import (
+        INDEPENDENTLY_SCHEDULED_SOURCES, INDEPENDENT_STALE_DAYS,
+    )
+    src = (Path(__file__).resolve().parent.parent
+           / "scripts" / "check_scraper_freshness.py").read_text(encoding="utf-8")
+    assert "no write for" in src, "the independent staleness alert was removed"
+    assert INDEPENDENT_STALE_DAYS >= 1
+    # Every exempted scraper names the unit that owns it, so the alert text
+    # tells the operator where to look.
+    for k, unit in INDEPENDENTLY_SCHEDULED_SOURCES.items():
+        assert unit.endswith((".timer", ".service")), (k, unit)

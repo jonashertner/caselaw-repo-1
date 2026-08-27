@@ -101,6 +101,30 @@ TUNNEL_DEPENDENT_SOURCES = {
     "ne_jurisprudence_adm",
 }
 
+# Scrapers that run on their OWN systemd timer rather than through
+# run_all_scrapers.py. They are correctly absent from a full
+# scraper_health.json run, so the registry reconciliation below must not
+# report them as "silently skipped or never ran".
+#
+# 2026-08-27: ecthr fired that WARN while it had in fact just completed a
+# 216-minute full-corpus backfill — +8,270 judgments, 0 errors — under
+# opencaselaw-ecthr-backfill.service. A daily top-off lives in
+# opencaselaw-ecthr.timer. The alert was not merely noise: it asserted the
+# opposite of the truth, which is the fastest way to train an operator to
+# ignore a channel.
+#
+# They still get a freshness check of their own below, keyed on the state
+# file, so a genuinely dead independent scraper is not silently exempt.
+# Value is the owning unit, for the alert text.
+INDEPENDENTLY_SCHEDULED_SOURCES = {
+    "ecthr": "opencaselaw-ecthr.timer",
+}
+
+# How stale an independently-scheduled scraper's state file may get before
+# we alert. ECtHR tops off daily; three days absorbs a weekend plus one
+# missed run without crying wolf.
+INDEPENDENT_STALE_DAYS = 3
+
 # Courts that legitimately publish rarely (small chamber, archival
 # series, historical-only). The "<30s + 0 new" heuristic is a
 # false-positive here — a clean caught-up exit looks identical to a
@@ -620,6 +644,7 @@ def main():
                     missing = sorted(
                         set(_REGISTERED) - set(scrapers)
                         - KNOWN_DEAD_SOURCES - ENTSCHEIDSUCHE_ONLY
+                        - set(INDEPENDENTLY_SCHEDULED_SOURCES)
                     )
                     for k in missing:
                         alerts.append(
@@ -627,6 +652,22 @@ def main():
                             f"scraper_health.json run (silently skipped or "
                             f"never ran)"
                         )
+                    # Independently-scheduled scrapers are excluded above,
+                    # so check them on their own terms: the state file is
+                    # touched on every run that writes anything.
+                    for k, unit in sorted(INDEPENDENTLY_SCHEDULED_SOURCES.items()):
+                        sf = REPO / "state" / f"{k}.jsonl"
+                        if not sf.exists():
+                            alerts.append(
+                                f"WARN {k}: independently scheduled ({unit}) but "
+                                f"no state file at {sf}")
+                            continue
+                        age_d = (now - datetime.fromtimestamp(
+                            sf.stat().st_mtime, tz=timezone.utc)).days
+                        if age_d > INDEPENDENT_STALE_DAYS:
+                            alerts.append(
+                                f"WARN {k}: independently scheduled ({unit}), "
+                                f"no write for {age_d}d — check that timer")
                 except Exception as e:
                     alerts.append(f"WARN registry reconciliation failed: {e}")
 
