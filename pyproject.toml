@@ -22,6 +22,12 @@ dependencies = [
     "zstandard>=0.22",
 ]
 
+[project.urls]
+Homepage = "https://opencaselaw.ch"
+Documentation = "https://opencaselaw.ch"
+Repository = "https://github.com/jonashertner/opencaselaw"
+Issues = "https://github.com/jonashertner/opencaselaw/issues"
+
 [project.optional-dependencies]
 crypto = ["pycryptodome>=3.20"]
 # pdfplumber is a runtime dependency of search_stack/build_botschaft_corpus.py
@@ -34,7 +40,7 @@ pdf = ["pymupdf>=1.27.2.2", "pdfplumber>=0.11"]
 api = [
     "fastapi>=0.104",
     "uvicorn>=0.24",
-    "mcp>=1.0",
+    "mcp>=1.27,<2",
     "python-dotenv>=1.0",
 ]
 # Provider SDKs for the FastAPI orchestrator (web_api/providers/*.py).

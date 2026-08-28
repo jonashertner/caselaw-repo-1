@@ -22,10 +22,12 @@ if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 
 
-def test_be_bvd_registered():
+def test_be_bvd_not_registered_until_productive():
     from run_scraper import SCRAPERS
-    assert "be_bvd" in SCRAPERS
-    assert SCRAPERS["be_bvd"] == ("scrapers.cantonal.be_bvd", "BEBvdScraper")
+    # The protocol implementation is intentionally parked: the live portal
+    # currently returns zero rows. Keep it out of production dispatch until a
+    # productive source/filter is validated (see the module status note).
+    assert "be_bvd" not in SCRAPERS
 
 
 def test_be_bvd_imports_and_subclasses_tribuna():
