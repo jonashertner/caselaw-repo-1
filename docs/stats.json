@@ -2402,7 +2402,7 @@
     "2026-07": 2069,
     "2026-08": 599
   },
-  "generated_at": "2026-08-28T11:57:32.942905+00:00",
+  "generated_at": "2026-08-28T19:54:38.211999+00:00",
   "scraper_health": {
     "run_at": "2026-08-28T04:07:13.471427+00:00",
     "run_duration_s": 11172.7,
@@ -3621,19 +3621,19 @@
       "reference_article": 40,
       "bachelor_thesis": 3
     },
-    "citation_edges": 9849285,
-    "statute_edges": 12488595
+    "citation_edges": 9852446,
+    "statute_edges": 12492140
   },
   "interesting_stats": {
     "most_cited_decision": {
       "docket": "BGE 125 V 351",
-      "citation_count": 77348,
+      "citation_count": 77357,
       "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
     },
     "most_cited_statute": {
       "law_code": "LTF",
       "article": "100",
-      "ref_count": 184257
+      "ref_count": 184301
     },
     "oldest_decision": {
       "docket": "1_I_26",
@@ -3645,17 +3645,17 @@
       "de_pct": 47.5,
       "fr_pct": 43.9,
       "it_pct": 8.6,
-      "total": 1057421
+      "total": 1057639
     },
     "regeste_coverage": {
       "pct": 38.8,
-      "with_regeste": 412320,
-      "total": 1061371
+      "with_regeste": 412322,
+      "total": 1061589
     },
     "graph_size": {
-      "decision_edges": 11542731,
-      "statute_edges": 12488595,
-      "total": 24031326
+      "decision_edges": 11546384,
+      "statute_edges": 12492140,
+      "total": 24038524
     },
     "echr_switzerland": {
       "total": 9614,
@@ -3671,25 +3671,25 @@
     "top_5_decisions": [
       {
         "docket": "BGE 125 V 351",
-        "citation_count": 77348,
+        "citation_count": 77357,
         "regeste_excerpt": "Regeste\n Art. 4 BV; Art. 108 Abs. 1 lit. b UVG; Art. 40 BZP in Verbindung mit Art. 19 VwVG; Art. 95 Abs. 2 in Verbindung mit Art. 113 und 132 OG: Beweiswürdigun",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
       },
       {
         "docket": "125 V 351",
-        "citation_count": 74968,
+        "citation_count": 74988,
         "regeste_excerpt": "Regeste\n Art. 4 BV; Art. 108 Abs. 1 lit. b UVG; Art. 40 BZP in Verbindung mit Art. 19 VwVG; Art. 95 Abs. 2 in Verbindung mit Art. 113 und 132 OG: Beweiswürdigun",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_125 V 351"
       },
       {
         "docket": "BGE 122 V 157",
-        "citation_count": 40309,
+        "citation_count": 40310,
         "regeste_excerpt": "Regeste\n Art. 4 BV, Art. 6 Ziff. 1 EMRK. - Art. 4 BV und Art. 6 Ziff. 1 EMRK umfassen keinen formellen Anspruch auf Beizug versicherungsexterner medizinischer G",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_122_V_157"
       },
       {
         "docket": "BGE 134 V 231",
-        "citation_count": 38697,
+        "citation_count": 38710,
         "regeste_excerpt": "Regeste\n Art. 6 Abs. 1 UVG; Beweiswert diagnostischer Methoden; funktionelle Magnetresonanztomographie; Schleudertrauma. Eine medizinisch-diagnostische Methode ",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_134_V_231"
       },
@@ -3704,27 +3704,27 @@
       {
         "law_code": "LTF",
         "article": "100",
-        "ref_count": 184257
+        "ref_count": 184301
       },
       {
         "law_code": "LTF",
         "article": "113",
-        "ref_count": 113501
+        "ref_count": 113520
       },
       {
         "law_code": "LTF",
         "article": "42",
-        "ref_count": 108593
+        "ref_count": 108598
       },
       {
         "law_code": "BGG",
         "article": "42",
-        "ref_count": 96522
+        "ref_count": 96555
       },
       {
         "law_code": "BGG",
         "article": "66",
-        "ref_count": 60491
+        "ref_count": 60499
       }
     ],
     "materialien_coverage": {
@@ -3768,7 +3768,7 @@
         "earliest": "1901-07-29",
         "latest": "2026-03-17",
         "span_years": 125,
-        "decision_count": 4602
+        "decision_count": 4607
       },
       {
         "court": "tg_gerichte",
@@ -3782,7 +3782,7 @@
         "earliest": "1908-11-08",
         "latest": "2026-08-24",
         "span_years": 118,
-        "decision_count": 169884
+        "decision_count": 169898
       }
     ]
   },
@@ -4286,6 +4286,22 @@
       "url": "https://www.fedlex.admin.ch/eli/cc/2015/843"
     },
     {
+      "sr_number": "741.213.3",
+      "in_force_date": "2026-10-01",
+      "title_de": "Verordnung des UVEK vom 28. September 2001 über die Tempo-30-Zonen und die Begegnungszonen",
+      "title_fr": "Ordonnance du DETEC du 28 septembre 2001 sur les zones 30 et les zones de rencontre",
+      "title_it": "Ordinanza del DATEC del 28 settembre 2001 concernente le zone con limite di velocità massimo di 30 km/h e le zone d'incontro",
+      "url": "https://www.fedlex.admin.ch/eli/cc/2002/23"
+    },
+    {
+      "sr_number": "741.21",
+      "in_force_date": "2026-10-01",
+      "title_de": "Signalisationsverordnung vom 5. September 1979 (SSV)",
+      "title_fr": "Ordonnance du 5 septembre 1979 sur la signalisation routière (OSR)",
+      "title_it": "Ordinanza del 5 settembre 1979 sulla segnaletica stradale (OSStr)",
+      "url": "https://www.fedlex.admin.ch/eli/cc/1979/1961_1961_1961"
+    },
+    {
       "sr_number": "172.010.1",
       "in_force_date": "2026-10-01",
       "title_de": "Regierungs- und Verwaltungsorganisationsverordnung vom 25. November 1998 (RVOV)",
@@ -4356,22 +4372,6 @@
       "title_fr": "Ordonnance du 25 août 2004 sur le Bureau de communication en matière de blanchiment d'argent (OBCBA)",
       "title_it": "Ordinanza del 25 agosto 2004 sull'Ufficio di comunicazione in materia di riciclaggio di denaro (OURD)",
       "url": "https://www.fedlex.admin.ch/eli/cc/2004/626"
-    },
-    {
-      "sr_number": "412.101.61",
-      "in_force_date": "2026-10-01",
-      "title_de": "Verordnung des WBF vom 11. September 2017 über die Mindestvorschriften für höhere Fachschulen (MiVo-HF)",
-      "title_fr": "Ordonnance du DEFR du 11 septembre 2017 concernant les conditions minimales pour les écoles supérieures \n(OCM ES)",
-      "title_it": "Ordinanza del DEFR dell' 11 settembre 2017 concernente le esigenze minime per le scuole specializzate superiori\n(OEM-SSS)",
-      "url": "https://www.fedlex.admin.ch/eli/cc/2017/586"
-    },
-    {
-      "sr_number": "955.01",
-      "in_force_date": "2026-10-01",
-      "title_de": "Verordnung vom 11. November 2015 über die Bekämpfung der Geldwäscherei und der Terrorismusfinanzierung (Geldwäschereiverordnung, GwV)",
-      "title_fr": "Ordonnance du 11 novembre 2015 sur la lutte contre le blanchiment d'argent et le financement du terrorisme (Ordonnance sur le blanchiment d'argent, OBA)",
-      "title_it": "Ordinanza dell' 11 novembre 2015 relativa alla lotta contro il riciclaggio di denaro e il finanziamento del terrorismo (Ordinanza sul riciclaggio di denaro, ORD)",
-      "url": "https://www.fedlex.admin.ch/eli/cc/2015/791"
     }
   ],
   "delta": {
@@ -4405,7 +4405,10 @@
       "VS": 13,
       "AR": 5
     },
-    "corpus": {},
+    "corpus": {
+      "citation_edges": 3161,
+      "statute_edges": 3545
+    },
     "previous_generated_at": "2026-08-27T20:05:40.044956+00:00"
   }
 }
