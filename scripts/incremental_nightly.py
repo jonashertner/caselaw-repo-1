@@ -154,6 +154,28 @@ def main() -> int:
         action="store_true",
         help="Swap only the decision_structure output into the live DB.",
     )
+    # ── Stage 2 of the cutover (docs/incremental_nightly_runbook.md) ──
+    # Both default OFF, so deploying this file changes nothing until the
+    # unit's ExecStart asks for them.
+    p.add_argument(
+        "--structure-from-shards",
+        action="store_true",
+        help="Build decision_structure with `publish.py --step 2g` (from the "
+             "pristine JSONL shards) instead of the incremental builder. "
+             "Costs ~2h but is byte-for-byte the behaviour the full build has "
+             "always had, so it sidesteps the decision_structure drift "
+             "question entirely — that pair has never passed its gate.",
+    )
+    p.add_argument(
+        "--with-distribution",
+        action="store_true",
+        help="After stats, run the cheap distribution steps that would "
+             "otherwise only happen on Sunday: RSS feeds, the QC gate, the "
+             "release manifest, the HuggingFace delta and the git push. "
+             "The push is NOT optional in practice — check_output_freshness "
+             "deadmans on docs/stats.json commit age at 36h and would page "
+             "every Tuesday without it.",
+    )
     p.add_argument(
         "--skip-quick-publish",
         action="store_true",
@@ -259,14 +281,21 @@ def main() -> int:
 
     # ── Step 3: decision_structure_incremental
     if not args.skip_structure:
-        struct_argv = [
-            sys.executable,
-            "search_stack/extract_decision_structure_incremental.py",
-            "--decisions-db", str(DECISIONS_DB),
-            "--structure-db", str(DECISION_STRUCTURE_DB),
-        ]
-        if in_place_structure:
-            struct_argv.append("--in-place")
+        if args.structure_from_shards:
+            # publish.py step 2g reads output/decisions/*.jsonl, not
+            # decisions.db, and writes the live sidecar with its own atomic
+            # swap. Identical to what the full build does today, which is
+            # why it needs no shadow pair and no drift verdict.
+            struct_argv = [sys.executable, "publish.py", "--step", "2g"]
+        else:
+            struct_argv = [
+                sys.executable,
+                "search_stack/extract_decision_structure_incremental.py",
+                "--decisions-db", str(DECISIONS_DB),
+                "--structure-db", str(DECISION_STRUCTURE_DB),
+            ]
+            if in_place_structure:
+                struct_argv.append("--in-place")
         rec = _run_step("decision_structure", struct_argv, args.dry_run)
         run["steps"].append(rec)
         if rec["exit_code"] != 0:
@@ -285,8 +314,11 @@ def main() -> int:
     # (row delta < 0.5%, top-30 cited identical). Drift is a VERDICT on
     # the night, not a crash: the builders already succeeded, so the run
     # keeps ok=true and the gate reads drift_ok from the summary jsonl.
+    # A pair built from shards writes the live DB directly and has no
+    # sibling, exactly like an --in-place pair.
+    _structure_is_shadow = not in_place_structure and not args.structure_from_shards
     shadow_pairs = ([] if in_place_graph else ["reference_graph"]) + \
-                   ([] if in_place_structure else ["decision_structure"])
+                   ([] if not _structure_is_shadow else ["decision_structure"])
     if shadow_pairs:
         drift_script = REPO_ROOT / "scripts" / "publish_drift_check.py"
         if drift_script.exists():
@@ -296,7 +328,7 @@ def main() -> int:
             # buries the pair still being evaluated.
             drift_argv = [sys.executable, "scripts/publish_drift_check.py",
                           "--tolerance-pct", "0.5"]
-            if any_in_place:
+            if any_in_place or args.structure_from_shards:
                 drift_argv += ["--pairs", ",".join(shadow_pairs)]
             rec = _run_step("drift_check", drift_argv, args.dry_run)
             run["steps"].append(rec)
@@ -331,6 +363,54 @@ def main() -> int:
             logger.info("[generate_stats] script missing — skipping")
     else:
         logger.info("[generate_stats] SKIPPED (--skip-stats)")
+
+    # ── Step 5: distribution (opt-in; Sunday-only without it)
+    #
+    # Order mirrors publish.py's own STEPS list: feeds, then the QC gate,
+    # then the manifest (so it captures the gate's verdict), then the push.
+    # The gate is treated the way publish.py treats it — a CRITICAL
+    # regression must not reach users, so a failing gate skips the push and
+    # the delta while leaving the DB work that already happened in place.
+    #
+    # Measured 2026-08-28: feeds 223s, gate 1,434s, manifest 3s, delta 17s,
+    # push 4s, health 25s — under 30 min in total, against the ~3,029s of
+    # full Parquet + HuggingFace upload that stay on Sunday.
+    if args.with_distribution:
+        gate_ok = True
+        for step, argv_step, fatal in (
+            ("rss_feeds",        "5b", False),
+            ("qc_gate",          "5c", True),
+            ("release_manifest", "5d", False),
+        ):
+            rec = _run_step(step, [sys.executable, "publish.py", "--step", argv_step],
+                            args.dry_run)
+            run["steps"].append(rec)
+            if rec["exit_code"] != 0:
+                if fatal:
+                    gate_ok = False
+                    logger.error(
+                        "%s FAILED (exit=%d) — skipping git push and delta "
+                        "publish so a regression does not reach users",
+                        step, rec["exit_code"])
+                else:
+                    logger.warning("%s failed (exit=%d) — continuing",
+                                   step, rec["exit_code"])
+        if gate_ok:
+            for step, argv_step in (("publish_delta", "7"),
+                                    ("git_push", "6"),
+                                    ("health_check", "6b")):
+                rec = _run_step(step, [sys.executable, "publish.py", "--step", argv_step],
+                                args.dry_run)
+                run["steps"].append(rec)
+                if rec["exit_code"] != 0:
+                    # Distribution failures are loud but not fatal: the data
+                    # is already correct on the box, only its publication
+                    # lagged. check_output_freshness catches a persistent one.
+                    logger.warning("%s failed (exit=%d) — continuing",
+                                   step, rec["exit_code"])
+        run["distribution_ok"] = gate_ok
+    else:
+        logger.info("[distribution] SKIPPED (--with-distribution not set)")
 
     run["total_duration_s"] = round(time.monotonic() - t_start, 2)
     run["ended_at"] = datetime.now(timezone.utc).isoformat()

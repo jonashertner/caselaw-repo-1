@@ -174,3 +174,75 @@ def test_unknown_pair_name_is_rejected():
         cwd=REPO, text=True, capture_output=True, check=False)
     assert r.returncode == 2
     assert "unknown pair" in (r.stdout + r.stderr).lower()
+
+
+# ── Stage 2: the weekday night that replaces the full build ───────────
+
+def test_stage2_flags_are_off_by_default():
+    """Deploying the orchestrator must change nothing until the unit asks."""
+    out = _dry_run()
+    assert "publish.py --step 2g" not in out
+    assert "--step 5c" not in out and "--step 6" not in out
+
+
+def test_structure_from_shards_uses_publish_step_2g():
+    """The full builder reads output/decisions/*.jsonl, not decisions.db.
+
+    That is the point: it is byte-for-byte today's behaviour, so it needs no
+    shadow pair and no drift verdict — which matters because the
+    decision_structure pair has never passed its gate.
+    """
+    out = _dry_run("--structure-from-shards")
+    line = _line_for(out, "decision_structure")
+    assert "publish.py --step 2g" in line
+    assert "extract_decision_structure_incremental" not in line
+
+
+def test_structure_from_shards_is_excluded_from_the_drift_check():
+    """It writes the live DB directly, so it has no sibling to compare."""
+    drift = _line_for(_dry_run("--structure-from-shards"), "drift_check")
+    assert "--pairs reference_graph" in drift
+    assert "decision_structure" not in drift.split("--pairs")[1]
+
+
+def test_full_stage2_night_runs_no_drift_check_at_all():
+    out = _dry_run("--in-place-graph", "--structure-from-shards", "--with-distribution")
+    assert _line_for(out, "drift_check") == ""
+
+
+def test_distribution_runs_the_cheap_steps_in_publish_order():
+    """Order mirrors publish.py: feeds, gate, manifest, then push.
+
+    The manifest must follow the gate so it captures the verdict, and the
+    push must follow both.
+    """
+    out = _dry_run("--with-distribution")
+    order = [s for s in ("rss_feeds", "qc_gate", "release_manifest",
+                         "publish_delta", "git_push", "health_check")
+             if _line_for(out, s)]
+    assert order == ["rss_feeds", "qc_gate", "release_manifest",
+                     "publish_delta", "git_push", "health_check"]
+
+
+def test_distribution_includes_the_git_push():
+    """Not optional in practice: check_output_freshness deadmans on
+    docs/stats.json commit age at 36h and would page every Tuesday."""
+    assert "--step 6" in _line_for(_dry_run("--with-distribution"), "git_push")
+
+
+def test_distribution_excludes_the_full_parquet_and_hf_upload():
+    """Those are ~3,029s of full-corpus work and belong to Sunday.
+    The 17s delta publish keeps the mirror daily instead."""
+    out = _dry_run("--with-distribution")
+    assert _line_for(out, "export_parquet") == ""
+    assert _line_for(out, "upload_hf") == ""
+    assert "--step 7" in _line_for(out, "publish_delta")
+
+
+def test_a_failing_qc_gate_blocks_publication_not_the_db_work():
+    """publish.py puts 5c in CRITICAL_STEPS so a regression never reaches
+    users. The orchestrator has to honour the same contract."""
+    src = (REPO / "scripts" / "incremental_nightly.py").read_text(encoding="utf-8")
+    i = src.index('("qc_gate",')
+    assert "True" in src[i:i + 80], "the gate is no longer marked fatal"
+    assert "skipping git push" in src, "a failing gate no longer blocks the push"
