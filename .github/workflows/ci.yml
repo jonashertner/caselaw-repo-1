@@ -59,13 +59,18 @@ jobs:
           pip install --quiet build setuptools wheel
           python -m build --wheel --no-isolation
           python - <<'PY'
-          import pathlib, sys, zipfile
+          import pathlib, sys, tomllib, zipfile
           wheels = list(pathlib.Path('dist').glob('swiss_caselaw_scrapers-*.whl'))
           if len(wheels) != 1:
               print('FAIL: expected exactly one wheel, got', wheels)
               sys.exit(1)
           z = zipfile.ZipFile(wheels[0])
-          required = ('quality/', 'web_api/', 'study/', 'scrapers/', 'search_stack/', 'mcp_server.py')
+          config = tomllib.loads(pathlib.Path('pyproject.toml').read_text())
+          configured_modules = config['tool']['setuptools']['py-modules']
+          required = (
+              'quality/', 'web_api/', 'study/', 'scrapers/', 'search_stack/',
+              *(f'{module}.py' for module in configured_modules),
+          )
           missing = [r for r in required if not any(n.startswith(r) or n == r for n in z.namelist())]
           if missing:
               print('FAIL: wheel missing', missing)

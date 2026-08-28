@@ -73,7 +73,38 @@ include = [
 ]
 
 [tool.setuptools]
-py-modules = ["pipeline", "base_scraper", "models", "db_schema", "run_scraper", "mcp_server", "fts5_server", "export_parquet", "build_fts5", "coverage_report"]
+py-modules = [
+    "appeal_extract",
+    "backfill_bger_chambers",
+    "backfill_canonical_identity",
+    "base_scraper",
+    "branch_map",
+    "build_fts5",
+    "cli_ch",
+    "coverage_report",
+    "db_schema",
+    "decision_widget",
+    "derive_from_text",
+    "docket_aliases",
+    "ecli",
+    "ecthr_docket",
+    "export_parquet",
+    "exports",
+    "fts5_server",
+    "health_alerts",
+    "health_metrics",
+    "incapsula_bypass",
+    "integrity",
+    "law_widget",
+    "mcp_server",
+    "models",
+    "pipeline",
+    "proceeding_map",
+    "run_scraper",
+    "seo_pages",
+    "stripe_billing",
+    "widget_runtime",
+]
 
 [project.scripts]
 swiss-caselaw = "pipeline:main"
