@@ -889,9 +889,15 @@ def collect_interesting_stats(repo_dir: Path) -> dict:
     # Switzerland has been subject to the ECHR since ratification in 1974.
     # Our corpus covers 5 surfaces: bge_egmr (Swiss BGE-published German
     # translations), hudoc_ch (HUDOC tagged Switzerland), and the three
-    # ECtHR chambers (chamber, committee, grand_chamber). Headline number
-    # = total cases against Switzerland; richness = breakdown + recent
-    # activity.
+    # ECtHR chambers (chamber, committee, grand_chamber). The ecthr_*
+    # courts hold judgments against all 46 respondent states, not just
+    # Switzerland: `canton` is historically named but holds a jurisdiction
+    # code — CH = Swiss federal / Swiss-respondent, two-letter codes =
+    # cantons, CE = non-Swiss ECtHR respondent states (see
+    # scrapers/hudoc.py _RESPONDENT_TO_CANTON; bge_egmr and hudoc_ch rows
+    # are CH by construction). Headline number = cases against Switzerland
+    # only; ecthr_corpus_total = the full ECtHR corpus across all
+    # respondent states (what the dashboard card sums via by_court).
     if decisions_db.exists():
         try:
             d = sqlite3.connect(f"file:{decisions_db}?mode=ro", uri=True, timeout=10)
@@ -902,23 +908,29 @@ def collect_interesting_stats(repo_dir: Path) -> dict:
             )
             placeholders = ",".join("?" * len(ECHR_COURTS))
             total = d.execute(
+                f"SELECT COUNT(*) AS n FROM decisions "
+                f"WHERE court IN ({placeholders}) AND canton='CH'",
+                ECHR_COURTS,
+            ).fetchone()["n"]
+            corpus_total = d.execute(
                 f"SELECT COUNT(*) AS n FROM decisions WHERE court IN ({placeholders})",
                 ECHR_COURTS,
             ).fetchone()["n"]
             grand = d.execute(
-                "SELECT COUNT(*) AS n FROM decisions WHERE court='ecthr_grand_chamber'"
+                "SELECT COUNT(*) AS n FROM decisions "
+                "WHERE court='ecthr_grand_chamber' AND canton='CH'"
             ).fetchone()["n"]
             this_year = datetime.now(timezone.utc).year
             current_year = d.execute(
                 f"SELECT COUNT(*) AS n FROM decisions "
-                f"WHERE court IN ({placeholders}) "
+                f"WHERE court IN ({placeholders}) AND canton='CH' "
                 f"AND decision_date >= ?",
                 (*ECHR_COURTS, f"{this_year}-01-01"),
             ).fetchone()["n"]
             most_recent = d.execute(
                 f"SELECT decision_id, decision_date, docket_number, regeste "
                 f"FROM decisions "
-                f"WHERE court IN ({placeholders}) "
+                f"WHERE court IN ({placeholders}) AND canton='CH' "
                 f"ORDER BY decision_date DESC LIMIT 1",
                 ECHR_COURTS,
             ).fetchone()
@@ -926,6 +938,7 @@ def collect_interesting_stats(repo_dir: Path) -> dict:
                 "total": int(total),
                 "grand_chamber": int(grand),
                 f"in_{this_year}": int(current_year),
+                "ecthr_corpus_total": int(corpus_total),
                 "most_recent": (
                     {
                         "decision_date": most_recent["decision_date"],
