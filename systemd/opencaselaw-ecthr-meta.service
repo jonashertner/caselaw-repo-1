@@ -1,0 +1,36 @@
+[Unit]
+Description=OpenCaseLaw ECtHR metadata sidecar (ecthr_meta.db)
+After=network.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/caselaw/repo
+# Deliberately NOT a publish.py step. The builder reads no serving
+# database — it goes to HUDOC, not to decisions.db — so it neither needs
+# the build window nor competes for the page cache the QC gate depends
+# on. Keeping it out of publish.py also keeps its failures out of the
+# nightly's blast radius: a step failure there cascade-skips the guarded
+# HuggingFace upload and git pushes (08-18, 08-21). Here a bad run
+# affects nothing but this sidecar.
+#
+# Do nothing while the ECtHR scrape itself is running; the two hit the
+# same HUDOC endpoint and there is no reason to double the load.
+ExecStartPre=/bin/bash -c '! systemctl is-active --quiet opencaselaw-ecthr.service'
+ExecStart=/usr/bin/python3 -m search_stack.build_ecthr_meta \
+    --output /opt/caselaw/repo/output/ecthr_meta.db
+# Non-zero deliberately stays a systemd failure, so `systemctl --failed`
+# is the notification:
+#   2 = build refused, it held <90% of the live sidecar (a HUDOC year
+#       shard was almost certainly lost). Live DB untouched; the short
+#       read is parked at ecthr_meta.db.tmp for inspection.
+#   3 = published, but a year shard failed, so the sidecar is incomplete.
+# Both self-heal on the next run once HUDOC recovers, and neither leaves
+# a truncated sidecar serving — but marking them SuccessExitStatus would
+# let a chronically broken sidecar read green forever, which is the
+# silent-staleness failure this whole sidecar exists to avoid.
+# 68 year shards at the scraper's 1.5 s request delay, plus retries.
+TimeoutStartSec=3600
+Nice=10
+IOSchedulingClass=idle
+StandardOutput=append:/opt/caselaw/repo/logs/ecthr_meta.log
+StandardError=append:/opt/caselaw/repo/logs/ecthr_meta.log

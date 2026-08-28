@@ -1,0 +1,19 @@
+[Unit]
+Description=Daily ECtHR metadata sidecar refresh (after the HUDOC scrape)
+
+[Timer]
+# 16:30 UTC. opencaselaw-ecthr.timer fires at 14:00 with up to 10 min of
+# randomised delay and TimeoutStartSec=5400, so the scrape can legitimately
+# still be running at 15:40; anything earlier than that would trip this
+# unit's ExecStartPre guard and report a failure that is really just a
+# scheduling overlap. 16:30 (+10 min jitter) clears it with margin.
+#
+# Independent of the 03:30 UTC publish: this builder never reads
+# decisions.db, so it has no reason to wait for the build window to
+# close (~17:00 UTC).
+OnCalendar=*-*-* 16:30:00 UTC
+Persistent=true
+RandomizedDelaySec=600
+
+[Install]
+WantedBy=timers.target
