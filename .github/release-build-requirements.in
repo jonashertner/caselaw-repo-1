@@ -1,0 +1,4 @@
+# Minimal trusted release toolchain. The compiled file is hash-pinned.
+build==1.6.0
+setuptools==84.0.0
+wheel==0.48.0
