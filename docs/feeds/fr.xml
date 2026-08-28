@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/fr.xml</link>
     <description>Latest published Swiss court decisions in Français.</description>
     <language>de-CH</language>
-    <lastBuildDate>Thu, 27 Aug 2026 11:03:59 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 28 Aug 2026 12:03:39 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/fr.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -149,6 +149,28 @@ Pr…</description>
       <pubDate>Wed, 09 Sep 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">fr_gerichte_608 2024 113</guid>
       <category>fr_gerichte</category>
+    </item>
+    <item>
+      <title>vs_gerichte C1 25 8 vom 2026-09-06</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/vs_gerichte_C1%2025%208</link>
+      <description>C1 25 8 
+ 
+ 
+ARRÊT DU 6 JUILLET 2026 
+ 
+Tribunal cantonal du Valais 
+Cour civile II 
+ 
+Composition : Christian Zuber, président ; Christophe Pralong, juge, et Valentin Piccinin, 
+juge suppléant ; Laura Jost, greffière ; 
+ 
+en la cause 
+ 
+X _________,…</description>
+      <pubDate>Sun, 06 Sep 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">vs_gerichte_C1 25 8</guid>
+      <category>vs_gerichte</category>
+      <category>Eherecht (anderes)</category>
     </item>
     <item>
       <title>fr_gerichte 502 2026 86 vom 2026-09-02</title>
@@ -541,6 +563,36 @@ a souhaité …</description>
       <category>ne_gerichte</category>
     </item>
     <item>
+      <title>Bundesgericht 7B_671/2026 vom 2026-08-19</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_7B_671_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+7B_671/2026
+
+Arrêt du 19 août 2026
+
+IIe Cour de droit pénal
+
+Composition
+
+M. le Juge fédéral Abrecht, Président.
+
+Greffier : M. Porchet.
+
+Participants à la procédure
+
+A.A.________…</description>
+      <pubDate>Wed, 19 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:7B_671.2026</guid>
+      <category>bger</category>
+    </item>
+    <item>
       <title>fr_gerichte 502 2026 97 vom 2026-08-19</title>
       <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_502%202026%2097</link>
       <description>Tribunal cantonal TC
@@ -607,6 +659,14 @@ Pré…</description>
       <description>Travail d'intérêt général (service civil)</description>
       <pubDate>Tue, 18 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:B-4049.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht E-6536/2025 vom 2026-08-18</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-6536_2025</link>
+      <description>Refus de la protection provisoire</description>
+      <pubDate>Tue, 18 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-6536.2025</guid>
       <category>bvger</category>
     </item>
     <item>
@@ -853,11 +913,47 @@ Arrêt d…</description>
       <category>ge_gerichte</category>
     </item>
     <item>
+      <title>Bundesgericht 9C_368/2026 vom 2026-08-17</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_9C_368_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+9C_368/2026
+
+Ordonnance du 17 août 2026
+
+IIIe Cour de droit public
+
+Composition
+
+Mme la Juge fédérale Moser-Szeless, Présidente.
+
+Greffier : M. Berthoud.
+
+Participants à la procéd…</description>
+      <pubDate>Mon, 17 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:9C_368.2026</guid>
+      <category>bger</category>
+    </item>
+    <item>
       <title>Bundesverwaltungsgericht D-3386/2026 vom 2026-08-17</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-3386_2026</link>
       <description>Exécution du renvoi (procédure accélérée)</description>
       <pubDate>Mon, 17 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-3386.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht D-4902/2026 vom 2026-08-17</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-4902_2026</link>
+      <description>Asile (sans excécution du renvoi) (procédure accélérée)</description>
+      <pubDate>Mon, 17 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-4902.2026</guid>
       <category>bvger</category>
     </item>
     <item>
@@ -883,119 +979,6 @@ Arrêt d…</description>
       <pubDate>Mon, 17 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-5819.2024</guid>
       <category>bvger</category>
-    </item>
-    <item>
-      <title>fr_gerichte 101 2026 140 vom 2026-08-17</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_101%202026%20140</link>
-      <description>Tribunal cantonal TC
-Kantonsgericht KG
-Rue des Augustins 3, case postale 630, 1701 Fribourg
-T +41 26 304 15 00
-www.fr.ch/tc
-—
-Pouvoir Judiciaire PJ
-Gerichtsbehörden GB
-101 2026 140
-Arrêt du 11 juin 2026
-Ie Cour d’appel civil
-Composition
-Président :
-J…</description>
-      <pubDate>Mon, 17 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">fr_gerichte_101 2026 140</guid>
-      <category>fr_gerichte</category>
-    </item>
-    <item>
-      <title>ge_gerichte ATAS/691/2026 vom 2026-08-17</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ge_gerichte_ATAS_691_2026</link>
-      <description>Siégeant : Justine BALZLI, présidente; Yves MABILLARD et Michael RUDERMANN, 
-juges assesseurs 
- 
- 
- 
- 
-RÉPUBLIQUE ET 
- 
-CANTON DE GENÈVE 
-POUVOIR JUDICIAIRE 
- 
-A/2579/2025 
-ATAS/691/2026 
-COUR DE JUSTICE 
-Chambre des assurances sociales 
-Arrêt du 17 …</description>
-      <pubDate>Mon, 17 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ge_gerichte_ATAS_691_2026</guid>
-      <category>ge_gerichte</category>
-    </item>
-    <item>
-      <title>ge_gerichte ATAS/692/2026 vom 2026-08-17</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ge_gerichte_ATAS_692_2026</link>
-      <description>Siégeant : Justine BALZLI, présidente; Yves MABILLARD et Michael RUDERMANN, 
-juges assesseurs 
- 
- 
- 
- 
-RÉPUBLIQUE ET 
- 
-CANTON DE GEN ÈVE 
-POUVOIR JUDICIAIRE 
- 
-A/3787/2025 
-ATAS/692/2026 
-COUR DE JUSTICE 
-Chambre des assurances sociales 
-Arrêt du 17…</description>
-      <pubDate>Mon, 17 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ge_gerichte_ATAS_692_2026</guid>
-      <category>ge_gerichte</category>
-    </item>
-    <item>
-      <title>ge_gerichte ATAS/693/2026 vom 2026-08-17</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ge_gerichte_ATAS_693_2026</link>
-      <description>Siégeant : Justine BALZLI, présidente ; Yves MABILLARD et Michael 
-RUDERMANN, juges assesseurs 
- 
- 
- 
- 
-RÉPUBLIQUE ET 
- 
-CANTON DE GEN ÈVE 
-POUVOIR JUDICIAIRE 
- 
-A/3811/2025 
-ATAS/693/2026 
-COUR DE JUSTICE 
-Chambre des assurances sociales 
-Arrêt du 1…</description>
-      <pubDate>Mon, 17 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ge_gerichte_ATAS_693_2026</guid>
-      <category>ge_gerichte</category>
-    </item>
-    <item>
-      <title>ge_gerichte ATAS/694/2026 vom 2026-08-17</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ge_gerichte_ATAS_694_2026</link>
-      <description>Siégeant : Justine BALZLI, présidente; Yves MABILLARD et Michael RUDERMANN, 
-juges assesseurs 
- 
- 
- 
- 
-RÉPUBLIQUE ET 
- 
-CANTON DE GEN ÈVE 
-POUVOIR JUDICIAIRE 
- 
-A/4392/2025 
-ATAS/694/2026 
-COUR DE JUSTICE 
-Chambre des assurances sociales 
-Arrêt du 17…</description>
-      <pubDate>Mon, 17 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ge_gerichte_ATAS_694_2026</guid>
-      <category>ge_gerichte</category>
     </item>
   </channel>
 </rss>

@@ -5,9 +5,17 @@
     <link>https://opencaselaw.ch/feeds/it.xml</link>
     <description>Latest published Swiss court decisions in Italiano.</description>
     <language>de-CH</language>
-    <lastBuildDate>Thu, 27 Aug 2026 11:03:59 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 28 Aug 2026 12:03:39 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/it.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Bundesverwaltungsgericht F-5574/2026 vom 2026-08-19</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-5574_2026</link>
+      <description>Asilo (non entrata nel merito) ed allontanamento (procedura Dublino - art. 31a cpv. 1 lett. b LAsi)</description>
+      <pubDate>Wed, 19 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-5574.2026</guid>
+      <category>bvger</category>
+    </item>
     <item>
       <title>Bundesverwaltungsgericht D-2648/2025 vom 2026-08-14</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-2648_2025</link>
@@ -333,6 +341,36 @@ Ca…</description>
       <category>bvger</category>
     </item>
     <item>
+      <title>Bundesgericht 5D_20/2026 vom 2026-07-30</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_5D_20_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+5D_20/2026
+
+Sentenza del 30 luglio 2026
+
+II Corte di diritto civile
+
+Composizione
+
+Giudici federali Hartmann, Giudice presidente,
+
+De Rossa, Josi,
+
+Cancelliera Antonini.
+
+Partecip…</description>
+      <pubDate>Thu, 30 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:5D_20.2026</guid>
+      <category>bger</category>
+    </item>
+    <item>
       <title>Bundesgericht 9C_267/2026 vom 2026-07-30</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bger_9C_267_2026</link>
       <description>Bundesgericht
@@ -408,6 +446,36 @@ Part…</description>
       <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_114.2026</guid>
       <category>bger</category>
       <category>Diritto delle esecuzioni e del fallimento</category>
+    </item>
+    <item>
+      <title>Bundesgericht 5A_926/2025 vom 2026-07-29</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_926_2025</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+5A_926/2025
+
+Sentenza del 29 luglio 2026
+
+II Corte di diritto civile
+
+Composizione
+
+Giudici federali Hartmann, Giudice presidente,
+
+De Rossa, Brunner,
+
+Cancelliera Antonini.
+
+Part…</description>
+      <pubDate>Wed, 29 Jul 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_926.2025</guid>
+      <category>bger</category>
     </item>
     <item>
       <title>Bundesgericht 7B_933/2026 vom 2026-07-29</title>
@@ -921,97 +989,6 @@ Partecipanti al…</description>
       <pubDate>Wed, 15 Jul 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-8458.2025</guid>
       <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 2C_546/2025 vom 2026-07-14</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_2C_546_2025</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-2C_546/2025
-
-Sentenza del 14 luglio 2026
-
-II Corte di diritto pubblico
-
-Composizione
-
-Giudici federali Aubry Girardin, Presidente,
-
-Hänni, Ryter,
-
-Cancelliere Savoldelli.
-
-Parteci…</description>
-      <pubDate>Tue, 14 Jul 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:2C_546.2025</guid>
-      <category>bger</category>
-      <category>Cittadinanza e diritto degli stranieri</category>
-    </item>
-    <item>
-      <title>Bundesgericht 2F_17/2026 vom 2026-07-14</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_2F_17_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-2F_17/2026
-
-Sentenza del 14 luglio 2026
-
-II Corte di diritto pubblico
-
-Composizione
-
-Giudici federali Aubry Girardin, Presidente,
-
-Hänni, Ryter,
-
-Cancelliere Savoldelli.
-
-Partecip…</description>
-      <pubDate>Tue, 14 Jul 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:2F_17.2026</guid>
-      <category>bger</category>
-      <category>Cittadinanza e diritto degli stranieri</category>
-    </item>
-    <item>
-      <title>Bundesgericht 2C_401/2026 vom 2026-07-13</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_2C_401_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-2C_401/2026
-
-Sentenza del 13 luglio 2026
-
-II Corte di diritto pubblico
-
-Composizione
-
-Giudice federale Aubry Girardin, Presidente,
-
-Cancelliere Savoldelli.
-
-Partecipanti al proced…</description>
-      <pubDate>Mon, 13 Jul 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:2C_401.2026</guid>
-      <category>bger</category>
-      <category>Cittadinanza e diritto degli stranieri</category>
     </item>
   </channel>
 </rss>

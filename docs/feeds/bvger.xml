@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/bvger.xml</link>
     <description>Latest published Bundesverwaltungsgericht decisions.</description>
     <language>de-CH</language>
-    <lastBuildDate>Thu, 27 Aug 2026 11:03:58 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 28 Aug 2026 12:03:36 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/bvger.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -14,6 +14,14 @@
       <description>Nichteintreten auf Asylgesuch und Wegweisung (Dublin-Verfahren - Art. 31a Abs. 1 Bst. b AsylG)</description>
       <pubDate>Wed, 19 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-5565.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht F-5574/2026 vom 2026-08-19</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-5574_2026</link>
+      <description>Asilo (non entrata nel merito) ed allontanamento (procedura Dublino - art. 31a cpv. 1 lett. b LAsi)</description>
+      <pubDate>Wed, 19 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-5574.2026</guid>
       <category>bvger</category>
     </item>
     <item>
@@ -57,6 +65,22 @@
       <category>bvger</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht E-5556/2026 vom 2026-08-18</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-5556_2026</link>
+      <description>Flughafenverfahren (Asyl und Wegweisung)</description>
+      <pubDate>Tue, 18 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-5556.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht E-6536/2025 vom 2026-08-18</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-6536_2025</link>
+      <description>Refus de la protection provisoire</description>
+      <pubDate>Tue, 18 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-6536.2025</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>Bundesverwaltungsgericht F-5067/2026 vom 2026-08-18</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-5067_2026</link>
       <description>Nichteintreten auf Asylgesuch und Wegweisung (Dublin-Verfahren - Art. 31a Abs. 1 Bst. b AsylG)</description>
@@ -73,11 +97,27 @@
       <category>bvger</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht C-3027/2024 vom 2026-08-17</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-3027_2024</link>
+      <description>Rentenrevision</description>
+      <pubDate>Mon, 17 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-3027.2024</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>Bundesverwaltungsgericht D-3386/2026 vom 2026-08-17</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-3386_2026</link>
       <description>Exécution du renvoi (procédure accélérée)</description>
       <pubDate>Mon, 17 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-3386.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht D-4902/2026 vom 2026-08-17</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-4902_2026</link>
+      <description>Asile (sans excécution du renvoi) (procédure accélérée)</description>
+      <pubDate>Mon, 17 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-4902.2026</guid>
       <category>bvger</category>
     </item>
     <item>
@@ -129,11 +169,27 @@
       <category>bvger</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht B-8049/2025 vom 2026-08-14</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_B-8049_2025</link>
+      <description>Arbeitslosenversicherung</description>
+      <pubDate>Fri, 14 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:B-8049.2025</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>Bundesverwaltungsgericht D-2648/2025 vom 2026-08-14</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-2648_2025</link>
       <description>Asilo ed allontanamento</description>
       <pubDate>Fri, 14 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-2648.2025</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht D-3297/2025 vom 2026-08-14</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-3297_2025</link>
+      <description>Verweigerung vorübergehender Schutz</description>
+      <pubDate>Fri, 14 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-3297.2025</guid>
       <category>bvger</category>
     </item>
     <item>
@@ -185,6 +241,14 @@
       <category>bvger</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht F-4925/2025 vom 2026-08-14</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-4925_2025</link>
+      <description>Schengen-Visum</description>
+      <pubDate>Fri, 14 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-4925.2025</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>Bundesverwaltungsgericht D-225/2025 vom 2026-08-13</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-225_2025</link>
       <description>Asyl und Wegweisung</description>
@@ -233,6 +297,14 @@
       <category>bvger</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht F-7643/2025 vom 2026-08-13</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-7643_2025</link>
+      <description>Rechtsverzögerung/Rechtsverweigerung</description>
+      <pubDate>Thu, 13 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-7643.2025</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>Bundesverwaltungsgericht A-6490/2025 vom 2026-08-12</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_A-6490_2025</link>
       <description>Militärdienstpflicht</description>
@@ -254,6 +326,14 @@
       <description>Assicurazione per la vecchiaia e i superstiti (altro)</description>
       <pubDate>Wed, 12 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-3244.2024</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht C-3445/2023 vom 2026-08-12</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-3445_2023</link>
+      <description>Spezialitätenliste</description>
+      <pubDate>Wed, 12 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-3445.2023</guid>
       <category>bvger</category>
     </item>
     <item>
@@ -326,86 +406,6 @@
       <description>Asyl und Wegweisung (Mehrfachgesuch)</description>
       <pubDate>Wed, 12 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-5327.2022</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht E-695/2026 vom 2026-08-12</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-695_2026</link>
-      <description>Datenschutz</description>
-      <pubDate>Wed, 12 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-695.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht F-2631/2026 vom 2026-08-12</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-2631_2026</link>
-      <description>Nichteintreten auf Asylgesuch und Wegweisung (Dublin-Verfahren - Art. 31a Abs. 1 Bst. b AsylG)</description>
-      <pubDate>Wed, 12 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-2631.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht F-4395/2021 vom 2026-08-12</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-4395_2021</link>
-      <description>Naturalisation ordinaire</description>
-      <pubDate>Wed, 12 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-4395.2021</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht F-5339/2026 vom 2026-08-12</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-5339_2026</link>
-      <description>Nichteintreten auf Asylgesuch und Wegweisung (Dublin-Verfahren - Art. 31a Abs. 1 Bst. b AsylG)</description>
-      <pubDate>Wed, 12 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-5339.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht A-2652/2025 vom 2026-08-11</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_A-2652_2025</link>
-      <description>Öffentlichkeitsprinzip</description>
-      <pubDate>Tue, 11 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:A-2652.2025</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht A-5655/2024 vom 2026-08-11</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_A-5655_2024</link>
-      <description>CO2-Abgabe</description>
-      <pubDate>Tue, 11 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:A-5655.2024</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht A-5704/2024 vom 2026-08-11</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_A-5704_2024</link>
-      <description>CO2-Abgabe</description>
-      <pubDate>Tue, 11 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:A-5704.2024</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht A-7657/2024 vom 2026-08-11</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_A-7657_2024</link>
-      <description>Öffentlichkeitsprinzip</description>
-      <pubDate>Tue, 11 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:A-7657.2024</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht D-5082/2026 vom 2026-08-11</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-5082_2026</link>
-      <description>Berichtigung</description>
-      <pubDate>Tue, 11 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-5082.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht E-4210/2024 vom 2026-08-11</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-4210_2024</link>
-      <description>Asyl und Wegweisung</description>
-      <pubDate>Tue, 11 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-4210.2024</guid>
       <category>bvger</category>
     </item>
   </channel>
