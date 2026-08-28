@@ -1267,7 +1267,7 @@ Court decisions are public records under Swiss law. Article 27 BGG requires the 
 
 ## Governance and removal
 
-Republication changes discoverability, so the project ships a governance policy covering source withdrawals, re-anonymization, and verified correction/removal requests. See [docs/governance-and-removal-policy.md](/Users/jonashertner/opencaselaw/docs/governance-and-removal-policy.md).
+Republication changes discoverability, so the project ships a governance policy covering source withdrawals, re-anonymization, and verified correction/removal requests. See [docs/governance-and-removal-policy.md](docs/governance-and-removal-policy.md).
 
 ---
 
