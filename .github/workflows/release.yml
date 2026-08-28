@@ -60,6 +60,7 @@ jobs:
           import os
           import pathlib
           import tarfile
+          import tomllib
           import zipfile
 
           dist = pathlib.Path("dist")
@@ -68,7 +69,16 @@ jobs:
           if len(wheels) != 1 or len(sdists) != 1:
               raise SystemExit(f"expected one wheel and one sdist; got {wheels=} {sdists=}")
 
-          required = ("scrapers/", "search_stack/", "quality/", "web_api/", "study/", "mcp_server.py")
+          config = tomllib.loads(pathlib.Path("pyproject.toml").read_text())
+          configured_modules = config["tool"]["setuptools"]["py-modules"]
+          required = (
+              "scrapers/",
+              "search_stack/",
+              "quality/",
+              "web_api/",
+              "study/",
+              *(f"{module}.py" for module in configured_modules),
+          )
           with zipfile.ZipFile(wheels[0]) as archive:
               names = archive.namelist()
               missing = [item for item in required if not any(name == item or name.startswith(item) for name in names)]
