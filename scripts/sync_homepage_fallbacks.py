@@ -12,6 +12,7 @@ Mirrors the hydration JS exactly (same ids, same formatting):
   #bignum, #f-decisions   ← total                (apostrophe thousands)
   #f-laws                 ← corpus.federal_laws + corpus.cantonal_laws
   #f-cites                ← corpus.citation_edges (one-decimal M)
+  #f-echr                 ← by_court sum over the ECtHR courts
   #cov-courts             ← court_count
   #trust-delta            ← delta.total
   #trust-date             ← generated_at (YYYY-MM-DD)
@@ -64,6 +65,19 @@ def build_replacements(stats: dict) -> list[tuple[str, str, re.Pattern, str]]:
     delta = int((stats.get("delta") or {}).get("total") or 0)
     gen_date = str(stats["generated_at"])[:10]
 
+    # ECtHR strand — summed from by_court exactly as the hydration JS does,
+    # NOT from interesting_stats.echr_switzerland (weekly cadence, and its
+    # total counts all 46 respondent states despite the name). by_court
+    # splits each ECtHR court by canton ('CE' Council-of-Europe-wide, 'CH'
+    # Swiss-respondent), so every row counts, and a court that starts
+    # ingesting (ecthr_committee: defined, zero rows today) appears on its own.
+    echr = sum(
+        int(r.get("count") or 0)
+        for r in (stats.get("by_court") or [])
+        if str(r.get("court", "")).startswith("ecthr_")
+        or r.get("court") in ("hudoc_ch", "bge_egmr")
+    )
+
     # Sanity floor: refuse to write numbers that would themselves embarrass.
     if not (950_000 < total < 5_000_000):
         raise SystemExit(f"implausible total {total}; refusing")
@@ -80,7 +94,7 @@ def build_replacements(stats: dict) -> list[tuple[str, str, re.Pattern, str]]:
     def text_then_span(elem_id: str) -> re.Pattern:
         return re.compile(rf'(id="{elem_id}"[^>]*>)[^<]*(<span)')
 
-    return [
+    rows = [
         ("bignum", fmt_thousands(total),
          text_then_close("bignum"), rf"\g<1>{fmt_thousands(total)}\g<2>"),
         ("f-decisions", fmt_thousands(total),
@@ -96,6 +110,26 @@ def build_replacements(stats: dict) -> list[tuple[str, str, re.Pattern, str]]:
         ("trust-date", gen_date,
          text_then_close("trust-date"), rf"\g<1>{gen_date}\g<2>"),
     ]
+
+    # f-echr degrades instead of blocking. Every other value above reads a
+    # stable top-level key; this one sums a list filtered by court-code
+    # prefix, so a renamed code or an aggregation that starts excluding the
+    # ECtHR courts would zero it. Refusing the whole run over that would
+    # leave the decisions count unrepaired — which is the drift that
+    # actually bit on 2026-08-22 (991'298 shown against a live 1'054'206).
+    # A stale ECtHR number is the smaller harm than a stale headline, so
+    # skip only this element and let the rest sync.
+    if 5_000 < echr < 100_000:
+        rows.append(
+            ("f-echr", fmt_thousands(echr),
+             text_then_span("f-echr"), rf"\g<1>{fmt_thousands(echr)} \g<2>")
+        )
+    else:
+        print(f"WARNING: implausible ECtHR total {echr} from by_court — "
+              f"leaving #f-echr at its current value, syncing the rest",
+              file=sys.stderr)
+
+    return rows
 
 
 def main() -> int:
