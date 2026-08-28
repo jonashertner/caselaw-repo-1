@@ -34,6 +34,10 @@ to HUDOC rather than to the corpus.
   than one respondent state; a column could only express that as a
   substring match.
 - **Idempotent.** `INSERT OR REPLACE` + build-to-`.tmp` + `os.replace()`.
+- **Writes nothing to `state/`.** It instantiates `HUDOCFullScraper` for
+  its discovery paging and so loads scraper state, but never records a
+  decision — verified after four local runs. That matters because on the
+  VPS it shares `state/` with the real nightly ECtHR scraper.
 - **Guarded swap.** See below — this is the part worth understanding.
 
 ## The swap guard
@@ -68,6 +72,30 @@ python3 -m search_stack.build_ecthr_meta --from-jsonl stubs.jsonl
 # Publish anyway after a verified shrink
 python3 -m search_stack.build_ecthr_meta --allow-shrink
 ```
+
+### Installing the timer
+
+Units live in `systemd/` and are **copied** into place on the VPS (not
+symlinked — `/etc/systemd/system/opencaselaw-ecthr.service` is a plain
+copy that currently matches its repo original). `deploy/` also holds ECtHR
+units, but that directory is a disaster-recovery snapshot consumed by
+nothing; its copy is stale. Do not install from it.
+
+After the VPS has fast-forwarded the repo:
+
+```bash
+cd /opt/caselaw/repo
+cp systemd/opencaselaw-ecthr-meta.{service,timer} /etc/systemd/system/
+systemctl daemon-reload
+systemctl enable --now opencaselaw-ecthr-meta.timer
+systemctl list-timers opencaselaw-ecthr-meta.timer   # confirm next run
+```
+
+First run can be forced with `systemctl start opencaselaw-ecthr-meta.service`.
+Note the swap guard will refuse it if `output/ecthr_meta.db` already holds
+substantially more judgments than the run produces.
+
+### Schedule
 
 Timer: `opencaselaw-ecthr-meta.timer`, daily 16:30 UTC — after
 `opencaselaw-ecthr.timer` (14:00 UTC, `TimeoutStartSec=5400`, so the
