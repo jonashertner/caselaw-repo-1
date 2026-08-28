@@ -59,8 +59,12 @@ jobs:
           pip install --quiet build setuptools wheel
           python -m build --wheel --no-isolation
           python - <<'PY'
-          import sys, zipfile
-          z = zipfile.ZipFile('dist/swiss_caselaw_scrapers-0.1.0-py3-none-any.whl')
+          import pathlib, sys, zipfile
+          wheels = list(pathlib.Path('dist').glob('swiss_caselaw_scrapers-*.whl'))
+          if len(wheels) != 1:
+              print('FAIL: expected exactly one wheel, got', wheels)
+              sys.exit(1)
+          z = zipfile.ZipFile(wheels[0])
           required = ('quality/', 'web_api/', 'study/', 'scrapers/', 'search_stack/', 'mcp_server.py')
           missing = [r for r in required if not any(n.startswith(r) or n == r for n in z.namelist())]
           if missing:

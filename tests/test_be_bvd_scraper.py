@@ -3,8 +3,8 @@
 Drafted 2026-06-16 for the entscheidsuche-independence program (workflow
 w7olj6loq): es_be_bvd is an orphan-live court (live upstream, no covering
 sibling). The GWT-RPC parsing is inherited from TribunaBaseScraper (covered by
-the sibling Tribuna tests); this only asserts the be_bvd-specific config +
-registration so a typo can't silently drop the scraper.
+the sibling Tribuna tests); this asserts the be_bvd-specific config and keeps
+the zero-result scraper parked until a productive upstream is validated.
 
 NOTE: a LIVE validation run (`python3 run_scraper.py be_bvd --max 3 -v`, gated)
 is still REQUIRED before the scraper is trusted — the registry previously
@@ -22,10 +22,12 @@ if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 
 
-def test_be_bvd_registered():
+def test_be_bvd_not_registered_until_productive():
     from run_scraper import SCRAPERS
-    assert "be_bvd" in SCRAPERS
-    assert SCRAPERS["be_bvd"] == ("scrapers.cantonal.be_bvd", "BEBvdScraper")
+    # The protocol implementation is intentionally parked: the live portal
+    # currently returns zero rows. Keep it out of production dispatch until a
+    # productive source/filter is validated (see the module status note).
+    assert "be_bvd" not in SCRAPERS
 
 
 def test_be_bvd_imports_and_subclasses_tribuna():
