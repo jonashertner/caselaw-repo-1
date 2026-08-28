@@ -6,10 +6,17 @@ build-backend = "setuptools.build_meta"
 name = "swiss-caselaw-scrapers"
 version = "0.1.0"
 description = "Scraping framework for Swiss federal and cantonal court decisions"
-readme = "README.md"
+readme = "PYPI.md"
 license = "MIT"
 requires-python = ">=3.10"
 authors = [{name = "Jonas Hertner"}]
+keywords = ["Switzerland", "case law", "legal research", "scraping", "MCP"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Text Processing :: Indexing",
+]
 
 dependencies = [
     "requests>=2.31",
@@ -40,7 +47,7 @@ pdf = ["pymupdf>=1.27.2.2", "pdfplumber>=0.11"]
 api = [
     "fastapi>=0.104",
     "uvicorn>=0.24",
-    "mcp>=1.27,<2",
+    "mcp>=1.28.1,<2",
     "python-dotenv>=1.0",
 ]
 # Provider SDKs for the FastAPI orchestrator (web_api/providers/*.py).
