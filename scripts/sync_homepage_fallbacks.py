@@ -111,6 +111,22 @@ def build_replacements(stats: dict) -> list[tuple[str, str, re.Pattern, str]]:
          text_then_close("trust-date"), rf"\g<1>{gen_date}\g<2>"),
     ]
 
+    # Redesign 2026-08-29: three more no-JS fallbacks. Same strictness as the
+    # core rows — the ids exist in the redesigned page; if a future edit drops
+    # one, the non-zero exit surfaces it as the nightly WARN.
+    schol = int(((stats.get("corpus") or {}).get("scholarship_publications")) or 0)
+    if 10_000 < schol < 500_000:
+        rows.append(("f-scholarship", fmt_thousands(schol),
+                     text_then_close("f-scholarship"),
+                     rf"\g<1>{fmt_thousands(schol)}\g<2>"))
+    else:
+        print(f"WARNING: implausible scholarship_publications {schol} — "
+              f"leaving #f-scholarship, syncing the rest", file=sys.stderr)
+    rows.append(("d-today", str(delta),
+                 text_then_close("d-today"), rf"\g<1>{delta}\g<2>"))
+    rows.append(("stamp", gen_date,
+                 text_then_close("stamp"), rf"\g<1>{gen_date}\g<2>"))
+
     # f-echr degrades instead of blocking. Every other value above reads a
     # stable top-level key; this one sums a list filtered by court-code
     # prefix, so a renamed code or an aggregation that starts excluding the

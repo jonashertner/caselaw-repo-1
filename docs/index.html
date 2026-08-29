@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="google-site-verification" content="5eTv5mgNKw8M8vENzS4KPG4aJKYm_zKZJhL3TbQpOGs" />
-<title>OpenCaseLaw — The complete record of Swiss case law, rebuilt every day</title>
-<meta name="description" content="The complete open record of Swiss law: 1,050,000+ published court decisions since 1875, all federal and cantonal courts, plus 9,600+ European Court of Human Rights judgments and 21,000+ federal and cantonal laws. CC0, rebuilt every day, readable by humans and machines.">
-<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0c0c0d" media="(prefers-color-scheme: dark)">
+<title>OpenCaseLaw — The open record of Swiss case law, rebuilt every day</title>
+<meta name="description" content="The open record of Swiss law: 1,050,000+ published court decisions since 1875, all federal and cantonal courts, plus 9,600+ European Court of Human Rights judgments and 21,000+ federal and cantonal laws. CC0, rebuilt every day, readable by humans and machines.">
+<meta name="theme-color" content="#FAF9F5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#131311" media="(prefers-color-scheme: dark)">
 <link rel="canonical" href="https://opencaselaw.ch/">
 <link rel="alternate" hreflang="de" href="https://opencaselaw.ch/?lang=de">
 <link rel="alternate" hreflang="fr" href="https://opencaselaw.ch/?lang=fr">
@@ -18,7 +18,7 @@
 <link rel="icon" href="favicon.svg">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://opencaselaw.ch/">
-<meta property="og:title" content="OpenCaseLaw — the complete record of Swiss case law, rebuilt every day">
+<meta property="og:title" content="OpenCaseLaw — the open record of Swiss case law, rebuilt every day">
 <meta property="og:description" content="1,050,000+ Swiss court decisions since 1875 — all federal and cantonal courts — plus 9,600+ ECtHR judgments and 21,000+ laws. CC0, daily, machine-readable.">
 <meta property="og:image" content="https://opencaselaw.ch/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -26,207 +26,206 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://mcp.opencaselaw.ch">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script>document.documentElement.classList.add('js');</script>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Dataset","name":"OpenCaseLaw — Swiss Case Law Open Dataset","description":"The complete open record of published Swiss court decisions (1875–present) from all federal and cantonal courts, plus European Court of Human Rights judgments, federal and cantonal legislation, and a resolved citation graph. Rebuilt daily.","url":"https://opencaselaw.ch/","license":"https://creativecommons.org/publicdomain/zero/1.0/","isAccessibleForFree":true,"creator":{"@type":"Person","name":"Jonas Hertner"},"temporalCoverage":"1875/..","inLanguage":["de","fr","it","en"],"distribution":[{"@type":"DataDownload","encodingFormat":"application/vnd.apache.parquet","contentUrl":"https://huggingface.co/datasets/voilaj/swiss-caselaw"}]}
+{"@context":"https://schema.org","@type":"Dataset","name":"OpenCaseLaw — Swiss Case Law Open Dataset","description":"The open record of published Swiss court decisions (1875–present) from all federal and cantonal courts, plus European Court of Human Rights judgments, federal and cantonal legislation, and a resolved citation graph. Rebuilt daily.","url":"https://opencaselaw.ch/","license":"https://creativecommons.org/publicdomain/zero/1.0/","isAccessibleForFree":true,"creator":{"@type":"Person","name":"Jonas Hertner"},"temporalCoverage":"1875/..","inLanguage":["de","fr","it","en"],"distribution":[{"@type":"DataDownload","encodingFormat":"application/vnd.apache.parquet","contentUrl":"https://huggingface.co/datasets/voilaj/swiss-caselaw"}]}
 </script>
 <style>
-/* ============================================================================
-   OpenCaseLaw — Refined Swiss Modernist (v3). Restraint, air, one red accent.
-   ========================================================================= */
 :root{
-  --ink:#0b0b0c; --paper:#ffffff; --paper-2:#faf9f7;
-  --t1:#101012; --t2:#56565c; --t3:#83838a;
-  --line:rgba(11,11,12,.11); --line-2:rgba(11,11,12,.06);
-  --red:#c01622; --red-fill:#c01622; --on-red:#ffffff; --red-bright:#da291c;
+  --paper:#FAF9F5;--paper-2:#F3F1EB;
+  --t1:#1B1A17;--t2:#5A574F;--t3:#737067;
+  --line:rgba(27,26,23,.15);--line-2:rgba(27,26,23,.07);
+  --shu:#C33D2E;--on-shu:#FCF9F4;
+  --f-serif:'Shippori Mincho','Times New Roman',Georgia,serif;
   --f-sans:'IBM Plex Sans','Helvetica Neue',Arial,system-ui,sans-serif;
-  --f-mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
-  --gut:clamp(24px,6vw,80px);
-  --maxw:1180px;
+  --f-mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --gut:clamp(24px,6vw,72px);--maxw:1120px;
   --ease:cubic-bezier(.22,.61,.36,1);
 }
-@media (prefers-color-scheme:dark){
-  :root{
-    --ink:#0c0c0d; --paper:#0c0c0d; --paper-2:#141416;
-    --t1:#f4f4f3; --t2:#adadb4; --t3:#7e7e85;
-    --line:rgba(255,255,255,.13); --line-2:rgba(255,255,255,.07);
-    --red:#ff5252; --red-fill:#ff5252; --on-red:#1a0c0c; --red-bright:#ff5252;
-  }
-}
+@media (prefers-color-scheme:dark){:root{
+  --paper:#131311;--paper-2:#1A1A17;
+  --t1:#EDEBE3;--t2:#B0ADA3;--t3:#8A877D;
+  --line:rgba(237,235,227,.17);--line-2:rgba(237,235,227,.08);
+  --shu:#E05A44;--on-shu:#1B0F0B;
+}}
 *{box-sizing:border-box}
-html{background:var(--paper);-webkit-text-size-adjust:100%}
-body{
-  margin:0;font-family:var(--f-sans);color:var(--t1);background:var(--paper);
-  font-size:16px;line-height:1.6;font-weight:400;
-  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
-  font-feature-settings:'kern' 1,'liga' 1;
-}
-a{color:inherit;text-decoration:none}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--paper);color:var(--t1);font-family:var(--f-sans);
+  font-size:16.5px;line-height:1.65;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 .wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--gut)}
-.mono{font-family:var(--f-mono);font-feature-settings:'tnum' 1}
+a{color:inherit;text-decoration:none}
+p a,li a{text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
+p a:hover,li a:hover{text-decoration-color:var(--shu)}
+:focus-visible{outline:2px solid var(--shu);outline-offset:3px;border-radius:2px}
 .tnum{font-variant-numeric:tabular-nums lining-nums}
-.skip{position:absolute;left:-999px;top:0;background:var(--ink);color:#fff;padding:10px 16px;z-index:99}
-.skip:focus{left:8px;top:8px}
-:focus-visible{outline:2px solid var(--red);outline-offset:3px;border-radius:3px}
+.skip{position:absolute;left:-9999px;top:0;background:var(--t1);color:var(--paper);padding:8px 14px;z-index:99}
+.skip:focus{left:12px;top:12px}
 
-/* ── Nav ─────────────────────────────────────────────────────── */
-.nav{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--paper) 90%,transparent);
-  backdrop-filter:saturate(180%) blur(14px);-webkit-backdrop-filter:saturate(180%) blur(14px);
-  border-bottom:1px solid var(--line)}
-.nav .wrap{display:flex;align-items:center;gap:18px;height:62px}
-.brand{display:inline-flex;align-items:center;gap:9px;font-family:var(--f-mono);font-weight:600;font-size:14px;letter-spacing:-.01em;color:var(--t1)}
-.brand .glyph{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border:1px solid var(--line);border-radius:5px;color:var(--red);font-weight:700}
-.nav-links{display:flex;gap:22px;margin-left:auto;align-items:center;font-size:14px}
-.nav-links a:not(.nav-cta){color:var(--t2);transition:color .15s var(--ease)}
-.nav-links a:not(.nav-cta):hover{color:var(--t1)}
-.nav-cta{display:inline-flex;align-items:center;gap:6px;background:var(--red-fill);color:var(--on-red);font-weight:500;
-  padding:8px 15px;border-radius:7px;font-size:14px;transition:transform .15s var(--ease),box-shadow .15s}
-.nav-cta:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(192,22,34,.24)}
-.langs{display:flex;gap:2px;font-family:var(--f-mono);font-size:12px}
-.langs a{color:var(--t2);padding:5px 7px;border-radius:5px;text-transform:uppercase;letter-spacing:.03em;transition:color .15s}
-.langs a:hover{color:var(--t1)}
-.langs a.on{color:var(--red);font-weight:600}
-.nav-burger{display:none;margin-left:auto;width:42px;height:42px;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:7px;background:none;color:var(--t1);cursor:pointer;font-size:18px}
-@media(max-width:860px){
-  .nav-links{display:none}
-  .nav-burger{display:inline-flex;font-size:0}
-  .nav-burger::before{content:"\2630";font-size:19px;line-height:1}
+/* ── nav ── */
+.nav{position:sticky;top:0;z-index:50;background:var(--paper);background:color-mix(in srgb,var(--paper) 90%,transparent);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line-2)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
+.brand{font-family:var(--f-mono);font-size:14px;letter-spacing:.01em;color:var(--t1);display:inline-flex;align-items:center;gap:7px}
+.brand .glyph{color:var(--shu);font-weight:500}
+.nav-links{display:flex;align-items:center;gap:26px;font-size:13.5px;color:var(--t2)}
+.nav-links a:hover{color:var(--t1)}
+.nav-cta{color:var(--t1);border-bottom:1px solid var(--line);padding-bottom:1px}
+.nav-cta:hover{border-bottom-color:var(--shu)}
+.langs{display:inline-flex;gap:8px;font-family:var(--f-mono);font-size:11.5px;letter-spacing:.05em}
+.langs a{color:var(--t3);text-transform:uppercase;padding:5px 2px}
+.langs a.on{color:var(--t1);border-bottom:1px solid var(--t1)}
+.nav-burger{display:none;background:none;border:none;font-size:20px;color:var(--t1);cursor:pointer;padding:6px}
+@media(max-width:820px){
+  .nav-burger{display:block}
+  .nav-links{display:none;position:absolute;top:60px;left:0;right:0;background:var(--paper);
+    border-bottom:1px solid var(--line);flex-direction:column;align-items:stretch;padding:10px var(--gut) 18px;gap:0;font-size:16px}
+  .nav-links a{padding:12px 0;border-bottom:1px solid var(--line-2)}
+  .nav-links .langs{padding:14px 0 0}
+  body.menu .nav-links{display:flex}
   body.menu{overflow:hidden}
-  body.menu .nav{backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--paper)}
-  body.menu .nav-burger::before{content:"\2715"}
-  body.menu .nav-links{display:flex;position:fixed;inset:62px 0 0 0;flex-direction:column;align-items:stretch;
-    background:var(--paper);padding:16px var(--gut) max(36px,env(safe-area-inset-bottom));gap:0;margin:0;z-index:39;overflow-y:auto}
-  body.menu .nav-links a:not(.nav-cta){padding:21px 2px;border-bottom:1px solid var(--line-2);font-size:22px;font-weight:500;color:var(--t1);letter-spacing:-.015em}
-  body.menu .nav-cta{justify-content:center;margin-top:28px;padding:16px;font-size:16px;border-radius:11px;border-bottom:none}
-  body.menu .langs{margin-top:auto;padding-top:32px;justify-content:center;gap:7px;border-bottom:none}
-  body.menu .langs a{font-size:14px;padding:11px 15px}
 }
 
-/* ── Hero ────────────────────────────────────────────────────── */
-.hero{position:relative;text-align:center;padding:clamp(64px,12vw,140px) 0 clamp(48px,8vw,96px);overflow:hidden}
-.hero::before{content:'';position:absolute;inset:0;z-index:0;pointer-events:none;
-  background-image:linear-gradient(var(--line-2) 1px,transparent 1px),linear-gradient(90deg,var(--line-2) 1px,transparent 1px);
-  background-size:100% 3rem,3.2rem 100%;
-  -webkit-mask-image:radial-gradient(ellipse 70% 58% at 50% 32%,#000,transparent 78%);
-  mask-image:radial-gradient(ellipse 70% 58% at 50% 32%,#000,transparent 78%)}
-.hero .wrap{position:relative;z-index:1;max-width:880px}
-.kicker{font-family:var(--f-mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--t3);margin:0 0 28px}
-.kicker b{color:var(--red);font-weight:600}
-.bignum{font-weight:600;font-size:clamp(64px,15vw,168px);line-height:.84;letter-spacing:-.035em;
-  font-variant-numeric:tabular-nums lining-nums;margin:0}
-.num-rule{width:54px;height:3px;background:var(--red);border-radius:2px;margin:22px auto 14px}
-.num-label{font-size:14px;color:var(--t2);margin:0}
-.headline{font-weight:600;font-size:clamp(26px,4.2vw,42px);line-height:1.12;letter-spacing:-.022em;margin:44px auto 0;max-width:18ch;text-wrap:balance}
-.headline em{font-style:normal;color:var(--red)}
-.subline{font-size:clamp(15px,1.7vw,18px);color:var(--t2);max-width:54ch;margin:20px auto 0;line-height:1.55;text-wrap:balance}
-.hero-actions{display:flex;gap:13px;justify-content:center;flex-wrap:wrap;margin:36px 0 0}
-.btn{display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:500;padding:13px 24px;border-radius:9px;
-  border:1px solid transparent;transition:transform .16s var(--ease),border-color .16s,box-shadow .16s;cursor:pointer}
-.btn .arr{transition:transform .16s var(--ease)}
-.btn:hover .arr{transform:translateX(3px)}
-.btn-primary{background:var(--red-fill);color:var(--on-red);box-shadow:0 1px 2px rgba(192,22,34,.28)}
-.btn-primary:hover{transform:translateY(-1px);box-shadow:0 12px 30px rgba(192,22,34,.22)}
-.btn-ghost{background:transparent;color:var(--t1);border-color:var(--line)}
-.btn-ghost:hover{border-color:var(--t1)}
-.hero-trust{display:inline-flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center;
-  margin:30px auto 0;font-family:var(--f-mono);font-size:12.5px;color:var(--t2)}
-.dot{width:7px;height:7px;border-radius:50%;background:var(--red-bright);position:relative;display:inline-block}
-.dot::after{content:'';position:absolute;inset:-3px;border-radius:50%;border:1px solid var(--red-bright);animation:ping 2.4s var(--ease) infinite}
-@keyframes ping{0%{transform:scale(.7);opacity:.7}70%,100%{transform:scale(2.4);opacity:0}}
-
-/* ── Responsive tuning ───────────────────────────────────────── */
-@media(min-width:1500px){:root{--maxw:1280px}.bignum{font-size:clamp(120px,13vw,196px)}}
-@media(max-width:560px){
-  .hero{padding:clamp(44px,13vw,72px) 0 52px}
-  .bignum{font-size:clamp(50px,17vw,86px)}
-  .hero-actions{width:100%;gap:10px}
-  .hero-actions .btn{flex:1 1 100%;justify-content:center;padding:14px 20px}
-  .sec{padding:clamp(52px,12vw,72px) 0}
-  .fact{padding:22px 0}
-  .daily{gap:20px 30px}
-  .stamp{margin-left:0;width:100%;margin-top:4px}
-  .connect-url{padding:15px 16px}
-  .copy{margin-left:0}
-}
-@media(max-width:380px){
-  .cov{grid-template-columns:repeat(2,1fr)}
-  .bignum{letter-spacing:-.04em}
+/* ── hero ── */
+.hero{padding:clamp(64px,11vw,140px) 0 clamp(56px,9vw,110px)}
+.kicker{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--t3);margin:0 0 clamp(28px,5vw,56px)}
+.hero-top{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:clamp(24px,5vw,72px);align-items:end}
+.bignum{font-family:var(--f-serif);font-weight:500;font-size:clamp(44px,13vw,164px);line-height:.95;
+  letter-spacing:-.015em;margin:0;color:var(--t1)}
+.num-rule{height:1px;background:var(--line);margin-top:clamp(16px,3vw,26px)}
+.num-label{font-size:14px;color:var(--t2);margin:14px 0 0;max-width:46ch}
+#num-unique{color:var(--t3);margin-top:6px;font-size:12.5px;min-height:1.65em}
+.hanko-col{display:flex;flex-direction:column;align-items:center;gap:14px;padding-bottom:8px}
+.hanko{width:clamp(88px,9vw,108px);aspect-ratio:1;background:var(--shu);color:var(--on-shu);
+  border-radius:8px;transform:rotate(-2.5deg);display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-family:var(--f-mono);line-height:1.25;text-align:center;box-shadow:0 1px 0 rgba(0,0,0,.04)}
+.hanko .h-delta{font-size:21px;font-weight:500}
+.hanko .h-date{font-size:10px;letter-spacing:.06em;opacity:.92}
+.hanko-cap{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.08em;color:var(--t3);text-align:center;max-width:20ch;line-height:1.6}
+.headline{font-family:var(--f-serif);font-weight:500;font-size:clamp(25px,3.6vw,40px);line-height:1.32;
+  letter-spacing:-.005em;margin:clamp(48px,8vw,88px) 0 0;max-width:24em;text-wrap:balance}
+.headline em{font-style:normal;text-decoration:underline;text-decoration-color:var(--shu);
+  text-decoration-thickness:2px;text-underline-offset:7px}
+.subline{font-size:16.5px;color:var(--t2);max-width:56ch;margin:20px 0 0}
+.hero-actions{display:flex;flex-wrap:wrap;gap:14px 26px;margin:34px 0 0;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:9px;font-size:14.5px}
+.btn-primary{background:var(--t1);color:var(--paper);padding:12px 22px;border-radius:3px}
+.btn-primary:hover{background:var(--shu);color:var(--on-shu)}
+.btn-ghost{color:var(--t1);border-bottom:1px solid var(--line);padding-bottom:2px}
+.btn-ghost:hover{border-bottom-color:var(--shu)}
+.arr{font-family:var(--f-sans)}
+@media(max-width:640px){
+  .hero-top{grid-template-columns:1fr;gap:30px}
+  .hanko-col{flex-direction:row;align-items:center;justify-content:flex-start;gap:18px}
+  .hanko-cap{text-align:left;max-width:26ch}
 }
 
-/* ── Sections ────────────────────────────────────────────────── */
-.sec{padding:clamp(64px,9vw,112px) 0;border-top:1px solid var(--line)}
-.sec-tag{font-family:var(--f-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);margin:0 0 10px}
-.sec-tag .n{color:var(--red)}
-.sec-h{font-weight:600;font-size:clamp(24px,3.4vw,36px);letter-spacing:-.02em;line-height:1.12;margin:0;max-width:20ch}
-.sec-sub{color:var(--t2);font-size:clamp(15px,1.6vw,17px);margin:14px 0 0;max-width:56ch;line-height:1.55}
+/* ── sections: rail + content ── */
+.sec{padding:clamp(64px,10vw,140px) 0;scroll-margin-top:72px}
+.sec .wrap{display:grid;grid-template-columns:64px minmax(0,1fr);gap:clamp(20px,4vw,56px)}
+.sec-rail{border-top:1px solid var(--line);padding-top:18px}
+.sec-tag{writing-mode:vertical-rl;transform:rotate(180deg);margin:0;
+  font-family:var(--f-mono);font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--t3);white-space:nowrap}
+.sec-tag .n{color:var(--t3);letter-spacing:.1em}
+.sec-body{border-top:1px solid var(--line);padding-top:clamp(26px,4vw,44px)}
+.sec-h{font-family:var(--f-serif);font-weight:500;font-size:clamp(23px,3vw,33px);line-height:1.35;
+  letter-spacing:-.004em;margin:0 0 14px;max-width:26em;text-wrap:balance}
+.sec-sub{font-size:15.5px;color:var(--t2);max-width:58ch;margin:0 0 clamp(30px,5vw,52px)}
+@media(max-width:820px){
+  .sec .wrap{grid-template-columns:1fr;gap:0}
+  .sec-rail{border-top:none;padding:0}
+  .sec-tag{writing-mode:horizontal-tb;transform:none;margin:0 0 14px}
+}
 
-/* Inside-the-corpus editorial rows */
-.facts{margin-top:48px;border-top:1px solid var(--line)}
-.fact{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1.4fr);gap:24px;align-items:baseline;
-  padding:30px 0;border-bottom:1px solid var(--line)}
-.fact-n{font-weight:600;font-size:clamp(34px,5vw,60px);letter-spacing:-.03em;line-height:.95;font-variant-numeric:tabular-nums lining-nums}
-.fact-n .u{font-size:.42em;color:var(--t3);font-weight:500;margin-left:8px;letter-spacing:0}
-.fact-t{font-size:15px;color:var(--t2);line-height:1.55}
-.fact-t b{color:var(--t1);font-weight:600}
-@media(max-width:680px){.fact{grid-template-columns:1fr;gap:8px}}
+/* ── facts ── */
+.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 clamp(28px,5vw,64px)}
+.fact{padding:clamp(22px,3vw,30px) 0;border-top:1px solid var(--line-2)}
+.facts .fact:nth-child(-n+2){border-top:none;padding-top:0}
+.fact-n{font-family:var(--f-mono);font-size:clamp(21px,2.6vw,27px);font-weight:500;letter-spacing:-.02em;color:var(--t1)}
+.fact-n .u{font-family:var(--f-sans);font-size:13px;font-weight:400;letter-spacing:.02em;color:var(--t3);margin-left:6px}
+.fact-t{font-size:14.5px;color:var(--t2);margin-top:9px;max-width:52ch}
+.fact-t b{font-weight:500;color:var(--t1)}
+@media(max-width:640px){.facts{grid-template-columns:1fr}.facts .fact:nth-child(2){border-top:1px solid var(--line-2);padding-top:22px}}
 
-/* Cantonal coverage grid (signature) */
-.cov{margin-top:44px;display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:10px}
-.cv{border:1px solid var(--line);border-radius:9px;padding:13px 14px;transition:border-color .16s var(--ease),transform .16s,box-shadow .16s;background:var(--paper)}
-.cv:hover{border-color:var(--t3);transform:translateY(-2px);box-shadow:0 10px 26px var(--line-2)}
-.cv.fed{border-color:color-mix(in srgb,var(--red) 40%,var(--line))}
-.cv-code{font-family:var(--f-mono);font-size:12px;color:var(--t3);text-transform:uppercase;letter-spacing:.04em}
-.cv.fed .cv-code{color:var(--red)}
-.cv-n{font-weight:600;font-size:21px;letter-spacing:-.02em;margin:6px 0 9px;font-variant-numeric:tabular-nums}
-.cv-bar{height:3px;border-radius:2px;background:var(--line);overflow:hidden}
-.cv-bar i{display:block;height:100%;background:var(--t2);width:0;transition:width .9s var(--ease)}
-.cv.fed .cv-bar i{background:var(--red)}
-.cov-foot{margin-top:18px;font-family:var(--f-mono);font-size:12.5px;color:var(--t3)}
 
-/* Daily strip */
-.daily{margin-top:40px;display:flex;flex-wrap:wrap;gap:14px 40px;align-items:flex-end}
-.daily .d{flex:0 0 auto}
-.daily .d-n{font-weight:600;font-size:clamp(30px,4.4vw,48px);letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
-.daily .d-n.pos{color:var(--red)}
-.daily .d-l{font-size:13px;color:var(--t2);margin-top:8px}
-.stamp{font-family:var(--f-mono);font-size:12.5px;color:var(--t3);margin-left:auto;align-self:center}
+/* ── register of holdings ── */
+.register{margin-top:clamp(40px,6vw,64px)}
+.reg-g{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--t3);margin:36px 0 4px;padding-top:16px;border-top:1px solid var(--line)}
+.register .reg-g:first-child{margin-top:0}
+.reg-row{display:flex;align-items:baseline;justify-content:space-between;gap:20px;
+  padding:12px 10px;margin-inline:-10px;border-top:1px solid var(--line-2);transition:background .25s var(--ease)}
+.reg-row:hover{background:var(--paper-2)}
+.reg-main{display:flex;flex-direction:column;gap:3px;min-width:0}
+.reg-l{font-size:14.5px;font-weight:500;color:var(--t1)}
+a.reg-l{align-self:flex-start;border-bottom:1px solid var(--line)}
+a.reg-l:hover{border-bottom-color:var(--shu);color:var(--shu)}
+.reg-d{font-size:13px;color:var(--t3);max-width:56ch}
+.reg-n{font-family:var(--f-mono);font-size:13.5px;color:var(--t1);white-space:nowrap}
+@media (prefers-reduced-motion:reduce){.reg-row{transition:none}}
 
-/* Connect */
-.connect-url{margin-top:40px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;
-  border:1px solid var(--line);border-radius:12px;padding:18px 20px;background:var(--paper-2)}
-.connect-url code{font-family:var(--f-mono);font-size:clamp(15px,2.4vw,22px);font-weight:500;color:var(--t1);letter-spacing:-.01em}
-.copy{margin-left:auto;display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:500;font-family:var(--f-mono);
-  border:1px solid var(--line);border-radius:7px;padding:9px 13px;background:var(--paper);color:var(--t2);cursor:pointer;transition:.15s}
-.copy:hover{color:var(--t1);border-color:var(--t3)}
-.copy.done{color:var(--red);border-color:var(--red)}
-.clients{margin-top:18px;display:flex;flex-wrap:wrap;gap:8px}
-.client{font-family:var(--f-mono);font-size:12.5px;color:var(--t2);border:1px solid var(--line);border-radius:999px;padding:5px 13px}
-.connect-note{margin-top:18px;font-size:14px;color:var(--t2)}
-.connect-note a{color:var(--red);text-decoration:underline;text-underline-offset:3px}
+/* ── coverage ── */
+.cov{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:26px 22px}
+.cv-code{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;color:var(--t3)}
+.cv-n{font-family:var(--f-mono);font-size:13.5px;color:var(--t1);margin:4px 0 7px}
+.cv-bar{height:2px;background:var(--line-2);overflow:hidden}
+.cv-bar i{display:block;height:100%;background:var(--t2);transition:width 1.1s var(--ease)}
+.cv.fed .cv-code{color:var(--shu)}
+.cv.fed .cv-bar i{background:var(--shu)}
+.cov-foot{font-family:var(--f-mono);font-size:12px;letter-spacing:.05em;color:var(--t3);
+  margin:clamp(28px,4vw,44px) 0 0;padding-top:16px;border-top:1px solid var(--line-2)}
+#cov-courts{color:var(--t1)}
 
-/* ── Footer ──────────────────────────────────────────────────── */
-.foot{border-top:1px solid var(--line);padding:64px 0 44px;color:var(--t2);font-size:14px}
-.foot-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:32px}
-@media(max-width:680px){.foot-grid{grid-template-columns:1fr 1fr}}
-.foot h4{font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--t1);margin:0 0 14px;font-weight:600}
-.foot ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
-.foot a{color:var(--t2)}
-.foot a:hover{color:var(--t1)}
-.foot-tag{max-width:30ch;line-height:1.55}
-.foot-legal{margin-top:40px;font-family:var(--f-mono);font-size:12px;color:var(--t3)}
+/* ── daily ── */
+.daily{display:flex;flex-wrap:wrap;gap:0;align-items:stretch}
+.d{padding:6px clamp(28px,5vw,56px) 6px 0;margin-right:clamp(28px,5vw,56px);border-right:1px solid var(--line-2)}
+.d:last-of-type{border-right:none}
+.d-n{font-family:var(--f-serif);font-size:clamp(34px,5vw,54px);font-weight:500;line-height:1.1;color:var(--t1)}
+.d-n.pos{color:var(--shu)}
+.d-l{font-size:13px;color:var(--t3);margin-top:6px}
+.stamp{flex-basis:100%;font-family:var(--f-mono);font-size:11.5px;letter-spacing:.08em;color:var(--t3);
+  margin:clamp(26px,4vw,40px) 0 0}
+@media(max-width:640px){.d{padding-right:20px;margin-right:20px}}
 
-/* ── Motion: staggered reveal ───────────────────────────────── */
-.js .rv{opacity:0;transform:translateY(16px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
-.rv.in{opacity:1;transform:none}
-.hero .wrap > *{animation:rise .8s var(--ease) both}
-.kicker{animation-delay:.02s}.bignum,.num-rule,.num-label{animation-delay:.06s}
-.headline{animation-delay:.16s}.subline{animation-delay:.22s}.hero-actions{animation-delay:.3s}.hero-trust{animation-delay:.38s}
-@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
-@media(prefers-reduced-motion:reduce){
-  .js .rv{opacity:1!important;transform:none!important;transition:none}
-  .hero .wrap > *{animation:none}
-  .dot::after,.cv-bar i{animation:none;transition:none}
+/* ── connect ── */
+.connect-url{display:flex;align-items:center;gap:14px;border:1px solid var(--line);
+  padding:16px 20px;max-width:520px;background:var(--paper)}
+.connect-url code{font-family:var(--f-mono);font-size:15.5px;color:var(--t1);flex:1;overflow-x:auto;white-space:nowrap}
+.copy{font-family:var(--f-mono);font-size:12px;letter-spacing:.06em;background:none;border:none;cursor:pointer;
+  color:var(--t2);border-bottom:1px solid var(--line);padding:2px 0}
+.copy:hover{color:var(--shu);border-bottom-color:var(--shu)}
+.copy.done{color:var(--shu);border-bottom-color:transparent}
+.clients{margin:22px 0 0;font-family:var(--f-mono);font-size:12.5px;letter-spacing:.03em;color:var(--t2);display:flex;flex-wrap:wrap;gap:6px 0}
+.client:not(:last-child)::after{content:"·";margin:0 10px;color:var(--t3)}
+.connect-note{font-size:14px;color:var(--t2);margin:26px 0 0;max-width:56ch}
+.connect-note a{color:var(--t1);text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
+.connect-note a:hover{text-decoration-color:var(--shu)}
+
+/* ── footer ── */
+.foot{border-top:1px solid var(--line);padding:clamp(44px,7vw,72px) 0 clamp(28px,4vw,44px);margin-top:clamp(24px,4vw,48px)}
+.foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:36px}
+.foot-tag{font-size:13.5px;color:var(--t3);max-width:30ch}
+.foot h2{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--t3);margin:4px 0 14px;font-weight:500}
+.foot ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px;font-size:13.5px}
+.foot ul a{color:var(--t2);text-decoration:none}
+.foot ul a:hover{color:var(--t1)}
+.foot-legal{font-family:var(--f-mono);font-size:11px;letter-spacing:.04em;color:var(--t3);
+  margin:clamp(36px,6vw,56px) 0 0;padding-top:18px;border-top:1px solid var(--line-2)}
+@media(max-width:820px){.foot-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.foot-grid{grid-template-columns:1fr}}
+
+.sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* ── motion ── */
+.js .rv{opacity:0;transform:translateY(12px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+.js .rv.in{opacity:1;transform:none}
+.settle{animation:settle .8s var(--ease)}
+@keyframes settle{from{opacity:.3}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){
+  .js .rv{opacity:1;transform:none;transition:none}
+  .cv-bar i{transition:none}
+  .settle{animation:none}
 }
 </style>
 </head>
@@ -236,8 +235,8 @@ a{color:inherit;text-decoration:none}
 <header class="nav">
   <div class="wrap">
     <a class="brand" href="/"><span class="glyph">+</span> opencaselaw.ch</a>
-    <button class="nav-burger" aria-label="Menu" aria-expanded="false" onclick="document.body.classList.toggle('menu')">☰</button>
-    <nav class="nav-links" aria-label="Primary">
+    <button class="nav-burger" aria-label="Menu" aria-expanded="false" aria-controls="nav-links" onclick="var o=document.body.classList.toggle('menu');this.setAttribute('aria-expanded',o);this.textContent=o?'\u2715':'\u2630'">☰</button>
+    <nav class="nav-links" id="nav-links" aria-label="Primary">
       <a href="/search/" data-t="nav_search">Search</a>
       <a href="/courts/" data-t="nav_courts">Courts</a>
       <a href="/laws/" data-t="nav_laws">Laws</a>
@@ -249,75 +248,117 @@ a{color:inherit;text-decoration:none}
 
 <main id="main">
 
-  <!-- HERO — completeness + daily -->
+  <!-- HERO — the archive, stamped daily -->
   <section class="hero">
     <div class="wrap">
-      <p class="kicker"><b data-t="kick_a">Complete</b> · <span data-t="kick_b">rebuilt every day</span></p>
-      <p class="bignum tnum" id="bignum">1&#8217;061&#8217;709</p>
-      <div class="num-rule" aria-hidden="true"></div>
-      <p class="num-label" data-t="hero_label">published Swiss court decisions, 1875–<span class="cy"></span></p>
-      <p class="num-label" id="num-unique" style="color:var(--t3);margin-top:6px;font-size:13px"></p>
-      <h1 class="headline" data-t="hero_h1">The complete record of Swiss case law — <em>rebuilt every day.</em></h1>
+      <p class="kicker"><span data-t="kick_b">rebuilt every day</span></p>
+      <div class="hero-top">
+        <div>
+          <p class="bignum tnum" id="bignum">1&#8217;061&#8217;709</p>
+          <div class="num-rule" aria-hidden="true"></div>
+          <p class="num-label" data-t="hero_label">published Swiss court decisions, 1875–<span class="cy">2026</span></p>
+          <p class="num-label" id="num-unique"></p>
+        </div>
+        <div class="hanko-col" role="group" aria-label="Daily rebuild stamp">
+          <div class="hanko">
+            <span class="h-delta tnum"><span id="trust-delta-seg"><span data-t="trust_new">+</span><b id="trust-delta">120</b></span></span>
+            <span class="h-date"><span id="trust-date">2026-08-29</span></span>
+          </div>
+          <p class="hanko-cap">CC0 · <span data-t="trust_cov">all 26 cantons + federal courts</span></p>
+        </div>
+      </div>
+      <h1 class="headline" data-t="hero_h1">The open record of Swiss case law — <em>rebuilt every day.</em></h1>
       <p class="subline" data-t="hero_sub">Every published decision from every federal and cantonal court, plus 21,000+ federal and cantonal laws. Open data (CC0), machine-readable.</p>
       <div class="hero-actions">
         <a href="#connect" class="btn btn-primary"><span data-t="cta_connect">Connect your AI</span> <span class="arr" aria-hidden="true">→</span></a>
         <a href="/search/" class="btn btn-ghost"><span data-t="cta_search">Search the corpus</span> <span class="arr" aria-hidden="true">→</span></a>
       </div>
-      <p class="hero-trust">
-        <span class="dot" aria-hidden="true"></span>
-        <span><span id="trust-delta-seg"><span data-t="trust_new">+</span><b id="trust-delta">120</b> · </span><span id="trust-date">2026-08-29</span> · CC0 · <span data-t="trust_cov">all 26 cantons + federal courts</span></span>
-      </p>
     </div>
   </section>
 
   <!-- INSIDE THE CORPUS -->
   <section class="sec rv" id="corpus">
     <div class="wrap">
-      <p class="sec-tag"><span class="n">§01</span> <span data-t="t_inside">Inside the corpus</span></p>
-      <h2 class="sec-h" data-t="inside_h">An open dataset of Swiss law.</h2>
-      <div class="facts">
-        <div class="fact">
-          <div class="fact-n tnum" id="f-decisions">1&#8217;061&#8217;709 <span class="u" data-t="u_decisions">decisions</span></div>
-          <div class="fact-t" data-t="f_decisions_t">Published rulings from the Federal Supreme Court, every federal court, and all 26 cantons — <b>1875–<span class="cy"></span></b>, in German, French and Italian.</div>
+      <div class="sec-rail"><p class="sec-tag"><span class="n">01</span>&#8202;&#8202;<span data-t="t_inside">Inside the corpus</span></p></div>
+      <div class="sec-body">
+        <h2 class="sec-h" data-t="inside_h">An open dataset of Swiss law.</h2>
+        <div class="facts">
+          <div class="fact">
+            <div class="fact-n tnum" id="f-decisions">1&#8217;061&#8217;709 <span class="u" data-t="u_decisions">decisions</span></div>
+            <div class="fact-t" data-t="f_decisions_t">Published rulings from the Federal Supreme Court, every federal court, and all 26 cantons — <b>1875–<span class="cy">2026</span></b>, in German, French and Italian.</div>
+          </div>
+          <div class="fact">
+            <div class="fact-n tnum" id="f-echr">9&#8217;614 <span class="u" data-t="u_echr">ECtHR judgments</span></div>
+            <div class="fact-t" data-t="f_echr_t">The Swiss-respondent case law, plus every Chamber and Grand Chamber judgment of importance 1–3 against any of the 46 Council of Europe states — <b>1960–<span class="cy">2026</span></b>.</div>
+          </div>
+          <div class="fact">
+            <div class="fact-n tnum" id="f-laws">21&#8217;136 <span class="u" data-t="u_laws">laws</span></div>
+            <div class="fact-t" data-t="f_laws_t"><b>5,525 federal</b> laws (Fedlex) and <b>15,600 cantonal</b> acts, with 494,000+ articles.</div>
+          </div>
+          <div class="fact">
+            <div class="fact-n tnum" id="f-cites">9.9M <span class="u" data-t="u_cites">citations</span></div>
+            <div class="fact-t" data-t="f_cites_t">A resolved citation graph linking decisions to the decisions and statutes they cite.</div>
+          </div>
         </div>
-        <div class="fact">
-          <div class="fact-n tnum" id="f-echr">9&#8217;614 <span class="u" data-t="u_echr">ECtHR judgments</span></div>
-          <div class="fact-t" data-t="f_echr_t">The Swiss-respondent case law, plus every Chamber and Grand Chamber judgment of importance 1–3 against any of the 46 Council of Europe states — <b>1960–<span class="cy"></span></b>.</div>
-        </div>
-        <div class="fact">
-          <div class="fact-n tnum" id="f-laws">21&#8217;136 <span class="u" data-t="u_laws">laws</span></div>
-          <div class="fact-t" data-t="f_laws_t"><b>5,525 federal</b> laws (Fedlex) and <b>15,600 cantonal</b> acts, with 494,000+ articles.</div>
-        </div>
-        <div class="fact">
-          <div class="fact-n tnum" id="f-cites">9.9M <span class="u" data-t="u_cites">citations</span></div>
-          <div class="fact-t" data-t="f_cites_t">A resolved citation graph linking decisions to the decisions and statutes they cite.</div>
+
+        <div class="register">
+          <p class="reg-g" data-t="g_recht">Case law</p>
+          <div class="reg-row"><div class="reg-main"><span class="reg-l" data-t="r_bge_l">BGE — Official reports of the Federal Supreme Court</span><span class="reg-d" data-t="r_bge_d">The Federal Supreme Court&#8217;s published leading cases, since 1875.</span></div><span class="reg-n tnum">50&#8217;486</span></div>
+          <div class="reg-row"><div class="reg-main"><span class="reg-l" data-t="r_bger_l">Federal Supreme Court (BGer)</span><span class="reg-d" data-t="r_bger_d">Every decision published online since 1986 — far beyond the official reports.</span></div><span class="reg-n tnum">192&#8217;853</span></div>
+          <div class="reg-row"><div class="reg-main"><span class="reg-l" data-t="r_bvger_l">Federal Administrative Court (BVGer)</span><span class="reg-d" data-t="r_bvger_d">Asylum, immigration, procurement, supervision and more.</span></div><span class="reg-n tnum">108&#8217;665</span></div>
+          <div class="reg-row"><div class="reg-main"><span class="reg-l" data-t="r_bstger_l">Federal Criminal Court (BStGer)</span><span class="reg-d" data-t="r_bstger_d">Criminal, complaints and appeals chambers.</span></div><span class="reg-n tnum">11&#8217;645</span></div>
+          <div class="reg-row"><div class="reg-main"><span class="reg-l" data-t="r_bpatger_l">Federal Patent Court (BPatGer)</span><span class="reg-d" data-t="r_bpatger_d">Patent infringement and validity.</span></div><span class="reg-n tnum">196</span></div>
+          <div class="reg-row"><div class="reg-main"><span class="reg-l" data-t="r_mkg_l">Military Court of Cassation (MKG)</span><span class="reg-d" data-t="r_mkg_d">Military case law.</span></div><span class="reg-n tnum">1&#8217;244</span></div>
+          <div class="reg-row"><div class="reg-main"><a class="reg-l" href="#coverage" data-t="r_cant_l">Cantonal courts — all 26 cantons</a><span class="reg-d" data-t="r_cant_d">Superior, administrative, social-insurance, commercial and specialised courts — each from the official source.</span></div><span class="reg-n tnum">656&#8217;570</span></div>
+          <p class="reg-g" data-t="g_beh">Regulatory decisions</p>
+          <div class="reg-row"><div class="reg-main"><span class="reg-l" data-t="r_finmae_l">FINMA — enforcement &amp; insurance rulings</span><span class="reg-d" data-t="r_finmae_d">Decisions of the financial-market supervisor.</span></div><span class="reg-n tnum">3&#8217;038</span></div>
+          <div class="reg-row"><div class="reg-main"><span class="reg-l" data-t="r_edoeb_l">FDPIC — data protection &amp; freedom of information</span><span class="reg-d" data-t="r_edoeb_d">The federal data-protection authority&#8217;s recommendations and decisions.</span></div><span class="reg-n tnum">1&#8217;816</span></div>
+          <div class="reg-row"><div class="reg-main"><span class="reg-l" data-t="r_ubi_l">UBI — broadcasting complaints</span><span class="reg-d" data-t="r_ubi_d">The independent broadcasting complaints authority.</span></div><span class="reg-n tnum">667</span></div>
+          <div class="reg-row"><div class="reg-main"><span class="reg-l" data-t="r_regw_l">Further regulators &amp; commissions</span><span class="reg-d" data-t="r_regw_d">COMCO &middot; ElCom &middot; ESchK &middot; PostCom &middot; ComCom &middot; BAZG &middot; ESBK &middot; Price Supervisor &middot; RAB</span></div><span class="reg-n tnum">1&#8217;529</span></div>
+          <p class="reg-g" data-t="g_praxis">Administrative practice</p>
+          <div class="reg-row"><div class="reg-main"><span class="reg-l" data-t="r_finma_l">FINMA circulars</span><span class="reg-d" data-t="r_finma_d">Every published version — in force and superseded — DE/FR/IT/EN.</span></div><span class="reg-n tnum">1&#8217;133</span></div>
+          <div class="reg-row"><div class="reg-main"><span class="reg-l" data-t="r_estvks_l">ESTV circulars</span><span class="reg-d" data-t="r_estvks_d">Direct federal tax, withholding tax, stamp duties.</span></div><span class="reg-n tnum">285</span></div>
+          <div class="reg-row"><div class="reg-main"><span class="reg-l" data-t="r_estvmw_l">ESTV VAT guidance</span><span class="reg-d" data-t="r_estvmw_d">The published VAT practice.</span></div><span class="reg-n tnum">153</span></div>
+          <div class="reg-row"><div class="reg-main"><span class="reg-l" data-t="r_seco_l">SECO commentary — Employment Act</span><span class="reg-d" data-t="r_seco_d">ArG and ArGV 1–5, article by article, DE/FR/IT.</span></div><span class="reg-n tnum">1&#8217;102</span></div>
+          <div class="reg-row"><div class="reg-main"><span class="reg-l" data-t="r_bafu_l">FOEN enforcement aids</span><span class="reg-d" data-t="r_bafu_d">Environmental law as enforced.</span></div><span class="reg-n tnum">297</span></div>
+          <div class="reg-row"><div class="reg-main"><span class="reg-l" data-t="r_sem_l">SEM directives</span><span class="reg-d" data-t="r_sem_d">Directives and circulars on immigration and asylum law.</span></div><span class="reg-n tnum">92</span></div>
+          <div class="reg-row"><div class="reg-main"><span class="reg-l" data-t="r_vpb_l">VPB / JAAC — federal administrative practice</span><span class="reg-d" data-t="r_vpb_d">The historical collection 1900–2016, full text.</span></div><span class="reg-n tnum">23&#8217;046</span></div>
+          <p class="reg-g" data-t="g_mat">Legislative materials</p>
+          <div class="reg-row"><div class="reg-main"><span class="reg-l" data-t="r_bot_l">Federal Council dispatches (Botschaften)</span><span class="reg-d" data-t="r_bot_d">Verbatim, searchable to the paragraph — 421&#8217;000+ paragraphs for legislative history.</span></div><span class="reg-n tnum">6&#8217;157</span></div>
+          <p class="reg-g" data-t="g_doktrin">Commentary &amp; scholarship</p>
+          <div class="reg-row"><div class="reg-main"><span class="reg-l" data-t="r_komm_l">Commentaries — OnlineKommentar</span><span class="reg-d" data-t="r_komm_d">Article-level commentary on 23 acts, CC-BY.</span></div><span class="reg-n tnum">1&#8217;173</span></div>
+          <div class="reg-row"><div class="reg-main"><span class="reg-l" data-t="r_schol_l">Scholarship</span><span class="reg-d" data-t="r_schol_d">Open-access publications from 24 Swiss repositories — full-text search.</span></div><span class="reg-n tnum" id="f-scholarship">44&#8217;491</span></div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- COVERAGE — cantonal grid (signature) -->
+  <!-- COVERAGE -->
   <section class="sec rv" id="coverage">
     <div class="wrap">
-      <p class="sec-tag"><span class="n">§02</span> <span data-t="t_coverage">Coverage</span></p>
-      <h2 class="sec-h" data-t="cov_h">All 26 cantons and the federal courts.</h2>
-      <p class="sec-sub" data-t="cov_sub">Published decisions per jurisdiction, scraped directly from each official source, deduplicated, and rebuilt nightly.</p>
-      <div class="cov" id="cov-grid" aria-label="Decisions per canton and the federal courts"></div>
-      <p class="cov-foot"><span id="cov-courts">118</span> <span data-t="cov_courts">courts</span> · 26 <span data-t="cov_cantons">cantons</span> · <span data-t="cov_fed">federal courts</span></p>
+      <div class="sec-rail"><p class="sec-tag"><span class="n">02</span>&#8202;&#8202;<span data-t="t_coverage">Coverage</span></p></div>
+      <div class="sec-body">
+        <h2 class="sec-h" data-t="cov_h">All 26 cantons and the federal courts.</h2>
+        <p class="sec-sub" data-t="cov_sub">Published decisions per jurisdiction, scraped directly from each official source, deduplicated, and rebuilt nightly.</p>
+        <div class="cov" id="cov-grid" role="list" aria-label="Decisions per canton"></div>
+        <p class="cov-foot"><span id="cov-courts">118</span> <span data-t="cov_courts">courts</span> · 26 <span data-t="cov_cantons">cantons</span> · <span data-t="cov_fed">federal courts</span></p>
+      </div>
     </div>
   </section>
 
-  <!-- REBUILT EVERY DAY -->
+  <!-- REBUILT EVERY NIGHT -->
   <section class="sec rv" id="daily">
     <div class="wrap">
-      <p class="sec-tag"><span class="n">§03</span> <span data-t="t_daily">Updates</span></p>
-      <h2 class="sec-h" data-t="daily_h">Rebuilt every night.</h2>
-      <p class="sec-sub" data-t="daily_sub">Each court is re-scraped daily; the corpus, the citation graph and this page are regenerated automatically.</p>
-      <div class="daily">
-        <div class="d"><div class="d-n pos tnum">+<span id="d-today">198</span></div><div class="d-l" data-t="d_today">new today</div></div>
-        <div class="d"><div class="d-n tnum"><span id="d-span">151</span></div><div class="d-l" data-t="d_span">years of case law</div></div>
-        <div class="d"><div class="d-n tnum"><span id="d-langs">3</span></div><div class="d-l" data-t="d_langs">national languages</div></div>
-        <p class="stamp"><span data-t="stamp_asof">As of</span> <span id="stamp"></span></p>
+      <div class="sec-rail"><p class="sec-tag"><span class="n">03</span>&#8202;&#8202;<span data-t="t_daily">Updates</span></p></div>
+      <div class="sec-body">
+        <h2 class="sec-h" data-t="daily_h">Rebuilt every night.</h2>
+        <p class="sec-sub" data-t="daily_sub">Each court is re-scraped daily; the corpus, the citation graph and this page are regenerated automatically.</p>
+        <div class="daily">
+          <div class="d"><div class="d-n pos tnum">+<span id="d-today">120</span></div><div class="d-l" data-t="d_today">new today</div></div>
+          <div class="d"><div class="d-n tnum"><span id="d-span">151</span></div><div class="d-l" data-t="d_span">years of case law</div></div>
+          <div class="d"><div class="d-n tnum"><span id="d-langs">3</span></div><div class="d-l" data-t="d_langs">national languages</div></div>
+          <p class="stamp"><span data-t="stamp_asof">As of</span> <span id="stamp">2026-08-29</span></p>
+        </div>
       </div>
     </div>
   </section>
@@ -325,19 +366,22 @@ a{color:inherit;text-decoration:none}
   <!-- CONNECT -->
   <section class="sec rv" id="connect">
     <div class="wrap">
-      <p class="sec-tag"><span class="n">§04</span> <span data-t="t_connect">Connect</span></p>
-      <h2 class="sec-h" data-t="connect_h">Use the corpus from an AI client.</h2>
-      <p class="sec-sub" data-t="connect_sub">An MCP endpoint and a REST API. Works with Claude, ChatGPT, Cursor, Gemini and Copilot. No account, no API key.</p>
-      <div class="connect-url">
-        <code>mcp.opencaselaw.ch</code>
-        <button class="copy" id="copy" data-t="copy">Copy</button>
+      <div class="sec-rail"><p class="sec-tag"><span class="n">04</span>&#8202;&#8202;<span data-t="t_connect">Connect</span></p></div>
+      <div class="sec-body">
+        <h2 class="sec-h" data-t="connect_h">Use the corpus from an AI client.</h2>
+        <p class="sec-sub" data-t="connect_sub">An MCP endpoint and a REST API. Works with Claude, ChatGPT, Cursor, Gemini and Copilot. No account, no API key.</p>
+        <div class="connect-url">
+          <code>mcp.opencaselaw.ch</code>
+          <button class="copy" id="copy" data-t="copy">Copy</button>
+          <span class="sr" role="status" id="copy-status"></span>
+        </div>
+        <div class="clients">
+          <span class="client">Claude</span><span class="client">ChatGPT</span><span class="client">Cursor</span>
+          <span class="client">Gemini CLI</span><span class="client">Copilot Studio</span><span class="client">REST / cURL</span>
+        </div>
+        <p class="connect-note"><span data-t="connect_note">Setup for each client, the REST API, bulk download and the Word add-in:</span>
+          <a href="/mcp/" data-t="connect_link">connection guide →</a></p>
       </div>
-      <div class="clients">
-        <span class="client">Claude</span><span class="client">ChatGPT</span><span class="client">Cursor</span>
-        <span class="client">Gemini CLI</span><span class="client">Copilot Studio</span><span class="client">REST / cURL</span>
-      </div>
-      <p class="connect-note"><span data-t="connect_note">Setup for each client, the REST API, bulk download and the Word add-in:</span>
-        <a href="/mcp/" data-t="connect_link">connection guide →</a></p>
     </div>
   </section>
 </main>
@@ -347,22 +391,22 @@ a{color:inherit;text-decoration:none}
     <div class="foot-grid">
       <div>
         <a class="brand" href="/"><span class="glyph">+</span> opencaselaw.ch</a>
-        <p class="foot-tag" style="margin-top:14px" data-t="foot_tag">The complete open record of Swiss law. CC0 dataset, MIT code.</p>
+        <p class="foot-tag" data-t="foot_tag">The open record of Swiss law. CC0 dataset, MIT code.</p>
       </div>
-      <div><h4 data-t="foot_browse">Browse</h4><ul>
+      <div><h2 data-t="foot_browse">Browse</h2><ul>
         <li><a href="/search/" data-t="nav_search">Search</a></li>
         <li><a href="/courts/" data-t="nav_courts">Courts</a></li>
         <li><a href="/laws/" data-t="nav_laws">Laws</a></li>
         <li><a href="/scholarship/" data-t="foot_scholarship">Scholarship</a></li>
         <li><a href="/coverage/" data-t="foot_coverage">Coverage</a></li>
       </ul></div>
-      <div><h4 data-t="foot_build">Build</h4><ul>
+      <div><h2 data-t="foot_build">Build</h2><ul>
         <li><a href="/mcp/">MCP server</a></li>
         <li><a href="/api/">REST API</a></li>
         <li><a href="https://word.opencaselaw.ch/">Word add-in</a></li>
         <li><a href="https://huggingface.co/datasets/voilaj/swiss-caselaw" rel="noopener">HuggingFace</a></li>
       </ul></div>
-      <div><h4 data-t="foot_trust">Trust</h4><ul>
+      <div><h2 data-t="foot_trust">Trust</h2><ul>
         <li><a href="/integrity/">Integrity</a></li>
         <li><a href="/standards/">Standards</a></li>
         <li><a href="/quality.html" data-t="nav_quality">Quality</a></li>
@@ -375,6 +419,7 @@ a{color:inherit;text-decoration:none}
 </footer>
 
 <script>
+
 /* ── i18n ──────────────────────────────────────────────────── */
 var I18N={
  de:{stamp_asof:'Stand',skip:'Zum Inhalt springen',nav_search:'Suche',nav_courts:'Gerichte',nav_laws:'Gesetze',nav_connect:'Verbinden →',nav_quality:'Qualität',
@@ -468,11 +513,14 @@ var I18N={
   foot_browse:'Browse',foot_build:'Build',foot_trust:'Trust',foot_coverage:'Coverage',foot_scholarship:'Scholarship',foot_about:'About',
   foot_tag:'The complete open record of Swiss law. CC0 dataset, MIT code.',foot_legal:'Corpus CC0 · Code MIT'}
 };
+/* ── i18n extension: register of holdings (rm falls back to de via t()) ── */
+var I18N_EXT={"de": {"g_recht": "Rechtsprechung", "g_beh": "Behördenentscheide", "g_praxis": "Verwaltungspraxis", "g_mat": "Materialien", "g_doktrin": "Doktrin", "r_bge_l": "BGE — Amtliche Sammlung des Bundesgerichts", "r_bge_d": "Die publizierten Leitentscheide des Bundesgerichts, seit 1875.", "r_bger_l": "Bundesgericht (BGer)", "r_bger_d": "Sämtliche online publizierten Urteile seit 1986 — weit über die amtliche Sammlung hinaus.", "r_bvger_l": "Bundesverwaltungsgericht (BVGer)", "r_bvger_d": "Asyl-, Ausländer-, Beschaffungs-, Aufsichtsrecht und mehr.", "r_bstger_l": "Bundesstrafgericht (BStGer)", "r_bstger_d": "Straf-, Beschwerde- und Berufungskammer.", "r_bpatger_l": "Bundespatentgericht (BPatGer)", "r_bpatger_d": "Patentverletzung und -bestand.", "r_mkg_l": "Militärkassationsgericht (MKG)", "r_mkg_d": "Die militärgerichtliche Rechtsprechung.", "r_cant_l": "Kantonale Gerichte — alle 26 Kantone", "r_cant_d": "Ober-, Verwaltungs-, Sozialversicherungs-, Handels- und Spezialgerichte, je direkt von der amtlichen Quelle.", "r_finmae_l": "FINMA — Enforcement & Versicherungsrecht", "r_finmae_d": "Verfügungen und Einschätzungen der Finanzmarktaufsicht.", "r_edoeb_l": "EDÖB — Datenschutz & Öffentlichkeit", "r_edoeb_d": "Empfehlungen und Entscheide des Eidg. Datenschutz- und Öffentlichkeitsbeauftragten.", "r_ubi_l": "UBI — Rundfunkbeschwerden", "r_ubi_d": "Unabhängige Beschwerdeinstanz für Radio und Fernsehen.", "r_regw_l": "Weitere Regulatoren & Kommissionen", "r_regw_d": "WEKO · ElCom · ESchK · PostCom · ComCom · BAZG · ESBK · Preisüberwacher · RAB", "r_finma_l": "FINMA-Rundschreiben", "r_finma_d": "Jede publizierte Fassung — geltend und aufgehoben — DE/FR/IT/EN.", "r_estvks_l": "ESTV-Kreisschreiben", "r_estvks_d": "Direkte Bundessteuer, Verrechnungssteuer, Stempelabgaben.", "r_estvmw_l": "ESTV MWST-Infos", "r_estvmw_d": "Die publizierte Mehrwertsteuer-Praxis.", "r_seco_l": "SECO-Kommentar — ArG / ArGV 1–5", "r_seco_d": "Artikel für Artikel, DE/FR/IT.", "r_bafu_l": "BAFU-Vollzugshilfen", "r_bafu_d": "Umweltrecht im Vollzug.", "r_sem_l": "SEM-Weisungen", "r_sem_d": "Weisungen und Rundschreiben zum Ausländer- und Asylrecht.", "r_vpb_l": "VPB — Verwaltungspraxis der Bundesbehörden", "r_vpb_d": "Die historische Sammlung 1900–2016, im Volltext.", "r_bot_l": "Botschaften des Bundesrats", "r_bot_d": "Im Wortlaut, absatzgenau durchsuchbar — über 421’000 Absätze für die historische Auslegung.", "r_komm_l": "Kommentare — OnlineKommentar", "r_komm_d": "Artikelweise Kommentierung zu 23 Erlassen, CC-BY.", "r_schol_d": "Open-Access-Publikationen aus 24 Schweizer Repositorien — Volltextsuche.", "r_schol_l": "Wissenschaftliche Publikationen", "hero_h1": "Das offene Verzeichnis der Schweizer Rechtsprechung — <em>täglich neu aufgebaut.</em>", "foot_tag": "Das offene Verzeichnis des Schweizer Rechts. CC0-Datensatz, MIT-Code."}, "fr": {"g_recht": "Jurisprudence", "g_beh": "Décisions d’autorités", "g_praxis": "Pratique administrative", "g_mat": "Travaux préparatoires", "g_doktrin": "Doctrine", "r_bge_l": "ATF — Recueil officiel du Tribunal fédéral", "r_bge_d": "Les arrêts de principe publiés du Tribunal fédéral, depuis 1875.", "r_bger_l": "Tribunal fédéral (TF)", "r_bger_d": "Tous les arrêts publiés en ligne depuis 1986 — bien au-delà du recueil officiel.", "r_bvger_l": "Tribunal administratif fédéral (TAF)", "r_bvger_d": "Asile, étrangers, marchés publics, surveillance et plus.", "r_bstger_l": "Tribunal pénal fédéral (TPF)", "r_bstger_d": "Cour des affaires pénales, Cour des plaintes et Cour d’appel.", "r_bpatger_l": "Tribunal fédéral des brevets (TFB)", "r_bpatger_d": "Contrefaçon et validité des brevets.", "r_mkg_l": "Tribunal militaire de cassation (TMC)", "r_mkg_d": "La jurisprudence militaire.", "r_cant_l": "Tribunaux cantonaux — les 26 cantons", "r_cant_d": "Tribunaux supérieurs, administratifs, des assurances sociales, de commerce et spécialisés — directement des sources officielles.", "r_finmae_l": "FINMA — enforcement & droit des assurances", "r_finmae_d": "Décisions de l’autorité de surveillance des marchés financiers.", "r_edoeb_l": "PFPDT — protection des données et transparence", "r_edoeb_d": "Recommandations et décisions du Préposé fédéral à la protection des données et à la transparence.", "r_ubi_l": "AIEP — plaintes radio-TV", "r_ubi_d": "Autorité indépendante d’examen des plaintes en matière de radio-télévision.", "r_regw_l": "Autres régulateurs & commissions", "r_regw_d": "COMCO · ElCom · CAF · PostCom · ComCom · OFDF · CFMJ · Surveillance des prix · ASR", "r_finma_l": "Circulaires de la FINMA", "r_finma_d": "Chaque version publiée — en vigueur et abrogée — DE/FR/IT/EN.", "r_estvks_l": "Circulaires de l’AFC", "r_estvks_d": "Impôt fédéral direct, impôt anticipé, droits de timbre.", "r_estvmw_l": "Infos TVA de l’AFC", "r_estvmw_d": "La pratique TVA publiée.", "r_seco_l": "Commentaire du SECO — LTr / OLT 1–5", "r_seco_d": "Article par article, DE/FR/IT.", "r_bafu_l": "Aides à l’exécution de l’OFEV", "r_bafu_d": "Le droit de l’environnement dans la pratique.", "r_sem_l": "Directives du SEM", "r_sem_d": "Directives et circulaires en droit des étrangers et de l’asile.", "r_vpb_l": "JAAC — jurisprudence des autorités administratives de la Confédération", "r_vpb_d": "La collection historique 1900–2016, en texte intégral.", "r_bot_l": "Messages du Conseil fédéral", "r_bot_d": "Texte intégral, consultable au paragraphe près — plus de 421’000 paragraphes pour l’interprétation historique.", "r_komm_l": "Commentaires — OnlineKommentar", "r_komm_d": "Commentaire article par article de 23 actes, CC-BY.", "r_schol_d": "Publications en libre accès de 24 dépôts suisses — recherche en texte intégral.", "r_schol_l": "Publications scientifiques", "hero_h1": "Le registre ouvert de la jurisprudence suisse — <em>reconstruit chaque jour.</em>", "foot_tag": "Le registre ouvert du droit suisse. Jeu de données CC0, code MIT."}, "it": {"g_recht": "Giurisprudenza", "g_beh": "Decisioni di autorità", "g_praxis": "Prassi amministrativa", "g_mat": "Materiali legislativi", "g_doktrin": "Dottrina", "r_bge_l": "DTF — Raccolta ufficiale del Tribunale federale", "r_bge_d": "Le sentenze di principio pubblicate del Tribunale federale, dal 1875.", "r_bger_l": "Tribunale federale (TF)", "r_bger_d": "Tutte le sentenze pubblicate online dal 1986 — ben oltre la raccolta ufficiale.", "r_bvger_l": "Tribunale amministrativo federale (TAF)", "r_bvger_d": "Asilo, stranieri, appalti pubblici, vigilanza e altro.", "r_bstger_l": "Tribunale penale federale (TPF)", "r_bstger_d": "Corte penale, Corte dei reclami penali e Corte d’appello.", "r_bpatger_l": "Tribunale federale dei brevetti (TFB)", "r_bpatger_d": "Violazione e validità dei brevetti.", "r_mkg_l": "Tribunale militare di cassazione (TMC)", "r_mkg_d": "La giurisprudenza militare.", "r_cant_l": "Tribunali cantonali — tutti i 26 cantoni", "r_cant_d": "Tribunali superiori, amministrativi, delle assicurazioni sociali, commerciali e specializzati — direttamente dalle fonti ufficiali.", "r_finmae_l": "FINMA — enforcement & diritto assicurativo", "r_finmae_d": "Decisioni dell’autorità di vigilanza sui mercati finanziari.", "r_edoeb_l": "IFPDT — protezione dei dati e trasparenza", "r_edoeb_d": "Raccomandazioni e decisioni dell’Incaricato federale della protezione dei dati e della trasparenza.", "r_ubi_l": "AIRR — ricorsi radiotelevisivi", "r_ubi_d": "Autorità indipendente di ricorso in materia radiotelevisiva.", "r_regw_l": "Altri regolatori & commissioni", "r_regw_d": "COMCO · ElCom · CAF · PostCom · ComCom · UDSC · CFCG · Sorvegliante dei prezzi · ASR", "r_finma_l": "Circolari FINMA", "r_finma_d": "Ogni versione pubblicata — vigente e abrogata — DE/FR/IT/EN.", "r_estvks_l": "Circolari dell’AFC", "r_estvks_d": "Imposta federale diretta, imposta preventiva, tasse di bollo.", "r_estvmw_l": "Info IVA dell’AFC", "r_estvmw_d": "La prassi IVA pubblicata.", "r_seco_l": "Commento della SECO — LL / OLL 1–5", "r_seco_d": "Articolo per articolo, DE/FR/IT.", "r_bafu_l": "Aiuti all’esecuzione dell’UFAM", "r_bafu_d": "Il diritto ambientale nella prassi.", "r_sem_l": "Direttive della SEM", "r_sem_d": "Direttive e circolari in materia di stranieri e asilo.", "r_vpb_l": "GAAC — giurisprudenza delle autorità amministrative della Confederazione", "r_vpb_d": "La raccolta storica 1900–2016, nel testo integrale.", "r_bot_l": "Messaggi del Consiglio federale", "r_bot_d": "Testo integrale, ricercabile per paragrafo — oltre 421’000 paragrafi per l’interpretazione storica.", "r_komm_l": "Commentari — OnlineKommentar", "r_komm_d": "Commento articolo per articolo di 23 atti, CC-BY.", "r_schol_d": "Pubblicazioni open access da 24 repository svizzeri — ricerca nel testo integrale.", "r_schol_l": "Pubblicazioni scientifiche", "hero_h1": "Il registro aperto della giurisprudenza svizzera — <em>ricostruito ogni giorno.</em>", "foot_tag": "Il registro aperto del diritto svizzero. Dataset CC0, codice MIT."}, "en": {"g_recht": "Case law", "g_beh": "Regulatory decisions", "g_praxis": "Administrative practice", "g_mat": "Legislative materials", "g_doktrin": "Commentary & scholarship", "r_bge_l": "BGE — Official reports of the Federal Supreme Court", "r_bge_d": "The Federal Supreme Court’s published leading cases, since 1875.", "r_bger_l": "Federal Supreme Court (BGer)", "r_bger_d": "Every decision published online since 1986 — far beyond the official reports.", "r_bvger_l": "Federal Administrative Court (BVGer)", "r_bvger_d": "Asylum, immigration, procurement, supervision and more.", "r_bstger_l": "Federal Criminal Court (BStGer)", "r_bstger_d": "Criminal, complaints and appeals chambers.", "r_bpatger_l": "Federal Patent Court (BPatGer)", "r_bpatger_d": "Patent infringement and validity.", "r_mkg_l": "Military Court of Cassation (MKG)", "r_mkg_d": "Military case law.", "r_cant_l": "Cantonal courts — all 26 cantons", "r_cant_d": "Superior, administrative, social-insurance, commercial and specialised courts — each from the official source.", "r_finmae_l": "FINMA — enforcement & insurance rulings", "r_finmae_d": "Decisions of the financial-market supervisor.", "r_edoeb_l": "FDPIC — data protection & freedom of information", "r_edoeb_d": "The federal data-protection authority’s recommendations and decisions.", "r_ubi_l": "UBI — broadcasting complaints", "r_ubi_d": "The independent broadcasting complaints authority.", "r_regw_l": "Further regulators & commissions", "r_regw_d": "COMCO · ElCom · ESchK · PostCom · ComCom · BAZG · ESBK · Price Supervisor · RAB", "r_finma_l": "FINMA circulars", "r_finma_d": "Every published version — in force and superseded — DE/FR/IT/EN.", "r_estvks_l": "ESTV circulars", "r_estvks_d": "Direct federal tax, withholding tax, stamp duties.", "r_estvmw_l": "ESTV VAT guidance", "r_estvmw_d": "The published VAT practice.", "r_seco_l": "SECO commentary — Employment Act", "r_seco_d": "ArG and ArGV 1–5, article by article, DE/FR/IT.", "r_bafu_l": "FOEN enforcement aids", "r_bafu_d": "Environmental law as enforced.", "r_sem_l": "SEM directives", "r_sem_d": "Directives and circulars on immigration and asylum law.", "r_vpb_l": "VPB / JAAC — federal administrative practice", "r_vpb_d": "The historical collection 1900–2016, full text.", "r_bot_l": "Federal Council dispatches (Botschaften)", "r_bot_d": "Verbatim, searchable to the paragraph — 421’000+ paragraphs for legislative history.", "r_komm_l": "Commentaries — OnlineKommentar", "r_komm_d": "Article-level commentary on 23 acts, CC-BY.", "r_schol_d": "Open-access publications from 24 Swiss repositories — full-text search.", "r_schol_l": "Scholarship", "hero_h1": "The open record of Swiss case law — <em>rebuilt every day.</em>", "foot_tag": "The open record of Swiss law. CC0 dataset, MIT code."}, "rm": {"hero_h1": "Il register avert da la giurisprudenza svizra — <em>reconstruì mintga di.</em>", "foot_tag": "Il register avert dal dretg svizzer. Set da datas CC0, code MIT."}};
+for(var _L in I18N_EXT){if(I18N[_L]){for(var _k in I18N_EXT[_L]){I18N[_L][_k]=I18N_EXT[_L][_k];}}}
 var LANGS=['de','fr','it','rm','en'];
 var qp=new URLSearchParams(location.search).get('lang');
-var stored=localStorage.getItem('lang');
+var stored=null;try{stored=localStorage.getItem('lang');}catch(e){}
 var curLang=(qp&&I18N[qp])?qp:((stored&&I18N[stored])?stored:'de');
-if(qp&&I18N[qp])localStorage.setItem('lang',qp);
+if(qp&&I18N[qp]){try{localStorage.setItem('lang',qp);}catch(e){}}
 function t(k){return (I18N[curLang]||I18N.de)[k]||I18N.de[k]||k;}
 function applyI18n(){
   document.documentElement.lang=curLang;
@@ -481,7 +529,7 @@ function applyI18n(){
   });
   document.querySelectorAll('.cy').forEach(function(e){e.textContent=window._cyear||new Date().getFullYear();});
   var lw=document.getElementById('langs');
-  lw.innerHTML=LANGS.map(function(l){return '<a href="?lang='+l+'" class="'+(l===curLang?'on':'')+'" hreflang="'+l+'">'+l+'</a>';}).join('');
+  lw.innerHTML=LANGS.map(function(l){return '<a href="?lang='+l+'" lang="'+l+'" hreflang="'+l+'" class="'+(l===curLang?'on':'')+'"'+(l===curLang?' aria-current="true"':'')+'>'+l+'</a>';}).join('');
 }
 applyI18n();
 
@@ -489,18 +537,20 @@ applyI18n();
 function fmt(n){return n==null?'—':n.toLocaleString('de-CH');}
 function animateNum(el,target){
   if(!el||target==null)return;
-  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){el.textContent=fmt(target);return;}
-  var start=performance.now(),dur=1100,from=0;
-  function step(now){var p=Math.min(1,(now-start)/dur);var e=1-Math.pow(1-p,3);
-    el.textContent=fmt(Math.round(from+(target-from)*e));if(p<1)requestAnimationFrame(step);}
-  requestAnimationFrame(step);
+  var txt=fmt(target);
+  if(el.textContent===txt)return;
+  el.textContent=txt;
+  if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    el.classList.remove('settle');void el.offsetWidth;el.classList.add('settle');
+  }
 }
 function renderCantons(byCanton){
   var grid=document.getElementById('cov-grid'); if(!grid||!byCanton)return;
+  byCanton=byCanton.filter(function(c){return c.canton!=='CE';});
   var max=Math.max.apply(null,byCanton.map(function(c){return c.count||0;}))||1;
   grid.innerHTML=byCanton.map(function(c){
     var fed=(c.canton==='CH');
-    return '<div class="cv'+(fed?' fed':'')+'"><div class="cv-code">'+(c.canton||'')+'</div>'+
+    return '<div class="cv'+(fed?' fed':'')+'" role="listitem"><div class="cv-code">'+(c.canton||'')+'</div>'+
       '<div class="cv-n tnum">'+fmt(c.count)+'</div>'+
       '<div class="cv-bar"><i style="width:0" data-w="'+Math.max(4,Math.round((c.count/max)*100))+'"></i></div></div>';
   }).join('');
@@ -512,10 +562,6 @@ function applyStats(s){
   var total=s.total;
   animateNum(document.getElementById('bignum'),total);
   document.getElementById('f-decisions').innerHTML=fmt(total)+' <span class="u">'+t('u_decisions')+'</span>';
-  // Additive cross-identifier dual-count: the corpus holds `total` source records
-  // (what is queryable / in the Parquet mirror); ~N of them are unique decisions
-  // after linking the same ruling published under two portal identifiers. Shown
-  // only when generate_stats emitted a current (generation-matched) figure.
   var uq=document.getElementById('num-unique');
   if(uq){
     if(s.unique_decisions && s.unique_decisions_status==='current'){
@@ -523,13 +569,6 @@ function applyStats(s){
       uq.style.display='';
     } else { uq.style.display='none'; }
   }
-  // ECtHR strand, summed from the nightly by_court rows rather than from
-  // interesting_stats.echr_switzerland (that block refreshes weekly and its
-  // total counts all 46 respondent states despite its name). by_court splits
-  // each ECtHR court by canton — CE for the Council-of-Europe-wide rows, CH
-  // for the Swiss-respondent ones — so every row must be summed, and a court
-  // that starts being ingested (ecthr_committee is defined but empty today)
-  // appears here on its own.
   var echr=document.getElementById('f-echr');
   if(echr&&s.by_court){
     var n=0;
@@ -538,15 +577,15 @@ function applyStats(s){
     });
     if(n>0)echr.innerHTML=fmt(n)+' <span class="u">'+t('u_echr')+'</span>';
   }
-  var laws=(s.corpus&&(s.corpus.federal_laws+s.corpus.cantonal_laws))||21108;
-  document.getElementById('f-laws').innerHTML=fmt(laws)+' <span class="u">'+t('u_laws')+'</span>';
+  if(s.corpus&&s.corpus.federal_laws&&s.corpus.cantonal_laws){
+    document.getElementById('f-laws').innerHTML=fmt(s.corpus.federal_laws+s.corpus.cantonal_laws)+' <span class="u">'+t('u_laws')+'</span>';
+  }
+  if(s.corpus&&s.corpus.scholarship_publications){
+    var sch=document.getElementById('f-scholarship');
+    if(sch)sch.textContent=fmt(s.corpus.scholarship_publications);
+  }
   var delta=(s.delta&&s.delta.total)||0;
   setT('trust-delta',fmt(delta)); setT('d-today',fmt(delta));
-  // Hide the "+N ·" growth badge when the nightly build added nothing (delta<=0),
-  // matching the backend's own convention (generate_stats shows no "+0"). A
-  // build-to-build delta of 0 is genuine on quiet days (Swiss courts publish with
-  // a ~1-2 week lag), and "+0" read as a broken counter. Only show it when the
-  // corpus actually grew build-over-build.
   var seg=document.getElementById('trust-delta-seg'); if(seg)seg.style.display=(delta>0)?'':'none';
   if(s.court_count)setT('cov-courts',s.court_count);
   if(s.date_range&&s.date_range.earliest){var y=new Date().getFullYear()-parseInt(s.date_range.earliest.slice(0,4),10);setT('d-span',y);}
@@ -556,8 +595,6 @@ function applyStats(s){
 }
 fetch('/stats.json?v='+Math.floor(Date.now()/60000)).then(function(r){return r.ok?r.json():null;}).then(applyStats).catch(function(){});
 fetch('https://mcp.opencaselaw.ch/health',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(h){
-  // Let the live /health count update the hero only when it's sane vs the published total
-  // (guards against transient live-DB anomalies, e.g. a quick_publish before the nightly dedup).
   if(h&&h.decisions){var st=window._stats&&window._stats.total;if(!st||h.decisions<=st*1.02)animateNum(document.getElementById('bignum'),h.decisions);}
 }).catch(function(){});
 
@@ -565,11 +602,22 @@ fetch('https://mcp.opencaselaw.ch/health',{cache:'no-store'}).then(function(r){r
 var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{rootMargin:'0px 0px -8% 0px'});
 document.querySelectorAll('.rv').forEach(function(el){io.observe(el);});
 
+/* ── mobile menu: close on link tap ────────────────────────── */
+document.querySelectorAll('.nav-links a').forEach(function(a){a.addEventListener('click',function(){
+  if(document.body.classList.contains('menu')){
+    document.body.classList.remove('menu');
+    var b=document.querySelector('.nav-burger');
+    if(b){b.setAttribute('aria-expanded','false');b.textContent='\u2630';}
+  }
+});});
+
 /* ── copy ──────────────────────────────────────────────────── */
 document.getElementById('copy').addEventListener('click',function(){
   var b=this;
   (navigator.clipboard?navigator.clipboard.writeText('https://mcp.opencaselaw.ch'):Promise.reject()).then(function(){
-    b.classList.add('done');b.textContent='✓ '+t('copy');setTimeout(function(){b.classList.remove('done');b.textContent=t('copy');},1600);
+    b.classList.add('done');b.textContent='✓ '+t('copy');
+    var st=document.getElementById('copy-status');if(st)st.textContent='✓ '+t('copy');
+    setTimeout(function(){b.classList.remove('done');b.textContent=t('copy');},1600);
   }).catch(function(){});
 });
 </script>
