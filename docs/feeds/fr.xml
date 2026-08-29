@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/fr.xml</link>
     <description>Latest published Swiss court decisions in Français.</description>
     <language>de-CH</language>
-    <lastBuildDate>Fri, 28 Aug 2026 12:03:39 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 29 Aug 2026 09:42:42 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/fr.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -372,6 +372,14 @@ représe…</description>
       <category>ge_gerichte</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht D-5622/2026 vom 2026-08-21</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-5622_2026</link>
+      <description>Asile et renvoi (procédure à l'aéroport)</description>
+      <pubDate>Fri, 21 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-5622.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>fr_gerichte 608 2025 141 vom 2026-08-21</title>
       <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_608%202025%20141</link>
       <description>Tribunal cantonal TC
@@ -390,6 +398,14 @@ Co…</description>
       <pubDate>Fri, 21 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">fr_gerichte_608 2025 141</guid>
       <category>fr_gerichte</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht E-8229/2025 vom 2026-08-20</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-8229_2025</link>
+      <description>Refus de la protection provisoire</description>
+      <pubDate>Thu, 20 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-8229.2025</guid>
+      <category>bvger</category>
     </item>
     <item>
       <title>ge_gerichte ATAS/712/2026 vom 2026-08-20</title>
@@ -593,6 +609,14 @@ A.A.________…</description>
       <category>bger</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht E-9040/2025 vom 2026-08-19</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-9040_2025</link>
+      <description>Refus de la protection provisoire</description>
+      <pubDate>Wed, 19 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-9040.2025</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>fr_gerichte 502 2026 97 vom 2026-08-19</title>
       <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_502%202026%2097</link>
       <description>Tribunal cantonal TC
@@ -659,6 +683,14 @@ Pré…</description>
       <description>Travail d'intérêt général (service civil)</description>
       <pubDate>Tue, 18 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:B-4049.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht E-1085/2022 vom 2026-08-18</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-1085_2022</link>
+      <description>Asile et renvoi</description>
+      <pubDate>Tue, 18 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-1085.2022</guid>
       <category>bvger</category>
     </item>
     <item>
@@ -946,38 +978,6 @@ Participants à la procéd…</description>
       <description>Exécution du renvoi (procédure accélérée)</description>
       <pubDate>Mon, 17 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-3386.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht D-4902/2026 vom 2026-08-17</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-4902_2026</link>
-      <description>Asile (sans excécution du renvoi) (procédure accélérée)</description>
-      <pubDate>Mon, 17 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-4902.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht E-4047/2026 vom 2026-08-17</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-4047_2026</link>
-      <description>Asile (sans exécution du renvoi)</description>
-      <pubDate>Mon, 17 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-4047.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht F-5560/2026 vom 2026-08-17</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-5560_2026</link>
-      <description>Asile (non-entrée en matière) et renvoi (procédure Dublin - art. 31a al. 1 let. b LAsi)</description>
-      <pubDate>Mon, 17 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-5560.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht F-5819/2024 vom 2026-08-17</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-5819_2024</link>
-      <description>Admission provisoire (divers)</description>
-      <pubDate>Mon, 17 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-5819.2024</guid>
       <category>bvger</category>
     </item>
   </channel>
