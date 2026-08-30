@@ -2401,7 +2401,7 @@
     "2026-07": 2104,
     "2026-08": 655
   },
-  "generated_at": "2026-08-30T10:02:52.356642+00:00",
+  "generated_at": "2026-08-30T18:26:49.225459+00:00",
   "scraper_health": {
     "run_at": "2026-08-30T02:01:24.371745+00:00",
     "run_duration_s": 3623.5,
@@ -2897,7 +2897,7 @@
         "note": null,
         "state_count": 98648,
         "jsonl_size_mb": 1490.5,
-        "jsonl_mtime": "2026-08-30T01:15:30.522760+00:00"
+        "jsonl_mtime": "2026-08-30T10:34:23.650070+00:00"
       },
       "nw_gerichte": {
         "success": true,
@@ -2931,7 +2931,7 @@
         "note": null,
         "state_count": 1141,
         "jsonl_size_mb": 39.9,
-        "jsonl_mtime": "2026-08-30T01:15:48.386979+00:00"
+        "jsonl_mtime": "2026-08-30T10:25:00.141195+00:00"
       },
       "postcom": {
         "success": true,
@@ -3033,7 +3033,7 @@
         "note": null,
         "state_count": 21348,
         "jsonl_size_mb": 490.5,
-        "jsonl_mtime": "2026-08-30T09:18:24.363070+00:00"
+        "jsonl_mtime": "2026-08-30T10:38:33.264043+00:00"
       },
       "sh_gerichte": {
         "success": true,
@@ -3084,7 +3084,7 @@
         "note": null,
         "state_count": 1611,
         "jsonl_size_mb": 32.6,
-        "jsonl_mtime": "2026-08-30T01:20:21.113253+00:00"
+        "jsonl_mtime": "2026-08-30T10:27:55.677373+00:00"
       },
       "sz_gerichte": {
         "success": true,
@@ -3509,7 +3509,7 @@
         "note": null,
         "state_count": 7674,
         "jsonl_size_mb": 191.4,
-        "jsonl_mtime": "2026-08-30T01:55:42.659568+00:00"
+        "jsonl_mtime": "2026-08-30T10:57:20.471492+00:00"
       },
       "ti_gerichte": {
         "success": true,
@@ -3582,7 +3582,7 @@
       "ZH": 135
     },
     "commentaries": 1173,
-    "scholarship_publications": 44491,
+    "scholarship_publications": 44495,
     "scholarship_by_source": {
       "zora_law": 14022,
       "boris_law": 7319,
@@ -3594,10 +3594,10 @@
       "eth_research_collection": 1760,
       "e_periodica_pubadmin": 855,
       "fhnw_irf": 496,
-      "onlinekommentar": 390,
+      "onlinekommentar": 391,
       "edoc_unibas_law": 324,
       "sui_generis": 294,
-      "medialex": 275,
+      "medialex": 278,
       "eizpublishing": 268,
       "leges": 204,
       "ex_ante": 176,
@@ -3610,29 +3610,29 @@
       "alexandria_law": 13
     },
     "scholarship_by_type": {
-      "article": 30285,
+      "article": 30288,
       "book": 10614,
       "dissertation": 2237,
       "report": 628,
-      "commentary": 420,
+      "commentary": 421,
       "working_paper": 194,
       "guidance": 70,
       "reference_article": 40,
       "bachelor_thesis": 3
     },
-    "citation_edges": 9854122,
-    "statute_edges": 12493659
+    "citation_edges": 9854336,
+    "statute_edges": 12493897
   },
   "interesting_stats": {
     "most_cited_decision": {
       "docket": "BGE 125 V 351",
-      "citation_count": 77365,
+      "citation_count": 77367,
       "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
     },
     "most_cited_statute": {
       "law_code": "LTF",
       "article": "100",
-      "ref_count": 184327
+      "ref_count": 184338
     },
     "oldest_decision": {
       "docket": "1_I_26",
@@ -3644,17 +3644,17 @@
       "de_pct": 47.5,
       "fr_pct": 43.9,
       "it_pct": 8.6,
-      "total": 1057759
+      "total": 1057775
     },
     "regeste_coverage": {
       "pct": 38.8,
       "with_regeste": 412357,
-      "total": 1061709
+      "total": 1061725
     },
     "graph_size": {
-      "decision_edges": 11548299,
-      "statute_edges": 12493659,
-      "total": 24041958
+      "decision_edges": 11548547,
+      "statute_edges": 12493897,
+      "total": 24042444
     },
     "echr_switzerland": {
       "total": 9614,
@@ -3670,25 +3670,25 @@
     "top_5_decisions": [
       {
         "docket": "BGE 125 V 351",
-        "citation_count": 77365,
+        "citation_count": 77367,
         "regeste_excerpt": "Regeste\n Art. 4 BV; Art. 108 Abs. 1 lit. b UVG; Art. 40 BZP in Verbindung mit Art. 19 VwVG; Art. 95 Abs. 2 in Verbindung mit Art. 113 und 132 OG: Beweiswürdigun",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
       },
       {
         "docket": "125 V 351",
-        "citation_count": 74999,
+        "citation_count": 75004,
         "regeste_excerpt": "Regeste\n Art. 4 BV; Art. 108 Abs. 1 lit. b UVG; Art. 40 BZP in Verbindung mit Art. 19 VwVG; Art. 95 Abs. 2 in Verbindung mit Art. 113 und 132 OG: Beweiswürdigun",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_125 V 351"
       },
       {
         "docket": "BGE 122 V 157",
-        "citation_count": 40312,
+        "citation_count": 40313,
         "regeste_excerpt": "Regeste\n Art. 4 BV, Art. 6 Ziff. 1 EMRK. - Art. 4 BV und Art. 6 Ziff. 1 EMRK umfassen keinen formellen Anspruch auf Beizug versicherungsexterner medizinischer G",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_122_V_157"
       },
       {
         "docket": "BGE 134 V 231",
-        "citation_count": 38716,
+        "citation_count": 38719,
         "regeste_excerpt": "Regeste\n Art. 6 Abs. 1 UVG; Beweiswert diagnostischer Methoden; funktionelle Magnetresonanztomographie; Schleudertrauma. Eine medizinisch-diagnostische Methode ",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_134_V_231"
       },
@@ -3703,12 +3703,12 @@
       {
         "law_code": "LTF",
         "article": "100",
-        "ref_count": 184327
+        "ref_count": 184338
       },
       {
         "law_code": "LTF",
         "article": "113",
-        "ref_count": 113527
+        "ref_count": 113536
       },
       {
         "law_code": "LTF",
@@ -3718,7 +3718,7 @@
       {
         "law_code": "BGG",
         "article": "42",
-        "ref_count": 96582
+        "ref_count": 96584
       },
       {
         "law_code": "BGG",
@@ -4385,7 +4385,10 @@
       "AG": 1,
       "BS": 3
     },
-    "corpus": {},
+    "corpus": {
+      "citation_edges": 214,
+      "statute_edges": 238
+    },
     "previous_generated_at": "2026-08-29T22:18:54.748328+00:00"
   }
 }
