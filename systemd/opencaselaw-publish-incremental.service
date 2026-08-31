@@ -20,7 +20,13 @@ WorkingDirectory=/opt/caselaw/repo
 # and add --in-place; this then becomes the primary ingestion path
 # and the legacy full rebuild moves to Sunday only.
 Environment=SWISS_CASELAW_DIR=/opt/caselaw/repo/output
-ExecStart=/usr/bin/python3 /opt/caselaw/repo/scripts/incremental_nightly.py --skip-quick-publish
+# --in-place-graph since 2026-09-01: Stage 1 of the cutover — after 7
+# consecutive green drift nights (2026-08-23..31, weekdays), the nightly
+# incremental now publishes the LIVE reference_graph.db (atomic staging +
+# os.replace, workers re-open on next connection). The daily 03:30 full
+# rebuild still regenerates it until Stage 2 moves fulls to Sundays.
+# decision_structure stays in shadow mode (streak 0).
+ExecStart=/usr/bin/python3 /opt/caselaw/repo/scripts/incremental_nightly.py --skip-quick-publish --in-place-graph
 # Generous timeout — the incremental run is targeted at ~10-25 min once
 # bootstrapped, but the FIRST run (no prior incremental state) does the
 # equivalent of a full reference_graph + decision_structure rebuild over
