@@ -15,17 +15,27 @@ This test enforces three invariants, mirroring the Word add-in's
      translation falls back to German, breaking the four-language
      contract for users in the other locales.
   2. **No key falls back silently.** The cross-product of
-     (referenced keys) × (languages) must be 0 gaps.
+     (referenced keys) × (languages) must be 0 gaps — with one
+     documented exception: the register-of-holdings namespace
+     (``g_*`` / ``r_*``, added 2026-08) deliberately falls back to
+     German for Romansh; the page itself says so ("rm falls back to
+     de via t()"). For those keys rm needs no own entry, but the DE
+     entry they fall back to must exist.
   3. **Soft cap on dead keys.** Defined-but-unreferenced keys >
      threshold suggest someone removed a feature without sweeping
      its strings.
 
-The parser walks the literal ``const I18N = { de: {...}, ... }``
-declaration in the rendered page, so adding/removing a language only
-requires updating ``LANGS`` below.
+The page defines its strings in TWO literals that are merged at
+runtime before ``applyI18n()`` runs: the base ``var I18N={...}`` and
+the JSON-shaped ``var I18N_EXT={...}`` extension from the 2026-08
+register redesign. The parser below reads both; a key defined in
+either is a defined key. (Found 2026-08-31: this test was red for
+weeks because it parsed only the base object and reported 47 keys as
+missing that the browser resolved fine.)
 """
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
 
@@ -36,6 +46,17 @@ INDEX = (
 )
 LANGS = ("de", "fr", "it", "rm", "en")
 MAX_DEAD_KEYS = 200  # current state ~135; bumped only intentionally
+
+
+def _rm_may_fall_back_to_de(key: str) -> bool:
+    """The register-of-holdings namespace is DE-fallback for Romansh by design.
+
+    The page's own comment above I18N_EXT reads "rm falls back to de via
+    t()". Encoding the namespace rather than a key snapshot mirrors that
+    decision: new register rows inherit it, everything outside the register
+    keeps strict five-language parity.
+    """
+    return key.startswith(("g_", "r_"))
 
 
 def _src() -> str:
@@ -85,6 +106,38 @@ def _defined_per_lang(src: str) -> dict[str, set[str]]:
         out[lang] = set(
             re.findall(r"(?:^|,)\s*([a-zA-Z_][\w]*)\s*:", block)
         )
+
+    # Second literal: the register-of-holdings extension, JSON-shaped and
+    # merged into I18N at runtime before applyI18n(). Keys defined there are
+    # as real as base keys.
+    em = re.search(r"(?:const|var|let)\s+I18N_EXT\s*=\s*\{", src)
+    if em:
+        # Ext keys only count because the page merges them into I18N before
+        # applyI18n() runs. If that merge loop ever disappears, the browser
+        # stops resolving these keys and this parser must not keep counting
+        # them — fail loudly instead of going green on a broken page.
+        assert re.search(r"for\s*\(\s*var\s+\w+\s+in\s+I18N_EXT\s*\)", src), (
+            "I18N_EXT exists but its merge-into-I18N loop is gone; the ext "
+            "keys no longer reach t() at runtime. Restore the merge or "
+            "update this parser."
+        )
+        i, depth = em.end(), 1
+        while depth > 0:
+            ch = src[i]
+            if ch == "{":
+                depth += 1
+            elif ch == "}":
+                depth -= 1
+            i += 1
+        try:
+            ext = json.loads(src[em.end() - 1 : i])
+        except json.JSONDecodeError as exc:  # pragma: no cover - lint guidance
+            pytest.fail(
+                f"I18N_EXT in docs/index.html is no longer JSON-shaped; "
+                f"update this parser to match the page: {exc}"
+            )
+        for lang, entries in ext.items():
+            out.setdefault(lang, set()).update(entries)
     return out
 
 
@@ -103,6 +156,29 @@ def defined(src: str) -> dict[str, set[str]]:
     return _defined_per_lang(src)
 
 
+def test_parser_is_not_vacuous(
+    referenced: set[str], defined: dict[str, set[str]]
+) -> None:
+    """Guard against the parity check passing because a parser found nothing.
+
+    The page references ~98 keys and defines dozens per language today. If a
+    page restructure changes the ``data-t`` or dictionary syntax, the regexes
+    would match nothing and every test below would pass on empty sets — the
+    exact silent-green failure this file exists to prevent (and the way it
+    was itself broken until 2026-08-31, in the other direction).
+    """
+    assert len(referenced) >= 50, (
+        f"only {len(referenced)} referenced i18n keys found — the data-t/t() "
+        f"extraction no longer matches the page; update _referenced_keys."
+    )
+    for lang in LANGS:
+        assert len(defined.get(lang, set())) >= 40, (
+            f"only {len(defined.get(lang, set()))} keys parsed for '{lang}' — "
+            f"the dictionary parser no longer matches the page; update "
+            f"_defined_per_lang."
+        )
+
+
 def test_all_five_languages_present(defined: dict[str, set[str]]) -> None:
     missing = sorted(set(LANGS) - set(defined))
     assert not missing, (
@@ -114,10 +190,21 @@ def test_all_five_languages_present(defined: dict[str, set[str]]) -> None:
 def test_all_referenced_keys_are_defined_in_all_languages(
     referenced: set[str], defined: dict[str, set[str]]
 ) -> None:
-    """The cross-product of referenced keys × languages must be 0 gaps."""
+    """The cross-product of referenced keys × languages must be 0 gaps.
+
+    Exception: register keys (``g_*``/``r_*``) need no ``rm`` entry — they
+    fall back to German by documented design — but the German entry they
+    fall back to must exist.
+    """
     gaps_by_lang: dict[str, list[str]] = {}
     for lang in LANGS:
-        gaps = sorted(referenced - defined.get(lang, set()))
+        gaps = referenced - defined.get(lang, set())
+        if lang == "rm":
+            gaps = {
+                k for k in gaps
+                if not (_rm_may_fall_back_to_de(k) and k in defined.get("de", set()))
+            }
+        gaps = sorted(gaps)
         if gaps:
             gaps_by_lang[lang] = gaps
     if gaps_by_lang:
