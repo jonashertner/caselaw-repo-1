@@ -1,19 +1,19 @@
 {
-  "total": 1061725,
-  "source_representations": 1061725,
+  "total": 1061733,
+  "source_representations": 1061733,
   "representation_method_version": "2026-07-23.1",
-  "unique_decisions": 920813,
-  "unique_decisions_lower_bound": 920763,
+  "unique_decisions": 920821,
+  "unique_decisions_lower_bound": 920771,
   "duplicate_representations": 140912,
   "unique_decisions_status": "current",
   "by_court": [
     {
       "court": "bger",
       "canton": "CH",
-      "count": 192853,
+      "count": 192861,
       "earliest": "1986-10-06",
-      "latest": "2026-08-19",
-      "last_scraped": "2026-08-28T11:01:02.304935+00:00",
+      "latest": "2026-08-21",
+      "last_scraped": "2026-08-31T11:00:20.945100+00:00",
       "languages": [
         "de",
         "fr",
@@ -1829,9 +1829,9 @@
     }
   ],
   "by_language": {
-    "de": 502498,
-    "fr": 464350,
-    "it": 90927,
+    "de": 502499,
+    "fr": 464354,
+    "it": 90930,
     "en": 3950
   },
   "by_year": {
@@ -1986,26 +1986,26 @@
     "2023": 51688,
     "2024": 51803,
     "2025": 48849,
-    "2026": 20845
+    "2026": 20853
   },
   "recent_daily": {
     "2026-08-01": 1,
     "2026-08-03": 75,
     "2026-08-04": 90,
     "2026-08-05": 71,
-    "2026-08-06": 64,
+    "2026-08-06": 66,
     "2026-08-07": 33,
     "2026-08-09": 1,
     "2026-08-10": 57,
-    "2026-08-11": 61,
-    "2026-08-12": 44,
+    "2026-08-11": 62,
+    "2026-08-12": 45,
     "2026-08-13": 35,
     "2026-08-14": 19,
     "2026-08-17": 36,
-    "2026-08-18": 26,
+    "2026-08-18": 28,
     "2026-08-19": 14,
     "2026-08-20": 10,
-    "2026-08-21": 2,
+    "2026-08-21": 3,
     "2026-08-24": 5,
     "2026-08-25": 4,
     "2026-08-26": 4,
@@ -2023,7 +2023,7 @@
     {
       "court": "bger",
       "canton": "CH",
-      "count": 192853
+      "count": 192861
     },
     {
       "court": "ge_gerichte",
@@ -2225,7 +2225,7 @@
     "2026": -57.3
   },
   "federal_vs_cantonal": {
-    "federal": 397049,
+    "federal": 397057,
     "cantonal": 664676
   },
   "language_by_year": {
@@ -2356,10 +2356,10 @@
       "it": 1548
     },
     "2026": {
-      "de": 11177,
+      "de": 11178,
       "en": 106,
-      "fr": 8791,
-      "it": 771
+      "fr": 8795,
+      "it": 774
     }
   },
   "by_month": {
@@ -2396,12 +2396,12 @@
     "2026-02": 3547,
     "2026-03": 3428,
     "2026-04": 2767,
-    "2026-05": 2587,
+    "2026-05": 2588,
     "2026-06": 2822,
     "2026-07": 2104,
-    "2026-08": 656
+    "2026-08": 663
   },
-  "generated_at": "2026-08-31T09:59:58.415302+00:00",
+  "generated_at": "2026-08-31T18:02:32.083566+00:00",
   "scraper_health": {
     "run_at": "2026-08-31T03:08:37.537267+00:00",
     "run_duration_s": 7656.5,
@@ -2880,7 +2880,7 @@
         "note": null,
         "state_count": 1141,
         "jsonl_size_mb": 39.9,
-        "jsonl_mtime": "2026-08-31T01:14:42.522192+00:00"
+        "jsonl_mtime": "2026-08-31T10:25:00.057590+00:00"
       },
       "emark": {
         "success": true,
@@ -2912,9 +2912,9 @@
         "duration_s": 867.8,
         "error": null,
         "note": null,
-        "state_count": 98648,
-        "jsonl_size_mb": 1490.5,
-        "jsonl_mtime": "2026-08-31T01:15:37.845768+00:00"
+        "state_count": 98656,
+        "jsonl_size_mb": 1490.6,
+        "jsonl_mtime": "2026-08-31T11:01:03.187606+00:00"
       },
       "nw_gerichte": {
         "success": true,
@@ -2999,7 +2999,7 @@
         "note": null,
         "state_count": 21348,
         "jsonl_size_mb": 490.5,
-        "jsonl_mtime": "2026-08-31T09:18:31.341556+00:00"
+        "jsonl_mtime": "2026-08-31T10:38:25.668002+00:00"
       },
       "sav_kantone": {
         "success": true,
@@ -3033,7 +3033,7 @@
         "note": null,
         "state_count": 1611,
         "jsonl_size_mb": 32.6,
-        "jsonl_mtime": "2026-08-31T01:20:13.522668+00:00"
+        "jsonl_mtime": "2026-08-31T10:24:30.979245+00:00"
       },
       "sh_gerichte": {
         "success": true,
@@ -3458,7 +3458,7 @@
         "note": null,
         "state_count": 7674,
         "jsonl_size_mb": 191.4,
-        "jsonl_mtime": "2026-08-31T01:51:51.589422+00:00"
+        "jsonl_mtime": "2026-08-31T10:56:15.311478+00:00"
       },
       "sg_publikationen": {
         "success": true,
@@ -3644,12 +3644,12 @@
       "de_pct": 47.5,
       "fr_pct": 43.9,
       "it_pct": 8.6,
-      "total": 1057775
+      "total": 1057783
     },
     "regeste_coverage": {
       "pct": 38.8,
       "with_regeste": 412357,
-      "total": 1061725
+      "total": 1061733
     },
     "graph_size": {
       "decision_edges": 11548547,
@@ -4078,6 +4078,14 @@
   "recent": {
     "bge": [
       {
+        "decision_id": "bger_12T_1_2026",
+        "docket": "12T_1/2026",
+        "date": "2026-08-21",
+        "court": "bger",
+        "language": "it",
+        "summary": "Denuncia all'autorità di vigilanza secondo l'art. 1 cpv. 2 LTF in relazione con l'art. 71 cpv. 1 PA"
+      },
+      {
         "decision_id": "bger_7B_671_2026",
         "docket": "7B_671/2026",
         "date": "2026-08-19",
@@ -4100,6 +4108,22 @@
         "court": "bger",
         "language": "de",
         "summary": "Aufschiebende Wirkung (Aufenthaltsbestimmungsrecht),"
+      },
+      {
+        "decision_id": "bger_5A_198_2026",
+        "docket": "5A_198/2026",
+        "date": "2026-08-18",
+        "court": "bger",
+        "language": "fr",
+        "summary": "demande de récusation (curatelle),"
+      },
+      {
+        "decision_id": "bger_4A_363_2026",
+        "docket": "4A_363/2026",
+        "date": "2026-08-18",
+        "court": "bger",
+        "language": "fr",
+        "summary": "contrat de bail,"
       },
       {
         "decision_id": "bger_9C_721_2025",
@@ -4132,30 +4156,6 @@
         "court": "bger",
         "language": "de",
         "summary": "Internationale Rechtshilfe in Strafsachen an Deutschland; Herausgabe von Beweismitteln,"
-      },
-      {
-        "decision_id": "bger_1C_417_2026",
-        "docket": "1C_417/2026",
-        "date": "2026-08-17",
-        "court": "bger",
-        "language": "de",
-        "summary": "Internationale Rechtshilfe in Strafsachen an Deutschland; Herausgabe von Beweismitteln,"
-      },
-      {
-        "decision_id": "bger_6F_12_2026",
-        "docket": "6F_12/2026",
-        "date": "2026-08-14",
-        "court": "bger",
-        "language": "de",
-        "summary": "Revisionsgesuch gegen das Urteil des Schweizerischen Bundesgerichts vom 6. Mai 2026 (6B_212/2026)."
-      },
-      {
-        "decision_id": "bger_5F_38_2026",
-        "docket": "5F_38/2026",
-        "date": "2026-08-14",
-        "court": "bger",
-        "language": "de",
-        "summary": "Revisionsgesuch gegen das Urteil des Schweizerischen Bundesgerichts 5A_994/2025 vom 26. November 2025."
       }
     ],
     "cantonal": [
@@ -4349,6 +4349,14 @@
       "url": "https://www.fedlex.admin.ch/eli/cc/2003/748"
     },
     {
+      "sr_number": "822.115.4",
+      "in_force_date": "2026-10-01",
+      "title_de": "Verordnung des WBF vom 21. April 2011 über die Ausnahmen vom Verbot von Nacht- und Sonntagsarbeit während der beruflichen Grundbildung",
+      "title_fr": "Ordonnance du DEFR du 21 avril 2011 concernant les dérogations à l'interdiction du travail de nuit et du dimanche pendant la formation professionnelle initiale",
+      "title_it": "Ordinanza del DEFR del 21 aprile 2011 sulle deroghe al divieto del lavoro notturno e domenicale durante la formazione professionale di base",
+      "url": "https://www.fedlex.admin.ch/eli/cc/2011/251"
+    },
+    {
       "sr_number": "221.411",
       "in_force_date": "2026-10-01",
       "title_de": "Handelsregisterverordnung vom 17. Oktober 2007 (HRegV)",
@@ -4363,19 +4371,13 @@
       "title_fr": "Ordonnance du 17 novembre 1999 sur l'organisation du Département fédéral de justice et police (Org DFJP)",
       "title_it": "Ordinanza del 17 novembre 1999 sull'organizzazione del Dipartimento federale di giustizia e polizia (Org-DFGP)",
       "url": "https://www.fedlex.admin.ch/eli/cc/2000/57"
-    },
-    {
-      "sr_number": "955.23",
-      "in_force_date": "2026-10-01",
-      "title_de": "Verordnung vom 25. August 2004 über die Meldestelle für Geldwäscherei (MGwV)",
-      "title_fr": "Ordonnance du 25 août 2004 sur le Bureau de communication en matière de blanchiment d'argent (OBCBA)",
-      "title_it": "Ordinanza del 25 agosto 2004 sull'Ufficio di comunicazione in materia di riciclaggio di denaro (OURD)",
-      "url": "https://www.fedlex.admin.ch/eli/cc/2004/626"
     }
   ],
   "delta": {
-    "total": 0,
-    "by_court": {},
+    "total": 8,
+    "by_court": {
+      "bger": 8
+    },
     "by_canton": {},
     "corpus": {},
     "previous_generated_at": "2026-08-30T18:26:49.225459+00:00"
