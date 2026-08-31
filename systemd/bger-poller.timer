@@ -8,7 +8,11 @@ Description=BGer Neuheiten poller — hourly Mon-Fri 07:00-18:00 CET
 # over-aggressive and caused frequent Incapsula challenges (each
 # triggering a 60-90 s camoufox cookie harvest). 60 min cadence
 # still catches the release within 1 h while cutting load and
-# challenge frequency by 75%.
+# challenge frequency by 75%. Do NOT restore 15-min polling: since
+# 2026-08-31 the SERVICE absorbs BGer's 30-90 min doc-service lag
+# itself (in-run burst retries, see BURST_RETRIES in bger_poller.py);
+# a run still bursting when the next fire comes simply absorbs it
+# (oneshot coalescing) — that is the no-pile-up safety, not a bug.
 OnCalendar=Mon..Fri *-*-* 05..16:00:00 UTC
 Persistent=true
 

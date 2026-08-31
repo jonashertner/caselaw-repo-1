@@ -10,6 +10,10 @@ ExecStart=/usr/bin/python3 scripts/bger_poller.py
 # OCL_RECENT_OVERLAY fallback sees freshly-captured rulings (search_stack/
 # build_recent_overlay.py). Non-fatal if it fails — the poller already succeeded.
 ExecStartPost=-/usr/bin/python3 -m search_stack.build_recent_overlay
-TimeoutStartSec=3900
+# 14400: the 2026-08-31 burst design's worst case (initial scrape+publish,
+# 3 x 720 s retry slots each with scrape+publish, one ~22 min stats regen)
+# no longer fits the old 3900 s — a mid-burst SIGTERM lost the whole run's
+# accounting. In-code BURST_DEADLINE_S=9000 bails well before this cap.
+TimeoutStartSec=14400
 StandardOutput=append:/opt/caselaw/repo/logs/bger_poller.log
 StandardError=append:/opt/caselaw/repo/logs/bger_poller.log

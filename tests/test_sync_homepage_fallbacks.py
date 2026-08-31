@@ -27,6 +27,9 @@ FIXTURE_HTML = """<html><body>
 <div class="fact-n tnum" id="f-cites">8.9M <span class="u">citations</span></div>
 <div class="fact-n tnum" id="f-echr">8&#8217;900 <span class="u">ECtHR judgments</span></div>
 <p class="cov-foot"><span id="cov-courts">109</span> courts</p>
+<span class="reg-n tnum" id="f-scholarship">43&#8217;000</span>
+<div class="d-n pos tnum">+<span id="d-today">198</span></div>
+<p class="stamp">As of <span id="stamp">2026-06-21</span></p>
 </body></html>"""
 
 FIXTURE_STATS = {
@@ -35,7 +38,8 @@ FIXTURE_STATS = {
     "generated_at": "2026-08-22T09:34:20+00:00",
     "delta": {"total": 139},
     "corpus": {"federal_laws": 5528, "cantonal_laws": 15608,
-               "citation_edges": 9836225},
+               "citation_edges": 9836225,
+               "scholarship_publications": 44491},
     # by_court splits each ECtHR court by canton: 'CE' for the
     # Council-of-Europe-wide rows, 'CH' for Swiss-respondent. Both count.
     "by_court": [
