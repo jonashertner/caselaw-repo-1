@@ -14,9 +14,26 @@ Output layout mirrors src/pages/:
   src/pages/gesetze/index.html    → docs/gesetze/index.html
   ...
 
+CURRENT STATE — the generator is dormant and docs/ is the source of truth.
+src/pages/ covers 5 of the 26 pages under docs/, and all 5 have drifted: the
+2026-08 homepage redesign (register of holdings, hanko, no completeness claim)
+was made directly in docs/index.html, while src/pages/index.html still holds
+the April version. A naive regeneration would therefore DESTROY the live
+homepage.
+
+Because of that, a plain run never overwrites a page whose current content
+differs from what would be generated. It reports the divergence and exits
+non-zero. Use --force only after resyncing src/pages/ from docs/.
+
+Finishing the generator — every page built from src/pages/, --check gating
+drift in CI — is the direction sketched in
+docs/superpowers/specs/2026-06-19-redesign-KICKOFF.md. Until someone does
+that, edit docs/ directly.
+
 Usage:
-  python3 tools/build_docs.py          # build all pages
-  python3 tools/build_docs.py --check  # verify output matches what's already in docs/
+  python3 tools/build_docs.py          # build; refuses to clobber drifted pages
+  python3 tools/build_docs.py --check  # report drift, write nothing
+  python3 tools/build_docs.py --force  # overwrite anyway (destructive)
 """
 from __future__ import annotations
 
@@ -89,22 +106,30 @@ def sha(text: str) -> str:
     return hashlib.sha256(text.encode()).hexdigest()[:12]
 
 
-def build(check_only: bool = False) -> int:
-    """Build all pages. Returns the number of pages written (or mismatches in check mode)."""
+def build(check_only: bool = False, force: bool = False) -> tuple[int, int]:
+    """Build all pages.
+
+    Returns ``(count, blocked)``. In check mode ``count`` is the number of pages
+    that differ from docs/; in write mode it is the number of pages written and
+    ``blocked`` is the number left untouched because docs/ had diverged from
+    what src/pages/ would produce. ``count`` is -1 on a setup error.
+    """
     if not LAYOUT_PATH.exists():
         print(f"error: layout not found at {LAYOUT_PATH}", file=sys.stderr)
-        return -1
+        return -1, 0
     if not PAGES_DIR.exists():
         print(f"error: pages directory not found at {PAGES_DIR}", file=sys.stderr)
-        return -1
+        return -1, 0
 
     layout = LAYOUT_PATH.read_text()
     pages = iter_pages()
     if not pages:
         print(f"warning: no pages found in {PAGES_DIR}", file=sys.stderr)
-        return 0
+        return 0, 0
 
     mismatches = 0
+    written = 0
+    blocked = 0
     for src in pages:
         content = src.read_text()
         rendered = render_page(layout, content)
@@ -123,11 +148,20 @@ def build(check_only: bool = False) -> int:
             else:
                 print(f"ok       {rel_out}  ({sha(rendered)})")
         else:
+            if out.exists() and out.read_text() != rendered and not force:
+                print(
+                    f"REFUSED  {rel_out} has diverged from {rel_src} — not "
+                    f"overwriting. docs/ is the source of truth; resync "
+                    f"{rel_src} first, or pass --force to discard the live page."
+                )
+                blocked += 1
+                continue
             out.parent.mkdir(parents=True, exist_ok=True)
             out.write_text(rendered)
+            written += 1
             print(f"built    {rel_src} -> {rel_out}  ({sha(rendered)})")
 
-    return mismatches if check_only else len(pages)
+    return (mismatches if check_only else written), blocked
 
 
 def main():
@@ -135,21 +169,36 @@ def main():
     parser.add_argument(
         "--check",
         action="store_true",
-        help="Verify output matches current docs/ without writing",
+        help="Report drift between src/pages/ and docs/ without writing",
+    )
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Overwrite docs/ pages that have diverged. DESTRUCTIVE — the live "
+             "homepage is maintained in docs/, not src/pages/.",
     )
     args = parser.parse_args()
 
-    result = build(check_only=args.check)
+    result, blocked = build(check_only=args.check, force=args.force)
+    if result == -1:
+        return 2
     if args.check:
         if result == 0:
             print("\nAll pages match.")
             return 0
-        else:
-            print(f"\n{result} page(s) differ from current docs/", file=sys.stderr)
-            return 1
-    else:
-        print(f"\nBuilt {result} page(s).")
-        return 0
+        print(f"\n{result} page(s) differ from current docs/", file=sys.stderr)
+        return 1
+
+    print(f"\nBuilt {result} page(s).")
+    if blocked:
+        print(
+            f"Refused to overwrite {blocked} diverged page(s). Those pages are "
+            f"maintained directly in docs/; resync src/pages/ from them before "
+            f"using --force.",
+            file=sys.stderr,
+        )
+        return 1
+    return 0
 
 
 if __name__ == "__main__":
