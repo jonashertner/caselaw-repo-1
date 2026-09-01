@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/fr.xml</link>
     <description>Latest published Swiss court decisions in Français.</description>
     <language>de-CH</language>
-    <lastBuildDate>Mon, 31 Aug 2026 10:08:26 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 01 Sep 2026 10:57:45 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/fr.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -304,6 +304,14 @@ Président :…</description>
       <category>EMRK / CEDH / CEDU — Menschenrechte</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht E-1497/2026 vom 2026-08-24</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-1497_2026</link>
+      <description>Asile et renvoi</description>
+      <pubDate>Mon, 24 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-1497.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>fr_gerichte 501 2026 18 vom 2026-08-24</title>
       <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_501%202026%2018</link>
       <description>Tribunal cantonal TC
@@ -372,6 +380,14 @@ représe…</description>
       <category>ge_gerichte</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht D-5621/2026 vom 2026-08-21</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-5621_2026</link>
+      <description>Asile et renvoi (procédure à l'aéroport)</description>
+      <pubDate>Fri, 21 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-5621.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>Bundesverwaltungsgericht D-5622/2026 vom 2026-08-21</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-5622_2026</link>
       <description>Asile et renvoi (procédure à l'aéroport)</description>
@@ -398,6 +414,14 @@ Co…</description>
       <pubDate>Fri, 21 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">fr_gerichte_608 2025 141</guid>
       <category>fr_gerichte</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht E-5602/2026 vom 2026-08-20</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-5602_2026</link>
+      <description>Asile et renvoi (procédure à l'aéroport)</description>
+      <pubDate>Thu, 20 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-5602.2026</guid>
+      <category>bvger</category>
     </item>
     <item>
       <title>Bundesverwaltungsgericht E-8229/2025 vom 2026-08-20</title>
@@ -678,6 +702,68 @@ Pré…</description>
       <category>fr_gerichte</category>
     </item>
     <item>
+      <title>Bundesgericht 4A_363/2026 vom 2026-08-18</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_4A_363_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+4A_363/2026
+
+Arrêt du 18 août 2026
+
+Ire Cour de droit civil
+
+Composition
+
+M. le Juge fédéral Hurni, Président.
+
+Greffier: M. Carruzzo.
+
+Participants à la procédure
+
+1. A.________,…</description>
+      <pubDate>Tue, 18 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:4A_363.2026</guid>
+      <category>bger</category>
+      <category>Droit des contrats</category>
+    </item>
+    <item>
+      <title>Bundesgericht 5A_198/2026 vom 2026-08-18</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_5A_198_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+5A_198/2026
+
+Ordonnance du 18 août 2026
+
+IIe Cour de droit civil
+
+Composition
+
+M. le Juge fédéral Bovey, Président.
+
+Greffière : Mme Dolivo-Bonvin.
+
+Participants à la procédure
+
+A…</description>
+      <pubDate>Tue, 18 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_198.2026</guid>
+      <category>bger</category>
+      <category>Droit de la famille</category>
+    </item>
+    <item>
       <title>Bundesverwaltungsgericht B-4049/2026 vom 2026-08-18</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_B-4049_2026</link>
       <description>Travail d'intérêt général (service civil)</description>
@@ -874,111 +960,6 @@ Ar…</description>
       <pubDate>Tue, 18 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ge_gerichte_ATAS_708_2026</guid>
       <category>ge_gerichte</category>
-    </item>
-    <item>
-      <title>ge_gerichte ATAS/709/2026 vom 2026-08-18</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ge_gerichte_ATAS_709_2026</link>
-      <description>Siégeant : Blaise PAGAN, président ; Maria Esther SPEDALIERO et Yves 
-MABILLARD, juges assesseurs 
- 
- 
- 
- 
-RÉPUBLIQUE ET 
- 
-CANTON DE GEN ÈVE 
-POUVOIR JUDICIAIRE 
- 
-A/3306/2025 
-ATAS/709/2026 
-COUR DE JUSTICE 
-Chambre des assurances sociales 
-Arrêt d…</description>
-      <pubDate>Tue, 18 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ge_gerichte_ATAS_709_2026</guid>
-      <category>ge_gerichte</category>
-    </item>
-    <item>
-      <title>ge_gerichte ATAS/710/2026 vom 2026-08-18</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ge_gerichte_ATAS_710_2026</link>
-      <description>Siégeant : Blaise PAGAN, président ; Maria Esther SPEDALIERO et Yves 
-MABILLARD, juges assesseurs 
- 
- 
- 
- 
-RÉPUBLIQUE ET 
- 
-CANTON DE GEN ÈVE 
-POUVOIR JUDICIAIRE 
- 
-A/350/2026 
-ATAS/710/2026 
-COUR DE JUSTICE 
-Chambre des assurances sociales 
-Arrêt du…</description>
-      <pubDate>Tue, 18 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ge_gerichte_ATAS_710_2026</guid>
-      <category>ge_gerichte</category>
-    </item>
-    <item>
-      <title>ge_gerichte ATAS/711/2026 vom 2026-08-18</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ge_gerichte_ATAS_711_2026</link>
-      <description>Siégeant : Blaise PAGAN, président ; Maria Esther SPEDALIERO et Yves 
-MABILLARD, juges assesseurs 
- 
- 
- 
- 
-RÉPUBLIQUE ET 
- 
-CANTON DE GEN ÈVE 
-POUVOIR JUDICIAIRE 
- 
-A/1216/2026 
-ATAS/711/2026 
-COUR DE JUSTICE 
-Chambre des assurances sociales 
-Arrêt d…</description>
-      <pubDate>Tue, 18 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ge_gerichte_ATAS_711_2026</guid>
-      <category>ge_gerichte</category>
-    </item>
-    <item>
-      <title>Bundesgericht 9C_368/2026 vom 2026-08-17</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_9C_368_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-9C_368/2026
-
-Ordonnance du 17 août 2026
-
-IIIe Cour de droit public
-
-Composition
-
-Mme la Juge fédérale Moser-Szeless, Présidente.
-
-Greffier : M. Berthoud.
-
-Participants à la procéd…</description>
-      <pubDate>Mon, 17 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:9C_368.2026</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht D-3386/2026 vom 2026-08-17</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-3386_2026</link>
-      <description>Exécution du renvoi (procédure accélérée)</description>
-      <pubDate>Mon, 17 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-3386.2026</guid>
-      <category>bvger</category>
     </item>
   </channel>
 </rss>

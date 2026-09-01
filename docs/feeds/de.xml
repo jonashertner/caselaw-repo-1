@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feeds/de.xml</link>
     <description>Latest published Swiss court decisions in Deutsch.</description>
     <language>de-CH</language>
-    <lastBuildDate>Mon, 31 Aug 2026 10:08:25 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 01 Sep 2026 10:57:44 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/de.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -270,12 +270,55 @@ Beschwerdegegnerin
       <category>so_gerichte</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht D-5464/2026 vom 2026-08-21</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-5464_2026</link>
+      <description>Vollzug der Wegweisung (Art. 40 i.V.m. Art. 6a Abs. 2 AsylG)</description>
+      <pubDate>Fri, 21 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-5464.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht E-3311/2025 vom 2026-08-21</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-3311_2025</link>
+      <description>Verweigerung vorübergehender Schutz</description>
+      <pubDate>Fri, 21 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-3311.2025</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>Bundesverwaltungsgericht B-3184/2024 vom 2026-08-20</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_B-3184_2024</link>
       <description>Tierwirtschaftliche Produktion (Ohne Milch)</description>
       <pubDate>Thu, 20 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:B-3184.2024</guid>
       <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht E-6207/2024 vom 2026-08-20</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-6207_2024</link>
+      <description>Asyl (ohne Wegweisungsvollzug)</description>
+      <pubDate>Thu, 20 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-6207.2024</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>ag_verwaltungsgericht WBE.2025.377 vom 2026-08-19</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ag_verwaltungsgericht_WBE.2025.377</link>
+      <description>Verwaltungsgericht
+3. Kammer
+WBE.2025.377 / MW / jb
+(2025-001003)
+Art. 88
+Urteil vom 19. August 2026
+Besetzung Verwaltungsrichter Winkler, Vorsitz
+Verwaltungsrichter J. Huber
+Verwaltungsrichter Michel
+Gerichtsschreiber Wildi
+Beschwerde- A._____
+führe…</description>
+      <pubDate>Wed, 19 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ag_verwaltungsgericht_WBE.2025.377</guid>
+      <category>ag_verwaltungsgericht</category>
     </item>
     <item>
       <title>Bundesverwaltungsgericht A-2042/2026 vom 2026-08-19</title>
@@ -315,6 +358,14 @@ Beschwerdegegnerin
       <description>Mehrwertsteuer</description>
       <pubDate>Wed, 19 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:A-4130.2025</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht E-5121/2021 vom 2026-08-19</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-5121_2021</link>
+      <description>Asyl und Wegweisung (Wiedererwägung)</description>
+      <pubDate>Wed, 19 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-5121.2021</guid>
       <category>bvger</category>
     </item>
     <item>
@@ -373,6 +424,24 @@ hat die Aufsichtsbehörde…</description>
       <pubDate>Wed, 19 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">so_gerichte_SCBES.2026.94</guid>
       <category>so_gerichte</category>
+    </item>
+    <item>
+      <title>ag_zivilgericht XBE.2026.86 vom 2026-08-18</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ag_zivilgericht_XBE.2026.86</link>
+      <description>Obergericht
+Kammer für Kindes- und Erwachsenenschutz
+XBE.2026.86
+(KEMN.2026.294 / 295)
+Entscheid vom 18. August 2026
+Besetzung Oberrichterin Merkofer, Präsidentin
+Oberrichter Lindner
+Oberrichter Giese
+Gerichtsschreiber Kläusler
+Beschwerde- A._____,
+f…</description>
+      <pubDate>Tue, 18 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ag_zivilgericht_XBE.2026.86</guid>
+      <category>ag_zivilgericht</category>
     </item>
     <item>
       <title>be_verwaltungsgericht 100 2026 142 vom 2026-08-18</title>
@@ -450,11 +519,51 @@ Verfahrensbeteiligte…</description>
       <category>bger</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht A-1673/2026 vom 2026-08-18</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_A-1673_2026</link>
+      <description>Zölle</description>
+      <pubDate>Tue, 18 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:A-1673.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>Bundesverwaltungsgericht A-1923/2026 vom 2026-08-18</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_A-1923_2026</link>
       <description>Mehrwertsteuer</description>
       <pubDate>Tue, 18 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:A-1923.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht A-4061/2026 vom 2026-08-18</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_A-4061_2026</link>
+      <description>Amtshilfe</description>
+      <pubDate>Tue, 18 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:A-4061.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht A-4063/2026 vom 2026-08-18</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_A-4063_2026</link>
+      <description>Amtshilfe</description>
+      <pubDate>Tue, 18 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:A-4063.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht A-4064/2026 vom 2026-08-18</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_A-4064_2026</link>
+      <description>Amtshilfe</description>
+      <pubDate>Tue, 18 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:A-4064.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht A-4066/2026 vom 2026-08-18</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_A-4066_2026</link>
+      <description>Amtshilfe</description>
+      <pubDate>Tue, 18 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:A-4066.2026</guid>
       <category>bvger</category>
     </item>
     <item>
@@ -575,6 +684,24 @@ Gerichtsschreib…</description>
       <category>ag_handelsgericht</category>
     </item>
     <item>
+      <title>ag_strafgericht SBE.2026.27 vom 2026-08-17</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ag_strafgericht_SBE.2026.27</link>
+      <description>Obergericht
+Beschwerdekammer in Strafsachen
+SBE.2026.27
+(ST.2025.105; STA.2023.4872)
+Art. 330
+Entscheid vom 17. August 2026
+Besetzung Oberrichter Richli, Präsident
+Gerichtsschreiberin Dos Santos Teodoro
+Gesuchsteller A._____, […]
+[…]
+verteidigt durch…</description>
+      <pubDate>Mon, 17 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ag_strafgericht_SBE.2026.27</guid>
+      <category>ag_strafgericht</category>
+    </item>
+    <item>
       <title>ai_gerichte KE 19-2025 vom 2026-08-17</title>
       <link>https://mcp.opencaselaw.ch/entscheid/ai_gerichte_KE%2019-2025</link>
       <description>1 - 6 
@@ -678,233 +805,6 @@ B…</description>
       <pubDate>Mon, 17 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BGer:2026:5A_779.2026</guid>
       <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 9C_721/2025 vom 2026-08-17</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_9C_721_2025</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-9C_721/2025, 9C_722/2025
-
-Urteil vom 17. August 2026
-
-III. öffentlich-rechtliche Abteilung
-
-Besetzung
-
-Bundesrichterin Moser-Szeless, Präsidentin,
-
-Bundesrichter Stadelmann, Parri…</description>
-      <pubDate>Mon, 17 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:9C_721.2025</guid>
-      <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht A-2099/2026 vom 2026-08-17</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_A-2099_2026</link>
-      <description>Mehrwertsteuer</description>
-      <pubDate>Mon, 17 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:A-2099.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht A-7041/2025 vom 2026-08-17</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_A-7041_2025</link>
-      <description>Personensicherheitsprüfungen</description>
-      <pubDate>Mon, 17 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:A-7041.2025</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht A-8507/2025 vom 2026-08-17</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_A-8507_2025</link>
-      <description>Mineralölsteuer</description>
-      <pubDate>Mon, 17 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:A-8507.2025</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht C-3027/2024 vom 2026-08-17</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-3027_2024</link>
-      <description>Rentenrevision</description>
-      <pubDate>Mon, 17 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-3027.2024</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht F-5523/2026 vom 2026-08-17</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-5523_2026</link>
-      <description>Nichteintreten auf Asylgesuch und Wegweisung (Dublin-Verfahren - Art. 31a Abs. 1 Bst. b AsylG)</description>
-      <pubDate>Mon, 17 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-5523.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>gr_gerichte VR3 2025 109 vom 2026-08-17</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_VR3%202025%20109</link>
-      <description>Obergericht des Kantons Graubünden
-Dretgira superiura dal chantun Grischun
-Tribunale d'appello del Cantone dei Grigioni
-Urteil vom 14. Juli 2026
-mitgeteilt am 27. Juli 2026
-Referenz
-VR3 25 109
-Instanz
-Dritte verwaltungsrechtliche Kammer
-Besetzung
-Bru…</description>
-      <pubDate>Mon, 17 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">gr_gerichte_VR3 2025 109</guid>
-      <category>gr_gerichte</category>
-    </item>
-    <item>
-      <title>so_gerichte SCBES.2026.87 vom 2026-08-17</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/so_gerichte_SCBES.2026.87</link>
-      <description>Urteilvom17. August 2026
-
-Es wirken mit:
-
-Oberrichterin Obrecht Steiner
-
-Oberrichter Rauber
-
-Gerichtsschreiber Isch
-
-In Sachen
-
-A.___ AG,
-
-Beschwerdeführerin
-
-gegen
-
-Betreibungsamt Grenchen-Bettlach,
-
-Beschwerdegegner
-
-betreffendKonkursandrohung
-
-zie…</description>
-      <pubDate>Mon, 17 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">so_gerichte_SCBES.2026.87</guid>
-      <category>so_gerichte</category>
-    </item>
-    <item>
-      <title>so_gerichte SCBES.2026.88 vom 2026-08-17</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/so_gerichte_SCBES.2026.88</link>
-      <description>Urteilvom17. August 2026
-
-Es wirken mit:
-
-Oberrichter Rauber
-
-Gerichtsschreiber Isch
-
-In Sachen
-
-1.    A.___
-AG,
-
-2.B.___,
-
-Beschwerdeführerinnen
-
-gegen
-
-Betreibungsamt Grenchen-Bettlach,
-
-Beschwerdegegner
-
-betreffendLohnpfändung
-
-zieht die Aufsicht…</description>
-      <pubDate>Mon, 17 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">so_gerichte_SCBES.2026.88</guid>
-      <category>so_gerichte</category>
-    </item>
-    <item>
-      <title>so_gerichte SCBES.2026.90 vom 2026-08-17</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/so_gerichte_SCBES.2026.90</link>
-      <description>Urteilvom17. August 2026
-
-Es wirken mit:
-
-Oberrichterin Obrecht Steiner
-
-Gerichtsschreiber Isch
-
-In Sachen
-
-A.___,
-
-Beschwerdeführerin
-
-gegen
-
-Betreibungsamt Olten-Gösgen,
-
-Beschwerdegegner
-
-betreffendRückweisung
-Betreibungsbegehren
-
-zieht die Aufsi…</description>
-      <pubDate>Mon, 17 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">so_gerichte_SCBES.2026.90</guid>
-      <category>so_gerichte</category>
-    </item>
-    <item>
-      <title>so_gerichte SCBES.2026.97 vom 2026-08-17</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/so_gerichte_SCBES.2026.97</link>
-      <description>Urteilvom17. August 2026
-
-Es wirken mit:
-
-Gerichtsschreiber Isch
-
-In Sachen
-
-A.___,
-
-Beschwerdeführerin
-
-gegen
-
-Betreibungsamt Dorneck-Thierstein,
-
-Beschwerdegegner
-
-betreffendPfändungsvollzug
-
-zieht die Aufsichtsbehörde
-für Schuldbetreibung und Kon…</description>
-      <pubDate>Mon, 17 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">so_gerichte_SCBES.2026.97</guid>
-      <category>so_gerichte</category>
-    </item>
-    <item>
-      <title>ag_handelsgericht HSU.2026.32 vom 2026-08-14</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ag_handelsgericht_HSU.2026.32</link>
-      <description>Handelsgericht
-2. Kammer
-HSU.2026.32 / as / mv
-Entscheid vom 14. August 2026
-Besetzung Oberrichter Vetter, Präsident
-Gerichtsschreiber Schneuwly
-Gesuchstellerin C._____ AG, _____
-Zustelladresse: c._____
-Gesuchsgegne- D._____ AG, _____
-rin
-Gegenstand …</description>
-      <pubDate>Fri, 14 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ag_handelsgericht_HSU.2026.32</guid>
-      <category>ag_handelsgericht</category>
     </item>
   </channel>
 </rss>

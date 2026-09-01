@@ -5,9 +5,36 @@
     <link>https://opencaselaw.ch/feeds/it.xml</link>
     <description>Latest published Swiss court decisions in Italiano.</description>
     <language>de-CH</language>
-    <lastBuildDate>Mon, 31 Aug 2026 10:08:26 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 01 Sep 2026 10:57:45 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/it.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Bundesgericht 12T_1/2026 vom 2026-08-21</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_12T_1_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+Commissione amministrativa
+
+CH - 1000 Lausanne 14
+
+Tel. +41 (0) 21 318 91 11
+
+no dossier 12T_1/2026
+
+Il Tribunale federale, rappresentato dalla Commissione amministrativa,
+
+in mat…</description>
+      <pubDate>Fri, 21 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:12T_1.2026</guid>
+      <category>bger</category>
+      <category>Ricorsi in materia di vigilanza</category>
+    </item>
     <item>
       <title>Bundesverwaltungsgericht F-5574/2026 vom 2026-08-19</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-5574_2026</link>
@@ -127,6 +154,37 @@ Partecipanti al pro…</description>
       <category>Assistenza giudiziaria e estradizione</category>
     </item>
     <item>
+      <title>Bundesgericht 8C_162/2026 vom 2026-08-06</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_8C_162_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+8C_162/2026
+
+Sentenza del 6 agosto 2026
+
+IV Corte di diritto pubblico
+
+Composizione
+
+Giudici federali Viscione, Presidente,
+
+Heine, Scherrer Reber,
+
+Cancelliere Colombi.
+
+Partecip…</description>
+      <pubDate>Thu, 06 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:8C_162.2026</guid>
+      <category>bger</category>
+      <category>Assicurazione contro la disoccupazione</category>
+    </item>
+    <item>
       <title>Bundesgericht 8C_188/2026 vom 2026-08-06</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bger_8C_188_2026</link>
       <description>Bundesgericht
@@ -155,6 +213,37 @@ Parte…</description>
       <pubDate>Thu, 06 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BGer:2026:8C_188.2026</guid>
       <category>bger</category>
+    </item>
+    <item>
+      <title>Bundesgericht 8C_65/2026 vom 2026-08-06</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_8C_65_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+8C_65/2026
+
+Sentenza del 6 agosto 2026
+
+IV Corte di diritto pubblico
+
+Composizione
+
+Giudici federali Viscione, Presidente,
+
+Maillard, Scherrer Reber,
+
+Cancelliere Colombi.
+
+Partec…</description>
+      <pubDate>Thu, 06 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:8C_65.2026</guid>
+      <category>bger</category>
+      <category>Assicurazione contro gli infortuni</category>
     </item>
     <item>
       <title>Bundesgericht 8C_682/2025 vom 2026-08-06</title>
@@ -942,53 +1031,6 @@ Partecipanti al…</description>
       <guid isPermaLink="false">ECLI:CH:BGer:2026:8C_610.2025</guid>
       <category>bger</category>
       <category>Assicurazione contro gli infortuni</category>
-    </item>
-    <item>
-      <title>Bundesgericht 8C_614/2025 vom 2026-07-15</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_8C_614_2025</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-8C_614/2025
-
-Sentenza del 15 luglio 2026
-
-IV Corte di diritto pubblico
-
-Composizione
-
-Giudici federali Viscione, Presidente,
-
-Heine, Métral,
-
-Cancelliere Colombi.
-
-Partecipanti al…</description>
-      <pubDate>Wed, 15 Jul 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:8C_614.2025</guid>
-      <category>bger</category>
-      <category>Assicurazione contro gli infortuni</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht C-6914/2025 vom 2026-07-15</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-6914_2025</link>
-      <description>Assicurazione per l'invalidità (altro)</description>
-      <pubDate>Wed, 15 Jul 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-6914.2025</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht C-8458/2025 vom 2026-07-15</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-8458_2025</link>
-      <description>Diritto alla rendita</description>
-      <pubDate>Wed, 15 Jul 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-8458.2025</guid>
-      <category>bvger</category>
     </item>
   </channel>
 </rss>
