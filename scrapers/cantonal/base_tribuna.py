@@ -67,6 +67,7 @@ _RE_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 _RE_DOCKET = re.compile(r"^[A-Z0-9]{1,4}\s+\d{4}\s+\d+$")
 _RE_ENC_PATH = re.compile(r"^[0-9a-f]{60,}$")
 _RE_HEX = re.compile(r"^[0-9a-f]{60,}$")
+_RE_B64CRED = re.compile(r"^[A-Za-z0-9+/=]{60,140}$")
 
 # Column definitions for the search request (field key, display label)
 _COLUMNS = [
@@ -198,6 +199,17 @@ class TribunaBaseScraper(BaseScraper):
             # Prefer ~96 char string, fallback to last
             candidates = sorted(hex_strings, key=lambda s: abs(len(s) - 96))
             credential = candidates[0]
+        else:
+            # FR came back from its 2026-08/09 outage issuing base64-style
+            # credentials ("AAAAD…", +/= charset) instead of hex; BE portals
+            # still use hex, so this path only runs when hex finds nothing.
+            # Same closest-to-96 heuristic. Dots exclude GWT class names.
+            b64_strings = [s for s in config_strings
+                           if _RE_B64CRED.match(s)]
+            if b64_strings:
+                candidates = sorted(b64_strings,
+                                    key=lambda s: abs(len(s) - 96))
+                credential = candidates[0]
         logger.info(f"[{self.court_code}] Config loaded, credential len={len(credential)}")
 
         # Step 3: getBerechtigungen
