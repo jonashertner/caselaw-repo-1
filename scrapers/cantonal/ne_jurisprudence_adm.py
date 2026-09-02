@@ -134,10 +134,132 @@ class NEJurisprudenceAdmScraper(BaseScraper):
         except Exception as e:
             logger.warning(f"NE-adm: session init failed: {e}")
 
+
+
+    # ── per-fiche identity (2026-09-02, gap forensics; hardened per the
+    #    10-agent review of the same day) ─────────────────────────────
+    # The portal lists MULTIPLE fiches per docket (interim and final
+    # rulings each carry their own nF30_KEY). decision_id is docket-
+    # keyed, so the legacy known-check permanently suppressed every
+    # later fiche of an already-held docket. The sidecar records which
+    # fiches we hold as "nf30<TAB>decision_id" PAIRS; on load a pair
+    # counts only if its decision_id is in state (state is marked AFTER
+    # the durable corpus write), so a crash between fetch and write
+    # self-heals — the fiche is re-yielded next run. A new fiche of a
+    # known docket gets a "-F<nf30>" suffixed id; docket_number stays
+    # REAL so citations are right, and build_fts5 dedup keeps same-
+    # docket different-date rows. Collision fiches WITHOUT a parsed
+    # date are skipped (same-canonical-key rows would be silently
+    # dropped by dedup while the sidecar claims them held).
+    # LEGACY MODE: sidecar absent or empty -> exactly the pre-change
+    # behavior, and _mark_nf30 never writes (a half-seeded sidecar is
+    # worse than none: it reads as "we hold almost nothing" and turns
+    # the next nightly into a portal-wide refetch). Seeding is done
+    # only by backfill_ne_fiche_collisions.py.
+    _known_nf30: set | None = None
+
+    def _nf30_sidecar(self):
+        from pathlib import Path
+        return Path(self.state.state_file).with_name(
+            f"{self.court_code}.nf30.txt")
+
+    def _load_known_nf30(self):
+        p = self._nf30_sidecar()
+        if not p.exists() or p.stat().st_size == 0:
+            logger.warning(
+                f"[{self.court_code}] nf30 sidecar missing/empty — legacy "
+                "docket-keyed discovery (collision fiches stay hidden; "
+                "run backfill_ne_fiche_collisions.py to seed)")
+            self._known_nf30 = None
+            return
+        try:
+            text = p.read_text()
+        except (OSError, UnicodeDecodeError) as e:
+            logger.error(
+                f"[{self.court_code}] unreadable nf30 sidecar ({e}) — "
+                "falling back to legacy; reseed to recover")
+            self._known_nf30 = None
+            self._claimed_ids = set()
+            return
+        known = set()
+        dropped = 0
+        for line in text.splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            nf30, _, did = line.partition("\t")
+            # A pair without a decision_id cannot be validated — drop it
+            # (review follow-up: an empty did must not bypass the
+            # state check the whole safety story rests on).
+            if not did or not self.state.is_known(did):
+                dropped += 1          # crash-window pair: fiche re-yields
+                continue
+            known.add(nf30)
+        if dropped:
+            logger.info(
+                f"[{self.court_code}] {dropped} sidecar pairs not in state "
+                "(interrupted fetch) — their fiches will be retried")
+        # Half-seed guard: a sidecar far smaller than the held corpus can
+        # only be a partial/corrupt seed — treat as unseeded.
+        state_n = len(getattr(self.state, "_seen", []) or [])
+        if state_n > 100 and len(known) < state_n // 2:
+            logger.error(
+                f"[{self.court_code}] sidecar holds {len(known)} fiches vs "
+                f"{state_n} known ids — refusing half-seeded mode, falling "
+                "back to legacy; reseed with backfill_ne_fiche_collisions.py "
+                "--reseed")
+            self._known_nf30 = None
+            return
+        self._known_nf30 = known
+        # Ids handed out THIS run: batch callers (base_scraper.run,
+        # pipeline.py, __main__) mark state only after the run, so a
+        # same-batch sibling fiche of a new docket must be routed to the
+        # -F path here, not against stale state (re-verify, minor a).
+        self._claimed_ids = set()
+
+    def _mark_nf30(self, nf30_key, decision_id):
+        if self._known_nf30 is None:
+            return                     # legacy mode NEVER writes (review F0)
+        if not nf30_key or nf30_key in self._known_nf30:
+            return
+        self._known_nf30.add(str(nf30_key))
+        with open(self._nf30_sidecar(), "a") as f:
+            f.write(f"{nf30_key}\t{decision_id}\n")
+
+    def _stub_filter(self, stub):
+        """None = skip; else the stub to yield (id possibly suffixed)."""
+        nf30 = stub.get("nf30_key")
+        if self._known_nf30 is None or not nf30:
+            return None if self.state.is_known(stub["decision_id"]) else stub
+        claimed = getattr(self, "_claimed_ids", set())
+        # Plain-id-unknown FIRST (review F1): a crash-window pair must
+        # never suppress a new docket's only ruling.
+        if (not self.state.is_known(stub["decision_id"])
+                and stub["decision_id"] not in claimed):
+            claimed.add(stub["decision_id"])
+            return stub
+        if nf30 in self._known_nf30:
+            return None
+        if not stub.get("decision_date"):
+            logger.warning(
+                f"[{self.court_code}] collision fiche without date skipped "
+                f"(docket {stub.get('docket_number')}, nf30 {nf30}) — "
+                "same-canonical dedup would silently drop it")
+            return None
+        alt = dict(stub)
+        alt["decision_id"] = make_decision_id(
+            self.court_code, f"{stub['docket_number']}-F{nf30}")
+        if (self.state.is_known(alt["decision_id"])
+                or alt["decision_id"] in claimed):
+            return None
+        claimed.add(alt["decision_id"])
+        return alt
+
     def discover_new(self, since_date=None) -> Iterator[dict]:
         if since_date and isinstance(since_date, str):
             since_date = date.fromisoformat(since_date)
         self._init_session()
+        self._load_known_nf30()
 
         formdata = dict(BASE_PARAMS)
         formdata.update({
@@ -166,7 +288,8 @@ class NEJurisprudenceAdmScraper(BaseScraper):
         session_key = self._extract_session_key(html)
         yielded = 0
         for stub in self._parse_result_page(html):
-            if not self.state.is_known(stub["decision_id"]):
+            stub = self._stub_filter(stub)
+            if stub is not None:
                 if since_date and stub.get("decision_date") and stub["decision_date"] < since_date:
                     continue
                 yielded += 1
@@ -188,7 +311,8 @@ class NEJurisprudenceAdmScraper(BaseScraper):
                     })
                     r = self.get(CGI_URL, params=params)
                     for stub in self._parse_result_page(r.text):
-                        if not self.state.is_known(stub["decision_id"]):
+                        stub = self._stub_filter(stub)
+                        if stub is not None:
                             if since_date and stub.get("decision_date") and stub["decision_date"] < since_date:
                                 continue
                             yielded += 1
@@ -278,8 +402,9 @@ class NEJurisprudenceAdmScraper(BaseScraper):
         publication_date = _parse_swiss_date(_extract_labelled(soup, "Publié le") or "")
         language = detect_language(full_text) if len(full_text) > 100 else "fr"
 
+        self._mark_nf30(stub.get("nf30_key"), stub["decision_id"])
         return Decision(
-            decision_id=make_decision_id("ne_jurisprudence_adm", stub["docket_number"]),
+            decision_id=stub["decision_id"],
             court="ne_jurisprudence_adm",
             canton="NE",
             chamber=chamber,

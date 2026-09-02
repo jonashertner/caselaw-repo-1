@@ -92,14 +92,18 @@ def test_unknown_court_still_gets_the_generic_rescan_advice(tmp_path):
 
 
 def test_tunnel_courts_are_NOT_suppressed(tmp_path):
-    """Their 2026-08-25 rescans also returned +0 new, but their logs show
-    urllib3 retries exhausting through the SOCKS tunnel. A +0 that may mean
-    'could not fetch' is not evidence of a structural offset, and suppressing
-    on that basis would hide a real shortfall."""
+    """2026-08-25: their rescans returned +0 through a retry-exhausted tunnel,
+    so a remedy entry was forbidden (a +0 that may mean 'could not fetch' is
+    not evidence). SUPERSEDED 2026-09-02: clean retry-free RESCAN_ALL runs
+    (0 errors, full pagination) plus 3-agent forensics named the causes —
+    per-fiche identity collisions (NE, real) and upstream zero-byte PDFs (JU).
+    The correct state is now: never in KNOWN_GAP_OFFSETS (the gap count must
+    stay visible), but ALWAYS in KNOWN_GAP_REMEDIES (the digest must stop
+    prescribing rescans measured not to work)."""
     for court in ("ju_gerichte", "ne_gerichte", "ne_jurisprudence_adm"):
         assert court not in KNOWN_GAP_OFFSETS
-        assert court not in KNOWN_GAP_REMEDIES
-
+        assert court in KNOWN_GAP_REMEDIES
+        assert "RESCAN_ALL 2026-09-02" in KNOWN_GAP_REMEDIES[court]
 
 def test_every_suppression_carries_re_testable_evidence():
     """A suppression is a claim about production. It must record when it was
