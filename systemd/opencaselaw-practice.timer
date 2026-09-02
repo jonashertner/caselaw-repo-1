@@ -2,8 +2,10 @@
 Description=Weekly federal Verwaltungspraxis refresh
 
 [Timer]
-# Saturday 06:00 UTC — after fedlex (04:07) and before cantonal (07:01)
-OnCalendar=Sat 06:00 UTC
+# Saturday 21:30 UTC — after the Saturday incremental publish (20:00 UTC, ~20 min)
+# and before the Sunday full build (03:30 UTC). The old Sat 06:00 slot fell inside
+# the daily full build (03:30 to ~17:00 UTC) and shared its page cache.
+OnCalendar=Sat 21:30 UTC
 Persistent=true
 
 [Install]

@@ -1,5 +1,5 @@
 [Unit]
-Description=OpenCaseLaw federal Verwaltungspraxis scrape (ESTV + SEM + BAFU)
+Description=OpenCaseLaw federal Verwaltungspraxis scrape (ESTV, SEM, BAFU, SECO, FINMA, BAG, BJ; BSV once promoted)
 After=network-online.target
 
 [Service]
@@ -11,6 +11,9 @@ ExecStartPost=/usr/bin/python3 -m search_stack.build_practice_db --jsonl-dir /op
 # Rolling, health-gated, discovers ALL workers (was: simultaneous restart of
 # 8770-8773 only — Saturday-morning downtime + stale practice.db on 8774-8777).
 ExecStartPost=/usr/bin/bash /opt/caselaw/repo/scripts/rolling_restart_workers.sh
-TimeoutStartSec=3600
+# No timeout: a re-issue-heavy week (or BSV, once promoted) can exceed an hour,
+# and a SIGTERM mid-ExecStart skips the rebuild + rolling restart for EVERY
+# source. The runner is idempotent (append-only JSONL, doc_id dedup).
+TimeoutStartSec=infinity
 StandardOutput=append:/opt/caselaw/repo/logs/practice_scrape.log
 StandardError=append:/opt/caselaw/repo/logs/practice_scrape.log
