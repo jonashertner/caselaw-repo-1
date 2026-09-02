@@ -88,6 +88,12 @@ def main() -> int:
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--seed-only", action="store_true")
     ap.add_argument("--reseed", action="store_true")
+    ap.add_argument("--fetch-same-date", action="store_true",
+                    help="also fetch collision fiches dated identically to "
+                         "their held row (DEFAULT SKIPPED: canonical-key "
+                         "collision means build dedup keeps only the longer "
+                         "text and can evict the served plain id; park these "
+                         "until build_fts5 pass 1 is content-aware)")
     ap.add_argument("--max", type=int, default=200,
                     help="safety cap on fetched fiches per court")
     args = ap.parse_args()
@@ -172,6 +178,11 @@ def main() -> int:
             # under one id — review F3/F6).
             s = scraper._stub_filter(s)
             if s is None:
+                continue
+            if (not args.fetch_same_date and "-F" in s["decision_id"]
+                    and str(s.get("decision_date"))
+                    in held_dates.get(s["docket_number"], set())):
+                print(f"  PARKED (same date as held row): {s['decision_id']}")
                 continue
             d = scraper.fetch_decision(s)
             if d is None:
