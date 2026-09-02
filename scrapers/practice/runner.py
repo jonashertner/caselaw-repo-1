@@ -24,6 +24,11 @@ from .ssk_kreisschreiben import SskKreisschreibenScraper
 from .are_vollzugshilfen import AreVollzugshilfenScraper
 from .epa_personalrecht import EpaPersonalrechtScraper
 from .finma_rundschreiben import FinmaRundschreibenScraper
+from .seco_alv import SecoAlvScraper
+from .bag_kvg import BagKvgScraper
+from .sem_handbuch_asyl import SemHandbuchAsylScraper
+from .bj_schkg import BjSchkgScraper
+from .bsv_weisungen import BsvWeisungenScraper
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +40,12 @@ ENABLED_SCRAPERS = {
     "bafu_vollzug":  BafuVollzugshilfenScraper,
     "seco_arg":      SecoArgScraper,
     "finma_rs":      FinmaRundschreibenScraper,
+    # Tier 1 social-law sources (Caritas access-to-justice memo, 2026-09-02).
+    # Small ones first: the unit's TimeoutStartSec=3600 covers the whole run.
+    "seco_alv":          SecoAlvScraper,
+    "bag_kvg":           BagKvgScraper,
+    "sem_handbuch_asyl": SemHandbuchAsylScraper,
+    "bj_schkg":          BjSchkgScraper,
 }
 
 # Defensive scaffolds — need first-run validation before enabling
@@ -42,6 +53,12 @@ EXPERIMENTAL_SCRAPERS = {
     "ssk_ks":            SskKreisschreibenScraper,
     "are_vollzug":       AreVollzugshilfenScraper,
     "epa_personalrecht": EpaPersonalrechtScraper,
+    # BSV is complete and tested but its first run takes hours (~2,600
+    # documents × versions × languages). It must not be picked up by
+    # opencaselaw-practice.service (TimeoutStartSec=3600, no lock) until the
+    # unit is adjusted; run it by hand: --only bsv_weisungen. Promote to
+    # ENABLED_SCRAPERS after the first full run has been indexed.
+    "bsv_weisungen":     BsvWeisungenScraper,
 }
 
 ALL_SCRAPERS = {**ENABLED_SCRAPERS, **EXPERIMENTAL_SCRAPERS}

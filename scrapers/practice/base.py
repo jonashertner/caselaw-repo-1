@@ -97,6 +97,56 @@ def sha256_hex(s: str) -> str:
     return hashlib.sha256(s.encode("utf-8")).hexdigest()
 
 
+# ── Localized date parsing (shared by BAG / BJ / SECO-ALV scrapers) ──
+_MONTHS_ALL: dict[str, int] = {
+    "januar": 1, "februar": 2, "märz": 3, "maerz": 3, "april": 4, "mai": 5,
+    "juni": 6, "juli": 7, "august": 8, "september": 9, "oktober": 10,
+    "november": 11, "dezember": 12,
+    "janvier": 1, "février": 2, "fevrier": 2, "mars": 3, "avril": 4,
+    "juin": 6, "juillet": 7, "août": 8, "aout": 8, "septembre": 9,
+    "octobre": 10, "novembre": 11, "décembre": 12, "decembre": 12,
+    "gennaio": 1, "febbraio": 2, "marzo": 3, "aprile": 4, "maggio": 5,
+    "giugno": 6, "luglio": 7, "agosto": 8, "settembre": 9, "ottobre": 10,
+    "dicembre": 12,
+}
+_DATE_WORDS = re.compile(r"(\d{1,2})(?:\.|er|re|º)?\s+([A-Za-zÀ-ÿ]+)\s+(\d{4})")
+_DATE_DMY = re.compile(r"\b(\d{1,2})\.(\d{1,2})\.(\d{4})\b")
+_DATE_YMD = re.compile(r"\b(\d{4})\.(\d{2})\.(\d{2})\b")
+
+
+def first_date_iso(text: str) -> str:
+    """Return the FIRST date in `text` as ISO YYYY-MM-DD, or "".
+
+    Understands "17. Dezember 2021", "11 août 2005", "25 giugno 2024",
+    "1.7.2026" and admin.ch's "2014.10.14". The first date in reading order
+    wins on purpose: on admin.ch download lists the issuance date precedes
+    the trailing file-modification date ("Weisung Nr. 7 vom 16. April 2020
+    … PDF 200 kB 6. April 2020"), and the issuance date is the one a reader
+    cites.
+    """
+    text = text or ""
+    best: tuple[int, str] | None = None
+    for m in _DATE_WORDS.finditer(text):
+        month = _MONTHS_ALL.get(m.group(2).lower())
+        if month:
+            iso = f"{m.group(3)}-{month:02d}-{int(m.group(1)):02d}"
+            if best is None or m.start() < best[0]:
+                best = (m.start(), iso)
+            break
+    for rx, order in ((_DATE_DMY, "dmy"), (_DATE_YMD, "ymd")):
+        m = rx.search(text)
+        if m and (best is None or m.start() < best[0]):
+            if order == "dmy":
+                iso = f"{m.group(3)}-{int(m.group(2)):02d}-{int(m.group(1)):02d}"
+            else:
+                iso = f"{m.group(1)}-{m.group(2)}-{m.group(3)}"
+            best = (m.start(), iso)
+    return best[1] if best else ""
+
+
+_NO_TEXT_LAYER_SENTINEL = "\x00no-text-layer"
+
+
 def build_session(retries: int = 3) -> requests.Session:
     """HTTP session with sensible retries for admin.ch endpoints."""
     s = requests.Session()
@@ -136,6 +186,24 @@ class PracticeScraper(ABC):
     # one current row per document. Default None = previous behaviour,
     # byte-identical for every existing scraper.
     REVISION_FIELD: str | None = None
+
+    # fetch_pdf_text caches every PDF forever under tempfile.gettempdir()
+    # (no eviction). That is fine for a few hundred small circulars and
+    # wrong for BSV (~2,600 documents × versions × languages, ~30 GB) or for
+    # sources whose PDF URL is stable across re-issues (a cache hit would
+    # re-index the OLD text after a re-issue). Subclasses opt out here.
+    CACHE_PDFS: bool = True
+
+    # Old circulars are often image-only scans (BAG KS 1.1/1.2/2.2/5.2,
+    # cantonal SchKG Kreisschreiben from 2000). extract_pdf_text returns ""
+    # and run() counts the document as failed — invisible even by title.
+    # A subclass may set a short marker so such a document is indexed under
+    # its own title plus the marker and the reader is told to open the PDF.
+    # The stored body is "<title> <marker>": a shared multi-sentence
+    # placeholder would make BM25 rank every scan first for any query that
+    # happens to contain one of its words. None keeps the historical
+    # behaviour (empty body = failure).
+    NO_TEXT_LAYER_BODY: str | None = None
 
     # ── Tunables ──
     REQUEST_DELAY = 1.0               # seconds between PDF fetches
@@ -186,26 +254,48 @@ class PracticeScraper(ABC):
         """Download a PDF + return extracted text. Caches in /tmp keyed by
         URL hash so re-runs don't re-download unchanged PDFs."""
         import tempfile
-        cache_dir = Path(tempfile.gettempdir()) / "ocl_practice_cache"
-        cache_dir.mkdir(exist_ok=True)
-        url_hash = sha256_hex(pdf_url)[:16]
-        cache_path = cache_dir / f"{url_hash}.pdf"
-        if cache_path.exists() and cache_path.stat().st_size > 1024:
-            try:
-                return extract_pdf_text(cache_path.read_bytes())
-            except Exception:
-                pass
+        cache_path: Path | None = None
+        if self.CACHE_PDFS:
+            cache_dir = Path(tempfile.gettempdir()) / "ocl_practice_cache"
+            cache_dir.mkdir(exist_ok=True)
+            url_hash = sha256_hex(pdf_url)[:16]
+            cache_path = cache_dir / f"{url_hash}.pdf"
+            if cache_path.exists() and cache_path.stat().st_size > 1024:
+                try:
+                    return self._text_or_placeholder(extract_pdf_text(cache_path.read_bytes()))
+                except Exception:
+                    pass
         try:
             r = self.get(pdf_url)
             r.raise_for_status()
-            cache_path.write_bytes(r.content)
-            return extract_pdf_text(r.content)
+            if not r.content.lstrip()[:5].startswith(b"%PDF"):
+                # A 200 that is not a PDF (login bounce, error page, HTML
+                # listing) must be a failure, never a "scanned document":
+                # with NO_TEXT_LAYER_BODY set it would otherwise be indexed
+                # under the document's title as if it were the file.
+                logger.warning("PDF fetch returned non-PDF content (%s, %d bytes): %s",
+                               r.headers.get("Content-Type", "?"), len(r.content), pdf_url)
+                return ""
+            if cache_path is not None:
+                cache_path.write_bytes(r.content)
+            return self._text_or_placeholder(extract_pdf_text(r.content))
         except requests.HTTPError as e:
             logger.warning("PDF fetch failed [%s]: %s", e.response.status_code, pdf_url)
             return ""
         except Exception as e:
             logger.warning("PDF fetch error: %s — %s", pdf_url, e)
             return ""
+
+    def _text_or_placeholder(self, text: str) -> str:
+        """A downloaded PDF with no text layer returns a sentinel (when the
+        class opted in) instead of "", so run() can tell "scanned" from
+        "download failed" and build the title-based placeholder body."""
+        if text or not self.NO_TEXT_LAYER_BODY:
+            return text
+        return _NO_TEXT_LAYER_SENTINEL
+
+    def _placeholder_body(self, stub: dict) -> str:
+        return f"{(stub.get('title') or '').strip()} {self.NO_TEXT_LAYER_BODY}".strip()
 
     # ────────────────────────────────────────────────────────────────
     # State + output
@@ -306,6 +396,8 @@ class PracticeScraper(ABC):
                 continue
 
             body = self.fetch_pdf_text(pdf_url)
+            if body == _NO_TEXT_LAYER_SENTINEL:
+                body = self._placeholder_body(stub)
             if not body:
                 logger.warning("[%s] empty body for %s", self.SOURCE_KEY, doc_id)
                 failed_count += 1

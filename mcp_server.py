@@ -10849,16 +10849,20 @@ server = Server(
         "portal scraping for 19 cantons + LexFind fallback for the rest), "
         "1,100+ scholarly commentaries, a verbatim Federal Council Botschaft "
         "corpus (5,900+ documents, ~410K FTS5-indexed paragraphs), "
-        "federal administrative practice — Verwaltungspraxis, 3,062 documents: "
+        "federal administrative practice — Verwaltungspraxis, 3,400+ documents: "
+        "BSV Wegleitungen, Kreisschreiben, Rundschreiben and Mitteilungen for "
+        "AHV/IV/EL/EO/FamZ/BVG (every retained version, DE/FR/IT), "
         "FINMA Rundschreiben in force and superseded, every published version "
         "of each (DE/FR/IT/EN), "
         "SECO commentary on the Arbeitsgesetz and ArGV 1-5 article by "
-        "article (DE/FR/IT), ESTV "
+        "article (DE/FR/IT) and the AVIG-Praxis for unemployment insurance, "
+        "BAG KVG Kreisschreiben, ESTV "
         "Kreisschreiben and MWST-Infos (DE/FR/IT), SEM Weisungen and "
-        "Rundschreiben, BAFU Vollzugshilfen — via search_practice / "
-        "get_practice, plus 23,000+ VPB/JAAC decisions (1900–2016) under "
+        "Rundschreiben and the Handbuch Asyl und Rückkehr, BJ SchKG Weisungen "
+        "and cantonal Existenzminimum Kreisschreiben, BAFU Vollzugshilfen — via "
+        "search_practice / get_practice, plus 23,000+ VPB/JAAC decisions (1900–2016) under "
         "court='ch_vb', "
-        "25,000+ open-access scholarship records from 23 Swiss legal sources "
+        "44,000+ open-access scholarship records from 24 Swiss legal sources "
         "(thousands with full-text — see find_scholarship_citing_decision and "
         "find_scholarship_citing_statute for the bidirectional bridge), "
         "structured federal decisions (Sachverhalt/Erwägungen/Dispositiv), "
@@ -11097,7 +11101,8 @@ server = Server(
         "• 'Was sagt das SECO zu Art. X ArG / ArGV?'  → search_practice (SECO commentary\n"
         "     is article-by-article — the reference for Arbeitsrecht questions)\n"
         "• 'Verwaltungspraxis / Praxis der Verwaltung zu [Thema]?' → search_practice (federal authorities:\n"
-        "     ESTV, SEM, BAFU); then get_practice for the verbatim text + source PDF\n"
+        "     BSV, SECO, BAG, SEM, BJ, ESTV, FINMA, BAFU); then get_practice for the verbatim text + source PDF\n"
+        "• 'WEL / KSIH / RWL / AVIG-Praxis / Handbuch Asyl / Existenzminimum-Richtlinien?' → search_practice\n"
         "• 'circulaire / directive / istruzioni / circolare?'      → search_practice\n"
         "• 'Verwaltungspraxis des Bundes vor 2017 (VPB/JAAC)?'     → search_decisions(court='ch_vb')\n"
         "• 'Has the ECHR ruled against CH on X?'   → search_decisions(court='ecthr_chamber') or court='hudoc_ch'\n"
@@ -21316,8 +21321,16 @@ def _search_practice(
     doc_type: str | None = None,
     language: str | None = None,
     limit: int = 10,
+    include_superseded: bool = False,
 ) -> dict:
-    """FTS5 search over federal Verwaltungspraxis documents."""
+    """FTS5 search over federal Verwaltungspraxis documents.
+
+    Versioned sources (FINMA, BSV) keep every retained edition as its own
+    row sharing the document's doc_number. Unless `include_superseded` is
+    set, results are collapsed to the newest-dated row per (source,
+    doc_number, language, doc_type) — a replay of the FINMA corpus showed a
+    single circular's 20 editions filling every result slot otherwise.
+    """
     conn = _open_practice_db()
     if conn is None:
         return {"error": "practice_db_unavailable",
@@ -21349,6 +21362,7 @@ def _search_practice(
             "total": 0,
             "results": [],
         }
+    collapse = not include_superseded
     where, params = ["practice_fts MATCH ?"], [fts_query]
     if source:
         where.append("p.source = ?"); params.append(source)
@@ -21359,7 +21373,7 @@ def _search_practice(
     if language:
         where.append("p.language = ?"); params.append(language.lower())
 
-    sql = f"""
+    inner = f"""
         SELECT p.doc_id, p.source, p.issuing_authority, p.doc_type,
                p.doc_number, p.title, p.date, p.language, p.url, p.pdf_url,
                snippet(practice_fts, 2, '«', '»', '…', 18) AS snippet,
@@ -21367,14 +21381,54 @@ def _search_practice(
         FROM practice_fts
         JOIN practice p ON p.rowid = practice_fts.rowid
         WHERE {' AND '.join(where)}
-        ORDER BY rank
-        LIMIT ?
     """
+    # Document identity for collapsing. doc_number is the key for every
+    # source except BSV, where series share an abbreviation (three
+    # "EVG-Urteile" digests, hundreds of "Mitteilung an die AHV-Ausgleichs-
+    # kassen"); there the per-document page url (/{lang}/d/<id>, identical
+    # across editions) is the identity. Other sources put the INDEX page in
+    # url, shared by many documents, so url cannot be the key for them.
+    group_key = "CASE WHEN source = 'bsv_weisungen' THEN url ELSE doc_number END"
+    if collapse:
+        # Editions of one document have near-identical text and cluster at
+        # adjacent ranks, so a Python window over the top-N rows can be
+        # swallowed entirely by one document (WEL alone has 20 DE editions).
+        # Dedup in SQL BEFORE the LIMIT: newest date per document wins, the
+        # group takes the best rank among its editions.
+        sql = f"""
+            SELECT doc_id, source, issuing_authority, doc_type, doc_number,
+                   title, date, language, url, pdf_url, snippet, rank
+            FROM (
+                SELECT *,
+                       ROW_NUMBER() OVER (
+                           PARTITION BY source, language, doc_type, {group_key}
+                           ORDER BY date DESC, rank
+                       ) AS rn,
+                       MIN(rank) OVER (
+                           PARTITION BY source, language, doc_type, {group_key}
+                       ) AS group_rank
+                FROM ({inner})
+            )
+            WHERE rn = 1
+            ORDER BY group_rank, rank
+            LIMIT ?
+        """
+    else:
+        sql = f"{inner} ORDER BY rank LIMIT ?"
     count_sql = f"""
         SELECT COUNT(*)
         FROM practice_fts
         JOIN practice p ON p.rowid = practice_fts.rowid
         WHERE {' AND '.join(where)}
+    """
+    distinct_sql = f"""
+        SELECT COUNT(*) FROM (
+            SELECT DISTINCT p.source, p.language, p.doc_type,
+                   CASE WHEN p.source = 'bsv_weisungen' THEN p.url ELSE p.doc_number END
+            FROM practice_fts
+            JOIN practice p ON p.rowid = practice_fts.rowid
+            WHERE {' AND '.join(where)}
+        )
     """
     try:
         try:
@@ -21384,6 +21438,7 @@ def _search_practice(
             # asking how much guidance exists on a topic was told "10" no
             # matter how much there was.
             total = conn.execute(count_sql, params).fetchone()[0]
+            distinct = conn.execute(distinct_sql, params).fetchone()[0] if collapse else total
         except sqlite3.OperationalError:
             # Raw operator query rejected by FTS5 (e.g. the NEAR(a b, 5) comma,
             # #78). Retry sanitized rather than leaking the engine error.
@@ -21392,10 +21447,13 @@ def _search_practice(
             params[0] = safe_query
             rows = conn.execute(sql, [*params, limit]).fetchall()
             total = conn.execute(count_sql, params).fetchone()[0]
+            distinct = conn.execute(distinct_sql, params).fetchone()[0] if collapse else total
     except sqlite3.OperationalError as e:
         return {"error": "fts5_query_error", "message": str(e), "query": query}
     finally:
         conn.close()
+
+    results = [dict(r) for r in rows]
 
     return {
         "query": query,
@@ -21404,8 +21462,10 @@ def _search_practice(
             "doc_type": doc_type, "language": language,
         }.items() if v},
         "total": total,
-        "returned": len(rows),
-        "results": [dict(r) for r in rows],
+        "distinct_documents": distinct,
+        "returned": len(results),
+        "collapsed_versions": total - distinct,
+        "results": results,
     }
 
 
@@ -21437,10 +21497,21 @@ def _format_search_practice_response(result: dict) -> str:
     if not result["results"]:
         return f"No practice documents matched: {result['query']}"
     total, shown = result["total"], result.get("returned", len(result["results"]))
-    head = f"Found {total} practice document(s) for '{result['query']}'"
-    if total > shown:
-        head += f" — showing the {shown} best-ranked"
+    collapsed = result.get("collapsed_versions") or 0
+    if collapsed:
+        distinct = result.get("distinct_documents", total - collapsed)
+        head = (f"Found {distinct} practice document(s) ({total} matching version(s)) "
+                f"for '{result['query']}'")
+        if distinct > shown:
+            head += f" — showing the {shown} best-ranked"
+    else:
+        head = f"Found {total} practice document(s) for '{result['query']}'"
+        if total > shown:
+            head += f" — showing the {shown} best-ranked"
     lines = [head]
+    if collapsed:
+        lines.append(f"  ({collapsed} superseded version(s) collapsed to the "
+                     f"newest per document — pass include_superseded=true for point-in-time questions)")
     for f, v in result.get("filters", {}).items():
         lines.append(f"  filter: {f} = {v}")
     lines.append("")
@@ -23473,25 +23544,9 @@ def _list_tools() -> list[Tool]:
         Tool(
             annotations=_READ_ONLY,
             name="search_practice",
+            title="Search administrative practice",
             description=(
-                "Use this tool when the question involves federal "
-                "ADMINISTRATIVE PRACTICE (Verwaltungspraxis): Wegleitungen, "
-                "Kreisschreiben, MWST-Infos, Weisungen, Rundschreiben, "
-                "Vollzugshilfen — interpretive agency guidance, not court "
-                "decisions. 3,062 documents: FINMA circulars, in force and "
-                "superseded, every published version (1,133, DE/FR/IT/EN); "
-                "SECO commentary on the Arbeitsgesetz and ArGV 1-5, article by "
-                "article (1,102, DE/FR/IT — the reference for employment-law "
-                "questions); ESTV tax and VAT (438, DE/FR/IT); BAFU "
-                "environment (297, DE); SEM migration/asylum/citizenship (92, "
-                "DE). Returns ranked excerpts with authority, document number, "
-                "date and a PDF link. A FINMA circular's versions share its "
-                "doc_number and differ by `date`: for past conduct take the "
-                "version whose date precedes it, not the newest. NOT covered: "
-                "BSV/AHV-IV, BAG and all cantonal administrations — say so "
-                "rather than implying a gap is an absence of guidance. For "
-                "federal administrative decisions before 2017 use "
-                "search_decisions(court='ch_vb') (VPB/JAAC)."
+                "Use this tool when the question involves federal ADMINISTRATIVE PRACTICE (Verwaltungspraxis): Wegleitungen, Kreisschreiben, Weisungen, Rundschreiben, Handbücher — agency guidance, not court decisions. 3,400+ documents. Covered: BSV (AHV/IV/EL/EO/FamZ/BVG Wegleitungen, Kreisschreiben, Mitteilungen, every retained version), SECO (Arbeitsgesetz commentary + AVIG-Praxis unemployment insurance), BAG (KVG Kreisschreiben), SEM (Weisungen AIG/Asyl/BüG + Handbuch Asyl und Rückkehr), BJ (SchKG Weisungen, cantonal Existenzminimum Kreisschreiben), FINMA, ESTV, BAFU; per-source counts in the filter enums. Returns ranked excerpts with authority, number, date, PDF link. Superseded versions collapse to the newest per document; for past conduct pass include_superseded=true and take the version dated before the facts. NOT covered: cantonal administrations — Sozialhilfe (SKOS, cantonal Handbücher), Prämienverbilligung (IPV) — say so, do not imply absence of guidance. Pre-2017 federal decisions: search_decisions(court='ch_vb')."
             ),
             inputSchema={
                 "type": "object",
@@ -23504,22 +23559,55 @@ def _list_tools() -> list[Tool]:
                     },
                     "source": {
                         "type": "string",
-                        "enum": ["finma_rs", "seco_arg", "bafu_vollzug", "estv_ks", "estv_mwst", "sem_weisungen"],
-                        "description": "Filter by source key. finma_rs (1,133), seco_arg (1,102), bafu_vollzug (297), estv_ks (285), estv_mwst (153), sem_weisungen (92).",
+                        "enum": ["finma_rs", "seco_arg", "bafu_vollzug", "estv_ks", "estv_mwst",
+                                 "sem_weisungen", "bsv_weisungen", "seco_alv", "bag_kvg",
+                                 "sem_handbuch_asyl", "bj_schkg"],
+                        "description": (
+                            "Filter by source key. finma_rs (1,133), seco_arg (1,102), "
+                            "bafu_vollzug (297), estv_ks (285), estv_mwst (153), sem_weisungen (92), "
+                            "bsv_weisungen (BSV Wegleitungen/Kreisschreiben/Rundschreiben/Mitteilungen, "
+                            "every retained version, DE/FR/IT), seco_alv (AVIG-Praxis ALE/KAE/SWE/RVEI/"
+                            "IE/AMM + thematic Weisungen, 54, DE/FR/IT), bag_kvg (KVG Kreisschreiben, "
+                            "38, DE/FR), sem_handbuch_asyl (Handbuch Asyl und Rückkehr, 92 articles, "
+                            "DE/FR), bj_schkg (SchKG Weisungen + cantonal and historical federal "
+                            "Kreisschreiben incl. Existenzminimum-Richtlinien, 174, DE/FR/IT)."
+                        ),
                     },
                     "issuing_authority": {
                         "type": "string",
-                        "enum": ["FINMA", "SECO", "ESTV", "BAFU", "SEM"],
-                        "description": "Filter by authority. FINMA (1,133), SECO (1,102), ESTV (438), BAFU (297), SEM (92).",
+                        "enum": ["FINMA", "SECO", "ESTV", "BAFU", "SEM", "BSV", "BAG", "BJ"],
+                        "description": (
+                            "Filter by authority. FINMA (1,133), SECO (Arbeitsgesetz 1,102 + "
+                            "AVIG-Praxis), ESTV (438), BAFU (297), SEM (Weisungen 92 + Handbuch), "
+                            "BSV (social insurance practice), BAG (health insurance), "
+                            "BJ (debt enforcement)."
+                        ),
                     },
                     "doc_type": {
                         "type": "string",
                         "enum": [
                             "wegleitung", "rundschreiben", "vollzugshilfe", "kreisschreiben",
-                            "rundschreiben_anhang", "mwst_branchen_info",
-                            "mwst_info", "weisung",
+                            "rundschreiben_anhang", "mwst_branchen_info", "mwst_info", "weisung",
+                            "handbuch", "mitteilung", "nachtrag", "rechtsprechung",
+                            "richtlinie", "weisung_anhang", "konkordat", "erlass",
                         ],
-                        "description": "Filter by document type. wegleitung (1,102), rundschreiben (1,017), vollzugshilfe (297), kreisschreiben (285), rundschreiben_anhang (132 — FINMA circular annexes: audit strategies, reporting forms), mwst_branchen_info (84), weisung (76), mwst_info (69).",
+                        "description": (
+                            "Filter by document type. wegleitung (SECO ArG 1,102 + BSV WEL/RWL…), "
+                            "rundschreiben (FINMA 1,017 + BSV/SEM), vollzugshilfe (297), "
+                            "kreisschreiben (ESTV 285 + BSV/BAG/BJ), rundschreiben_anhang (132 — FINMA "
+                            "circular annexes), mwst_branchen_info (84), weisung (SEM/SECO-ALV/BJ/BSV), "
+                            "mwst_info (69), handbuch (SEM Handbuch Asyl), mitteilung (BSV Mitteilungen "
+                            "an die Ausgleichskassen), nachtrag (BSV Nachträge), rechtsprechung (BSV "
+                            "AHI-Praxis digests), richtlinie / weisung_anhang / konkordat / erlass (BJ SchKG page)."
+                        ),
+                    },
+                    "include_superseded": {
+                        "type": "boolean",
+                        "default": False,
+                        "description": (
+                            "Return every retained version of a document (FINMA, BSV) instead of "
+                            "collapsing to the newest. Set for point-in-time questions."
+                        ),
                     },
                     "language": {
                         "type": "string",
@@ -23542,9 +23630,11 @@ def _list_tools() -> list[Tool]:
         Tool(
             annotations=_READ_ONLY,
             name="get_practice",
+            title="Get administrative practice",
             description=(
                 "Retrieve a single federal administrative-practice document by "
-                "its doc_id (e.g. 'estv_ks_ks_nr_28', 'sem_weisungen_weisungen-aug-d'). "
+                "its doc_id (e.g. 'estv_ks_ks_nr_28', 'sem_weisungen_weisungen-aug-d', "
+                "'bsv_weisungen_6930_v20_de', 'seco_alv_avig_ale_de'). "
                 "Returns full body text, title, date, issuing authority, and PDF URL. "
                 "Use search_practice first to discover the doc_id."
             ),
@@ -24937,6 +25027,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 doc_type=arguments.get("doc_type"),
                 language=arguments.get("language"),
                 limit=arguments.get("limit", 10),
+                include_superseded=bool(arguments.get("include_superseded", False)),
             )
             return [TextContent(type="text", text=_format_search_practice_response(result))]
 

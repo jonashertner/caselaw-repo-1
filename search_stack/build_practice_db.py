@@ -51,6 +51,10 @@ logger = logging.getLogger("build_practice_db")
 
 
 def build(jsonl_dir: Path, db_path: Path) -> dict:
+    # A symlinked practice.db (data volume) must be replaced THROUGH the
+    # link: os.replace() onto the link itself would turn it into a regular
+    # file on the root disk, with the multi-GB .tmp twin beside it.
+    db_path = Path(db_path).resolve() if Path(db_path).exists() else Path(db_path)
     tmp_path = db_path.parent / (db_path.name + ".tmp")
     if tmp_path.exists():
         tmp_path.unlink()
@@ -123,7 +127,23 @@ def build(jsonl_dir: Path, db_path: Path) -> dict:
                       title=excluded.title,
                       body_text=excluded.body_text,
                       scraped_at=excluded.scraped_at,
-                      content_hash=excluded.content_hash
+                      content_hash=excluded.content_hash,
+                      -- A re-issued edition (REVISION_FIELD sources: SECO,
+                      -- BAG, BJ, SEM-Handbuch) must also refresh its
+                      -- metadata, or the index keeps the FIRST edition's
+                      -- date/pdf_url under the NEW text. NULLIF/COALESCE
+                      -- keeps the stored value when the new record's field
+                      -- is empty (a parse regression must not blank a
+                      -- good date).
+                      date=COALESCE(NULLIF(excluded.date, ''), practice.date),
+                      pdf_url=COALESCE(NULLIF(excluded.pdf_url, ''), practice.pdf_url),
+                      url=COALESCE(NULLIF(excluded.url, ''), practice.url),
+                      doc_number=COALESCE(NULLIF(excluded.doc_number, ''), practice.doc_number),
+                      doc_type=COALESCE(NULLIF(excluded.doc_type, ''), practice.doc_type),
+                      language=COALESCE(NULLIF(excluded.language, ''), practice.language),
+                      topics_json=CASE WHEN excluded.topics_json IN ('', '[]')
+                                       THEN practice.topics_json
+                                       ELSE excluded.topics_json END
                 """, (
                     d.get("doc_id"), d.get("source"), d.get("issuing_authority"),
                     d.get("doc_type"), d.get("doc_number"), d.get("title"),
@@ -146,6 +166,16 @@ def build(jsonl_dir: Path, db_path: Path) -> dict:
 
     # Re-build FTS5 from base table — single transaction
     conn.execute("INSERT INTO practice_fts(practice_fts) VALUES('rebuild')")
+
+    # doc_count must be ROWS, not JSONL lines: append-only files re-append a
+    # re-issued edition, and the upsert collapses it to one row. The line
+    # count is kept as `lines` for the build summary only.
+    for src, meta in by_source.items():
+        meta["lines"] = meta["doc_count"]
+    for src, n in conn.execute(
+            "SELECT source, COUNT(*) FROM practice GROUP BY source"):
+        if src in by_source:
+            by_source[src]["doc_count"] = n
 
     # Sources catalog
     for src, meta in by_source.items():
