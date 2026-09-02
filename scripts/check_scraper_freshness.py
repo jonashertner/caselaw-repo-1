@@ -297,6 +297,36 @@ KNOWN_GAP_REMEDIES: dict[str, str] = {
         "Rueckstand wird ueber die naechsten Laeufe abgebaut (Timeout auf 4h "
         "erhoeht); diese Meldung verschwindet von selbst), kein Nachlauf."
     ),
+    # Forensik 2026-09-02 (3 Agenten + Cross-Check, nach sauberem RESCAN_ALL
+    # aller drei Portale mit +0 neu / 0 Fehlern): dieselbe Identitaetsfalle
+    # wie #68, diesmal per Design — decision_id ist docket-basiert, die
+    # NE-Portale listen aber MEHRERE Fiches pro Aktenzeichen (Zwischen- und
+    # Endentscheid je eigene Fiche/nF30_KEY). Discovery behaelt die neueste
+    # und unterdrueckt aeltere dauerhaft; ein Rescan kann das nie schliessen.
+    "ne_gerichte": (
+        "REAL, aber kein Nachlauf: docket-basierte decision_id kollabiert "
+        "mehrere Fiches pro Aktenzeichen (INT- vs. CDP-Entscheide); 35 der "
+        "45 via entscheidsuche.ch-Kreuzabgleich benannt. Fix = per-Fiche-"
+        "Identitaet (nF30_KEY) + gezielter Backfill, pipeline-gated. "
+        "RESCAN_ALL 2026-09-02 (387 Seiten, 37.6 min, 0 Fehler): +0 — "
+        "erwartungsgemaess wirkungslos."
+    ),
+    "ne_jurisprudence_adm": (
+        "REAL, aber kein Nachlauf: gleiche Ursache wie ne_gerichte "
+        "(Massnahmen- und Endentscheid teilen das Aktenzeichen, je eigene "
+        "Fiche). 37 Kollisions-Fiches, in einem 17-Seiten-Walk enumerierbar. "
+        "Fix = per-Fiche-Identitaet + Backfill, pipeline-gated. RESCAN_ALL "
+        "2026-09-02 (83 Seiten, 5.4 min, 0 Fehler): +0."
+    ),
+    "ju_gerichte": (
+        "GEMISCHT, kein Nachlauf: 4 von 29 sind real, aber upstream defekt — "
+        "das Portal liefert fuer ADM 2011 85, ADM 2015 126, ADM 2015 140 und "
+        "ADM 2016 11 Null-Byte-PDFs (HTTP 200, Content-Length: 0, verifiziert "
+        "2026-09-02; einzige Abhilfe: Meldung ans Tribunal cantonal JU). Die "
+        "uebrigen 25 sind vermutlich Duplikat-Zeilen der Portalliste, aber "
+        "unklassifiziert. RESCAN_ALL 2026-09-02 (alle 1170 Seiten, 29.4 min, "
+        "0 Fehler): +0 neu, 4 NoneReturns — die vier genannten."
+    ),
 }
 
 
