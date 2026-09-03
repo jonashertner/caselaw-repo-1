@@ -246,7 +246,7 @@ MCP_TOOLS = [
                 "article": {"type": "string", "description": "Article number; omit for full article list"},
                 "language": {"type": "string", "enum": ["de", "fr", "it"], "default": "de"},
                 "canton": {"type": "string", "description": "Two-letter canton code or 'CH' for federal", "default": "CH"},
-                "as_of": {"type": "string", "description": "Optional historical version date (YYYY-MM-DD)"},
+                "as_of": {"type": "string", "description": "Past date (YYYY-MM-DD or DD.MM.YYYY): the historical Fedlex edition in force on that date. Federal laws only; always report the returned snapshot_date."},
             },
         },
     },

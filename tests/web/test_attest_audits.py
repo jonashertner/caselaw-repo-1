@@ -512,8 +512,10 @@ def test_statute_text_cache_hits(m, monkeypatch, tmp_path):
     r2 = m._fetch_statute_text(law_code="OR", article="41")
     assert r1 == r2
     assert r1.get("sr_number") == "220"
-    # Two queries on first call, ZERO on the cached second call
-    assert calls["n"] == 2, f"expected 2 DB calls (uncached only), got {calls['n']}"
+    # Three statements on the first call (laws lookup, the `section` schema
+    # probe added with the 2026-09 rebuild, article text), ZERO on the cached
+    # second call.
+    assert calls["n"] == 3, f"expected 3 DB calls (uncached only), got {calls['n']}"
 
 
 def test_strict_resolver_returns_none_on_miss(m, monkeypatch):

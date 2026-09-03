@@ -10895,7 +10895,12 @@ server = Server(
         "key_arguments, …) — NEVER quote them verbatim; use them only to locate "
         "the BBl reference, then call `get_article_purpose` for quotable text. "
         "If you can't retrieve the exact words, paraphrase and cite the whole "
-        "decision.\n\n"
+        "decision. If a `get_law` result carries `verbatim_quotation: "
+        "not_guaranteed` (a PDF-only historical edition, rendered with a "
+        "'Text source: Fedlex PDF edition' line), NEVER quote from it: name "
+        "the edition date and the Fedlex link and paraphrase. If it carries "
+        "`verbatim_quotation: best_effort` (a Word edition), quote only with "
+        "the edition date stated in the same sentence.\n\n"
 
         "R3. NEVER state what a Swiss statute says from memory. Always "
         "call `get_law` (federal) or `get_legislation` (cantonal/federal "
@@ -11163,6 +11168,8 @@ server = Server(
         "           text get_law returned (not from your prior).\n"
         "   Step 3: linked citation + the actual provision text (excerpt).\n"
         "   Step 4: pending amendments if get_law returned `pending_changes`.\n"
+        "   Step 5: if `version` is historical, state the edition date\n"
+        "           (`snapshot_date`) in the first sentence.\n"
         "   Length: ~3–6 sentences.\n\n"
 
         "2. LEADING-CASES — \"Leading cases on Art. X / topic Y?\"\n"
@@ -14757,11 +14764,14 @@ def _pinpoint_in_text(full_text: str, pinpoint: str) -> bool:
 #        actually exists in statutes.db.
 #
 #   2. Misgrounding via fabricated direct quotations.
-#      → _audit_quotes treats every "..." substring of length ≥ 30 as
-#        a load-bearing quote and requires it to be a verbatim
-#        substring of source text from one of the cited decisions
-#        (regeste, Erwägungen, or first 8k of full text). Whitespace
-#        and curly/straight-quote variants are normalised before match.
+#      → _audit_quotes (opt-in via audit_quotes) treats every "..."
+#        substring of 60-400 chars near a citation or Art. X LAW
+#        reference as a load-bearing quote and requires it to be a
+#        verbatim substring of source text from one of the cited
+#        decisions (regeste, Erwägungen, or first 8k of full text) or
+#        of the referenced statute article in any official language.
+#        Whitespace and curly/straight-quote variants are normalised
+#        before match.
 #
 #   3. Date hallucination ("BGer X vom 03.04.2024" when the real
 #      decision is dated otherwise).
@@ -14780,7 +14790,12 @@ def _pinpoint_in_text(full_text: str, pinpoint: str) -> bool:
 _STATUTE_AUDIT_PATTERN = re.compile(
     r"""
     \b(?i:Art\.?|Artikel|articolo|article)\s*
-    (?P<article>\d+(?:\s*(?:bis|ter|quater|quinquies|sexies)|[a-z](?![a-z]))?)
+    (?P<article>\d+(?:\s*(?:bis|ter|quater|quinquies|sexies)|\s*[a-z](?![a-z]))?)
+    # The letter suffix may be space-separated ("Art. 85 a BV"): that is
+    # how statutes.db rendered inline suffixes until the 2026-09 parser
+    # fix, so drafts copied from get_law spell it that way. Downstream
+    # normalisation strips the whitespace. The (?![a-z]) guard keeps
+    # "al." / "und" / "et" out of the article slot.
     # Optional chain of subdivision markers — Swiss legal citations
     # commonly read "Art. 4 Abs. 1 Bst. a Ziff. 2 Satz 3 OR" and the
     # same chain in FR/IT/Latin. Each marker is paired with a value
@@ -14827,9 +14842,13 @@ _STATUTE_AUDIT_PATTERN = re.compile(
 # Defence-in-depth: even with case-sensitive matching, all-caps words
 # that look like a law slot but never are.
 _STATUTE_AUDIT_INVALID_LAWS = {
-    # Paragraph markers
+    # Paragraph markers. Italian "co." (comma) is deliberately NOT here:
+    # the law slot is case-sensitive and uppercase-first, so lowercase
+    # "co." never reaches it, while uppercase CO is the French and Italian
+    # abbreviation of the Obligationenrecht. Blacklisting it silently
+    # skipped every "art. 41 CO" reference in FR/IT drafts (2026-09).
     "ABS", "ABSATZ", "AL", "ALIN", "ALINEA", "ALINEA", "CPV",
-    "CAPOVERSO", "PARA", "PAR", "CO",
+    "CAPOVERSO", "PARA", "PAR",
     # Letter markers
     "BST", "BUCHSTABE", "LIT", "LET", "LETTRE", "LETT", "LETTERA",
     # Numeral markers
@@ -14948,7 +14967,7 @@ def _audit_statutes(draft_text: str) -> list[dict]:
                     "verify before citing."
                 ),
             })
-        elif not result.get("text_de"):
+        elif not (result.get("text") or result.get("text_de")):
             issues.append({
                 "category": "statute",
                 "citation": m.group(0),
@@ -15102,11 +15121,24 @@ def _statute_source_pool(draft_text: str) -> list[dict]:
         if key in seen:
             continue
         seen.add(key)
-        stat = _fetch_statute_text(law_code=law_up, article=article)
-        if stat.get("text_de"):
+        # Pool the whole article in every official language: FR/IT share
+        # abbreviations (CO, CC, CP), drafts mix languages, and the pool is
+        # only a substring haystack, so a superset never costs correctness.
+        # Before this the pool held the first 600 chars of the German text
+        # only, which flagged every correct FR/IT quote and every quote
+        # from the tail of a long article.
+        for lang in ("de", "fr", "it"):
+            stat = _fetch_statute_text(law_code=law_up, article=article,
+                                       lang=lang, full=True)
+            body = stat.get("text") or stat.get("text_de")
+            # The language fallback serves German for a missing
+            # translation; pool each language once.
+            if not body or stat.get("lang_served", lang) != lang:
+                continue
             pool.append({
                 "decision_id": f"statute:{law_up}_{article}",
-                "regeste": stat["text_de"],
+                "lang": lang,
+                "regeste": body,
                 "full_text": "",
                 "paragraphs": [],
             })
@@ -16811,19 +16843,40 @@ def _get_related_cases(decision_id: str, *, limit: int = 3) -> dict:
 # see the prior file until restarted (every deploy). So the cache is
 # safe and bounded by the universe of (law_code, article) pairs the
 # server is ever asked about (typically <2k in normal traffic).
-_statute_text_cache: dict[tuple[str, str], dict] = {}
+def _articles_has_section(conn) -> bool:
+    """True when statutes.db carries the 2026-09 `section` column (transitional
+    / final-provision articles tagged with their eId prefix). The read side
+    serves both the old and the rebuilt schema during the rollout."""
+    try:
+        return any(r[1] == "section" for r in conn.execute("PRAGMA table_info(articles)"))
+    except Exception:
+        # Not only sqlite3.Error: tests hand in minimal fake connections, and
+        # an unprobeable connection must simply mean "old schema".
+        return False
+
+
+_statute_text_cache: dict[tuple, dict] = {}
 _STATUTE_TEXT_CACHE_MAX = 4096
 
 
-def _fetch_statute_text(*, law_code: str, article: str) -> dict:
+def _fetch_statute_text(*, law_code: str, article: str, lang: str = "de",
+                        full: bool = False) -> dict:
     """Fetch statute article text from statutes.db. Returns {} if unavailable.
+
+    ``lang`` is tried first, then the other official languages, so a
+    French draft quoting "art. 41 CO" is checked against the French text
+    while a missing translation still resolves. ``text`` holds the
+    article (whole when ``full``, else the first 600 chars for display),
+    ``lang_served`` says which language that is, and ``text_de`` is set
+    only when German was served: that is the field _audit_statutes and
+    get_doctrine read, so their behaviour is unchanged.
 
     Cached. Two DB queries per uncached call (abbr → sr_number, then
     article text); both ~2-5 ms but called repeatedly by the
-    statute-quote audit, so caching the (law_code, article) → result
-    map shaves ~10 ms per audit per repeat reference.
+    statute-quote audit, so caching the (law_code, article, lang, full)
+    → result map shaves ~10 ms per audit per repeat reference.
     """
-    key = (law_code, article)
+    key = (law_code, article, lang, full)
     cached = _statute_text_cache.get(key)
     if cached is not None:
         return cached
@@ -16842,20 +16895,34 @@ def _fetch_statute_text(*, law_code: str, article: str) -> dict:
             result = {"law_code": law_code, "article": article}
         else:
             sr = law_row["sr_number"]
-            art_row = conn.execute(
-                "SELECT article_num, text, lang FROM articles "
-                "WHERE sr_number = ? AND article_num = ? AND lang = 'de' LIMIT 1",
-                (sr, article),
-            ).fetchone()
+            art_row, served = None, None
+            # Main-body article only: transitional blocks reuse its number.
+            main_only = " AND section = ''" if _articles_has_section(conn) else ""
+            for cand in dict.fromkeys((lang or "de", "de", "fr", "it")):
+                art_row = conn.execute(
+                    "SELECT article_num, text, lang FROM articles "
+                    "WHERE sr_number = ? AND article_num = ? AND lang = ?" + main_only + " LIMIT 1",
+                    (sr, article, cand),
+                ).fetchone()
+                if art_row:
+                    try:
+                        served = art_row["lang"] or cand
+                    except (KeyError, IndexError):
+                        served = cand
+                    break
             if not art_row:
                 result = {"law_code": law_code, "article": article, "sr_number": sr}
             else:
+                body = art_row["text"] or ""
                 result = {
                     "law_code": law_code,
                     "article": article,
                     "sr_number": sr,
-                    "text_de": (art_row["text"] or "")[:600],
+                    "lang_served": served,
+                    "text": body if full else body[:600],
                 }
+                if served == "de":
+                    result["text_de"] = body[:600]
     except Exception:
         result = {"law_code": law_code, "article": article}
     finally:
@@ -18616,19 +18683,524 @@ _FEDLEX_LANG_URIS = {
 }
 
 
+# Federal SR numbers are digits and dots ('220', '235.1', '0.452'). Checked
+# before an SR number reaches a SPARQL string: the value goes to a public
+# third-party endpoint, so it must not carry quotes or query syntax.
+_SR_NUMBER_RE = re.compile(r"^\d[\d.]{0,30}$")
+_FEDLEX_ELI_PREFIX = "https://fedlex.data.admin.ch/eli/"
+# jolux:inForceStatus is a URI ending in .../enforcement-status/<n>.
+_FEDLEX_STATUS = {"/0": "in_force", "/3": "repealed"}
+
+
+def _fedlex_sparql_select(query: str, timeout: float = 15) -> list[dict]:
+    """POST a SELECT to Fedlex and return its bindings as {var: value} dicts.
+
+    Raises on transport or JSON errors so each caller decides how to
+    degrade. Every Fedlex query on the historical path goes through here;
+    it is the one seam the offline tests stub.
+    """
+    import requests as _req
+    resp = _req.post(_FEDLEX_SPARQL, data={"query": query},
+                     headers={"Accept": "application/sparql-results+json"},
+                     timeout=timeout)
+    resp.raise_for_status()
+    return [{k: v.get("value") for k, v in b.items()}
+            for b in resp.json().get("results", {}).get("bindings", [])]
+
+
+def _fedlex_candidate_works(sr_number: str) -> list[dict]:
+    """Every jolux:ConsolidationAbstract that has ever carried ``sr_number``.
+
+    Fedlex tags SR numbers two ways and the two sets barely overlap: acts
+    published before ~2020 carry jolux:historicalLegalId, totally revised
+    acts since then (the 2020 nDSG at SR 235.1, ~730 others) carry only the
+    taxonomy notation. A historicalLegalId-only lookup therefore lands on
+    the repealed 1992 DSG for every date, and an in-force filter on that
+    lookup returns nothing at all, so both branches are UNIONed here.
+
+    One row per work: {"work", "eif", "nlif", "status"} with ISO dates (or
+    None) and status "in_force" / "repealed" / None. No date filter, no
+    ORDER BY, no LIMIT: the pick happens in _pick_fedlex_work, in Python,
+    so the Fedlex date quirks stay testable offline. Cached 7 days.
+    """
+    if not _SR_NUMBER_RE.match(sr_number or ""):
+        raise ValueError(f"invalid SR number {sr_number!r}")
+    cache_key = f"fedlex_works:v1:{sr_number}"
+    cached = _lexfind_cache_get(cache_key)
+    if cached is not None:
+        return cached
+    # str(?n) is load-bearing: skos:notation is a typed literal, so the
+    # property-path form `classifiedByTaxonomyEntry/skos:notation "x"`
+    # matches nothing. DISTINCT because the store emits one solution per
+    # rdf:type triple.
+    rows = _fedlex_sparql_select(
+        'PREFIX jolux: <http://data.legilux.public.lu/resource/ontology/jolux#>\n'
+        'PREFIX skos: <http://www.w3.org/2004/02/skos/core#>\n'
+        'SELECT DISTINCT ?work ?eif ?nlif ?status WHERE {\n'
+        f'  {{ ?work jolux:historicalLegalId "{sr_number}" . }}\n'
+        '  UNION\n'
+        '  { ?work jolux:classifiedByTaxonomyEntry ?tax .\n'
+        '    ?tax skos:notation ?n .\n'
+        f'    FILTER(str(?n) = "{sr_number}") }}\n'
+        '  ?work a jolux:ConsolidationAbstract .\n'
+        '  OPTIONAL { ?work jolux:dateEntryInForce ?eif }\n'
+        '  OPTIONAL { ?work jolux:dateNoLongerInForce ?nlif }\n'
+        '  OPTIONAL { ?work jolux:inForceStatus ?status }\n'
+        '}'
+    )
+    by_work: dict[str, dict] = {}
+    for row in rows:
+        work = row.get("work")
+        if not work:
+            continue
+        cand = by_work.setdefault(work, {"work": work, "eif": None, "nlif": None, "status": None})
+        eif = (row.get("eif") or "")[:10] or None
+        nlif = (row.get("nlif") or "")[:10] or None
+        if eif and (cand["eif"] is None or eif < cand["eif"]):
+            cand["eif"] = eif
+        if nlif and (cand["nlif"] is None or nlif > cand["nlif"]):
+            cand["nlif"] = nlif
+        status = _FEDLEX_STATUS.get((row.get("status") or "")[-2:])
+        # A live status wins over a repealed one if a work carries both.
+        if status and cand["status"] != "in_force":
+            cand["status"] = status
+    result = list(by_work.values())
+    # A transient zero-binding response must not pin "No Fedlex act carried
+    # SR ..." for a week: cache only non-empty answers.
+    if result:
+        _lexfind_cache_set(cache_key, result)
+    return result
+
+
+def _pick_fedlex_work(candidates: list[dict], as_of: str) -> dict | None:
+    """The work in force on ISO date ``as_of``, or None. Pure, no I/O.
+
+    Window: dateEntryInForce <= as_of and dateNoLongerInForce >= as_of; an
+    unbound date passes. ``>=`` on the end date is deliberate. Fedlex records
+    it two ways: as an exclusive end (1992 DSG: nlif 2023-09-01, the day the
+    nDSG entered into force) and, on a few works, as the last day in force
+    (SR 131.233: nlif 2001-12-31, successor eif 2002-01-01). Keeping the
+    changeover day inside both windows and breaking the tie by the newest
+    entry-into-force date picks the successor under both conventions.
+
+    Rank: repealed works with no end date last (979 of them on Fedlex; the
+    repeal date is unknown, so they must never beat a datable live
+    candidate), then a known start before an unknown one, then newest start.
+    """
+    if not as_of:
+        return None
+    in_window = [
+        c for c in candidates
+        if not (c.get("eif") and c["eif"] > as_of)
+        and not (c.get("nlif") and c["nlif"] < as_of)
+    ]
+    if not in_window:
+        return None
+    in_window.sort(key=lambda c: (
+        not (c.get("status") == "repealed" and not c.get("nlif")),
+        c.get("eif") is not None,
+        c.get("eif") or "",
+    ), reverse=True)
+    return in_window[0]
+
+
+def _resolve_fedlex_work(sr_number: str, as_of: str) -> dict | None:
+    """SR number + ISO date -> the Fedlex work in force on that date."""
+    return _pick_fedlex_work(_fedlex_candidate_works(sr_number), as_of)
+
+
+def _fedlex_snapshots(work_uri: str) -> list[dict]:
+    """All dated consolidations of one work, [{"snapshot", "date"}] sorted by
+    date. Cached 24h: a newly published consolidation is exactly what
+    pending_changes must notice within a day.
+    """
+    if not str(work_uri).startswith(_FEDLEX_ELI_PREFIX):
+        raise ValueError(f"unexpected Fedlex work URI {work_uri!r}")
+    cache_key = f"fedlex_snaps:v1:{work_uri}"
+    cached = _lexfind_cache_get(cache_key)
+    if cached is not None:
+        return cached
+    rows = _fedlex_sparql_select(
+        'PREFIX jolux: <http://data.legilux.public.lu/resource/ontology/jolux#>\n'
+        'SELECT DISTINCT ?snapshot ?date WHERE {\n'
+        f'  ?snapshot jolux:isMemberOf <{work_uri}> .\n'
+        '  ?snapshot jolux:dateApplicability ?date .\n'
+        '}'
+    )
+    seen: dict[tuple[str, str], dict] = {}
+    for r in rows:
+        if r.get("snapshot") and r.get("date"):
+            key = (r["snapshot"], r["date"][:10])
+            seen.setdefault(key, {"snapshot": key[0], "date": key[1]})
+    snaps = sorted(seen.values(), key=lambda snap: (snap["date"], snap["snapshot"]))
+    if snaps:
+        _lexfind_cache_set(cache_key, snaps)
+    return snaps
+
+
+def _fedlex_expression_info(uri: str, language: str) -> dict:
+    """Title, abbreviation and available formats of a Fedlex work or dated
+    consolidation in one language.
+
+    {"formats": {"xml": url, "pdf-a": url, "doc": url, ...}, "title", "abbr"};
+    the format key is the tail of the jolux:userFormat URI. Asked of the
+    edition itself, a repealed act is labelled with its own title, never
+    its successor's. Cached 30 days.
+    """
+    if not str(uri).startswith(_FEDLEX_ELI_PREFIX):
+        raise ValueError(f"unexpected Fedlex URI {uri!r}")
+    lang_uri = _FEDLEX_LANG_URIS.get(language, _FEDLEX_LANG_URIS["de"])
+    cache_key = f"fedlex_expr:v1:{uri}:{language}"
+    cached = _lexfind_cache_get(cache_key)
+    if cached is not None:
+        return cached
+    rows = _fedlex_sparql_select(
+        'PREFIX jolux: <http://data.legilux.public.lu/resource/ontology/jolux#>\n'
+        'SELECT DISTINCT ?fmt ?url ?title ?abbr WHERE {\n'
+        f'  <{uri}> jolux:isRealizedBy ?expr .\n'
+        f'  ?expr jolux:language <{lang_uri}> .\n'
+        '  OPTIONAL { ?expr jolux:title ?title }\n'
+        '  OPTIONAL { ?expr jolux:titleShort ?abbr }\n'
+        '  OPTIONAL { ?expr jolux:isEmbodiedBy ?manif .\n'
+        '             ?manif jolux:userFormat ?fmt .\n'
+        '             ?manif jolux:isExemplifiedBy ?url }\n'
+        '}'
+    )
+    info = {"formats": {}, "title": None, "abbr": None}
+    for r in rows:
+        if r.get("fmt") and r.get("url"):
+            info["formats"].setdefault(r["fmt"].rstrip("/").rsplit("/", 1)[-1], r["url"])
+        if r.get("title") and not info["title"]:
+            info["title"] = r["title"]
+        if r.get("abbr") and not info["abbr"]:
+            info["abbr"] = r["abbr"]
+    if info["formats"] or info["title"]:
+        _lexfind_cache_set(cache_key, info)
+    return info
+
+
+def _fedlex_snapshot_url(snapshot_uri: str, language: str) -> str:
+    """Public Fedlex page of one dated consolidation: the same host swap
+    _fedlex_url applies to work URIs, plus the language segment."""
+    return (str(snapshot_uri).replace("fedlex.data.admin.ch", "www.fedlex.admin.ch")
+            .rstrip("/") + "/" + (language or "de"))
+
+
+def _extract_pdf_text(content: bytes) -> tuple[str, int]:
+    """Plain text of a PDF and its page count (pymupdf), pages joined by
+    newlines. Kept separate so tests can stand in a synthetic edition."""
+    import fitz  # pymupdf
+    doc = fitz.open(stream=content, filetype="pdf")
+    try:
+        return "\n".join(page.get_text() for page in doc), len(doc)
+    finally:
+        doc.close()
+
+
+# Whole editions can run to ~1.4 MB of text (OR); the LexFind cache prunes
+# by row count, not size, so very large editions are served uncached.
+_EDITION_TEXT_CACHE_MAX_CHARS = 3_000_000
+
+
+def _fetch_fedlex_edition_text(sr_number: str, snapshot_date: str, language: str,
+                               fmt: str, url: str) -> dict | None:
+    """Whole-edition plain text of a dated consolidation Fedlex publishes
+    only as PDF: {"full_text", "chars", "pages", "fmt", "url"}.
+
+    Cached by edition (hist_edition:, 30 days), not by as_of, so every date
+    that resolves to the same consolidation shares one download. Returns
+    None when the download or the extraction fails.
+    """
+    cache_key = f"hist_edition:v1:{sr_number}:{snapshot_date}:{language}:{fmt}"
+    cached = _lexfind_cache_get(cache_key)
+    if cached is not None:
+        return cached
+    import requests as _req
+    resp = _req.get(url, timeout=60)
+    if resp.status_code != 200 or not resp.content.startswith(b"%PDF"):
+        return None
+    try:
+        text, pages = _extract_pdf_text(resp.content)
+    except Exception as e:
+        logger.warning("Fedlex PDF parse failed for SR %s edition %s: %s", sr_number, snapshot_date, e)
+        return None
+    text = text.replace("\u00a0", " ")
+    edition = {"full_text": text, "chars": len(text), "pages": pages, "fmt": fmt, "url": url}
+    if len(text) <= _EDITION_TEXT_CACHE_MAX_CHARS:
+        _lexfind_cache_set(cache_key, edition)
+    return edition
+
+
+_PDF_ANY_ARTICLE_MARKER = re.compile(
+    r"^[ \t]*Art\.\s*\d+[a-z]?(?:bis|ter|quater|quinquies|sexies|septies|octies|novies|decies)?(?![0-9a-z])",
+    re.MULTILINE,
+)
+
+
+def _pdf_article_excerpt(full_text: str, article: str, max_chars: int = 8000) -> tuple[str | None, int]:
+    """Best-effort window around one article in unstructured edition text.
+
+    Every line-start "Art. N" is a candidate (Fedlex PDFs also list the
+    articles in a table of contents); the block from each candidate to the
+    next line-start "Art." marker is measured and the longest wins. Returns
+    (excerpt, candidate_count). Measured on the 2017 OR, this kind of split
+    is exact for ~63 % of articles and silently wrong for ~24 % (two-column
+    layout, marginal notes bleeding in), which is why callers flag the
+    result verbatim_quotation="not_guaranteed" and the server prompt forbids
+    quoting it.
+    """
+    num = re.escape((article or "").strip())
+    if not num:
+        return None, 0
+    marker = re.compile(rf"^[ \t]*Art\.\s*{num}(?![0-9a-z])", re.MULTILINE)
+    starts = [m.start() for m in marker.finditer(full_text)]
+    if not starts:
+        return None, 0
+    best = ""
+    for s in starts:
+        nxt = _PDF_ANY_ARTICLE_MARKER.search(full_text, s + 1)
+        block = full_text[s:nxt.start() if nxt else len(full_text)].strip()
+        if len(block) > len(best):
+            best = block
+    return best[:max_chars], len(starts)
+
+
+# Fedlex ships pre-2021 editions as PDF and, for about a fifth of them, also
+# as the Bundeskanzlei Word file. The Word paragraph styles carry the article
+# structure the PDF loses, so with a style-preserving converter on the host
+# those editions can be served per article. Dark by default: the converter
+# is not installed on the production host yet, and the split is best effort.
+_HIST_DOC_ENABLED = os.environ.get("SWISS_CASELAW_HIST_DOC", "") == "1"
+_DOC_CONVERTERS = ("soffice", "libreoffice", "textutil")
+_doc_converter_cache: list = []
+
+
+def _doc_converter() -> str | None:
+    """Path of a style-preserving .doc -> HTML converter on this host, or
+    None. Probed once per process and logged."""
+    import shutil
+    if not _doc_converter_cache:
+        found = next((shutil.which(c) for c in _DOC_CONVERTERS if shutil.which(c)), None)
+        _doc_converter_cache.append(found)
+        logger.info("Fedlex .doc converter: %s", found or "none found")
+    return _doc_converter_cache[0]
+
+
+def _convert_doc_to_html(content: bytes) -> str | None:
+    """Run the host converter on a .doc payload; HTML text or None."""
+    import subprocess
+    import tempfile
+    conv = _doc_converter()
+    if not conv:
+        return None
+    with tempfile.TemporaryDirectory(prefix="fedlex-doc-") as tmp:
+        src_path = os.path.join(tmp, "edition.doc")
+        with open(src_path, "wb") as fh:
+            fh.write(content)
+        try:
+            if conv.endswith("textutil"):
+                out = subprocess.run([conv, "-convert", "html", "-stdout", src_path],
+                                     capture_output=True, timeout=60, check=False)
+                return out.stdout.decode("utf-8", "replace") if out.returncode == 0 else None
+            # LibreOffice needs a writable profile dir under ProtectSystem=strict.
+            subprocess.run([conv, "--headless", f"-env:UserInstallation=file://{tmp}/lo",
+                            "--convert-to", "html", "--outdir", tmp, src_path],
+                           capture_output=True, timeout=60, check=False)
+            html_path = os.path.join(tmp, "edition.html")
+            if os.path.exists(html_path):
+                with open(html_path, encoding="utf-8", errors="replace") as fh:
+                    return fh.read()
+        except (subprocess.TimeoutExpired, OSError) as e:
+            logger.warning("Fedlex .doc conversion failed: %s", e)
+    return None
+
+
+_DOC_ARTICLE_MARKER = re.compile(
+    r"^Art\.\s*(\d+[a-z]?(?:bis|ter|quater|quinquies|sexies|septies|octies|novies|decies|undecies|duodecies)?)$"
+)
+
+
+def _split_fedlex_doc_html(html_text: str) -> list[dict]:
+    """Recover the articles of a Fedlex Word edition from its HTML export.
+
+    The Bundeskanzlei template puts each "Art. N" in a paragraph style of
+    its own, the marginal note (Randtitel) in a small-font style right after
+    it, and the Absätze in the body style, so the split is by paragraph
+    class, discovered from content rather than hard-coded: the marker class
+    is the one whose paragraphs are (almost) all bare "Art. N"; the heading
+    class is what usually follows a marker; the body class is what holds the
+    numbered Absätze. Paragraphs in a larger font than the body (Titel /
+    Abschnitt headings) end the current article. Returns [] when no marker
+    class exists, i.e. the structure was not recovered. Later blocks that
+    reuse a main-body number (final provisions) are dropped, first wins.
+    """
+    import html as _html
+    from collections import Counter
+
+    sizes: dict[str, float] = {}
+    for m in re.finditer(r"\b(p\d+)\s*\{([^}]*)\}", html_text):
+        g = re.search(r"font:\s*([\d.]+)px", m.group(2))
+        if g:
+            sizes[m.group(1)] = float(g.group(1))
+
+    paras: list[tuple[str, str]] = []
+    for cls, raw in re.findall(r'<p class="([^"]+)"[^>]*>(.*?)</p>', html_text, re.S):
+        t = re.sub(r"<br\s*/?>", " ", raw)
+        t = re.sub(r"<[^>]+>", "", t)
+        t = _html.unescape(t).replace("\u00a0", " ").replace("\u2011", "-")
+        paras.append((cls, re.sub(r"\s+", " ", t).strip()))
+    if not paras:
+        return []
+
+    per_class = Counter(c for c, t in paras if t)
+    marker_hits = Counter(c for c, t in paras if t and _DOC_ARTICLE_MARKER.match(t))
+    marker_cls = None
+    for cls, hits in marker_hits.most_common():
+        if hits >= 3 and hits >= 0.95 * per_class[cls]:
+            marker_cls = cls
+            break
+    if marker_cls is None:
+        return []
+
+    body_cls = Counter(c for c, t in paras if c != marker_cls and re.match(r"^\d+[a-z]?\s", t)).most_common(1)
+    body_cls = body_cls[0][0] if body_cls else None
+    if body_cls is None:
+        # No numbered Absatz anywhere (short acts): the most common
+        # non-marker class carries the text.
+        others = Counter(c for c, t in paras if t and c != marker_cls)
+        body_cls = others.most_common(1)[0][0] if others else None
+    after_marker = Counter()
+    for i in range(1, len(paras)):
+        if paras[i - 1][0] == marker_cls and paras[i][0] not in (marker_cls, body_cls) and paras[i][1]:
+            after_marker[paras[i][0]] += 1
+    heading_cls = after_marker.most_common(1)[0][0] if after_marker else None
+    body_size = sizes.get(body_cls) if body_cls else None
+
+    articles: list[dict] = []
+    seen: set[str] = set()
+    cur: dict | None = None
+    for cls, t in paras:
+        if cls == marker_cls:
+            m = _DOC_ARTICLE_MARKER.match(t)
+            if not m:
+                continue
+            num = m.group(1)
+            if num in seen:
+                cur = None
+                continue
+            seen.add(num)
+            cur = {"article_num": num, "heading": None, "_body": []}
+            articles.append(cur)
+            continue
+        if cur is None or not t:
+            continue
+        if cls == heading_cls:
+            cur["heading"] = t if cur["heading"] is None else cur["heading"] + " " + t
+        elif cls == body_cls or (body_size is None and cls not in sizes):
+            cur["_body"].append(t)
+        elif body_size is not None and sizes.get(cls, body_size) > body_size + 1.5:
+            cur = None  # structural heading: the article is over
+        # other small styles (footnotes, spacers) are dropped
+
+    out = []
+    for a in articles:
+        if a["_body"]:
+            out.append({"article_num": a["article_num"], "heading": a["heading"],
+                        "text": "\n".join(a["_body"]), "footnote": None, "section": ""})
+    return out
+
+
+def _fetch_fedlex_doc_articles(sr_number: str, snapshot_date: str, language: str,
+                               url: str) -> list[dict] | None:
+    """Per-article text of a dated consolidation from its Word file, or None
+    when the download, the conversion or the split fails. Cached with the
+    edition (hist_edition:, 30 days)."""
+    cache_key = f"hist_edition:v1:{sr_number}:{snapshot_date}:{language}:doc"
+    cached = _lexfind_cache_get(cache_key)
+    if cached is not None:
+        return cached
+    import requests as _req
+    resp = _req.get(url, timeout=60)
+    if resp.status_code != 200 or not resp.content:
+        return None
+    html_text = _convert_doc_to_html(resp.content)
+    if not html_text:
+        return None
+    articles = _split_fedlex_doc_html(html_text)
+    if not articles:
+        return None
+    _lexfind_cache_set(cache_key, articles)
+    return articles
+
+
+def _select_historical_articles(articles: list[dict], sr_number: str,
+                                requested: str) -> tuple[list[dict], dict]:
+    """Pick the requested article out of a parsed edition.
+
+    Exact number first, then the GitHub #87 ordinal alias, then a prefix
+    match (what the current-law path's LIKE fallback does), main-body
+    articles before transitional ones. Returns (articles, extra result
+    keys) so a non-exact match is always flagged in the response.
+    """
+    def norm(s) -> str:
+        return re.sub(r"\s+", "", str(s or "")).lower()
+
+    req = norm(requested)
+    main_first = sorted(articles, key=lambda a: bool(a.get("section")))
+    exact = [a for a in main_first if norm(a["article_num"]) == req]
+    if exact:
+        main = [a for a in exact if not a.get("section")]
+        return (main or exact), {}
+    alias = _TRUNCATED_ORDINAL_ALIASES.get((sr_number, requested))
+    if alias:
+        hit = [a for a in main_first if norm(a["article_num"]) == norm(alias)]
+        if hit:
+            return hit, {"article_number_alias": {
+                "requested": requested, "stored_as": alias,
+                "note": f"Art. {requested} is filed as '{alias}' in this edition.",
+            }}
+    prefix = [a for a in main_first if norm(a["article_num"]).startswith(req)]
+    if prefix:
+        main = [a for a in prefix if not a.get("section")] or prefix
+        return main, {"article_match": {
+            "requested": requested,
+            "matched": [a["article_num"] for a in main],
+            "method": "prefix",
+        }}
+    nearest: list[str] = []
+    lead = re.match(r"\d+", req)
+    if lead:
+        want = int(lead.group(0))
+
+        def distance(num: str) -> int:
+            m = re.match(r"\d+", num)
+            return abs(int(m.group(0)) - want) if m else 10 ** 9
+
+        nearest = sorted({a["article_num"] for a in articles if not a.get("section")},
+                         key=distance)[:5]
+    return [], {"note": (
+        f"Art. {requested} is not in this edition. Nearest article numbers: "
+        f"{', '.join(nearest) or 'none'}."
+    )}
+
+
 def _fetch_historical_law_version(
     sr_number: str, article: str | None, language: str, as_of: str,
 ) -> dict | None:
-    """Fetch a historical version of a federal law article from Fedlex.
+    """Fetch the text of a federal law as it stood on ``as_of`` (ISO date).
 
-    Uses SPARQL to find the dated consolidation snapshot applicable on
-    ``as_of`` (ISO date), downloads the Akoma Ntoso XML, and parses it
-    with the same parser used for the current version.
+    Resolves the work in force on that date (_resolve_fedlex_work), takes
+    the latest dated consolidation on or before it, downloads the Akoma
+    Ntoso XML and parses it with the parser the statutes.db build uses. The
+    result carries the edition's own title, dates and Fedlex link, so a
+    historical answer is never less attributable than a current one.
 
-    Results are cached in the LexFind cache with a long TTL (historical
-    versions don't change).  Returns None on any failure.
+    Returns the result dict or {"error": ...} naming the specific failure:
+    no act under that SR on that date, no edition on or before it, no
+    machine-readable text in that language, download failure. Errors are
+    never cached; editions are (a dated consolidation never changes).
     """
-    cache_key = f"hist_law:v1:{sr_number}:{article or 'all'}:{language}:{as_of}"
+    cache_key = f"hist_law:v3:{sr_number}:{article or 'all'}:{language}:{as_of}"
     cached = _lexfind_cache_get(cache_key)
     if cached is not None:
         return cached
@@ -18636,140 +19208,194 @@ def _fetch_historical_law_version(
     try:
         import requests as _req
         import xml.etree.ElementTree as ET
-        from search_stack.build_statutes_db import parse_article, AKN_NS
+        from search_stack.build_statutes_db import parse_root
 
-        # Step 1: find the work URI for this SR number
-        work_query = (
-            'PREFIX jolux: <http://data.legilux.public.lu/resource/ontology/jolux#>\n'
-            'SELECT ?work WHERE {\n'
-            '  ?work a jolux:ConsolidationAbstract .\n'
-            f'  ?work jolux:historicalLegalId "{sr_number}" .\n'
-            '} LIMIT 1'
-        )
-        resp = _req.post(_FEDLEX_SPARQL, data={"query": work_query},
-                         headers={"Accept": "application/sparql-results+json"}, timeout=15)
-        bindings = resp.json().get("results", {}).get("bindings", [])
-        if not bindings:
-            return None
-        work_uri = bindings[0]["work"]["value"]
+        work = _resolve_fedlex_work(sr_number, as_of)
+        if work is None:
+            return {"error": (
+                f"No Fedlex act carried SR {sr_number} on {as_of}. Either the SR "
+                f"number is wrong or no act held that number on that date. Call "
+                f"get_law without as_of to see the current act and when it entered "
+                f"into force."
+            )}
+        work_uri = work["work"]
+        snapshots = _fedlex_snapshots(work_uri)
+        applicable = [snap for snap in snapshots if snap["date"] <= as_of]
+        if not applicable:
+            return {"error": (
+                f"SR {sr_number} entered into force on "
+                f"{work.get('eif') or 'a date Fedlex does not record'}; Fedlex has no "
+                f"consolidation of it dated on or before {as_of}. Earliest available "
+                f"edition: {snapshots[0]['date'] if snapshots else 'none'}."
+            )}
+        snapshot_uri = applicable[-1]["snapshot"]
+        snapshot_date = applicable[-1]["date"]
+        source_url = _fedlex_snapshot_url(snapshot_uri, language)
 
-        # Step 2: find the closest snapshot <= as_of
-        snap_query = (
-            'PREFIX jolux: <http://data.legilux.public.lu/resource/ontology/jolux#>\n'
-            'SELECT ?snapshot ?date WHERE {\n'
-            f'  ?snapshot jolux:isMemberOf <{work_uri}> .\n'
-            '  ?snapshot jolux:dateApplicability ?date .\n'
-            f'  FILTER(str(?date) <= "{as_of}")\n'
-            '} ORDER BY DESC(?date) LIMIT 1'
-        )
-        resp = _req.post(_FEDLEX_SPARQL, data={"query": snap_query},
-                         headers={"Accept": "application/sparql-results+json"}, timeout=15)
-        bindings = resp.json().get("results", {}).get("bindings", [])
-        if not bindings:
-            return None
-        snapshot_uri = bindings[0]["snapshot"]["value"]
-        snapshot_date = bindings[0]["date"]["value"]
-
-        # Step 3: get the XML download URL
-        lang_uri = _FEDLEX_LANG_URIS.get(language, _FEDLEX_LANG_URIS["de"])
-        xml_query = (
-            'PREFIX jolux: <http://data.legilux.public.lu/resource/ontology/jolux#>\n'
-            'SELECT ?url WHERE {\n'
-            f'  <{snapshot_uri}> jolux:isRealizedBy ?expr .\n'
-            f'  ?expr jolux:language <{lang_uri}> .\n'
-            '  ?expr jolux:isEmbodiedBy ?manif .\n'
-            '  ?manif jolux:userFormat <https://fedlex.data.admin.ch/vocabulary/user-format/xml> .\n'
-            '  ?manif jolux:isExemplifiedBy ?url .\n'
-            '} LIMIT 1'
-        )
-        resp = _req.post(_FEDLEX_SPARQL, data={"query": xml_query},
-                         headers={"Accept": "application/sparql-results+json"}, timeout=15)
-        bindings = resp.json().get("results", {}).get("bindings", [])
-        if not bindings:
-            return {"error": f"No XML available for {sr_number} as of {as_of}. "
-                             f"XML versions are available from ~2021 onward. "
-                             f"Closest snapshot: {snapshot_date}."}
-        xml_url = bindings[0]["url"]["value"]
-
-        # Step 4: download + parse the XML
-        xml_resp = _req.get(xml_url, timeout=30)
-        if xml_resp.status_code != 200:
-            return None
-        root = ET.fromstring(xml_resp.content)
-
-        # Parse all articles from the XML
-        article_elems = root.findall(f".//{{{AKN_NS}}}article")
-        articles_parsed = []
-        for art_elem in article_elems:
-            art_num, heading, text, footnote = parse_article(art_elem)
-            if not art_num or not text:
-                continue
-            if article and art_num != article:
-                continue
-            articles_parsed.append({
-                "article_num": art_num,
-                "heading": heading,
-                "text": text,
-            })
-
+        # Formats live on the edition; the act's title lives on the work (the
+        # edition expression carries a generic "Consolidation: 220 -
+        # 2017-04-01" label or nothing). The work is the act itself, so a
+        # repealed act is still labelled with its own title.
+        info = _fedlex_expression_info(snapshot_uri, language)
+        work_info = _fedlex_expression_info(work_uri, language)
+        title = work_info.get("title") or info.get("title")
+        abbr = work_info.get("abbr") or info.get("abbr")
+        formats = info.get("formats") or {}
         result = {
             "sr_number": sr_number,
+            "abbreviation": abbr,
+            "title": title,
+            "canton": "CH",
+            "level": "federal",
+            "language": language,
+            "version": "historical",
             "as_of": as_of,
             "snapshot_date": snapshot_date,
-            "language": language,
-            "level": "federal",
-            "version": "historical",
-            "articles": articles_parsed,
+            "work_uri": work_uri,
+            "work_entry_in_force": work.get("eif"),
+            "work_no_longer_in_force": work.get("nlif"),
+            "work_in_force_status": work.get("status"),
+            "fedlex_snapshot_uri": snapshot_uri,
+            "source_url": source_url,
+            "source_label": f"Fedlex (Fassung vom {snapshot_date})",
+            "formats_available": sorted(formats),
         }
-        # Cache for 30 days (historical versions never change)
+
+        xml_url = formats.get("xml")
+        doc_url = formats.get("doc")
+        pdf_url = formats.get("pdf-a") or formats.get("pdf")
+        doc_articles = None
+        if not xml_url and doc_url and _HIST_DOC_ENABLED and _doc_converter():
+            doc_articles = _fetch_fedlex_doc_articles(sr_number, snapshot_date, language, doc_url)
+        if xml_url:
+            xml_resp = _req.get(xml_url, timeout=30)
+            if xml_resp.status_code != 200:
+                return {"error": (
+                    f"Fedlex download failed for SR {sr_number}, edition {snapshot_date} "
+                    f"(HTTP {xml_resp.status_code}). Try again later; the edition is at "
+                    f"{source_url}"
+                )}
+            root = ET.fromstring(xml_resp.content)
+
+            # parse_root tags articles inside transitional / final-provision
+            # blocks with their section (eId 'disp_u2/art_1' vs 'art_1') so
+            # Art. 1 means the main article; the raw fragment is kept only
+            # for a single-article request (REST ?format=xml).
+            all_articles = []
+            for parsed in parse_root(root):
+                entry = {
+                    "article_num": parsed["article_num"],
+                    "heading": parsed["heading"],
+                    "text": parsed["text"],
+                    "footnote": parsed.get("footnote"),
+                    "section": parsed.get("section") or "",
+                }
+                if parsed.get("section_heading"):
+                    entry["section_heading"] = parsed["section_heading"]
+                if article and parsed.get("xml"):
+                    entry["xml"] = parsed["xml"]
+                all_articles.append(entry)
+            result.update({
+                "text_source": "fedlex_xml",
+                "structure": "articles",
+                "verbatim_quotation": "verbatim",
+            })
+            if article:
+                matched, extra = _select_historical_articles(all_articles, sr_number, article)
+                result["articles"] = matched
+                result.update(extra)
+            else:
+                result["articles"] = all_articles
+        elif doc_articles:
+            # Word edition: the paragraph styles give back the article shape,
+            # validated at 72 % byte-identical bodies against XML editions of
+            # the same acts. Good enough to cite with the edition date, not
+            # good enough to call verbatim.
+            result.update({
+                "text_source": "fedlex_doc",
+                "structure": "articles",
+                "verbatim_quotation": "best_effort",
+            })
+            if article:
+                matched, extra = _select_historical_articles(doc_articles, sr_number, article)
+                result["articles"] = matched
+                result.update(extra)
+            else:
+                result["articles"] = doc_articles
+        elif pdf_url:
+            # Pre-2021 editions (and some later ones) exist only as PDF. The
+            # text is served whole-edition and flagged: a per-article split of
+            # pdftotext output was measured silently wrong for one article in
+            # four, so nothing here may be quoted as statute text.
+            edition = _fetch_fedlex_edition_text(sr_number, snapshot_date, language,
+                                                 "pdf-a" if "pdf-a" in formats else "pdf", pdf_url)
+            if edition is None:
+                return {"error": (
+                    f"Fedlex download failed for SR {sr_number}, edition {snapshot_date} "
+                    f"(PDF). Try again later; the edition is at {source_url}"
+                )}
+            result.update({
+                "text_source": "fedlex_pdf",
+                "structure": "none",
+                "verbatim_quotation": "not_guaranteed",
+                "edition_chars": edition["chars"],
+                "edition_pages": edition["pages"],
+            })
+            if article:
+                excerpt, candidates = _pdf_article_excerpt(edition["full_text"], article)
+                if excerpt:
+                    result["articles"] = [{"article_num": article, "heading": None,
+                                           "text": excerpt, "excerpt": True}]
+                    result["excerpt_candidates"] = candidates
+                else:
+                    result["articles"] = []
+                    result["note"] = (f"No 'Art. {article}' marker found in the PDF text of this "
+                                      f"edition; open the edition on Fedlex: {source_url}")
+            else:
+                result["articles"] = []
+                result["article_count"] = None
+                result["edition_preview"] = edition["full_text"][:1500]
+                result["note"] = (f"PDF edition without article structure ({edition['chars']:,} "
+                                  f"characters). Request a specific article to receive a windowed "
+                                  f"excerpt, or open the edition on Fedlex.")
+        else:
+            present = ", ".join(sorted(formats)) or "none"
+            return {"error": (
+                f"Fedlex has an edition of SR {sr_number} dated {snapshot_date} (the "
+                f"one applicable on {as_of}) but no machine-readable text in "
+                f"'{language}' (formats present: {present}). Try language='de' or "
+                f"open the edition: {source_url}"
+            )}
+        # hist_law: sits in _LEXFIND_CACHE_TTL_MAP at 30 days.
         _lexfind_cache_set(cache_key, result)
         return result
     except Exception as e:
         import traceback
-        logger.warning("Historical law fetch failed for %s as_of %s: %s\n%s", sr_number, as_of, e, traceback.format_exc())
+        logger.warning("Historical law fetch failed for %s as_of %s: %s\n%s",
+                       sr_number, as_of, e, traceback.format_exc())
         return None
 
 
 def _fetch_pending_changes(sr_number: str) -> list[dict]:
-    """Query Fedlex for future consolidation snapshots of a law.
+    """Future consolidation dates of the act in force under ``sr_number``
+    today: [{"date": ISO}], ascending, at most five. Cached 24h.
 
-    If a law has a snapshot with dateApplicability > today, it means
-    a pending amendment will enter into force on that date.  Returns
-    a list of {date, snapshot_uri} for upcoming changes.  Cached 24h.
+    The work is resolved as of today through _resolve_fedlex_work, so a
+    totally revised act (whose live work carries no historicalLegalId) is
+    the one checked, not its repealed predecessor.
     """
-    cache_key = f"pending:v1:{sr_number}"
+    cache_key = f"pending:v2:{sr_number}"
     cached = _lexfind_cache_get(cache_key)
     if cached is not None:
         return cached
 
     try:
-        import requests as _req
         today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-
-        # Step 1: work URI
-        r = _req.post(_FEDLEX_SPARQL, data={"query": (
-            'PREFIX jolux: <http://data.legilux.public.lu/resource/ontology/jolux#>\n'
-            'SELECT ?work WHERE {\n'
-            '  ?work a jolux:ConsolidationAbstract .\n'
-            f'  ?work jolux:historicalLegalId "{sr_number}" .\n'
-            '} LIMIT 1'
-        )}, headers={"Accept": "application/sparql-results+json"}, timeout=10)
-        bindings = r.json().get("results", {}).get("bindings", [])
-        if not bindings:
+        work = _resolve_fedlex_work(sr_number, today)
+        if work is None:
             return []
-        work = bindings[0]["work"]["value"]
-
-        # Step 2: future snapshots
-        r = _req.post(_FEDLEX_SPARQL, data={"query": (
-            'PREFIX jolux: <http://data.legilux.public.lu/resource/ontology/jolux#>\n'
-            'SELECT ?date WHERE {\n'
-            f'  ?snap jolux:isMemberOf <{work}> .\n'
-            '  ?snap jolux:dateApplicability ?date .\n'
-            f'  FILTER(str(?date) > "{today}")\n'
-            '} ORDER BY ?date LIMIT 5'
-        )}, headers={"Accept": "application/sparql-results+json"}, timeout=10)
-        bindings = r.json().get("results", {}).get("bindings", [])
-        result = [{"date": b["date"]["value"]} for b in bindings]
+        result = [{"date": snap["date"]}
+                  for snap in _fedlex_snapshots(work["work"]) if snap["date"] > today][:5]
         _lexfind_cache_set(cache_key, result)
         return result
     except Exception:
@@ -18811,8 +19437,9 @@ def get_law(
     are local, fast, and returned in the same shape so callers can work
     uniformly across jurisdictions.
 
-    Set ``as_of`` to an ISO date (e.g. '2020-01-01') to retrieve a
-    historical version of the law from Fedlex (available from ~2021).
+    Set ``as_of`` to a past date (ISO or DD.MM.YYYY) to retrieve the
+    edition of a federal law in force on that date, fetched live from
+    Fedlex. Federal laws only; the result names the edition (snapshot_date).
     """
     canton_u = (canton or "CH").upper()
     # A canton-prefixed name carries its own jurisdiction: ZH/StG is
@@ -18823,19 +19450,48 @@ def get_law(
     _prefix, _bare = split_qualified_law_name(abbreviation or "")
     if _prefix:
         abbreviation, canton_u = _bare, _prefix
+    if as_of and canton_u != "CH":
+        # Checked before the cantonal branch: LexFind serves current text
+        # only, and silently returning it for a dated request would be the
+        # worst failure mode on this path.
+        return {"error": (
+            f"as_of is supported for federal laws only (canton='CH'); cantonal "
+            f"historical versions are not available. Omit as_of for the current "
+            f"text of the {canton_u} act."
+        )}
     if canton_u != "CH":
         return _get_law_cantonal(sr_number, abbreviation, article, language, canton_u)
 
     # Historical version: on-demand fetch from Fedlex SPARQL
     if as_of:
+        # The date is compared with Fedlex consolidation dates as an ISO
+        # string, so anything else must be normalised or rejected here:
+        # 'today' sorts above every ISO date and used to select a
+        # consolidation not yet in force.
+        as_of_iso = _parse_date_param(as_of)
+        if not as_of_iso:
+            return {"error": (
+                f"Invalid as_of '{as_of}': use an ISO date YYYY-MM-DD (or DD.MM.YYYY), "
+                f"e.g. '2019-06-01'. Relative words such as 'today' are not accepted; "
+                f"omit as_of for the text currently in force."
+            )}
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        if as_of_iso > today:
+            return {"error": (
+                f"as_of '{as_of_iso}' is in the future. Omit as_of for the text in "
+                f"force today; consolidations not yet in force are announced in "
+                f"pending_changes."
+            )}
+        as_of = as_of_iso
         # Resolve SR number from abbreviation
         if not sr_number and abbreviation:
             conn = _get_statutes_conn()
             if conn:
                 try:
                     row = conn.execute(
-                        "SELECT sr_number FROM laws WHERE UPPER(abbr_de) = ? OR UPPER(abbr_fr) = ? LIMIT 1",
-                        (abbreviation.upper(), abbreviation.upper()),
+                        "SELECT sr_number FROM laws WHERE UPPER(abbr_de) = ? OR UPPER(abbr_fr) = ? "
+                        "OR UPPER(abbr_it) = ? LIMIT 1",
+                        (abbreviation.upper(), abbreviation.upper(), abbreviation.upper()),
                     ).fetchone()
                     if row:
                         sr_number = row["sr_number"]
@@ -18843,10 +19499,14 @@ def get_law(
                     conn.close()
         if not sr_number:
             return {"error": f"Cannot resolve SR number for '{abbreviation}'."}
+        sr_number = str(sr_number).strip()
+        if not _SR_NUMBER_RE.match(sr_number):
+            return {"error": (
+                f"Invalid sr_number '{sr_number}': federal SR numbers contain digits "
+                f"and dots only (e.g. '220', '235.1', '0.452')."
+            )}
         result = _fetch_historical_law_version(sr_number, article, language, as_of)
-        if result and "error" not in result:
-            return result
-        if result and "error" in result:
+        if result:
             return result
         return {"error": f"Historical version not available for SR {sr_number} as of {as_of}."}
 
@@ -18904,17 +19564,27 @@ def get_law(
         # column exists after a statutes.db rebuild; gracefully omitted on
         # older DBs so the API never errors during a staged rollout.
         _art_cols = "article_num, heading, text"
+        _has_section = False
         try:
-            if any(r[1] == "xml" for r in conn.execute("PRAGMA table_info(articles)")):
+            _cols = {r[1] for r in conn.execute("PRAGMA table_info(articles)")}
+            if "xml" in _cols:
                 _art_cols += ", xml"
+            # 2026-09 rebuild: transitional / final-provision articles carry a
+            # `section` (their eId prefix) so they stop colliding with the main
+            # body. Older DBs have no column; every query below degrades to the
+            # old behaviour.
+            if "section" in _cols:
+                _has_section = True
+                _art_cols += ", section, section_heading"
         except sqlite3.Error:
             pass
+        _main = " AND section = ''" if _has_section else ""
 
         if article:
             # Fetch specific article
             articles = conn.execute(
                 f"""SELECT {_art_cols} FROM articles
-                   WHERE sr_number = ? AND article_num = ? AND lang = ?""",
+                   WHERE sr_number = ? AND article_num = ? AND lang = ?{_main}""",
                 (sr_number, article, language),
             ).fetchall()
             if not articles:
@@ -18922,7 +19592,7 @@ def get_law(
                 articles = conn.execute(
                     f"""SELECT {_art_cols} FROM articles
                        WHERE sr_number = ? AND lang = ?
-                       AND (article_num = ? OR article_num LIKE ?)""",
+                       AND (article_num = ? OR article_num LIKE ?){_main}""",
                     (sr_number, language, article, f"{article}%"),
                 ).fetchall()
             if not articles:
@@ -18937,7 +19607,7 @@ def get_law(
                     for _lang in (language, "de", "fr", "it"):
                         _rows = conn.execute(
                             f"""SELECT {_art_cols} FROM articles
-                               WHERE sr_number = ? AND article_num = ? AND lang = ?""",
+                               WHERE sr_number = ? AND article_num = ? AND lang = ?{_main}""",
                             (sr_number, _alias, _lang),
                         ).fetchall()
                         if not _rows:
@@ -18978,7 +19648,7 @@ def get_law(
                     articles = conn.execute(
                         f"""SELECT {_art_cols} FROM articles
                            WHERE sr_number = ? AND lang = ?
-                           AND (article_num = ? OR article_num LIKE ?)""",
+                           AND (article_num = ? OR article_num LIKE ?){_main}""",
                         (sr_number, alt, article, f"{article}%"),
                     ).fetchall()
                     if articles:
@@ -18992,6 +19662,35 @@ def get_law(
                             ),
                         }
                         break
+            if _has_section:
+                if articles:
+                    _others = conn.execute(
+                        """SELECT DISTINCT section, section_heading FROM articles
+                           WHERE sr_number = ? AND lang = ? AND section != ''
+                           AND article_num = ?
+                           ORDER BY section""",
+                        (sr_number, language, article),
+                    ).fetchall()
+                    if _others:
+                        result["also_in_sections"] = [
+                            {"section": o["section"], "section_heading": o["section_heading"]}
+                            for o in _others
+                        ]
+                else:
+                    # The number exists only in a transitional / final-provision
+                    # block (ZGB SchlT, OR Schlussbestimmungen): serve it, labelled.
+                    articles = conn.execute(
+                        f"""SELECT {_art_cols} FROM articles
+                           WHERE sr_number = ? AND lang = ? AND section != ''
+                           AND article_num = ?
+                           ORDER BY section""",
+                        (sr_number, language, article),
+                    ).fetchall()
+                    if articles:
+                        result["article_section_note"] = (
+                            f"Art. {article} exists only in the transitional / final "
+                            f"provisions of this act, not in its main body."
+                        )
             result["articles"] = [dict(a) for a in articles]
 
             # Enrich with Materialien (legislative history) when fetching
@@ -19014,17 +19713,35 @@ def get_law(
                 pass
         else:
             # Return article list (no text to keep response compact)
-            articles = conn.execute(
-                """SELECT article_num, heading FROM articles
-                   WHERE sr_number = ? AND lang = ?
-                   ORDER BY CAST(article_num AS INTEGER), article_num""",
-                (sr_number, language),
-            ).fetchall()
-            result["article_count"] = len(articles)
-            result["articles"] = [
-                {"article_num": a["article_num"], "heading": a["heading"]}
-                for a in articles
-            ]
+            if _has_section:
+                articles = conn.execute(
+                    """SELECT article_num, heading, section, section_heading FROM articles
+                       WHERE sr_number = ? AND lang = ?
+                       ORDER BY (section != ''), section,
+                                CAST(article_num AS INTEGER), article_num""",
+                    (sr_number, language),
+                ).fetchall()
+                _main_rows = [a for a in articles if not a["section"]]
+                result["article_count"] = len(_main_rows)
+                result["transitional_count"] = len(articles) - len(_main_rows)
+                result["articles"] = [
+                    {"article_num": a["article_num"], "heading": a["heading"],
+                     **({"section": a["section"], "section_heading": a["section_heading"]}
+                        if a["section"] else {})}
+                    for a in articles
+                ]
+            else:
+                articles = conn.execute(
+                    """SELECT article_num, heading FROM articles
+                       WHERE sr_number = ? AND lang = ?
+                       ORDER BY CAST(article_num AS INTEGER), article_num""",
+                    (sr_number, language),
+                ).fetchall()
+                result["article_count"] = len(articles)
+                result["articles"] = [
+                    {"article_num": a["article_num"], "heading": a["heading"]}
+                    for a in articles
+                ]
 
         return result
     except sqlite3.Error as e:
@@ -19096,6 +19813,7 @@ def _article_reference_lookup_federal(
         conn = _get_statutes_conn()
     if conn is None:
         return []
+    _main = " AND section = ''" if _articles_has_section(conn) else ""
     try:
         law_rows = conn.execute(
             """SELECT sr_number, abbr_de, abbr_fr, abbr_it,
@@ -19119,9 +19837,9 @@ def _article_reference_lookup_federal(
             stored_as = None
             for lang in dict.fromkeys(lang_order):
                 rows = conn.execute(
-                    """SELECT article_num, heading, text
+                    f"""SELECT article_num, heading, text
                        FROM articles
-                       WHERE sr_number = ? AND LOWER(article_num) = ? AND lang = ?
+                       WHERE sr_number = ? AND LOWER(article_num) = ? AND lang = ?{_main}
                        LIMIT 1""",
                     (sr, article, lang),
                 ).fetchall()
@@ -19133,9 +19851,9 @@ def _article_reference_lookup_federal(
                 if alias:
                     for lang in dict.fromkeys(lang_order):
                         rows = conn.execute(
-                            """SELECT article_num, heading, text
+                            f"""SELECT article_num, heading, text
                                FROM articles
-                               WHERE sr_number = ? AND article_num = ? AND lang = ?
+                               WHERE sr_number = ? AND article_num = ? AND lang = ?{_main}
                                LIMIT 1""",
                             (sr, alias, lang),
                         ).fetchall()
@@ -19284,8 +20002,9 @@ def _abbreviation_lookup_federal(
 def _run_articles_fts(conn, match_query, sr_number, language, limit):
     """One BM25-ranked articles_fts MATCH with optional sr/lang filters. Shared
     by the strict (AND) and broadened (OR) passes of search_laws (issue #31)."""
+    section_cols = ", a.section, a.section_heading" if _articles_has_section(conn) else ""
     sql = [
-        "SELECT a.sr_number, a.article_num, a.heading,",
+        f"SELECT a.sr_number, a.article_num, a.heading{section_cols},",
         "       snippet(articles_fts, 3, '>>>', '<<<', '...', 40) AS snippet,",
         "       l.abbr_de, l.abbr_fr, l.abbr_it, l.title_de, l.title_fr, l.title_it",
         "FROM articles_fts f",
@@ -19361,13 +20080,17 @@ def _search_laws_federal(
 
         def _absorb(rows):
             for r in rows:
-                key = (r["sr_number"], r["article_num"])
+                section = r["section"] if "section" in r.keys() else ""
+                # Main-body hits keep the (sr, article) key the priority
+                # entries above use; transitional hits get their own key.
+                key = ((r["sr_number"], r["article_num"]) if not section
+                       else (r["sr_number"], section, r["article_num"]))
                 if key in seen_keys:
                     continue
                 seen_keys.add(key)
                 abbr = r[f"abbr_{display_lang}"] or r["abbr_de"] or "?"
                 title = r[f"title_{display_lang}"] or r["title_de"] or ""
-                priority.append({
+                hit = {
                     "level": "federal",
                     "canton": "CH",
                     "sr_number": r["sr_number"],
@@ -19376,7 +20099,11 @@ def _search_laws_federal(
                     "article_num": r["article_num"],
                     "heading": r["heading"],
                     "snippet": r["snippet"],
-                })
+                }
+                if section:
+                    hit["section"] = section
+                    hit["section_heading"] = r["section_heading"]
+                priority.append(hit)
                 if len(priority) >= limit:
                     break
 
@@ -20199,20 +20926,74 @@ def _format_get_law_response(result: dict) -> str:
     text += f"Jurisdiction: {label}\n"
     if result.get("consolidation_date"):
         text += f"Consolidation date: {result['consolidation_date']}\n"
+    if result.get("version") == "historical":
+        # A dated edition must never read like current law: name the edition,
+        # the act's in-force window and where the text came from.
+        text += (f"Version: HISTORICAL — Fedlex edition of {result.get('snapshot_date')}, "
+                 f"applicable on {result.get('as_of')}\n")
+        eif = result.get("work_entry_in_force") or "?"
+        nlif = result.get("work_no_longer_in_force")
+        status = result.get("work_in_force_status")
+        if status == "repealed" and not nlif:
+            window = (f"{eif} – ? (repealed; end date not recorded on Fedlex — "
+                      f"verify this edition applied on {result.get('as_of')})")
+        else:
+            window = f"{eif} – {nlif or '(open)'}" + (" (repealed)" if status == "repealed" else "")
+        text += f"Act in force: {window}\n"
+        if result.get("text_source") == "fedlex_xml":
+            text += "Text source: Fedlex Akoma Ntoso XML — per-article, verbatim\n"
+        elif result.get("text_source") == "fedlex_doc":
+            text += ("Text source: Fedlex Word (.doc) edition — article structure recovered from "
+                     "paragraph styles; best effort (72 % of bodies matched the XML text "
+                     "byte-for-byte in validation). Quote only with the edition date stated "
+                     "and check against the linked edition.\n")
+        elif result.get("text_source") == "fedlex_pdf":
+            text += ("Text source: Fedlex PDF edition — NO article structure recovered; "
+                     "verbatim quotation NOT guaranteed.\n"
+                     "WARNING: do not quote this text. Cite the edition (Quelle below) and "
+                     "paraphrase; marginal notes and page headers may be interleaved.\n")
+        elif result.get("text_source"):
+            text += f"Text source: {result['text_source']}\n"
     if result.get("category"):
         text += f"Category: {result['category']}\n"
     if result.get("source_url"):
         # One rendered link per response (the #art_ anchor already targets the
         # requested article). Bare URLs are what Copilot's sanitiser strips.
         text += f"Quelle: {_md_link(result.get('source_label') or 'Quelle', result['source_url'])}\n"
+    pending = [p.get("date") for p in (result.get("pending_changes") or []) if p.get("date")]
+    if pending:
+        # System-prompt rule R5 asks the model to surface this; until now the
+        # field existed in the dict and never reached the text.
+        also = f" (also: {', '.join(pending[1:])})" if len(pending) > 1 else ""
+        text += (f"Pending changes: a consolidation of this act enters into force on "
+                 f"{pending[0]}{also}; it does not necessarily touch the article shown. "
+                 f"Verify the affected articles on Fedlex.\n")
     if result.get("article_number_alias"):
         text += f"Note: {result['article_number_alias']['note']}\n"
     if result.get("article_language_fallback"):
         text += f"Note: {result['article_language_fallback']['note']}\n"
+    if result.get("article_match"):
+        am = result["article_match"]
+        text += (f"Note: no exact Art. {am.get('requested')} in this edition; showing "
+                 f"{am.get('method', 'closest')} matches {', '.join(am.get('matched') or [])}.\n")
+    if result.get("note"):
+        text += f"Note: {result['note']}\n"
+    if result.get("also_in_sections"):
+        blocks = result["also_in_sections"]
+        names = "; ".join(b.get("section_heading") or b.get("section") or "?" for b in blocks)
+        first = (result.get("articles") or [{}])[0].get("article_num", "")
+        text += (f"Note: Art. {first} also exists in {len(blocks)} transitional/final-provision "
+                 f"block(s): {names}.\n")
+    if result.get("article_section_note"):
+        text += f"Note: {result['article_section_note']}\n"
     text += "\n"
 
     articles = result.get("articles", [])
     if not articles:
+        if result.get("edition_preview"):
+            text += "Edition preview (unstructured PDF text, first 1500 characters):\n\n"
+            text += result["edition_preview"].strip() + "\n"
+            return text
         text += "No articles found.\n"
         return text
 
@@ -20220,13 +21001,33 @@ def _format_get_law_response(result: dict) -> str:
     if articles and "text" in articles[0]:
         for art in articles:
             heading = f" — {art['heading']}" if art.get("heading") else ""
+            if art.get("section"):
+                # Transitional / final-provision articles reuse main-body
+                # numbers; say which block this one belongs to.
+                heading += f" ({art.get('section_heading') or 'transitional/final provisions'}, {art['section']})"
             marker = "§" if level == "cantonal" and canton in {"ZH", "SH", "AI", "AR", "AG", "BS", "BL"} else "Art."
-            text += f"### {marker} {art['article_num']}{heading}\n\n"
+            if art.get("excerpt"):
+                cands = result.get("excerpt_candidates") or 1
+                where = f", 1 of {cands} candidate positions" if cands > 1 else ""
+                text += (f"### Excerpt around \"Art. {art['article_num']}\" "
+                         f"(unstructured PDF text{where})\n\n")
+            else:
+                text += f"### {marker} {art['article_num']}{heading}\n\n"
             text += (art.get("text") or "") + "\n\n"
+            if art.get("footnote"):
+                text += f"> Footnote: {art['footnote']}\n\n"
     else:
         # Just article list
-        text += f"**{result.get('article_count', len(articles))} articles**\n\n"
+        count_line = f"**{result.get('article_count', len(articles))} articles**"
+        if result.get("transitional_count"):
+            count_line += f" (+{result['transitional_count']} in transitional / final provisions)"
+        text += count_line + "\n\n"
+        current_block = ""
         for art in articles:
+            block = art.get("section") or ""
+            if block and block != current_block:
+                text += f"\n#### {art.get('section_heading') or 'Transitional / final provisions'} ({block})\n\n"
+            current_block = block
             heading = f" {art['heading']}" if art.get("heading") else ""
             text += f"- Art. {art['article_num']}{heading}\n"
 
@@ -20270,6 +21071,8 @@ def _format_search_laws_response(result: dict, lang: str = "de") -> str:
             abbr = r.get("abbreviation") or "?"
             sr = r.get("sr_number") or "?"
             text += f"**{i}. [CH] Art. {r['article_num']} {abbr}** (SR {sr}){heading}"
+            if r.get("section"):
+                text += f" [{r.get('section_heading') or 'transitional / final provisions'}]"
             _fx = _fedlex_url(r.get("sr_number"), r.get("article_num"), lang)
             if _fx:
                 text += f" — {_md_link('Fedlex', _fx)}"
@@ -20288,6 +21091,15 @@ _LEXFIND_CACHE_TTL_MAP = {
     "law:": 3600,          # 1h — keep LexFind-served law text current (issue #27)
     "law_text:": 3600,     # 1h — same currency guarantee for the PDF-extracted text
     "changes:": 86400,     # 24h
+    # Fedlex historical path. A dated consolidation never changes; the
+    # SR -> works map changes only on a total revision; the snapshot list
+    # gains a row when a new consolidation is published (pending_changes).
+    "hist_law:": 2592000,      # 30d
+    "hist_edition:": 2592000,  # 30d
+    "fedlex_expr:": 2592000,   # 30d
+    "fedlex_works:": 604800,   # 7d
+    "fedlex_snaps:": 86400,    # 24h
+    "pending:": 86400,         # 24h
 }
 
 
@@ -22720,12 +23532,13 @@ def _list_tools() -> list[Tool]:
                 "in the corpus and any pinpoint (E. X.Y / consid. X.Y) "
                 "resolves to a real Erwägung; (2) every 'Art. X LAW' statute "
                 "reference resolves (known abbreviation, existing article); "
-                "(3) every quoted passage of 30+ chars appears verbatim in a "
-                "cited source; (4) decision dates adjacent to citations "
+                "(3) with audit_quotes=true, quoted passages (60-400 chars) near "
+                "a citation or 'Art. X LAW' reference appear verbatim in the cited "
+                "decision or statute (DE/FR/IT); (4) decision dates adjacent to citations "
                 "match the stored dates; (5) with audit_grounding=true, an "
                 "independent LLM judge checks that each cited source "
                 "actually supports the claim sentence preceding it (one "
-                "call, ~3 s, regardless of citation count). Returns the "
+                "call, ~3 s). Returns the "
                 "draft annotated per citation plus a structured issues "
                 "list. CALL THIS BEFORE emitting any answer containing a "
                 "case citation, statute reference or direct quotation; set "
@@ -22753,6 +23566,19 @@ def _list_tools() -> list[Tool]:
                             "Sonnet call (~$0.005). Set to true for any "
                             "answer with ≥2 citations or where a wrong "
                             "proposition would mislead a Swiss lawyer."
+                        ),
+                    },
+                    "audit_quotes": {
+                        "type": "boolean",
+                        "default": False,
+                        "description": (
+                            "When true, also verifies that every quoted passage "
+                            "(60-400 chars) within ~250 chars of a case citation "
+                            "or an 'Art. X LAW' reference appears verbatim in the "
+                            "cited decision or in that statute article (DE/FR/IT). "
+                            "Off by default while the statute mirror's footnote "
+                            "fix rolls out; set true when you quoted statute or "
+                            "Erwägung text and want it checked."
                         ),
                     },
                 },
@@ -22867,24 +23693,19 @@ def _list_tools() -> list[Tool]:
             annotations=_READ_ONLY,
             name="get_law",
             description=(
-                "AUTHORITATIVE LOOKUP for the current text of any Swiss law article — "
-                "federal OR cantonal. Served from two local mirrors:\n"
-                "  • Federal (canton='CH', default): Fedlex mirror — core codes "
-                "(OR, ZGB, StGB, StPO, ZPO, BV, SchKG, BGG/LTF, DBG, IPRG, AIG, "
-                "BVG, KVG, AsylG, BGFA and dozens more), all three official "
-                "languages (DE/FR/IT).\n"
-                "  • Cantonal: LexFind mirror — every cantonal statute and "
-                "ordinance from all 26 cantons (ZH, BE, LU, UR, SZ, OW, NW, GL, "
-                "ZG, FR, SO, BS, BL, SH, AR, AI, SG, GR, AG, TG, TI, VD, VS, NE, "
-                "GE, JU), in each canton's publication language.\n"
-                "Both jurisdictions return the same shape (title, articles with "
-                "heading + text, article_count, canton, level). Use this BEFORE "
-                "relying on training-data recall — Swiss statute text changes "
-                "frequently and LLMs routinely hallucinate article content. "
-                "Examples: get_law(abbreviation='BV', article='8'); "
-                "get_law(sr_number='220', article='41'); "
-                "get_law(canton='ZH', sr_number='554.5', article='1') for Art. 1 "
-                "of the Zurich Hundegesetz."
+                "AUTHORITATIVE LOOKUP for the text of any Swiss law article — federal "
+                "OR cantonal — from two local mirrors. Federal (canton='CH', default): "
+                "Fedlex mirror, all federal acts (OR, ZGB, StGB, StPO, ZPO, BV, SchKG, "
+                "BGG/LTF, DBG, IPRG, AIG, BVG, KVG, AsylG, BGFA …) in DE/FR/IT. "
+                "Cantonal: LexFind mirror, every statute and ordinance of all 26 "
+                "cantons in the canton's language. Same shape for both (title, "
+                "articles with heading + text, article_count, canton, level). Use "
+                "this BEFORE relying on training-data recall — statute text changes "
+                "often and LLMs hallucinate article content. With as_of: the dated "
+                "Fedlex edition in force on that date (snapshot_date, title, in-force "
+                "window, link); always tell the user the edition date. Examples: "
+                "get_law(abbreviation='BV', article='8'); get_law(sr_number='220', "
+                "article='41'); get_law(canton='ZH', sr_number='554.5', article='1')."
             ),
             inputSchema={
                 "type": "object",
@@ -22946,12 +23767,17 @@ def _list_tools() -> list[Tool]:
                     },
                     "as_of": {
                         "type": "string",
+                        "pattern": r"^(\d{4}-\d{2}-\d{2}|\d{1,2}\.\d{1,2}\.\d{4})$",
                         "description": (
-                            "ISO date (e.g. '2020-01-01') to retrieve a HISTORICAL "
-                            "version of the law from Fedlex. Use this to see what a "
-                            "provision said before it was amended. XML versions "
-                            "available from ~2021; older versions may only have PDF. "
-                            "Federal laws only."
+                            "Past date, ISO 'YYYY-MM-DD' (or Swiss 'DD.MM.YYYY'), to "
+                            "retrieve the HISTORICAL edition of a federal law in force "
+                            "on that date. The response names the edition "
+                            "(snapshot_date), the act's title and in-force window and "
+                            "links the Fedlex edition; always report the edition date "
+                            "to the user. Federal laws only (rejected for cantons). "
+                            "Fedlex publishes machine-readable text for most acts only "
+                            "for editions of the 2010s and later; an older edition returns "
+                            "an error naming the formats Fedlex has for it."
                         ),
                     },
                 },
@@ -26477,6 +27303,24 @@ setInterval(load, 30000);
                 "consolidation_date":{"type": "string", "nullable": True},
                 "source_url":        {"type": "string", "nullable": True},
                 "source_label":      {"type": "string", "nullable": True},
+                # Historical editions (?as_of=): provenance of the dated text.
+                "version":                 {"type": "string", "nullable": True},
+                "as_of":                   {"type": "string", "nullable": True},
+                "snapshot_date":           {"type": "string", "nullable": True},
+                "work_uri":                {"type": "string", "nullable": True},
+                "work_entry_in_force":     {"type": "string", "nullable": True},
+                "work_no_longer_in_force": {"type": "string", "nullable": True},
+                "work_in_force_status":    {"type": "string", "nullable": True},
+                "fedlex_snapshot_uri":     {"type": "string", "nullable": True},
+                "text_source":             {"type": "string", "nullable": True},
+                "structure":               {"type": "string", "nullable": True},
+                "verbatim_quotation":      {"type": "string", "nullable": True},
+                "formats_available":       {"type": "array", "nullable": True, "items": {"type": "string"}},
+                "pending_changes": {
+                    "type": "array", "nullable": True,
+                    "items": {"type": "object", "additionalProperties": True,
+                              "properties": {"date": {"type": "string"}}},
+                },
                 "articles": {
                     "type": "array",
                     "items": {
@@ -26486,6 +27330,8 @@ setInterval(load, 30000);
                             "article_num": {"type": "string"},
                             "heading":     {"type": "string", "nullable": True},
                             "text":        {"type": "string"},
+                            "footnote":    {"type": "string", "nullable": True},
+                            "section":     {"type": "string", "nullable": True},
                         },
                     },
                 },
@@ -27449,7 +28295,7 @@ setInterval(load, 30000);
         article: str = Query(None, description="Article number to retrieve (e.g., 8, 41a)"),
         language: str = Query("de", description="Language: de, fr, it"),
         canton: str = Query("CH", description="Canton code (CH=federal, ZH, BE, …)"),
-        as_of: str = Query(None, description="ISO date (e.g., 2020-01-01) for a historical version from Fedlex"),
+        as_of: str = Query(None, description="Past date (YYYY-MM-DD or DD.MM.YYYY): the historical Fedlex edition in force on that date; federal laws only"),
         format: str = Query("json", description="json (default) or xml — for a single federal article, returns its verbatim Akoma Ntoso XML (application/xml). Issue #22."),
     ):
         abbr = None if abbreviation == "_" else abbreviation
@@ -27467,7 +28313,9 @@ setInterval(load, 30000);
                 raise HTTPException(
                     status_code=404,
                     detail="No Akoma Ntoso XML for this request — request a single "
-                           "federal article (?article=…); rebuild statutes.db to populate it.",
+                           "federal article (?article=…). Current law takes the fragment "
+                           "from statutes.db (rebuild to populate it); an as_of edition "
+                           "carries it only when Fedlex has XML for that edition.",
                 )
             return Response(content=frag, media_type="application/xml")
         # A law found but no matching article is a miss, not an answer:
