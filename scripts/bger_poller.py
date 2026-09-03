@@ -273,7 +273,9 @@ def _save_state(today: str, dockets: set[str],
     """Save current state.
 
     ``failing`` maps docket → consecutive runs it has failed ingestion
-    (doc-service error pages). Dockets recover by dropping out of the dict.
+    (doc-service error pages, or a same-docket second ruling the scraper
+    could not identify — see _held_under_docket_id). Dockets recover by
+    dropping out of the dict.
     ``pending`` records scraped-but-unpublished JSONL rows (quick_publish
     failed or was lock-skipped) so the next run sweeps them even when the
     Neuheiten page shows nothing new. ``alerts`` holds per-day ntfy dedup
@@ -376,6 +378,28 @@ def _parse_quick_publish_output(output: str) -> tuple[int, bool]:
     skipped = ("skipping quick_publish" in output
                or "Full publish.py is running" in output)
     return inserted, skipped
+
+
+def _held_under_docket_id(dockets: set[str]) -> set[str]:
+    """Subset of ``dockets`` whose docket-keyed id is already in the
+    scraper state (state/bger.jsonl, one id per line; ~1.6 MB).
+
+    A docket that is listed on Neuheiten, NOT in JSONL after the scraper
+    ran, but already held is not a doc-service failure: BGer published a
+    second ruling under a docket we hold (recusal ruling → final judgment,
+    2C_532/2025 on 2026-09-03). The scraper fetches those under a -D<date>
+    id once its date sidecar is seeded (backfill_bger_docket_collisions.py);
+    in legacy mode they are skipped as "known" and every burst retry is
+    wasted. Distinguishing the two keeps the alert honest.
+    """
+    if not dockets:
+        return set()
+    p = REPO_DIR / "state" / "bger.jsonl"
+    try:
+        ids = set(p.read_text().split())
+    except OSError:
+        return set()
+    return {d for d in dockets if "bger_" + d.replace("/", "_") in ids}
 
 
 def _update_failing_streaks(prev_failing: dict[str, int],
@@ -937,23 +961,34 @@ def main():
             _save_state(today_iso, seen_state, failing=failing,
                         pending=pending_publish, alerts=alerts)
             if unsaved and db_current:
+                held = _held_under_docket_id(unsaved)
                 logger.warning(
-                    "%d/%d new dockets NOT in JSONL (likely BGer "
-                    "doc-service error pages); will retry next poll. "
+                    "%d/%d new dockets NOT in JSONL — %d already held under "
+                    "a docket-keyed id (a second ruling under a known "
+                    "docket; the scraper needs its date sidecar seeded, see "
+                    "backfill_bger_docket_collisions.py), %d likely BGer "
+                    "doc-service lag/error pages; will retry next poll. "
                     "First few: %s",
-                    len(unsaved), len(new_dockets),
+                    len(unsaved), len(new_dockets), len(held),
+                    len(unsaved) - len(held),
                     ", ".join(sorted(unsaved)[:5]),
                 )
                 persistent = {d: n for d, n in failing.items()
                               if n >= FAILING_STREAK_ALERT}
                 if persistent:
+                    def _tag(d: str, n: int) -> str:
+                        return (f"{d} (x{n}, held under docket id)"
+                                if d in held else f"{d} (x{n})")
                     msg = (
-                        "BGer doc-service failure persisting >=%d "
+                        "BGer ingestion failure persisting >=%d "
                         "consecutive runs (each run bursts %d retries): "
-                        "%s — dockets are listed on Neuheiten but their "
-                        "documents keep returning error pages" % (
+                        "%s — listed on Neuheiten but not ingested. 'held "
+                        "under docket id' = a second ruling under a docket "
+                        "we already hold (not an error page; seed the "
+                        "scraper's date sidecar). Otherwise BGer's doc "
+                        "service keeps returning error pages" % (
                             FAILING_STREAK_ALERT, BURST_RETRIES,
-                            ", ".join(f"{d} (x{n})"
+                            ", ".join(_tag(d, n)
                                       for d, n in sorted(persistent.items())),
                         ))
                     logger.error(msg)
