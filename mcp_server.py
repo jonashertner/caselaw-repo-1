@@ -20863,6 +20863,37 @@ def _get_legislation_local(
         conn.close()
 
 
+_LEGISLATION_MISSING_IDENTIFIER_ERROR = (
+    "get_legislation needs one of two identifiers: `lexfind_id` (the positive "
+    "integer LexFind ID from search_legislation results) or `systematic_number` "
+    "(the SR/systematic number, e.g. '220'; add `canton` for a cantonal law). "
+    "Neither was provided; a lexfind_id of 0 or an empty string counts as "
+    "missing. Use search_legislation (optionally with `canton`) to find the "
+    "law first, then pass its lexfind_id or systematic_number here."
+)
+
+
+def _normalize_lexfind_id(value) -> int | None:
+    """Return a positive integer LexFind ID, or None when the client sent no
+    usable id. LLM clients that lack an id tend to send a placeholder (0,
+    "0", "") instead of omitting the field; those must count as absent rather
+    than reach LexFind as ``texts-of-law/0`` (a guaranteed 404, seen ~3x/day
+    in the production journal in early September 2026)."""
+    if value is None or isinstance(value, bool):
+        return None
+    if isinstance(value, str):
+        value = value.strip()
+        if not value.isdigit():
+            return None
+    elif isinstance(value, float):
+        if not value.is_integer():
+            return None
+    elif not isinstance(value, int):
+        return None
+    ivalue = int(value)
+    return ivalue if ivalue > 0 else None
+
+
 def _get_legislation(
     *,
     lexfind_id: int | None = None,
@@ -20873,6 +20904,18 @@ def _get_legislation(
 ) -> dict:
     """Get legislation details by LexFind ID or systematic number."""
     language = language if language in ("de", "fr", "it") else "de"
+
+    # Argument validation, before any local lookup or network call. Placeholder
+    # ids (0 / "0" / "") and blank systematic numbers are treated as absent;
+    # with neither identifier there is nothing to look up, so say so instead
+    # of asking LexFind for law 0.
+    lexfind_id = _normalize_lexfind_id(lexfind_id)
+    if systematic_number is None or isinstance(systematic_number, bool):
+        systematic_number = None
+    else:
+        systematic_number = str(systematic_number).strip() or None
+    if lexfind_id is None and systematic_number is None:
+        return {"error": _LEGISLATION_MISSING_IDENTIFIER_ERROR}
 
     # Local-first: serve federal laws from statutes.db when available
     if (
@@ -20920,8 +20963,8 @@ def _get_legislation(
 
     # Path B: resolve systematic number to ID
     if lexfind_id is None:
-        if not systematic_number:
-            return {"error": "Provide either lexfind_id or systematic_number."}
+        if not systematic_number:  # unreachable after the guard above; kept as an invariant
+            return {"error": _LEGISLATION_MISSING_IDENTIFIER_ERROR}
 
         cache_key = f"sysnum:{language}:{systematic_number}:{canton}"
         cached = _lexfind_cache_get(cache_key)
@@ -23363,11 +23406,11 @@ def _list_tools() -> list[Tool]:
                     "properties": {
                         "lexfind_id": {
                             "type": "integer",
-                            "description": "LexFind ID of the law (from search_legislation results).",
+                            "description": "LexFind ID of the law (from search_legislation results). Positive integer; omit it when unknown rather than passing 0.",
                         },
                         "systematic_number": {
                             "type": "string",
-                            "description": "SR/systematic number (e.g., '220' for OR, '210' for ZGB). Used when lexfind_id not available.",
+                            "description": "SR/systematic number (e.g., '220' for OR, '210' for ZGB). Used when lexfind_id not available. One of lexfind_id or systematic_number is required.",
                         },
                         "canton": {
                             "type": "string",
