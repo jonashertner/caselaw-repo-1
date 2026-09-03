@@ -263,7 +263,8 @@ def test_block_rows_sharing_a_number_are_all_kept():
         ("decl_u2", "1", "Erklärung Deutschland."),
         ("decl_u2", "1", "Erklärung Schweiz."),
     ]
-    assert stats["duplicate_key"] == 0 and stats["articles"] == 4
+    # Shared keys are counted (two rows repeat decl_u2/1) but nothing is dropped.
+    assert stats["duplicate_key"] == 2 and stats["articles"] == 4
     assert all(a["section_heading"] == "Erklärungen" for a in arts[1:])
 
 
