@@ -63,6 +63,23 @@ Commit `428eb657` (code) + the follow-up commit (systemd unit/timer, this runboo
     ```
     Do NOT use `enable --now` on the service itself.
 
+## Lessons from the 2026-09-03 run (read before Evening 2)
+- `systemctl mask` refuses when `/etc/systemd/system/opencaselaw-practice.timer` is a real file (it is): use
+  `systemctl disable --now opencaselaw-practice.timer` instead, and `enable --now` to bring it back.
+- Installing a timer whose OnCalendar moved, then `daemon-reload`, fired the service immediately (Persistent=true catch-up):
+  a full ten-source run, its own practice.db rebuild and a rolling restart at 22:40–22:51 UTC, overlapping the manual ingest
+  (duplicate JSONL lines, harmless — the upsert collapses them). The repo timer now carries Persistent=false; on Evening 2 copy
+  it again before `enable --now`.
+- bag.admin.ch serves its `/dam/…pdf` files with HTTP 502 to the Hetzner IP (HTML pages are fine; same files download from the
+  dev Mac). BAG is therefore scraped locally and `output/practice/bag_kvg.jsonl` (38 rows) copied to the VPS practice dir —
+  legitimate, `output/` is untracked data, not the git tree. Same class as the NE/JU egress constraint.
+- `output/practice/` and `practice.db` now live on the data volume behind symlinks (`/mnt/HC_Volume_104655575/output/`);
+  practice.db was 203 MB after the four sources. build() resolves the symlink, the unit's `--db` path can stay.
+- Process checks over SSH: `pgrep -f "practice.runner"` matches the ssh shell itself; use `pgrep -x python3 -a | grep practice.runner`.
+- The MCP code went live at 21:03 UTC (another session's rolling restart after the merge), before practice.db held the new
+  sources — for ~1 h 50 min the description promised SECO-ALV/BAG/SEM-Handbuch/BJ with zero rows. Land code and data in one
+  window next time, or restart only after the rebuild.
+
 ## Rollback
 Workers only pick up code on restart, so before step 8 nothing is user-visible. After step 8: `git revert` the two commits,
 merge on the VPS, rebuild practice.db (the new JSONL files are harmless to the old code), rolling restart. The old practice.db

@@ -6,7 +6,12 @@ Description=Weekly federal Verwaltungspraxis refresh
 # and before the Sunday full build (03:30 UTC). The old Sat 06:00 slot fell inside
 # the daily full build (03:30 to ~17:00 UTC) and shared its page cache.
 OnCalendar=Sat 21:30 UTC
-Persistent=true
+# Persistent=false on purpose: with Persistent=true a daemon-reload after
+# changing OnCalendar fires the service IMMEDIATELY when the new schedule's
+# last elapse is later than the last recorded trigger (2026-09-03 22:40 UTC:
+# an unplanned full run + rolling restart mid-deploy). A missed weekly
+# refresh is harmless; an unplanned one is not.
+Persistent=false
 
 [Install]
 WantedBy=timers.target
