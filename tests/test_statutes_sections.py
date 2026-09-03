@@ -6,7 +6,7 @@ collided on the dev slice, and get_law(220, 2) returned 13 "Art. 2" blocks.
 
 parse_root now records `section` (the block eId prefix, '' for the main
 body), `section_heading` (that block's heading) and `eid`, counts and WARNs
-every drop and every duplicate (section, article_num) key, and build_db
+every drop (shared keys are kept and counted), and build_db
 stores the three columns. `amendment_refs` is gone from the schema.
 """
 from __future__ import annotations
@@ -95,25 +95,27 @@ def test_stats_counter_threaded_through():
     assert stats["duplicate_key"] == 0
 
 
-def test_duplicate_key_keeps_first_and_warns(caplog):
+def test_shared_keys_are_kept_and_counted(caplog):
+    """Production gate 2026-09-03: of 1,190 colliding main-body keys, 1,189 held
+    different articles (Art. 7.1 ... 7.31 of a free-trade agreement all
+    parse as "7"; treaty protocols reuse eIds). Nothing is dropped for
+    sharing a key; the count goes to stats and an INFO line."""
     xml = f'''<akomaNtoso xmlns="{AKN}"><act><body>
-      <article eId="art_5"><num>Art. 5</num><paragraph><content><p>Erste Fassung.</p></content></paragraph></article>
-      <article eId="art_5"><num>Art. 5</num><paragraph><content><p>Zweite Fassung.</p></content></paragraph></article>
-      <article eId="disp_u1/art_5"><num>Art. 5</num><paragraph><content><p>Andere Sektion.</p></content></paragraph></article>
+      <article eId="art_7_1"><num>Art. 7.1</num><paragraph><content><p>Erstes Kapitel.</p></content></paragraph></article>
+      <article eId="art_7_2"><num>Art. 7.2</num><paragraph><content><p>Zweites Kapitel.</p></content></paragraph></article>
+      <article eId="disp_u1/art_7"><num>Art. 7</num><paragraph><content><p>Andere Sektion.</p></content></paragraph></article>
     </body></act></akomaNtoso>'''
     stats: Counter = Counter()
-    with caplog.at_level(logging.WARNING, logger="build_statutes"):
-        arts = b.parse_root(_root(xml), stats, source="220/de.xml")
-    assert [(a["section"], a["text"]) for a in arts] == [
-        ("", "Erste Fassung."), ("disp_u1", "Andere Sektion."),
+    with caplog.at_level(logging.INFO, logger="build_statutes"):
+        arts = b.parse_root(_root(xml), stats, source="0.632/de.xml")
+    assert [(a["section"], a["article_num"], a["text"]) for a in arts] == [
+        ("", "7", "Erstes Kapitel."), ("", "7", "Zweites Kapitel."), ("disp_u1", "7", "Andere Sektion."),
     ]
     assert stats["duplicate_key"] == 1
-    assert stats["articles"] == 2
-    warnings = [r for r in caplog.records if r.levelno == logging.WARNING]
-    assert len(warnings) == 1
-    assert "duplicate article" in warnings[0].getMessage()
-    assert "220/de.xml" in warnings[0].getMessage()
-    assert "art_5" in warnings[0].getMessage()
+    assert stats["articles"] == 3
+    assert not [r for r in caplog.records if r.levelno == logging.WARNING]
+    infos = [r.getMessage() for r in caplog.records if r.levelno == logging.INFO]
+    assert any("shared key" in m and "art_7_2" in m and "0.632/de.xml" in m for m in infos)
 
 
 def test_drops_are_counted_and_warned(caplog):

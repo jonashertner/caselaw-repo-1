@@ -370,9 +370,13 @@ def parse_article(article_elem) -> tuple[str, str | None, str, str | None]:
 def parse_root(root, stats: Counter | None = None, source: str = "") -> list[dict]:
     """Extract all articles from a parsed Akoma Ntoso document.
 
-    Every drop and every duplicate key is counted in `stats` and logged at
-    WARNING; the old silent `continue` hid 251 empties and 492 colliding
-    keys on the dev slice.
+    Every drop is counted in `stats` and logged at WARNING; the old silent
+    `continue` hid 251 empties on the dev slice. Rows sharing a
+    (section, article_num) key are all kept and only counted: on the
+    production corpus 1,190 main-body keys collide, and in 1,189 of them the
+    rows are different articles (free-trade agreements numbered Art. 7.1 ...
+    7.31 all parse as "7"; treaty protocols reuse eIds) — the read side
+    already serves several rows per number.
     """
     if stats is None:
         stats = Counter()
@@ -407,18 +411,18 @@ def parse_root(root, stats: Counter | None = None, source: str = "") -> list[dic
             stats["dropped_no_text"] += 1
             log.warning("%sdrop (no text) eId=%r article_num=%r", where, eid, article_num)
             continue
-        # Only the main body is deduplicated. Fedlex reuses eIds inside the
-        # declaration and annex blocks of treaties (SR 0.131.1 carries seven
-        # `decl_u2/art_1`, one per declaring state), so a block row that
-        # shares its number is content, not a duplicate: 6,519 rows
-        # corpus-wide. The read side never serves a block row as the main
-        # article, and lists blocks by DISTINCT section.
+        # Never drop a row for sharing its key. Fedlex reuses eIds inside
+        # the declaration blocks of treaties (SR 0.131.1: seven
+        # `decl_u2/art_1`, one per declaring state) and even in main bodies,
+        # and chapter-dotted numbering ("Art. 7.1") collapses to "7" for
+        # every article of the chapter: 5,918 main-body rows on the
+        # production corpus, one of them an actual duplicate. Count them so
+        # the build log shows the shape; the read side serves all rows.
         key = (section, article_num)
-        if not section and key in seen:
+        if key in seen:
             stats["duplicate_key"] += 1
-            log.warning("%sduplicate article (section=%r, article_num=%r) eId=%r, keeping first",
-                        where, section, article_num, eid)
-            continue
+            log.info("%sshared key (section=%r, article_num=%r) eId=%r, keeping both",
+                     where, section, article_num, eid)
         seen.add(key)
         if footnote and text == footnote:
             stats["footnote_as_body"] += 1
