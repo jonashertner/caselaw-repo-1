@@ -24100,11 +24100,16 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
     # (query, case, topic, facts, reference) are therefore EXCLUDED from the
     # tool-call log; only structural facets + public identifiers are kept
     # (court/date/language filters, statute refs, decision ids). Do not add
-    # any free-text argument here.
+    # any free-text argument here. lexfind_id / systematic_number are the
+    # legislation tools' public law identifiers (same class as sr_number);
+    # without them the 2026-09 get_legislation 404s were logged as
+    # {"canton": "FR"} and misread as "no identifier sent" when the client
+    # had in fact sent lexfind_id=0.
     _STRUCTURAL_LOG_KEYS = ("decision_id", "law_code", "abbreviation",
                             "sr_number", "article", "court", "language",
                             "date_from", "date_to", "canton", "chamber",
-                            "limit", "offset", "sort", "e_number")
+                            "limit", "offset", "sort", "e_number",
+                            "lexfind_id", "systematic_number")
     _log_args = {k: v for k, v in arguments.items() if k in _STRUCTURAL_LOG_KEYS}
     # No IP, User-Agent or session id on this line. /datenschutz/ describes
     # three log tiers; the systemd journal is none of them and journald
