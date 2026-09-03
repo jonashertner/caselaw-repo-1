@@ -140,8 +140,8 @@ The IT BSV folder page renders de/fr-only documents without an Italian file (fix
 8. README / dataset_card: one sentence extending the official-texts (Art. 5 URG) statement to Verwaltungsverordnungen; practice.db
    stays out of the CC0 Parquet mirror as today.
 
-**Sequencing rule (load-bearing):** the merged code advertises "Covered: BSV" in the search_practice description, but BSV rows only
-arrive with the manual ingest in step 3. Do NOT roll workers between step 1 and step 4, and mask the practice timer
+**Sequencing rule (load-bearing):** BSV rows only arrive with the manual ingest. Until `bsv_weisungen` is promoted in runner.py the
+shipped description lists BSV under NOT covered as "ingest in progress" (decided 2026-09-03: four small sources go live first). Do NOT roll workers between step 1 and step 4, and mask the practice timer
 (`systemctl mask opencaselaw-practice.timer`) until BSV is indexed — otherwise a Saturday run rebuilds practice.db without BSV and
 rolling-restarts workers that then promise a corpus with zero rows. Land code and ingest in the same off-peak window.
 

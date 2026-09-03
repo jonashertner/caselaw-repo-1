@@ -144,7 +144,9 @@ def test_schema_names_the_uncovered_authorities():
     gaps = d.split("NOT covered:", 1)[1]
     for absent in ("cantonal", "Sozialhilfe", "SKOS", "Prämienverbilligung"):
         assert absent in gaps, f"description does not disclose that {absent} is absent"
-    for covered in ("BSV", "BAG", "BJ", "FINMA"):
+    from scrapers.practice import runner
+    covered_now = ["BAG", "BJ", "FINMA"] + (["BSV"] if "bsv_weisungen" in runner.ENABLED_SCRAPERS else [])
+    for covered in covered_now:
         assert covered in d.split("NOT covered:", 1)[0], covered
         assert covered not in gaps, f"{covered} is covered but listed as a gap"
 

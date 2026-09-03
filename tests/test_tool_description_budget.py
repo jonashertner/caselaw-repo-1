@@ -84,10 +84,18 @@ def test_practice_description_constraints_still_hold():
     props = t.inputSchema["properties"]
     for counted in ("1,133", "1,102"):
         assert counted in props["source"]["description"], counted
-    # a shipped source must never appear in the gap list
+    # a shipped source must never appear in the gap list. BSV is scraped but
+    # its first (multi-hour) ingest lands after the 2026-09-03 deploy; until
+    # it is promoted in runner.py it stays in the gap list, marked in progress.
     gaps = d.split("NOT covered:", 1)[1] if "NOT covered:" in d else ""
-    for shipped in ("SECO", "FINMA", "ESTV", "BAFU", "SEM", "BSV", "BAG", "BJ"):
-        assert shipped not in gaps, f"{shipped} listed as a gap: {gaps[:120]}"
+    from scrapers.practice import runner
+    shipped = ["SECO", "FINMA", "ESTV", "BAFU", "SEM", "BAG", "BJ"]
+    if "bsv_weisungen" in runner.ENABLED_SCRAPERS:
+        shipped.append("BSV")
+    else:
+        assert "BSV" in gaps and "in progress" in gaps, gaps[:160]
+    for name in shipped:
+        assert name not in gaps, f"{name} listed as a gap: {gaps[:120]}"
 
 
 def test_practice_filters_match_the_description():
