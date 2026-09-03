@@ -359,6 +359,11 @@ def parse_article(article_elem) -> tuple[str, str | None, str, str | None]:
     # than dropping the article (ZGB Art. 10, 135 keep rendering and matching).
     if footnote and not re.search(r"\w", full_text):
         full_text = footnote
+    elif heading and not re.search(r"\w", full_text):
+        # A deleted rule of a treaty regulation is a number plus the heading
+        # "[Gelöscht]" and nothing else (77 rows corpus-wide). The heading is
+        # the only content there is; the old fallback served the number.
+        full_text = heading
     return article_num, heading, full_text, footnote
 
 
@@ -402,8 +407,14 @@ def parse_root(root, stats: Counter | None = None, source: str = "") -> list[dic
             stats["dropped_no_text"] += 1
             log.warning("%sdrop (no text) eId=%r article_num=%r", where, eid, article_num)
             continue
+        # Only the main body is deduplicated. Fedlex reuses eIds inside the
+        # declaration and annex blocks of treaties (SR 0.131.1 carries seven
+        # `decl_u2/art_1`, one per declaring state), so a block row that
+        # shares its number is content, not a duplicate: 6,519 rows
+        # corpus-wide. The read side never serves a block row as the main
+        # article, and lists blocks by DISTINCT section.
         key = (section, article_num)
-        if key in seen:
+        if not section and key in seen:
             stats["duplicate_key"] += 1
             log.warning("%sduplicate article (section=%r, article_num=%r) eId=%r, keeping first",
                         where, section, article_num, eid)

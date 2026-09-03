@@ -173,7 +173,8 @@ def main() -> int:
         ex = "; ".join(f"{sr}/{lang}{'/' + sec if sec else ''} {o!r}->{nw!r}"
                        for sr, lang, sec, o, nw in num_examples[kind][:3])
         print(f"    {kind:36s} {n:8d}  e.g. {ex}")
-    print(f"{'article_num containing whitespace':40s} {len(whitespace_nums):8d}")
+    print(f"{'article_num containing whitespace':40s} {len(whitespace_nums):8d}  "
+          f"(main body: {sum(1 for w in whitespace_nums if not w[2])}; '§ N' / 'Regel N' block numbering is legitimate)")
     for w in whitespace_nums[:10]:
         print(f"    {w}")
     print(f"{'rows that would be empty':40s} {len(empty_rows):8d}")
@@ -182,6 +183,10 @@ def main() -> int:
     print(f"{'rows served from footnote (repealed)':40s} {footnote_as_body:8d}")
     print(f"{'colliding (sr,lang,section,article_num)':40s} {len(collisions):8d}  "
           f"(surplus rows {sum(v - 1 for v in collisions.values())})")
+    main_coll = {k: v for k, v in collisions.items() if not k[2]}
+    print(f"{'  of which in the main body':40s} {len(main_coll):8d}  "
+          f"(surplus rows {sum(v - 1 for v in main_coll.values())}; block collisions are kept, "
+          f"Fedlex reuses eIds inside declaration blocks)")
     for k, v in sorted(collisions.items())[:10]:
         print(f"    {k} x{v}")
     print(f"{'article_num with >= 5 digits (weld)':40s} {len(weld_nums):8d}")

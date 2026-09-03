@@ -238,3 +238,46 @@ def test_make_statutes_conn_uses_real_schema():
     assert con.execute("SELECT COUNT(*) FROM articles_fts WHERE articles_fts MATCH 'Hauptteil'").fetchone()[0] == 1
     with pytest.raises(KeyError):
         make_statutes_conn([{"sr_number": "220", "article_num": "1", "text": "x", "bogus": 1}])
+
+
+def test_block_rows_sharing_a_number_are_all_kept():
+    """Production gate 2026-09-03: Fedlex reuses eIds inside the declaration
+    blocks of treaties (SR 0.131.1 has seven `decl_u2/art_1`, one per
+    declaring state). Those are content, not duplicates; only the main body
+    is deduplicated."""
+    xml = f'''<akomaNtoso xmlns="{AKN}"><act><body>
+      <article eId="art_1"><num>Art. 1</num><paragraph><content><p>Hauptteil.</p></content></paragraph></article>
+      <declarations eId="decl_u2"><heading>Erklärungen</heading>
+        <article eId="decl_u2/art_1"><num>1</num><paragraph><content><p>Erklärung Österreich.</p></content></paragraph></article>
+        <article eId="decl_u2/art_1"><num>1</num><paragraph><content><p>Erklärung Deutschland.</p></content></paragraph></article>
+        <article eId="decl_u2/art_1"><num>1</num><paragraph><content><p>Erklärung Schweiz.</p></content></paragraph></article>
+      </declarations>
+    </body></act></akomaNtoso>'''
+    stats: Counter = Counter()
+    arts = b.parse_root(_root(xml), stats)
+    assert [(a["section"], a["article_num"], a["text"]) for a in arts] == [
+        ("", "1", "Hauptteil."),
+        ("decl_u2", "1", "Erklärung Österreich."),
+        ("decl_u2", "1", "Erklärung Deutschland."),
+        ("decl_u2", "1", "Erklärung Schweiz."),
+    ]
+    assert stats["duplicate_key"] == 0 and stats["articles"] == 4
+    assert all(a["section_heading"] == "Erklärungen" for a in arts[1:])
+
+
+def test_deleted_rule_keeps_its_heading_as_body():
+    """Treaty regulations mark deleted rules as a number plus "[Gelöscht]"
+    and nothing else (77 rows corpus-wide). The heading is the only content;
+    the old fallback served the number itself as text."""
+    xml = f'''<akomaNtoso xmlns="{AKN}"><act><body>
+      <article eId="art_30"><num><b>Regel 30</b></num><heading>[<i>Gelöscht</i>]</heading></article>
+      <article eId="art_31"><num><b>Regel 31</b></num><heading>Fristen</heading>
+        <paragraph><content><p>Die Frist beträgt zwei Monate.</p></content></paragraph></article>
+    </body></act></akomaNtoso>'''
+    stats: Counter = Counter()
+    arts = b.parse_root(_root(xml), stats)
+    assert [(a["article_num"], a["heading"], a["text"]) for a in arts] == [
+        ("Regel 30", "[Gelöscht]", "[Gelöscht]"),
+        ("Regel 31", "Fristen", "Die Frist beträgt zwei Monate."),
+    ]
+    assert stats["dropped_no_text"] == 0
