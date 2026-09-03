@@ -1,6 +1,17 @@
 #!/usr/bin/env python3
 """
-Build amendment reference table mapping AS/BBl page numbers to ELI URIs.
+DEPRECATED (2026-09): build amendment reference table mapping AS/BBl page
+numbers to ELI URIs.
+
+Nothing reads the amendment_refs table in statutes.db any more: every
+consumer resolves AS/BBl references through materialien.db, and
+search_stack.build_statutes_db no longer creates the table. This script also
+writes in place, in WAL mode, into the live statutes.db that MCP workers open
+with immutable=1, which is exactly the write path CLAUDE.md invariant 1
+forbids. It is kept only for forensic re-runs against a copy and refuses to
+run without --force.
+
+Original purpose:
 
 Queries the Fedlex SPARQL endpoint to resolve page-based references
 (e.g. "AS 2016 1249", "BBl 2012 4721") to their correct ELI URIs
@@ -30,6 +41,7 @@ import argparse
 import logging
 import os
 import sqlite3
+import sys
 import time
 from pathlib import Path
 
@@ -299,8 +311,21 @@ def main():
         "--delay", type=float, default=0.3,
         help="Delay between SPARQL requests (seconds)",
     )
+    parser.add_argument(
+        "--force", action="store_true",
+        help="Actually run. Deprecated: writes WAL into the target DB in place; "
+             "never point it at the live statutes.db",
+    )
     parser.add_argument("-v", "--verbose", action="store_true")
     args = parser.parse_args()
+
+    if not args.force:
+        log.error(
+            "build_amendment_refs is deprecated: the amendment_refs table has no readers "
+            "and this script writes into the target DB in place (WAL). Rerun with --force "
+            "against a copy if you really need it."
+        )
+        sys.exit(2)
 
     if args.verbose:
         logging.getLogger().setLevel(logging.DEBUG)

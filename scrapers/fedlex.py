@@ -21,6 +21,7 @@ import logging
 import os
 import re
 import sqlite3
+import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -89,15 +90,21 @@ def discover_laws() -> list[dict]:
          including the revDSG at SR 235.1)
 
     The UNION ensures both old and new versions of revised laws are found.
-    When both exist for the same SR number, the one with the latest consolidation
-    date wins (i.e., the current version).
+    When several works share one SR number, select_work() picks by in-force
+    status, then enactment year, then latest consolidation date. Status and
+    the two dates are OPTIONAL: 164 works carry no dateEntryInForce, and the
+    flag is not enough on its own: Fedlex leaves inForceStatus at "in force"
+    on superseded ordinances for months while the successor carries no flag
+    at all, so a passed dateNoLongerInForce must count as repealed (9 SRs on
+    2026-09-03, e.g. 641.811.912 and the 747.224.2xx Rhine ordinances).
     """
     log.info("Discovering laws via SPARQL...")
     query = """
     PREFIX jolux: <http://data.legilux.public.lu/resource/ontology/jolux#>
     PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 
-    SELECT ?work ?srNumber (MAX(?date) AS ?latestDate) WHERE {
+    SELECT ?work ?srNumber ?inForceStatus ?dateEntryInForce ?dateNoLongerInForce
+           (MAX(?date) AS ?latestDate) WHERE {
       ?work a jolux:ConsolidationAbstract .
       ?consolidation jolux:isMemberOf ?work .
       ?consolidation jolux:dateApplicability ?date .
@@ -109,8 +116,11 @@ def discover_laws() -> list[dict]:
         ?tax skos:notation ?srNumber .
         FILTER NOT EXISTS { ?work jolux:historicalLegalId ?any . }
       }
+      OPTIONAL { ?work jolux:inForceStatus ?inForceStatus }
+      OPTIONAL { ?work jolux:dateEntryInForce ?dateEntryInForce }
+      OPTIONAL { ?work jolux:dateNoLongerInForce ?dateNoLongerInForce }
     }
-    GROUP BY ?work ?srNumber
+    GROUP BY ?work ?srNumber ?inForceStatus ?dateEntryInForce ?dateNoLongerInForce
     ORDER BY ?srNumber
     """
     rows = sparql_query(query, timeout=600)
@@ -306,6 +316,123 @@ def _eli_year(work_uri: str) -> int:
     return year
 
 
+# jolux:inForceStatus values: .../vocabulary/enforcement-status/0 is in force,
+# /3 is repealed. Verified live 2026-09-03 on SR 956.1 (FINMAG): the current
+# act eli/cc/2008/736 (/0, in force 2009-01-01) and its repealed predecessor
+# eli/cc/2008/68 (/3) tie on ELI year, and the repealed one won on row order,
+# so FINMAG was absent from production. 36 SRs tie on year, 7 were decided
+# by row order.
+_STATUS_IN_FORCE = 0
+_STATUS_UNKNOWN = 1
+_STATUS_REPEALED = 2
+_STATUS_NAMES = {_STATUS_IN_FORCE: "in-force", _STATUS_UNKNOWN: "unknown",
+                 _STATUS_REPEALED: "repealed"}
+
+
+def _status_rank(row: dict, today: str | None = None) -> int:
+    """0 in force, 1 no status recorded, 2 repealed.
+
+    Date-aware: a work whose dateNoLongerInForce has passed is repealed
+    whatever inForceStatus says (the flag lags on superseded ordinances);
+    otherwise the flag decides, and a missing flag ranks between the two.
+    ``today`` is an ISO date, injectable for tests.
+    """
+    today = today or datetime.now(timezone.utc).date().isoformat()
+    nlif = (row.get("dateNoLongerInForce") or "")[:10]
+    if nlif and nlif <= today:
+        return _STATUS_REPEALED
+    status = row.get("inForceStatus") or ""
+    if not status:
+        return _STATUS_UNKNOWN
+    return _STATUS_REPEALED if status.rstrip("/").endswith("/3") else _STATUS_IN_FORCE
+
+
+def _status_name(row: dict) -> str:
+    return _STATUS_NAMES[_status_rank(row)]
+
+
+def select_work(candidates: list[dict], today: str | None = None) -> dict:
+    """Pick the work to download for an SR number shared by several works.
+
+    Pure. In-force status first (a repealed act must never beat a live one,
+    whatever its ELI year; see _status_rank for the date rule), then
+    enactment year, then date of entry into force (in a chain of repealed
+    ordinances that is the last act of the chain, which is what production
+    has always served), then latest consolidation date. On a full tie the
+    first candidate wins, so the result is deterministic for a given input
+    order.
+    """
+    return max(candidates, key=lambda c: (
+        -_status_rank(c, today),
+        _eli_year(c["work"]),
+        (c.get("dateEntryInForce") or "")[:10],
+        (c.get("latestDate") or "")[:10],
+    ))
+
+
+def _report_multi_sr_losers(sr: str, winner: dict, losers: list[dict],
+                            xml_urls: dict[str, dict[str, str]]) -> list[dict]:
+    """The "tiebreak wrong" signal: the picked work has no XML but a discarded
+    candidate does. Logs one ERROR per such candidate and returns them.
+
+    `losers` carry a "consolidation_uri" (set by the caller from
+    resolve_consolidation_uris); `xml_urls` is get_xml_urls() over those.
+    Pure apart from logging, so it is testable under caplog.
+    """
+    with_xml = []
+    for loser in losers:
+        cons = loser.get("consolidation_uri")
+        langs = sorted((xml_urls.get(cons) or {}).keys()) if cons else []
+        if not langs:
+            continue
+        with_xml.append(loser)
+        log.error(
+            "SR %s: tiebreak picked %s (status=%s, year %d) which has no XML, but discarded "
+            "%s (status=%s, year %d) has XML in %s. Check select_work / Fedlex status data.",
+            sr, winner["work"], _status_name(winner), _eli_year(winner["work"]),
+            loser["work"], _status_name(loser), _eli_year(loser["work"]), ", ".join(langs),
+        )
+    return with_xml
+
+
+def _write_law_index(index_path: Path, law_index: list[dict], *, full_crawl: bool) -> None:
+    """Write laws.json atomically, keeping the previous file as laws.json.prev.
+
+    A full crawl that comes back with < 90 % of the previous entries is a
+    broken SPARQL run, not 550 abrogations; refuse to overwrite the index
+    unless FEDLEX_ALLOW_SHRINK=1. Partial runs (--sr, --top) always rewrite
+    a smaller index, so the guard applies to full crawls only.
+    """
+    previous = None
+    if index_path.exists():
+        try:
+            previous = len(json.loads(index_path.read_text(encoding="utf-8")))
+        except (OSError, json.JSONDecodeError, TypeError) as e:
+            log.warning("Could not read previous %s (%s); shrink guard skipped", index_path, e)
+    if full_crawl and previous and len(law_index) < 0.9 * previous:
+        if os.environ.get("FEDLEX_ALLOW_SHRINK") == "1":
+            log.warning("Law index shrank %d -> %d entries; writing anyway (FEDLEX_ALLOW_SHRINK=1)",
+                        previous, len(law_index))
+        else:
+            log.error("Law index shrank %d -> %d entries (< 90 %%); not overwriting %s. "
+                      "Set FEDLEX_ALLOW_SHRINK=1 to override.", previous, len(law_index), index_path)
+            sys.exit(2)
+
+    tmp_path = index_path.with_name(index_path.name + ".tmp")
+    with open(tmp_path, "w", encoding="utf-8") as f:
+        json.dump(law_index, f, ensure_ascii=False, indent=2)
+    if index_path.exists():
+        prev_path = index_path.with_name(index_path.name + ".prev")
+        prev_path.unlink(missing_ok=True)
+        try:
+            os.link(index_path, prev_path)
+        except OSError:
+            import shutil
+            shutil.copy2(index_path, prev_path)
+    os.replace(tmp_path, index_path)
+    log.info("Saved law index to %s (%d entries)", index_path, len(law_index))
+
+
 def normalize_sr(sr: str) -> str:
     """Normalize SR number for use as directory name (replace dots with underscores)."""
     return sr.replace(".", "_").replace("/", "_")
@@ -336,16 +463,23 @@ def run(sr_filter: set[str] | None = None, top_cited: int = 0):
             multi_sr[sr] = candidates
     log.info("Found %d unique SR numbers (%d with multiple works)", len(sr_candidates), len(multi_sr))
 
-    # For multi-work SR numbers, prefer the work with the higher year
-    # (newer enactment replaces old one, e.g. BV 1999 replaces BV 1874)
+    # For multi-work SR numbers, prefer the in-force work, then the newer
+    # enactment (BV 1999 replaces BV 1874). Winners and losers are kept so
+    # the download loop can tell when a tiebreak discarded the only work
+    # that has XML.
+    multi_winners: dict[str, dict] = {}
+    multi_losers: dict[str, list[dict]] = {}
     if multi_sr:
         for sr, candidates in multi_sr.items():
-            candidates.sort(key=lambda c: _eli_year(c["work"]), reverse=True)
-            single_laws.append(candidates[0])
-            if len(candidates) > 1:
-                log.debug("SR %s: picked %s (year %d) over %s",
-                          sr, candidates[0]["work"][-30:], _eli_year(candidates[0]["work"]),
-                          candidates[1]["work"][-30:])
+            winner = select_work(candidates)
+            single_laws.append(winner)
+            multi_winners[sr] = winner
+            multi_losers[sr] = [c for c in candidates if c is not winner]
+            log.info("SR %s: picked %s (status=%s, year %d, latest %s) over %s",
+                     sr, winner["work"], _status_name(winner), _eli_year(winner["work"]),
+                     winner.get("latestDate", "?"),
+                     ", ".join(f"{c['work']} (status={_status_name(c)}, year {_eli_year(c['work'])})"
+                               for c in multi_losers[sr]))
 
     laws = single_laws
 
@@ -408,6 +542,8 @@ def run(sr_filter: set[str] | None = None, top_cited: int = 0):
             "work_uri": work,
             "consolidation_uri": consolidation_uri,
             "consolidation_date": cons_date,
+            "in_force_status": row.get("inForceStatus"),
+            "date_entry_in_force": row.get("dateEntryInForce"),
         }
         # Add metadata
         meta = metadata.get(work, {})
@@ -419,11 +555,11 @@ def run(sr_filter: set[str] | None = None, top_cited: int = 0):
 
     log.info("Built index of %d laws", len(law_index))
 
-    # Step 5: Resolve XML download URLs
+    # Step 7: Resolve XML download URLs
     consolidation_uris = [e["consolidation_uri"] for e in law_index]
     xml_urls = get_xml_urls(consolidation_uris)
 
-    # Step 6: Download XMLs
+    # Step 8: Download XMLs
     xml_dir = OUTPUT_DIR / "xml"
     downloaded = 0
     skipped = 0
@@ -436,8 +572,17 @@ def run(sr_filter: set[str] | None = None, top_cited: int = 0):
         urls = xml_urls.get(cons_uri, {})
 
         if not urls:
-            log.debug("No XML URLs for SR %s", sr)
+            log.warning("No XML URLs for SR %s (consolidation %s)", sr, cons_uri)
             failed += 1
+            losers = multi_losers.get(sr)
+            if losers:
+                # The winner of a multi-work tiebreak has no XML: check
+                # whether we threw away the work that has it.
+                loser_cons = resolve_consolidation_uris(losers)
+                for loser in losers:
+                    loser["consolidation_uri"] = loser_cons.get(loser["work"])
+                loser_xml = get_xml_urls(sorted(loser_cons.values()))
+                _report_multi_sr_losers(sr, multi_winners[sr], losers, loser_xml)
             continue
 
         # Sidecar meta.json records the consolidation URI of whatever XML
@@ -508,12 +653,10 @@ def run(sr_filter: set[str] | None = None, top_cited: int = 0):
         downloaded, skipped, failed,
     )
 
-    # Step 7: Save law index
+    # Step 9: Save law index (atomic, shrink-guarded on a full crawl)
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    index_path = OUTPUT_DIR / "laws.json"
-    with open(index_path, "w", encoding="utf-8") as f:
-        json.dump(law_index, f, ensure_ascii=False, indent=2)
-    log.info("Saved law index to %s (%d entries)", index_path, len(law_index))
+    _write_law_index(OUTPUT_DIR / "laws.json", law_index,
+                     full_crawl=not sr_filter and top_cited <= 0)
 
 
 def main():

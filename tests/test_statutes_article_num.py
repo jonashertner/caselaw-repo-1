@@ -95,9 +95,108 @@ def test_known_ordinals_still_parse():
 
 
 def test_footnote_text_after_number_still_stripped():
-    # The regex earns its keep by cutting trailing footnote prose; that must
-    # survive the anchoring change.
+    # The real BV Art. 5a structure: the suffix is an <i>, the footnote prose
+    # is an <authorialNote> inside <num>. The number must come out clean and
+    # the prose must not leak into it.
     num, *_ = b.parse_article(
-        _article("art_5_a", "Art. 5 a Angenommen in der Volksabstimmung")
+        _article("art_5_a", "Art. 5<i>a</i><authorialNote><p>Angenommen in der "
+                            "Volksabstimmung vom 9. Feb. 2014.</p></authorialNote>")
     )
     assert num == "5a"
+
+
+# ── Defect H (2026-09-03 review): range eIds ─────────────────────────────────
+# Commit 942c56f6's #32 repair searched `art_(\w+)` anywhere in the eId and
+# concatenated the pieces, so range articles ("Art. 135–149", eId
+# art_135_149) were stored as "135149", and "disp_u12/art_2_4" became "24",
+# polluting OR Art. 24 with a second block. The repair now applies only when
+# the eId names a single article.
+
+
+def test_range_eid_keeps_first_number():
+    num, *_ = b.parse_article(_article("art_135_149", "Art. 135–149"))
+    assert num == "135"
+
+
+def test_transitional_range_eid_keeps_first_number():
+    num, *_ = b.parse_article(_article("disp_u12/art_2_4", "Art. 2–4"))
+    assert num == "2"
+
+
+def test_split_bold_number_in_transitional_block_still_repaired():
+    num, *_ = b.parse_article(_article("disp_u2/art_451", "<b>Art. 45</b><b>1</b>"))
+    assert num == "451"
+
+
+def test_split_bold_number_repaired_from_single_article_eid():
+    num, *_ = b.parse_article(_article("art_451", "<b>Art. 45</b><b>1</b>"))
+    assert num == "451"
+
+
+def test_correct_num_not_overridden_by_disagreeing_eid():
+    # OR fr: eId art_221 carries <num>Art. 220</num>. 221 does not extend
+    # 220, so the <num> wins.
+    num, *_ = b.parse_article(_article("art_221", "Art. 220"))
+    assert num == "220"
+
+
+def test_italian_range_conjunction_not_read_as_suffix():
+    # "Art. 135 a 149": the "a" is "to", not a letter suffix. Was "135a".
+    num, *_ = b.parse_article(_article("art_135_149", "Art. 135 a 149"))
+    assert num == "135"
+    num, *_ = b.parse_article(_article("art_50_51", "Art. 50 e 51"))
+    assert num == "50"
+
+
+def test_french_range_keeps_first_number():
+    num, *_ = b.parse_article(_article("art_135_149", "Art. 135 à 149"))
+    assert num == "135"
+
+
+def test_german_range_with_suffixes_keeps_first_number():
+    num, *_ = b.parse_article(_article("art_663_a_663_b", "Art. 663<i>a</i> und 663<i>b</i>"))
+    assert num == "663a"
+
+
+def test_multi_article_num_first_token_rejected_by_regex_uses_first_article():
+    # StGB fr: "<b>Art. 355</b><i>f</i>et <b>355</b><i>g</i>" joins to
+    # "355fet 355g"; the strict regex refuses "355fe..." so fall back to the
+    # first \d+[a-z]? token.
+    num, *_ = b.parse_article(_article("art_355_f_355_g", "<b>Art. 355</b><i>f</i>et <b>355</b><i>g</i>"))
+    assert num == "355f"
+
+
+def test_missing_num_filled_from_single_article_eid_only():
+    assert b.parse_article(_article("art_38_a", ""))[0] == "38a"
+    assert b.parse_article(_article("disp_u1/art_7", ""))[0] == "7"
+    assert b.parse_article(_article("art_135_149", ""))[0] == ""
+
+
+def test_eid_article_num_helper():
+    assert b._eid_article_num("art_41") == "41"
+    assert b._eid_article_num("art_38_a") == "38a"
+    assert b._eid_article_num("art_268_a_bis") == "268abis"
+    assert b._eid_article_num("art_179_decies") == "179decies"
+    # Fedlex separates every suffix with "_"; a glued suffix is not an eId shape
+    assert b._eid_article_num("art_322decies") is None
+    assert b._eid_article_num("disp_u2/art_1") == "1"
+    assert b._eid_article_num("art_135_149") is None
+    assert b._eid_article_num("art_663_a_663_b") is None
+    assert b._eid_article_num("disp_u12/art_2_4") is None
+    assert b._eid_article_num("") is None
+
+
+def test_article_section_helper():
+    assert b.article_section(_article("art_1", "Art. 1")) == ""
+    assert b.article_section(_article("disp_u2/art_1", "Art. 1")) == "disp_u2"
+
+
+def test_article_num_never_contains_whitespace():
+    for eid, inner in [
+        ("art_264_a", "<b>Art</b><b>. 264</b><i>a</i>"),
+        ("art_663_b_bis", "<b>Art</b><b>.\u00a0663</b><i>b</i><sup>bis</sup>"),
+        ("art_135_149", "Art. 135 a 149"),
+        ("art_16", "<b>Art. 16</b><b>8</b>"),
+    ]:
+        num, *_ = b.parse_article(_article(eid, inner))
+        assert " " not in num and num, (eid, num)

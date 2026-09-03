@@ -43,6 +43,13 @@ def test_article_xml_fragment_preserves_structure(tmp_path):
     assert a["article_num"] == "41"
     assert "Schadenersatz" in (a["heading"] or "")
     assert "widerrechtlich" in a["text"]
+    # 2026-09: the amendment note is a footnote, not part of the heading
+    assert "Fassung gemaess" not in a["heading"]
+    assert a["heading"] == "Schadenersatz"
+    assert "Fassung gemaess" in (a["footnote"] or "")
+    assert "Fassung gemaess" not in a["text"]
+    # main-body article: no block section
+    assert a["section"] == "" and a["section_heading"] is None and a["eid"] == "art_41"
 
     # new: a verbatim Akoma Ntoso XML subtree for the article
     assert "xml" in a, "article dict must carry an 'xml' fragment"
