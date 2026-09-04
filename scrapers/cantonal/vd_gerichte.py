@@ -25,8 +25,12 @@ Platform: Spring Boot REST API with Angular SPA frontend.
 """
 from __future__ import annotations
 
+import json
 import logging
+import os
+import re
 from datetime import date, timedelta
+from pathlib import Path
 from typing import Iterator
 
 from base_scraper import BaseScraper
@@ -46,6 +50,40 @@ API_URL = f"{BASE_URL}/api"
 # Monthly iteration to stay under 10,000 result cap
 # Earliest year with decisions
 START_YEAR = 2007
+
+# The portal's stable identity for a decision is its uuid (decisionHit.id); it
+# is also the last path segment of the pdf_url stored on every held record.
+UUID_RE = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
+
+# Corpus shard the scraper appends to (run_scraper.py); used once to seed the
+# uuid sidecar when it is missing. Override for tests / non-standard layouts.
+REPO_ROOT = Path(__file__).resolve().parents[2]
+SHARD_ENV = "VD_GERICHTE_SHARD"
+
+
+def uuid_from_pdf_url(url: str | None) -> str | None:
+    """Return the decision uuid encoded in a pdf_url, or None."""
+    if not url:
+        return None
+    tail = url.rstrip("/").rsplit("/", 1)[-1].strip().lower()
+    return tail if UUID_RE.match(tail) else None
+
+
+def iter_uuid_ids(shard: Path) -> Iterator[tuple[str, str]]:
+    """Stream (uuid, decision_id) pairs from a corpus shard, in file order.
+    Torn or unparseable lines and records without a pdf uuid are skipped."""
+    with open(shard, "rb") as f:
+        for raw in f:
+            line = raw.strip()
+            if not line:
+                continue
+            try:
+                rec = json.loads(line)
+            except Exception:
+                continue
+            u = uuid_from_pdf_url(rec.get("pdf_url"))
+            if u:
+                yield u, rec.get("decision_id") or ""
 
 
 class VDGerichteScraper(BaseScraper):
@@ -131,6 +169,115 @@ class VDGerichteScraper(BaseScraper):
             logger.error(f"VD: search failed: {e}")
             return None
 
+    # ── uuid-keyed identity ──────────────────────────────────────────────
+    # 2026-09-04: prestations.vd.ch stopped returning affaireHit.numero (null
+    # on every hit, all years). Ids were docket-keyed from that number, so
+    # the fallback (decisionHit.numero) minted NEW ids for decisions the
+    # corpus already served under their ZD number — 8,133 duplicates in one
+    # night — and its per-year sequence numbers ("641") collide across years,
+    # which makes genuinely new rulings look known and never fetched.
+    #
+    # Sidecar state/vd_gerichte.uuids.txt, one "<uuid>\t<decision_id>" line
+    # per held decision. Seeded once from the corpus shard (first id per
+    # uuid = the id the corpus has served longest) when the sidecar is
+    # missing — automatically at startup if the shard is readable, or with
+    # scripts/vd_uuid_sidecar.py --seed — and appended after every durable
+    # write (mark_run_complete). A listing whose uuid is held is skipped
+    # whatever id it would mint. No sidecar and no shard = the old
+    # docket-keyed is_known() check alone, never an error.
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._load_known_uuids()
+
+    def _uuid_sidecar(self) -> Path:
+        state_dir = getattr(self, "state_dir", None) or Path("state")
+        return Path(state_dir) / f"{self.court_code}.uuids.txt"
+
+    def _shard_path(self) -> Path:
+        return Path(os.environ.get(
+            SHARD_ENV, REPO_ROOT / "output" / "decisions" / "vd_gerichte.jsonl"))
+
+    def _seed_from_shard(self) -> int:
+        """Write the sidecar from the corpus shard (first id per uuid).
+        Returns the number of uuids written; 0 when no shard is readable."""
+        shard = self._shard_path()
+        try:
+            if not shard.is_file() or shard.stat().st_size == 0:
+                return 0
+            first: dict[str, str] = {}
+            for u, did in iter_uuid_ids(shard):
+                first.setdefault(u, did)
+        except OSError as e:
+            logger.warning(f"[vd_gerichte] cannot read {shard} to seed the uuid sidecar: {e}")
+            return 0
+        p = self._uuid_sidecar()
+        p.parent.mkdir(parents=True, exist_ok=True)
+        tmp = p.with_name(p.name + ".tmp")
+        with open(tmp, "w", encoding="utf-8") as f:
+            f.write(f"# seeded from {shard} — <uuid>\\t<decision_id>, first id per uuid\n")
+            for u, did in first.items():
+                f.write(f"{u}\t{did}\n")
+        os.replace(tmp, p)
+        logger.info(f"[vd_gerichte] uuid sidecar seeded from {shard}: {len(first)} uuids")
+        return len(first)
+
+    def _load_known_uuids(self) -> None:
+        self._known_uuids: dict[str, str] = {}
+        p = self._uuid_sidecar()
+        if not p.exists() and self._seed_from_shard() == 0:
+            logger.info(
+                "[vd_gerichte] uuid sidecar missing and no shard to seed from — "
+                "docket-keyed identity only (scripts/vd_uuid_sidecar.py --seed)")
+            return
+        try:
+            with open(p, encoding="utf-8") as f:
+                for line in f:
+                    line = line.rstrip("\n")
+                    if not line or line.startswith("#"):
+                        continue
+                    parts = line.split("\t", 1)
+                    u = parts[0].strip().lower()
+                    if not UUID_RE.match(u):
+                        continue
+                    self._known_uuids.setdefault(
+                        u, parts[1].strip() if len(parts) > 1 else "")
+        except OSError as e:
+            logger.warning(
+                f"[vd_gerichte] unreadable uuid sidecar ({e}) — docket-keyed "
+                "identity only; reseed to recover")
+            self._known_uuids = {}
+            return
+        logger.info(f"[vd_gerichte] uuid sidecar: {len(self._known_uuids)} held uuids")
+
+    def _mark_uuid(self, uuid: str | None, decision_id: str) -> None:
+        """Record a durably written decision's uuid (idempotent, append-only)."""
+        known = getattr(self, "_known_uuids", None)
+        if known is None:
+            known = self._known_uuids = {}
+        u = (uuid or "").strip().lower()
+        if not UUID_RE.match(u) or u in known:
+            return
+        known[u] = decision_id
+        p = self._uuid_sidecar()
+        p.parent.mkdir(parents=True, exist_ok=True)
+        with open(p, "a", encoding="utf-8") as f:
+            f.write(f"{u}\t{decision_id}\n")
+
+    def _is_new(self, stub: dict) -> bool:
+        """Unknown by id AND by uuid. The uuid check is what survives a
+        portal that changes how it numbers cases."""
+        if self.state.is_known(stub["decision_id"]):
+            return False
+        known = getattr(self, "_known_uuids", None) or {}
+        return (stub.get("uuid") or "").strip().lower() not in known
+
+    def mark_run_complete(self, decisions: list) -> None:
+        """State first (durable), then the uuid sidecar."""
+        super().mark_run_complete(decisions)
+        for d in decisions:
+            self._mark_uuid(uuid_from_pdf_url(getattr(d, "pdf_url", None)),
+                            d.decision_id)
+
     def discover_new(self, since_date=None) -> Iterator[dict]:
         if since_date and isinstance(since_date, str):
             since_date = date.fromisoformat(since_date)
@@ -178,7 +325,7 @@ class VDGerichteScraper(BaseScraper):
 
                 # Process page 0
                 for stub in self._parse_search_page(response):
-                    if not self.state.is_known(stub["decision_id"]):
+                    if self._is_new(stub):
                         total_yielded += 1
                         yield stub
 
@@ -189,7 +336,7 @@ class VDGerichteScraper(BaseScraper):
                         break
                     response = data.get("response", {})
                     for stub in self._parse_search_page(response):
-                        if not self.state.is_known(stub["decision_id"]):
+                        if self._is_new(stub):
                             total_yielded += 1
                             yield stub
 
@@ -216,11 +363,19 @@ class VDGerichteScraper(BaseScraper):
         if not uuid:
             return None
 
-        affaire = hit.get("affaireHit", {})
-        docket = affaire.get("numero", "")
-        if not docket:
-            # Use decision number as fallback
-            docket = hit.get("numero", uuid)
+        affaire = hit.get("affaireHit") or {}
+        affaire_no = str(affaire.get("numero") or "").strip()
+        hit_no = str(hit.get("numero") or "").strip()
+        if affaire_no:
+            # Case number ("ZD17.028583"): the historical id scheme.
+            docket, id_key = affaire_no, affaire_no
+        elif hit_no and not hit_no.isdigit():
+            # A real docket ("AI 210/17 - 249/2017") is unique on its own.
+            docket, id_key = hit_no, hit_no
+        else:
+            # Bare per-year sequence number, or nothing: collides across
+            # years, so the id is keyed on the portal's stable uuid.
+            docket, id_key = (hit_no or uuid), uuid
 
         # Parse decision date
         date_str = hit.get("dateDecision", "")
@@ -265,7 +420,7 @@ class VDGerichteScraper(BaseScraper):
         # Jurivoc concepts
         concepts = hit.get("conceptsJurivoc", [])
 
-        decision_id = make_decision_id("vd_gerichte", docket)
+        decision_id = make_decision_id("vd_gerichte", id_key)
 
         return {
             "decision_id": decision_id,
