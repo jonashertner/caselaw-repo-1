@@ -5,9 +5,17 @@
     <link>https://opencaselaw.ch/feeds/it.xml</link>
     <description>Latest published Swiss court decisions in Italiano.</description>
     <language>de-CH</language>
-    <lastBuildDate>Wed, 02 Sep 2026 10:55:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 04 Sep 2026 13:52:33 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/it.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Bundesverwaltungsgericht F-5795/2026 vom 2026-08-25</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-5795_2026</link>
+      <description>Asilo (non entrata nel merito) ed allontanamento (procedura Dublino - art. 31a cpv. 1 lett. b LAsi)</description>
+      <pubDate>Tue, 25 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-5795.2026</guid>
+      <category>bvger</category>
+    </item>
     <item>
       <title>Bundesgericht 12T_1/2026 vom 2026-08-21</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bger_12T_1_2026</link>
@@ -64,11 +72,35 @@ Cancelliere Caprara.…</description>
       <category>bger</category>
     </item>
     <item>
+      <title>gr_gerichte VR1 2026 6 vom 2026-08-20</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/gr_gerichte_VR1%202026%206</link>
+      <description>Obergericht des Kantons Graubünden
+Dretgira superiura dal chantun Grischun
+Tribunale d'appello del Cantone dei Grigioni
+Sentenza del 20 agosto 2026
+comunicata il 25 agosto 2026
+N. d'incarto
+VR1 26 6
+Istanza
+Prima Camera di diritto costituzionale e am…</description>
+      <pubDate>Thu, 20 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">gr_gerichte_VR1 2026 6</guid>
+      <category>gr_gerichte</category>
+    </item>
+    <item>
       <title>Bundesverwaltungsgericht F-5574/2026 vom 2026-08-19</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-5574_2026</link>
       <description>Asilo (non entrata nel merito) ed allontanamento (procedura Dublino - art. 31a cpv. 1 lett. b LAsi)</description>
       <pubDate>Wed, 19 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-5574.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht D-7209/2025 vom 2026-08-17</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-7209_2025</link>
+      <description>Asilo ed allontanamento</description>
+      <pubDate>Mon, 17 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-7209.2025</guid>
       <category>bvger</category>
     </item>
     <item>
@@ -988,74 +1020,6 @@ Partecipanti al procedimento
       <pubDate>Thu, 16 Jul 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BGer:2026:4D_93.2026</guid>
       <category>bger</category>
-    </item>
-    <item>
-      <title>Bundesgericht 6B_413/2026 vom 2026-07-16</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_6B_413_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-6B_413/2026
-
-Sentenza del 16 luglio 2026
-
-I Corte di diritto penale
-
-Composizione
-
-Giudice federale Muschietti, Presidente,
-
-Cancelliera Ortolano Ribordy.
-
-Partecipanti al procedi…</description>
-      <pubDate>Thu, 16 Jul 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:6B_413.2026</guid>
-      <category>bger</category>
-      <category>Infrazione</category>
-    </item>
-    <item>
-      <title>Bundesgericht 7B_567/2026 vom 2026-07-16</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bger_7B_567_2026</link>
-      <description>Bundesgericht
-
-Tribunal fédéral
-
-Tribunale federale
-
-Tribunal federal
-
-7B_567/2026
-
-Sentenza del 16 luglio 2026
-
-II Corte di diritto penale
-
-Composizione
-
-Giudici federali Abrecht, Presidente,
-
-van de Graaf, Kölz,
-
-Cancelliere Valentino.
-
-Partecipant…</description>
-      <pubDate>Thu, 16 Jul 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BGer:2026:7B_567.2026</guid>
-      <category>bger</category>
-      <category>Quesiti di competenza, garanzia del foro del domicilio e del ...</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht C-712/2024 vom 2026-07-16</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-712_2024</link>
-      <description>Assicurazione contro gli infortuni (altro)</description>
-      <pubDate>Thu, 16 Jul 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-712.2024</guid>
-      <category>bvger</category>
     </item>
   </channel>
 </rss>

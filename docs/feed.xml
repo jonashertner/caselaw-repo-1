@@ -5,7 +5,7 @@
     <link>https://opencaselaw.ch/feed.xml</link>
     <description>Latest published decisions across all Swiss courts indexed by OpenCaseLaw.</description>
     <language>de-CH</language>
-    <lastBuildDate>Thu, 03 Sep 2026 10:41:25 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 04 Sep 2026 13:49:13 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feed.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -237,6 +237,33 @@ X _________,…</description>
       <category>Eherecht (anderes)</category>
     </item>
     <item>
+      <title>EGMR (Kammer) 13598/21 vom 2026-09-03</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ecthr_chamber_13598_21_20260903</link>
+      <description>Non-violation de l'article 1 du Protocole n° 1 - Protection de la propriété (Article 1 al. 2 du Protocole n° 1 - Réglementer l'usage des biens); No violation: P1-1;P1-1-2; [EGMR / CourEDH / CorteEDU; Art. 1 ZP 1 EMRK / Prot. 1 CEDH / CEDU]</description>
+      <pubDate>Thu, 03 Sep 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ecthr_chamber_13598_21_20260903</guid>
+      <category>ecthr_chamber</category>
+      <category>EMRK / CEDH / CEDU — Menschenrechte</category>
+    </item>
+    <item>
+      <title>EGMR (Kammer) 23169/16_23834/18_37683/19 vom 2026-09-03</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ecthr_chamber_23169_16_23834_18_37683_19_20260903</link>
+      <description>Preliminary objection joined to merits and dismissed (Art. 34) Individual applications;(Art. 34) Victim;Violation of Article 3 - Prohibition of torture (Article 3 - Degrading punishment;Inhuman punishment) (Substantive aspect);No violation of Article 3 - Prohibition of torture (Article 3 - Degrading punishment;Inhuman punishment) (Substantive aspect);Violation of Article 3 - Prohibition of torture (Article 3 - Degrading punishment;Inhuman punishment) (Substantive aspect);No violation of Article 3 - Prohibition of torture (Article 3 - Degrading punishment;Inhuman punishment) (Substantive aspect);Violation of Article 7 - No punishment without law (Article 7-1 - Heavier penalty;Retroactivity);Violation of Article 7 - No punishment without law (Article 7-1 - Heavier penalty;Nulla poena sine lege;Nullum crimen sine lege);Pecuniary damage - claim dismissed (Article 41 - Pecuniary damage;Just satisfaction);Non-pecuniary damage - award (Article 41 - Non-pecuniary damage;Just satisfaction); Violation: 3;7;7-1; No violation: 3; [EGMR / CourEDH / CorteEDU; Art. 34, Art. 3, Art. 7, Art. 41 EMRK / CEDH / CEDU]</description>
+      <pubDate>Thu, 03 Sep 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ecthr_chamber_23169_16_23834_18_37683_19_20260903</guid>
+      <category>ecthr_chamber</category>
+      <category>EMRK / CEDH / CEDU — Menschenrechte</category>
+    </item>
+    <item>
+      <title>EGMR (Kammer) 52315/22 vom 2026-09-03</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/ecthr_chamber_52315_22_20260903</link>
+      <description>Non-violation de l'article 11 - Liberté de réunion et d'association (Article 11-1 - Liberté de réunion pacifique); No violation: 11;11-1; [EGMR / CourEDH / CorteEDU; Art. 11 EMRK / CEDH / CEDU]</description>
+      <pubDate>Thu, 03 Sep 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ecthr_chamber_52315_22_20260903</guid>
+      <category>ecthr_chamber</category>
+      <category>EMRK / CEDH / CEDU — Menschenrechte</category>
+    </item>
+    <item>
       <title>fr_gerichte 604 2026 52 vom 2026-09-03</title>
       <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_604%202026%2052</link>
       <description>Tribunal cantonal TC
@@ -257,6 +284,15 @@ Marc Sugnaux
       <pubDate>Thu, 03 Sep 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">fr_gerichte_604 2026 52</guid>
       <category>fr_gerichte</category>
+    </item>
+    <item>
+      <title>hudoc_ch 1007/20_21022/21 vom 2026-09-03</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/hudoc_ch_1007_20_21022_21</link>
+      <description>Violation de l'article 8 - Droit au respect de la vie privée et familiale (Article 8-1 - Respect de la vie privée); Violation: 8;8-1</description>
+      <pubDate>Thu, 03 Sep 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">hudoc_ch_1007_20_21022_21</guid>
+      <category>hudoc_ch</category>
+      <category>EMRK / Menschenrechte</category>
     </item>
     <item>
       <title>fr_gerichte 502 2026 86 vom 2026-09-02</title>
@@ -461,6 +497,38 @@ r…</description>
       <category>ge_gerichte</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht E-1981/2025 vom 2026-08-27</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-1981_2025</link>
+      <description>Asile et renvoi</description>
+      <pubDate>Thu, 27 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-1981.2025</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht E-5614/2026 vom 2026-08-27</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-5614_2026</link>
+      <description>Verweigerung vorübergehender Schutz</description>
+      <pubDate>Thu, 27 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-5614.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht E-5748/2026 vom 2026-08-27</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-5748_2026</link>
+      <description>Asile (non-entrée en matière) et renvoi (demande multiple)</description>
+      <pubDate>Thu, 27 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-5748.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht E-9497/2025 vom 2026-08-27</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-9497_2025</link>
+      <description>Asile et renvoi</description>
+      <pubDate>Thu, 27 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-9497.2025</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>fr_gerichte 102 2026 92 vom 2026-08-27</title>
       <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_102%202026%2092</link>
       <description>Tribunal cantonal TC
@@ -582,11 +650,35 @@ Arrêt d…</description>
       <category>ge_gerichte</category>
     </item>
     <item>
+      <title>Bundesverwaltungsgericht A-1445/2024 vom 2026-08-26</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_A-1445_2024</link>
+      <description>Post- und Fernmeldeüberwachung</description>
+      <pubDate>Wed, 26 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:A-1445.2024</guid>
+      <category>bvger</category>
+    </item>
+    <item>
       <title>Bundesverwaltungsgericht E-1759/2024 vom 2026-08-26</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-1759_2024</link>
       <description>Asyl und Wegweisung</description>
       <pubDate>Wed, 26 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-1759.2024</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht E-4812/2026 vom 2026-08-26</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-4812_2026</link>
+      <description>Asyl und Wegweisung (Mehrfachgesuch)</description>
+      <pubDate>Wed, 26 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-4812.2026</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht F-5554/2026 vom 2026-08-26</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-5554_2026</link>
+      <description>Nichteintreten auf Asylgesuch und Wegweisung (Dublin-Verfahren - Art. 31a Abs. 1 Bst. b AsylG)</description>
+      <pubDate>Wed, 26 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-5554.2026</guid>
       <category>bvger</category>
     </item>
     <item>
@@ -670,6 +762,34 @@ Be…</description>
       <category>gr_gerichte</category>
     </item>
     <item>
+      <title>Bundesgericht 7B_1016/2026 vom 2026-08-25</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bger_7B_1016_2026</link>
+      <description>Bundesgericht
+
+Tribunal fédéral
+
+Tribunale federale
+
+Tribunal federal
+
+7B_1016/2026
+
+Urteil vom 25. August 2026
+
+II. strafrechtliche Abteilung
+
+Besetzung
+
+Bundesrichter Abrecht, Präsident,
+
+Bundesrichterinnen van de Graaf, Koch,
+
+Gerichtsschreiber Ta…</description>
+      <pubDate>Tue, 25 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BGer:2026:7B_1016.2026</guid>
+      <category>bger</category>
+    </item>
+    <item>
       <title>Bundesverwaltungsgericht C-2977/2026 vom 2026-08-25</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bvger_C-2977_2026</link>
       <description>Freiwillige Versicherung</description>
@@ -686,304 +806,28 @@ Be…</description>
       <category>bvger</category>
     </item>
     <item>
-      <title>Bundesverwaltungsgericht E-5661/2024 vom 2026-08-25</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-5661_2024</link>
+      <title>Bundesverwaltungsgericht D-1024/2024 vom 2026-08-25</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-1024_2024</link>
+      <description>Asile (sans exécution du renvoi)</description>
+      <pubDate>Tue, 25 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-1024.2024</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht D-3748/2025 vom 2026-08-25</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-3748_2025</link>
+      <description>Refus de la protection provisoire</description>
+      <pubDate>Tue, 25 Aug 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-3748.2025</guid>
+      <category>bvger</category>
+    </item>
+    <item>
+      <title>Bundesverwaltungsgericht E-3548/2021 vom 2026-08-25</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bvger_E-3548_2021</link>
       <description>Asyl und Wegweisung</description>
       <pubDate>Tue, 25 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-5661.2024</guid>
+      <guid isPermaLink="false">ECLI:CH:BVGer:2026:E-3548.2021</guid>
       <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht F-4452/2026 vom 2026-08-25</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_F-4452_2026</link>
-      <description>Nichteintreten auf Asylgesuch und Wegweisung (sicherer Drittstaat - Art. 31a Abs. 1 Bst. a AsylG)</description>
-      <pubDate>Tue, 25 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:F-4452.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>EGMR (Kammer) 30915/23 vom 2026-08-25</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ecthr_chamber_30915_23_20260825</link>
-      <description>Preliminary objection joined to merits and dismissed (Art. 34) Individual applications;(Art. 34) Victim;Remainder inadmissible (Art. 35) Admissibility criteria;(Art. 35-1) Exhaustion of domestic remedies;(Art. 35-3-a) Manifestly ill-founded;(Art. 35-3-a) Ratione materiae;Violation of Article 8 - Right to respect for private and family life (Article 8-1 - Respect for home);Respondent State to take measures of a general character (Article 46-2 - Legislative amendments);Pecuniary damage - claim dismissed (Article 41 - Pecuniary damage;Just satisfaction);Non-pecuniary damage - award (Article 41 - Non-pecuniary damage;Just satisfaction); Violation: 8;8-1; [EGMR / CourEDH / CorteEDU; Art. 34, Art. 35, Art. 8, Art. 46, Art. 41 EMRK / CEDH / CEDU]</description>
-      <pubDate>Tue, 25 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ecthr_chamber_30915_23_20260825</guid>
-      <category>ecthr_chamber</category>
-      <category>EMRK / CEDH / CEDU — Menschenrechte</category>
-    </item>
-    <item>
-      <title>EGMR (Grosse Kammer) 2170/24 vom 2026-08-25</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ecthr_grand_chamber_2170_24_20260825</link>
-      <description>Exception préliminaire rejetée (Art. 35) Conditions de recevabilité;(Art. 35-1) Épuisement des voies de recours internes;Partiellement irrecevable (Art. 35) Conditions de recevabilité;(Art. 35-1) Épuisement des voies de recours internes;Violation de l'article 10 - Liberté d'expression - {général} (Article 10-1 - Liberté d'expression);Violation de l'article 11 - Liberté de réunion et d'association (Article 11-1 - Liberté de réunion pacifique);Violation de l'article 6 - Droit à un procès équitable (Article 6 - Procédure pénale;Article 6-1 - Procès équitable;Tribunal impartial;Tribunal indépendant);Violation de l'article 5 - Droit à la liberté et à la sûreté (Article 5-1 - Privation de liberté;Article 5-1-a - Après condamnation;Article 5-1-c - Raisons plausibles de soupçonner);Violation de l'article 18 - Limitation de l'usage des restrictions aux droits (Article 18 - Restrictions dans un but non prévu);Violation de l'article 3 - Interdiction de la torture (Article 3 - Peine dégradante;Peine inhumaine) (Volet matériel);Etat défendeur tenu de prendre des mesures individuelles (Article 46-2 - Mesures individuelles);Etat défendeur tenu de prendre des mesures générales (Article 46 - Problème structurel;Article 46-2 - Mesures générales);Préjudice moral - réparation (Article 41 - Préjudice moral;Satisfaction équitable); Violation: 10;10-1;11;11-1;6;6-1;5;5-1;5-1-a;5-1-c;18;3; [EGMR / CourEDH / CorteEDU; Art. 35, Art. 10, Art. 11, Art. 6, Art. 5, Art. 18, Art. 3, Art. 46, Art. 41 EMRK / CEDH / CEDU]</description>
-      <pubDate>Tue, 25 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ecthr_grand_chamber_2170_24_20260825</guid>
-      <category>ecthr_grand_chamber</category>
-      <category>EMRK / CEDH / CEDU — Menschenrechte</category>
-    </item>
-    <item>
-      <title>fr_gerichte 605 2026 7 vom 2026-08-25</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/fr_gerichte_605%202026%207</link>
-      <description>Tribunal cantonal TC
-Kantonsgericht KG
-Augustinergasse 3, Postfach 630, 1701 Freiburg
-T +41 26 304 15 00
-www.fr.ch/tc
-—
-Pouvoir Judiciaire PJ
-Gerichtsbehörden GB
-605 2026 7
-Urteil vom 16. Juni 2026
-I. Sozialversicherungsgerichtshof
-Besetzung
-Präsiden…</description>
-      <pubDate>Tue, 25 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">fr_gerichte_605 2026 7</guid>
-      <category>fr_gerichte</category>
-    </item>
-    <item>
-      <title>ge_gerichte ACJC/1446/2026 vom 2026-08-25</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ge_gerichte_ACJC_1446_2026</link>
-      <description>Le présent arrêt est communiqué aux parties par plis recommandés du 27 août 2026. 
- 
- 
-REPUBLIQUE ET 
- 
-CANTON DE GENEVE 
-POUVOIR JUDICIAIRE 
-C/24367/2018 
-ACJC/1446/2026 
-ARRÊT 
-DE LA COUR DE JUSTICE 
-Chambre civile 
-DU MARDI 25 AOÛT 2026 
- 
- 
-Entre…</description>
-      <pubDate>Tue, 25 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ge_gerichte_ACJC_1446_2026</guid>
-      <category>ge_gerichte</category>
-    </item>
-    <item>
-      <title>ge_gerichte ATAS/727/2026 vom 2026-08-25</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ge_gerichte_ATAS_727_2026</link>
-      <description>Siégeant : Joanna JODRY, présidente. 
- 
- 
- 
- 
-RÉPUBLIQUE ET 
- 
-CANTON DE GEN ÈVE 
-POUVOIR JUDICIAIRE 
- 
-A/2526/2026 
-ATAS/727/2026 
-ARRET 
-DU TRIBUNAL ARBITRAL 
-DES ASSURANCES 
-du 25 août 2026 
- 
-En la cause 
-MUTUEL ASSURANCE MALADIE SA 
-AVENIR ASSUR…</description>
-      <pubDate>Tue, 25 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ge_gerichte_ATAS_727_2026</guid>
-      <category>ge_gerichte</category>
-    </item>
-    <item>
-      <title>ge_gerichte ATAS/728/2026 vom 2026-08-25</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ge_gerichte_ATAS_728_2026</link>
-      <description>Siégeant : Joanna JODRY, présidente ; Saskia BERENS TOGNI et 
-Pierre-Bernard PETITAT, juges assesseurs. 
- 
- 
- 
- 
-RÉPUBLIQUE ET 
- 
-CANTON DE GEN ÈVE 
-POUVOIR JUDICIAIRE 
- 
-A/1460/2024 
-ATAS/728/2026 
-COUR DE JUSTICE 
-Chambre des assurances sociales 
-A…</description>
-      <pubDate>Tue, 25 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ge_gerichte_ATAS_728_2026</guid>
-      <category>ge_gerichte</category>
-    </item>
-    <item>
-      <title>ge_gerichte ATAS/729/2026 vom 2026-08-25</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ge_gerichte_ATAS_729_2026</link>
-      <description>Siégeant : Joanna JODRY, présidente ; Saskia BERENS TOGNI et 
-Pierre-Bernard PETITAT, juges assesseurs. 
- 
- 
- 
- 
-RÉPUBLIQUE ET 
- 
-CANTON DE GEN ÈVE 
-POUVOIR JUDICIAIRE 
- 
-A/2179/2025 
-ATAS/729/2026 
-COUR DE JUSTICE 
-Chambre des assurances sociales 
-A…</description>
-      <pubDate>Tue, 25 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ge_gerichte_ATAS_729_2026</guid>
-      <category>ge_gerichte</category>
-    </item>
-    <item>
-      <title>ge_gerichte ATAS/730/2026 vom 2026-08-25</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ge_gerichte_ATAS_730_2026</link>
-      <description>Siégeant : Joanna JODRY, présidente ; Saskia BERENS TOGNI et 
-Pierre-Bernard PETITAT, juges assesseurs. 
- 
- 
- 
- 
-RÉPUBLIQUE ET 
- 
-CANTON DE GEN ÈVE 
-POUVOIR JUDICIAIRE 
- 
-A/3151/2025 
-ATAS/730/2026 
-COUR DE JUSTICE 
-Chambre des assurances sociales 
-A…</description>
-      <pubDate>Tue, 25 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ge_gerichte_ATAS_730_2026</guid>
-      <category>ge_gerichte</category>
-    </item>
-    <item>
-      <title>ge_gerichte ATAS/731/2026 vom 2026-08-25</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ge_gerichte_ATAS_731_2026</link>
-      <description>Siégeant : Joanna JODRY, présidente ; Saskia BERENS TOGNI et 
-Pierre-Bernard PETITAT, juges assesseurs. 
- 
- 
- 
- 
-RÉPUBLIQUE ET 
- 
-CANTON DE GEN ÈVE 
-POUVOIR JUDICIAIRE 
- 
-A/1283/2026 
-ATAS/731/2026 
-COUR DE JUSTICE 
-Chambre des assurances sociales 
-A…</description>
-      <pubDate>Tue, 25 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ge_gerichte_ATAS_731_2026</guid>
-      <category>ge_gerichte</category>
-    </item>
-    <item>
-      <title>ge_gerichte ATAS/732/2026 vom 2026-08-25</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ge_gerichte_ATAS_732_2026</link>
-      <description>Siégeant : Joanna JODRY, présidente ; Saskia BERENS TOGNI et 
-Pierre-Bernard PETITAT, juges assesseurs. 
- 
- 
- 
- 
-RÉPUBLIQUE ET 
- 
-CANTON DE GEN ÈVE 
-POUVOIR JUDICIAIRE 
- 
-A/2197/2026 
-ATAS/732/2026 
-COUR DE JUSTICE 
-Chambre des assurances sociales 
-A…</description>
-      <pubDate>Tue, 25 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ge_gerichte_ATAS_732_2026</guid>
-      <category>ge_gerichte</category>
-    </item>
-    <item>
-      <title>ge_gerichte ATAS/733/2026 vom 2026-08-25</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ge_gerichte_ATAS_733_2026</link>
-      <description>Siégeant : Valérie MONTANI, présidente. 
- 
- 
- 
- 
-RÉPUBLIQUE ET 
- 
-CANTON DE GEN ÈVE 
-POUVOIR JUDICIAIRE 
- 
-A/4431/2025 
-ATAS/733/2026 
-COUR DE JUSTICE 
-Chambre des assurances sociales 
-Ordonnance d’expertise du 25 août 2026 
-Chambre 6 
- 
-En la cause …</description>
-      <pubDate>Tue, 25 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ge_gerichte_ATAS_733_2026</guid>
-      <category>ge_gerichte</category>
-    </item>
-    <item>
-      <title>ge_gerichte ATAS/739/2026 vom 2026-08-25</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ge_gerichte_ATAS_739_2026</link>
-      <description>Siégeant : Karine STECK, présidente 
- 
- 
- 
- 
-RÉPUBLIQUE ET 
- 
-CANTON DE GEN ÈVE 
-POUVOIR JUDICIAIRE 
- 
-A/2253/2026 
-ATAS/739/2026 
-COUR DE JUSTICE 
-Chambre des assurances sociales 
-Arrêt du 25 août 2026 
-Chambre 3 
- 
-En la cause 
-A______ 
- 
- 
-recoura…</description>
-      <pubDate>Tue, 25 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ge_gerichte_ATAS_739_2026</guid>
-      <category>ge_gerichte</category>
-    </item>
-    <item>
-      <title>ge_gerichte ATAS/740/2026 vom 2026-08-25</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ge_gerichte_ATAS_740_2026</link>
-      <description>Siégeant : Karine STECK, présidente 
- 
- 
- 
- 
-RÉPUBLIQUE ET 
- 
-CANTON DE GEN ÈVE 
-POUVOIR JUDICIAIRE 
- 
-A/3707/2025 
-ATAS/740/2026 
-COUR DE JUSTICE 
-Chambre des assurances sociales 
-Arrêt du 25 août 2026 
-Chambre 3 
- 
-En la cause 
-A_______ 
-représenté…</description>
-      <pubDate>Tue, 25 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ge_gerichte_ATAS_740_2026</guid>
-      <category>ge_gerichte</category>
     </item>
   </channel>
 </rss>
