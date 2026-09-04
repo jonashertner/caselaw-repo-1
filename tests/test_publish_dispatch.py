@@ -165,3 +165,60 @@ def test_step_2c_uses_the_incremental_builder_and_seeds_state(monkeypatch, tmp_p
     assert "--source-db" not in cmd and "--db" not in cmd
     # Keep the measured headroom: bootstrap was 12,140s on production.
     assert captured["kwargs"].get("timeout", 0) >= 18000
+
+
+# ── manual single-step runs must not impersonate a full publish ───────────
+# (2026-09-04 Stage A review: the incremental orchestrator drives 2g, 5b, 5c,
+# 5d, 7, 6, 6b as `publish.py --step X`; each used to clear the resume
+# checkpoint, refresh state/last_publish_success.json and push "Publish OK".)
+
+def _fake_ok_step(dry_run: bool = False, full_rebuild: bool = False) -> bool:
+    return True
+
+
+def _capture(monkeypatch, tmp_path):
+    notes: list[tuple] = []
+    events: dict[str, int] = {"clear": 0, "save": 0}
+    monkeypatch.setattr(publish, "REPO_DIR", tmp_path)
+    monkeypatch.setattr(publish, "_notify", lambda *a, **k: notes.append(a))
+    monkeypatch.setattr(publish, "_clear_checkpoint", lambda: events.__setitem__("clear", events["clear"] + 1))
+    monkeypatch.setattr(publish, "_save_checkpoint", lambda *a, **k: events.__setitem__("save", events["save"] + 1))
+    monkeypatch.setattr(publish, "_load_checkpoint", lambda: None)
+    monkeypatch.setattr(publish, "_append_run_record", lambda rec: None)
+    monkeypatch.setattr(publish, "STEPS", [("5b", "Generate RSS Feeds", _fake_ok_step)])
+    return notes, events
+
+
+def test_manual_step_leaves_marker_checkpoint_and_notify_alone(monkeypatch, tmp_path):
+    notes, events = _capture(monkeypatch, tmp_path)
+    monkeypatch.setattr(sys, "argv", ["publish.py", "--step", "5b", "--dry-run"])
+    publish.main()
+    assert not (tmp_path / "state" / "last_publish_success.json").exists()
+    assert events == {"clear": 0, "save": 0}
+    assert not any(a and a[0] == "Publish OK" for a in notes)
+
+
+def test_full_run_still_writes_marker_and_notifies(monkeypatch, tmp_path):
+    notes, events = _capture(monkeypatch, tmp_path)
+    monkeypatch.setattr(sys, "argv", ["publish.py", "--dry-run"])
+    publish.main()
+    assert (tmp_path / "state" / "last_publish_success.json").exists()
+    assert events["clear"] == 1 and events["save"] == 1
+    assert any(a and a[0] == "Publish OK" for a in notes)
+
+
+def test_lock_refusal_exits_non_zero(monkeypatch, tmp_path):
+    """A run that cannot take the publish flock is a missed publish; with
+    exit 0 the unit stayed green and nobody was paged."""
+    import fcntl
+    _capture(monkeypatch, tmp_path)
+    monkeypatch.setattr(sys, "argv", ["publish.py", "--dry-run"])
+
+    def _busy(*a, **k):
+        raise BlockingIOError
+
+    monkeypatch.setattr(fcntl, "flock", _busy)
+    import pytest
+    with pytest.raises(SystemExit) as e:
+        publish.main()
+    assert e.value.code == 2

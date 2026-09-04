@@ -1845,8 +1845,13 @@ def main():
     try:
         fcntl.flock(lock_file, fcntl.LOCK_EX | fcntl.LOCK_NB)
     except (BlockingIOError, OSError):
+        # Exit non-zero: a run that could not start is a missed publish.
+        # With `return` the unit stayed "success" and nobody was paged when
+        # the daily full build lost its slot to a still-running incremental
+        # (2026-09-04 Stage A review). OnFailure= on the unit turns this
+        # into an alert; the timer simply fires again the next day.
         logger.error("Another publish process is already running. Exiting.")
-        return
+        sys.exit(2)
     logger.info("Acquired publish lock")
 
     # Remove the lock file on any normal exit so the systemd-level
@@ -1893,6 +1898,9 @@ def main():
         "full_rebuild": bool(args.full_rebuild), "dry_run": bool(args.dry_run),
         "steps_requested": [str(n) for n, _, _ in STEPS],
         "resumed_from_checkpoint": bool(_load_checkpoint()),
+        # A `--step N` run is one step, not a publish: consumers of this file
+        # (runtime trends, freshness probes) filter on it.
+        "manual_step": str(args.step) if manual_step_mode else None,
         "ts": datetime.now(timezone.utc).isoformat(timespec="seconds"),
     })
 
@@ -2104,7 +2112,10 @@ def main():
                 "elapsed_s": round(elapsed, 1),
                 "ts": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             })
-            if ok:
+            # A manual single step must never touch the full build's resume
+            # checkpoint (it would replace a crashed run's 4h-TTL checkpoint
+            # with a one-step one).
+            if ok and not manual_step_mode:
                 _save_checkpoint(num, results)
         except Exception as e:
             results[num] = False
@@ -2180,6 +2191,7 @@ def main():
         "stale_downstream": fts5_failed,
         "steps": {str(k): (v if isinstance(v, str) else bool(v))
                   for k, v in results.items()},
+        "manual_step": str(args.step) if manual_step_mode else None,
         "ts": datetime.now(timezone.utc).isoformat(timespec="seconds"),
     })
 
@@ -2191,6 +2203,17 @@ def main():
         msg += f"\nTotal: {total_elapsed/60:.0f} min"
         _notify("Publish FAILED", msg, priority="high")
         sys.exit(1)
+    elif manual_step_mode:
+        # A single `--step N` run (the incremental orchestrator drives 2g,
+        # 5b, 5c, 5d, 7, 6 and 6b this way) is not a full publish. It must
+        # not clear the full build's resume checkpoint, must not refresh the
+        # last_publish_success marker that quality.smoke reads as "the whole
+        # pipeline succeeded", and must not push a "Publish OK" notification
+        # (seven a night would drown the real one). Step-level alerts (the
+        # gate's own BLOCKED/DEGRADED, "Publish FAILED" above) still fire.
+        logger.info(
+            "manual step %s OK — success marker, checkpoint and 'Publish OK' "
+            "notification left untouched (not a full publish)", args.step)
     else:
         _clear_checkpoint()
         # Durable full-publish-success marker. The 15-min bger poller keeps

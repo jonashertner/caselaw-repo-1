@@ -246,3 +246,103 @@ def test_a_failing_qc_gate_blocks_publication_not_the_db_work():
     i = src.index('("qc_gate",')
     assert "True" in src[i:i + 80], "the gate is no longer marked fatal"
     assert "skipping git push" in src, "a failing gate no longer blocks the push"
+
+
+# ── Stage A prerequisites (2026-09-04 safety review) ──────────────────────
+
+import scripts.incremental_nightly as inc  # noqa: E402
+
+
+def test_late_start_guard_is_inert_without_stage2_flags():
+    out = _dry_run("--in-place-graph", "--now-utc", "23:30")
+    assert "late start" not in out
+    assert _line_for(out, "decision_structure")            # shadow builder still runs
+
+
+def test_late_start_skips_structure_and_distribution():
+    """A run queued behind a late full build must not still be driving
+    `publish.py --step` children (which hold the publish flock) at 03:30,
+    or the daily full build exits 'already running' and the safety net is
+    lost. quick_publish, the graph and stats still run."""
+    out = _dry_run("--in-place-graph", "--structure-from-shards",
+                   "--with-distribution", "--now-utc", "23:10")
+    assert "late start" in out
+    assert "SKIPPED (late start" in _line_for(out, "decision_structure")
+    assert "SKIPPED (late start" in _line_for(out, "distribution")
+    assert "--step 2g" not in out
+    assert not _line_for(out, "qc_gate")
+    assert _line_for(out, "reference_graph")
+    assert _line_for(out, "generate_stats")
+
+
+def test_small_hours_count_as_late_too():
+    out = _dry_run("--structure-from-shards", "--now-utc", "01:15")
+    assert "late start" in out
+
+
+def test_on_time_start_runs_everything():
+    out = _dry_run("--in-place-graph", "--structure-from-shards",
+                   "--with-distribution", "--now-utc", "20:05")
+    assert "late start" not in out
+    assert "--step 2g" in _line_for(out, "decision_structure")
+    assert _line_for(out, "qc_gate") and _line_for(out, "git_push")
+
+
+def test_cutoff_is_configurable():
+    out = _dry_run("--with-distribution", "--now-utc", "21:00",
+                   "--latest-start-utc", "20:30")
+    assert "late start" in out
+
+
+def test_is_late_start_boundaries():
+    assert inc._is_late_start("22:30", "22:30")
+    assert inc._is_late_start("22:30", "23:59")
+    assert inc._is_late_start("22:30", "00:00")
+    assert inc._is_late_start("22:30", "03:29")
+    assert not inc._is_late_start("22:30", "03:30")      # the full build's own slot
+    assert not inc._is_late_start("22:30", "05:48")      # Step B: after the scrape
+    assert not inc._is_late_start("22:30", "20:00")
+    assert not inc._is_late_start("22:30", "22:29")
+
+
+def test_distribution_children_never_get_the_sqlite_snapshot(monkeypatch):
+    """publish.py gates the ~60 GB snapshot on the weekday; a Saturday night
+    run crossing midnight would otherwise produce Sunday's artefact twice."""
+    monkeypatch.setenv("OCL_PUBLISH_SQLITE_SNAPSHOT", "1")
+    monkeypatch.setenv("HF_TOKEN", "x")
+    env = inc._distribution_env()
+    assert env["OCL_PUBLISH_SQLITE_SNAPSHOT"] == "0"
+    assert env["HF_TOKEN"] == "x"                      # the rest is inherited
+
+
+def test_file_identity_changes_when_a_builder_swaps_a_new_file_in(tmp_path):
+    db = tmp_path / "decision_structure.db"
+    db.write_bytes(b"old")
+    before = inc._file_identity(db)
+    assert before is not None and inc._file_identity(db) == before   # stable
+    tmp = tmp_path / "decision_structure.db.tmp"
+    tmp.write_bytes(b"new-and-longer")
+    import os
+    os.replace(tmp, db)                                # the builders' swap
+    assert inc._file_identity(db) != before
+    assert inc._file_identity(tmp_path / "missing.db") is None
+
+
+def test_structure_failure_detection_is_in_the_from_shards_path():
+    """publish.py marks 2g NON_FATAL, so `--step 2g` exits 0 on failure; the
+    orchestrator must judge by the live file instead."""
+    src = (REPO / "scripts" / "incremental_nightly.py").read_text(encoding="utf-8")
+    i = src.index('"--step", "2g"')
+    tail = src[i:i + 2500]
+    assert "_file_identity(DECISION_STRUCTURE_DB) == before" in tail
+    assert 'rec["exit_code"] = 1' in tail
+
+
+def test_exit_codes_are_documented_in_the_unit():
+    unit = (REPO / "systemd" / "opencaselaw-publish-incremental.service").read_text()
+    assert "OnFailure=ntfy-alert@%n.service" in unit
+    assert "ReadWritePaths=/opt/caselaw/repo /mnt /tmp" in unit
+    assert "EnvironmentFile=-/opt/caselaw/repo/.env.publish" in unit
+    assert "MemoryHigh=32G" in unit
+    # Not flipped yet: Stage A is documented, the live ExecStart is unchanged.
+    assert "ExecStart=/usr/bin/python3 /opt/caselaw/repo/scripts/incremental_nightly.py --skip-quick-publish --in-place-graph" in unit

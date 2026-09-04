@@ -5,10 +5,20 @@ Wants=network.target
 # Don't double-fire with the legacy full-rebuild publish (currently runs
 # daily 03:30 UTC; in Phase 3 it moves to Sundays only).
 ConditionPathExists=!/tmp/opencaselaw-publish.lock
+# A non-zero exit (builder failure, the 10h timeout, or the orchestrator's
+# own codes: 2 = QC gate withheld publication, 3 = a distribution step
+# lagged) pages via the same ntfy template the smoke probe uses. Before
+# 2026-09-04 this unit could fail without anyone hearing about it.
+OnFailure=ntfy-alert@%n.service
 
 [Service]
 Type=oneshot
 WorkingDirectory=/opt/caselaw/repo
+# The distribution tail (Stage A) runs `publish.py --step 7` and `--step 6`,
+# which need the HuggingFace token and the delta flag the full build gets
+# from the same file. The SQLite snapshot flag in it is overridden to 0 by
+# the orchestrator for its children (Sunday-only artefact).
+EnvironmentFile=-/opt/caselaw/repo/.env.publish
 # PHASE 1 (shadow validation, current): --skip-quick-publish so we don't
 # race the legacy full-rebuild's lock on decisions.db (quick_publish
 # already runs every hour via bger-poller — it's covered). Only the
@@ -26,24 +36,42 @@ Environment=SWISS_CASELAW_DIR=/opt/caselaw/repo/output
 # os.replace, workers re-open on next connection). The daily 03:30 full
 # rebuild still regenerates it until Stage 2 moves fulls to Sundays.
 # decision_structure stays in shadow mode (streak 0).
+#
+# STAGE A (prepared 2026-09-04, NOT yet flipped — docs/incremental_nightly_runbook.md
+# "Step A"): the ExecStart becomes
+#   .../incremental_nightly.py --in-place-graph --structure-from-shards --with-distribution
+# i.e. quick_publish ingests the night's scrape, decision_structure is rebuilt
+# from the shards exactly as the full build does, and feeds / QC gate / manifest /
+# HF delta / git push / health run every night. The daily full build stays as
+# the safety net until Step B moves it to Sunday. Flip only on a night whose
+# full build ended before ~19:30 UTC; the orchestrator's --latest-start-utc
+# guard (22:30) skips the long steps otherwise.
 ExecStart=/usr/bin/python3 /opt/caselaw/repo/scripts/incremental_nightly.py --skip-quick-publish --in-place-graph
-# Generous timeout — the incremental run is targeted at ~10-25 min once
-# bootstrapped, but the FIRST run (no prior incremental state) does the
-# equivalent of a full reference_graph + decision_structure rebuild over
-# all ~972k decisions. Sequential bootstrap of both builders observed
-# 2026-05-25: reference_graph 2h 36m (completed) + decision_structure
-# interrupted at the prior 4h cap. 6h cap accommodates back-to-back
-# bootstraps with headroom; subsequent runs only process delta-since-
-# checkpoint and finish in under 30 min.
-TimeoutStartSec=21600
+# 10h (was 6h): Stage A adds quick_publish (~20 min), the ~2h structure
+# rebuild and the ~45 min distribution tail to the ~1h30 graph + stats run,
+# about 4.5h in total, and the run may start late when queued behind the
+# full build. The late-start guard keeps it off the 03:30 slot regardless.
+TimeoutStartSec=10h
 StandardOutput=append:/opt/caselaw/repo/logs/incremental_nightly.log
 StandardError=append:/opt/caselaw/repo/logs/incremental_nightly.log
 
-# Hardening — same envelope as the legacy publish service.
+# Hardening. ProtectSystem=strict keeps the OS read-only; the repo itself
+# must be writable as a whole: the distribution tail commits and pushes
+# (.git), writes releases/<date>/manifest.json and appends to
+# quality/history.db, none of which the old output/logs/docs/state list
+# covered (every night's git push would have died on .git/index.lock).
 ProtectSystem=strict
-ReadWritePaths=/opt/caselaw/repo/output /opt/caselaw/repo/logs /opt/caselaw/repo/docs /opt/caselaw/repo/state /mnt /tmp
+ReadWritePaths=/opt/caselaw/repo /mnt /tmp
 PrivateTmp=false
 NoNewPrivileges=true
+
+# Same fence as opencaselaw-publish.service's drop-in: a night run must not
+# evict the serving page cache or starve the eight workers. Without it the
+# structure rebuild and the QC gate would run uncapped against serving.
+CPUQuota=800%
+CPUWeight=20
+IOWeight=20
+MemoryHigh=32G
 
 [Install]
 WantedBy=multi-user.target

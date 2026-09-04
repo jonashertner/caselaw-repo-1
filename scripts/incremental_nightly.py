@@ -69,13 +69,15 @@ DECISION_STRUCTURE_DB = DATA_DIR / "decision_structure.db"
 logger = logging.getLogger("incremental_nightly")
 
 
-def _run_step(name: str, argv: list[str], dry_run: bool) -> dict:
+def _run_step(name: str, argv: list[str], dry_run: bool,
+              env: dict | None = None) -> dict:
     """Run one builder step, capture timing + exit code, stream output to
     the orchestrator log so journalctl shows real-time progress.
 
     Returns a step record. On non-zero exit code, the orchestrator
     short-circuits in main() — but we still write the partial record so
-    the drift check can see which step blew up.
+    the drift check can see which step blew up. ``env`` replaces the
+    child's environment (default: inherit).
     """
     record = {
         "step": name,
@@ -99,6 +101,7 @@ def _run_step(name: str, argv: list[str], dry_run: bool) -> dict:
             check=False,
             text=True,
             capture_output=False,  # stream to orchestrator stdout/stderr
+            env=env,
         )
         record["exit_code"] = proc.returncode
     except FileNotFoundError as e:
@@ -127,6 +130,53 @@ def _append_summary(run_record: dict) -> None:
     LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
     with LOG_FILE.open("a", encoding="utf-8") as fh:
         fh.write(json.dumps(run_record, ensure_ascii=False) + "\n")
+
+
+# The daily full build's timer. A Stage 2 night that is still driving
+# `publish.py --step` children at this time holds the publish flock, and
+# the full build then exits "already running" — the safety net is lost for
+# the day. The late-start guard below keeps the long steps off nights that
+# started too late to finish before it.
+FULL_BUILD_HHMM = "03:30"
+
+
+def _hhmm_minutes(hhmm: str) -> int:
+    h, m = hhmm.strip().split(":")
+    return int(h) * 60 + int(m)
+
+
+def _now_hhmm(now_utc: str | None = None) -> str:
+    return now_utc or datetime.now(timezone.utc).strftime("%H:%M")
+
+
+def _is_late_start(latest_start: str, now_utc: str | None = None) -> bool:
+    """True when the run starts after ``latest_start`` (UTC) or in the small
+    hours before the full build — both mean it was queued behind a late full
+    build and cannot finish the long steps before 03:30."""
+    now = _hhmm_minutes(_now_hhmm(now_utc))
+    return now >= _hhmm_minutes(latest_start) or now < _hhmm_minutes(FULL_BUILD_HHMM)
+
+
+def _file_identity(path: Path) -> tuple | None:
+    """(inode, size, mtime_ns) of the file behind ``path`` (symlinks resolved),
+    or None. A builder that swaps a new file in changes all three."""
+    try:
+        st = Path(path).resolve().stat()
+    except OSError:
+        return None
+    return (st.st_ino, st.st_size, st.st_mtime_ns)
+
+
+def _distribution_env() -> dict:
+    """Environment for the `publish.py --step` children of the distribution
+    tail. The unit loads .env.publish (HF token, delta flag) so step 7 can
+    push the HuggingFace delta; the SQLite snapshot flag in the same file is
+    forced off because publish.py gates it on the weekday and a Saturday
+    night run that crosses midnight would otherwise produce the ~60 GB
+    snapshot that belongs to the Sunday full build."""
+    env = dict(os.environ)
+    env["OCL_PUBLISH_SQLITE_SNAPSHOT"] = "0"
+    return env
 
 
 def main() -> int:
@@ -199,6 +249,20 @@ def main() -> int:
         help="Skip Step 4 (generate_stats).",
     )
     p.add_argument(
+        "--latest-start-utc",
+        default="22:30",
+        metavar="HH:MM",
+        help="Stage 2 guard: a run that starts later than this (UTC), or in "
+             "the small hours before the 03:30 full build, was queued behind a "
+             "late full build. It then skips the ~2h structure rebuild and the "
+             "distribution tail, because a `publish.py --step` child still "
+             "holding the publish flock at 03:30 would make the full build "
+             "exit 'already running' and cost the day's safety net. "
+             "quick_publish, the graph and stats still run. Only consulted "
+             "with --structure-from-shards or --with-distribution.",
+    )
+    p.add_argument("--now-utc", default=None, help=argparse.SUPPRESS)  # tests
+    p.add_argument(
         "--dry-run",
         action="store_true",
         help="Log what would run without executing.",
@@ -236,6 +300,18 @@ def main() -> int:
         "ok": True,
     }
     t_start = time.monotonic()
+
+    # ── Late-start guard (Stage 2 flags only)
+    late_start = False
+    if args.structure_from_shards or args.with_distribution:
+        late_start = _is_late_start(args.latest_start_utc, args.now_utc)
+        if late_start:
+            logger.warning(
+                "late start (%s UTC, cutoff %s): the structure rebuild and the "
+                "distribution tail are skipped tonight so the %s full build "
+                "keeps its slot; the full build regenerates both",
+                _now_hhmm(args.now_utc), args.latest_start_utc, FULL_BUILD_HHMM)
+            run["late_start"] = True
 
     # ── Step 1: quick_publish (always in-place — this IS the ingestion
     # path; quick_publish itself uses the atomic-swap pattern with
@@ -280,7 +356,12 @@ def main() -> int:
         logger.info("[reference_graph] SKIPPED (--skip-graph)")
 
     # ── Step 3: decision_structure_incremental
-    if not args.skip_structure:
+    if args.skip_structure:
+        logger.info("[decision_structure] SKIPPED (--skip-structure)")
+    elif args.structure_from_shards and late_start:
+        logger.warning("[decision_structure] SKIPPED (late start — the full "
+                       "build rebuilds it from the same shards)")
+    else:
         if args.structure_from_shards:
             # publish.py step 2g reads output/decisions/*.jsonl, not
             # decisions.db, and writes the live sidecar with its own atomic
@@ -296,7 +377,19 @@ def main() -> int:
             ]
             if in_place_structure:
                 struct_argv.append("--in-place")
+        before = None if args.dry_run else _file_identity(DECISION_STRUCTURE_DB)
         rec = _run_step("decision_structure", struct_argv, args.dry_run)
+        if (args.structure_from_shards and not args.dry_run
+                and rec["exit_code"] == 0
+                and _file_identity(DECISION_STRUCTURE_DB) == before):
+            # publish.py lists 2g in NON_FATAL_STEPS: a failed or timed-out
+            # extractor still exits 0 and even logs "Publish OK". The only
+            # trustworthy signal is the live file — the builder swaps a new
+            # inode in on success, so an unchanged file means it did not.
+            logger.error("[decision_structure] publish.py --step 2g exited 0 "
+                         "but decision_structure.db is unchanged — FAILED")
+            rec["exit_code"] = 1
+            rec["error"] = "decision_structure.db unchanged after step 2g"
         run["steps"].append(rec)
         if rec["exit_code"] != 0:
             run["ok"] = False
@@ -305,8 +398,6 @@ def main() -> int:
             run["ended_at"] = datetime.now(timezone.utc).isoformat()
             _append_summary(run)
             return rec["exit_code"]
-    else:
-        logger.info("[decision_structure] SKIPPED (--skip-structure)")
 
     # ── Step 3b: drift check (shadow mode only) — compares the sibling
     # incremental DBs against the live full-rebuilt ones. This is the
@@ -375,17 +466,24 @@ def main() -> int:
     # Measured 2026-08-28: feeds 223s, gate 1,434s, manifest 3s, delta 17s,
     # push 4s, health 25s — under 30 min in total, against the ~3,029s of
     # full Parquet + HuggingFace upload that stay on Sunday.
-    if args.with_distribution:
+    if args.with_distribution and late_start:
+        logger.warning("[distribution] SKIPPED (late start — the full build "
+                       "distributes in the morning)")
+        run["distribution_skipped"] = "late_start"
+    elif args.with_distribution:
         gate_ok = True
+        dist_failed: list[str] = []
+        dist_env = _distribution_env()
         for step, argv_step, fatal in (
             ("rss_feeds",        "5b", False),
             ("qc_gate",          "5c", True),
             ("release_manifest", "5d", False),
         ):
             rec = _run_step(step, [sys.executable, "publish.py", "--step", argv_step],
-                            args.dry_run)
+                            args.dry_run, env=dist_env)
             run["steps"].append(rec)
             if rec["exit_code"] != 0:
+                dist_failed.append(step)
                 if fatal:
                     gate_ok = False
                     logger.error(
@@ -400,27 +498,41 @@ def main() -> int:
                                     ("git_push", "6"),
                                     ("health_check", "6b")):
                 rec = _run_step(step, [sys.executable, "publish.py", "--step", argv_step],
-                                args.dry_run)
+                                args.dry_run, env=dist_env)
                 run["steps"].append(rec)
                 if rec["exit_code"] != 0:
                     # Distribution failures are loud but not fatal: the data
                     # is already correct on the box, only its publication
                     # lagged. check_output_freshness catches a persistent one.
+                    dist_failed.append(step)
                     logger.warning("%s failed (exit=%d) — continuing",
                                    step, rec["exit_code"])
         run["distribution_ok"] = gate_ok
+        run["distribution_failed_steps"] = dist_failed
     else:
         logger.info("[distribution] SKIPPED (--with-distribution not set)")
 
     run["total_duration_s"] = round(time.monotonic() - t_start, 2)
     run["ended_at"] = datetime.now(timezone.utc).isoformat()
+
+    # Exit code: the unit has OnFailure alerting, so anything the morning
+    # should hear about must leave a non-zero exit. The DB work above is
+    # already durable either way (atomic swaps); these codes only say what
+    # did NOT get published.
+    if run.get("distribution_ok") is False:
+        exit_code = 2        # CRITICAL gate verdict: publication withheld
+    elif run.get("distribution_failed_steps"):
+        exit_code = 3        # feeds / manifest / delta / push / health lagged
+    else:
+        exit_code = 0
+    run["exit_code"] = exit_code
     _append_summary(run)
 
     logger.info(
-        "=== incremental_nightly done (mode=%s, total=%ss, ok=%s) ===",
-        mode, run["total_duration_s"], run["ok"],
+        "=== incremental_nightly done (mode=%s, total=%ss, ok=%s, exit=%d) ===",
+        mode, run["total_duration_s"], run["ok"], exit_code,
     )
-    return 0
+    return exit_code
 
 
 if __name__ == "__main__":
