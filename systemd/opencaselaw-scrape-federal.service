@@ -1,11 +1,17 @@
 [Unit]
-Description=OpenCaseLaw midday federal court scrape (BVGer, BStGer, BPatGer)
+Description=OpenCaseLaw midday federal scrape (BVGer, BStGer, BPatGer, BGE + admin.ch DAM retry: ElCom, BAZG)
 After=network.target
 
 [Service]
 Type=oneshot
 WorkingDirectory=/opt/caselaw/repo
-ExecStart=/usr/bin/python3 run_all_scrapers.py --courts bvger,bstger,bpatger,bge --source federal
+# elcom + bazg: their PDFs live on the admin.ch DAM, which answered 502 to every
+# download during the 01:00 UTC scrape on 2026-09-04 (31 new BAZG documents lost
+# for the night) while the same files served fine from this host at 09:00 UTC.
+# Retrying them here costs ~2 min and self-heals a nightly DAM hiccup the same day.
+# --source federal writes scraper_health_federal.json, so the nightly health
+# verdict is untouched.
+ExecStart=/usr/bin/python3 run_all_scrapers.py --courts bvger,bstger,bpatger,bge,elcom,bazg --source federal
 TimeoutStartSec=7200
 StandardOutput=append:/opt/caselaw/repo/logs/daily_scrape.log
 StandardError=append:/opt/caselaw/repo/logs/daily_scrape.log

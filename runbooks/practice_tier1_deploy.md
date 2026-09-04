@@ -84,3 +84,21 @@ Commit `428eb657` (code) + the follow-up commit (systemd unit/timer, this runboo
 Workers only pick up code on restart, so before step 8 nothing is user-visible. After step 8: `git revert` the two commits,
 merge on the VPS, rebuild practice.db (the new JSONL files are harmless to the old code), rolling restart. The old practice.db
 is not kept; the rebuild from JSONL takes ~1 min without BSV.
+
+## Evening 2 addendum (2026-09-04)
+- BSV finished 2026-09-04 00:38 UTC: 6,083 records, 0 failed, 615 MB JSONL on the volume. Runbook step 9 is satisfied.
+- The 20:00 UTC incremental is NOT skipped when the full build overruns: it is queued behind it (`After=` ordering)
+  and runs ~2 h. Gate steps 3+ on BOTH units being inactive:
+  `systemctl is-active opencaselaw-publish.service opencaselaw-publish-incremental.service`.
+  The 01:00 scrape is network + JSONL only and does not block; the next hard stop is the 03:30 full build.
+- Back practice.db up before the rebuild (there is no `.prev` kept otherwise):
+  `V=/mnt/HC_Volume_104655575/output && cp -p $V/practice.db $V/practice.db.prev-$(date -u +%Y%m%d)`.
+  Rollback = copy it back + rolling restart.
+- The rebuilt DB is ~1.0 GB (578 M body chars); it already lives on the volume behind the `output/practice.db`
+  symlink, so the unit's `--db` path stays. Expect 9,504 rows (3,421 + 6,083); the JSONL line count (9,771)
+  includes duplicate lines from the 2026-09-03 overlapping timer run that the upsert collapses.
+- Land data before code: rebuild practice.db, then ff-merge the BSV promotion, then the rolling restart. Merging
+  first would let any worker restart (the daily post-swap recycle included) advertise BSV with zero rows.
+- Copy the repo timer (Persistent=false) into /etc before `enable --now`; the stamp file is newer than the last
+  scheduled elapse, so enabling does not fire a run. Enable only after the Saturday incremental has exited if the
+  deploy slips to Saturday, because the timer fires at 21:30 UTC and repeats crawl, rebuild and rolling restart.

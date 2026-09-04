@@ -121,6 +121,14 @@ class ElComScraper(BaseScraper):
     REQUEST_DELAY = 2.0
     TIMEOUT = 120  # Some PDFs are large
 
+    # Eight listed Verfügungen are image-only scans (a 512 KB PDF with no
+    # text layer, e.g. 211-00008): fetch_decision returns None for them on
+    # every run, which re-downloaded the same 3-4 MB nightly since March 2026
+    # and made the health check read "8 not downloadable" as a portal outage.
+    # Cache them as gaps (re-probed after GAP_TTL_DAYS in case a text layer
+    # appears); the real fix is OCR, tracked separately.
+    CACHE_NONE_AS_GAP = True
+
     @property
     def court_code(self) -> str:
         return "elcom"
