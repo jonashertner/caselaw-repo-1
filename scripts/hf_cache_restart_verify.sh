@@ -130,14 +130,20 @@ done
 echo "workers with HF_HOME in their environment: $applied/$n"
 [ "$applied" = "$n" ] || abort "only $applied/$n workers have the new env (not restarted yet?)"
 
-echo "== live check per worker: FR claim vs DE decision BGE 146 III 25 (baseline 2026-09-03: pinpoint null; expect source=semantic)"
+echo "== live check per worker: FR paraphrase of BGE 146 III 25 E. 3.2 vs the DE decision (expect source=semantic, e_number=3.2)"
+# The claim is a French paraphrase of E. 3.2 of the German judgment. It was
+# scored against the stored MiniLM vectors before being adopted: best cosine
+# 0.82 on E. 3.2 (verified through worker 8770 on 2026-09-04). The earlier
+# keyword-bag claim ("législateur maintenir système double délai prescription
+# amiante") scored 0.35, below PINPOINT_SEMANTIC_MEDIUM=0.55, so it reported
+# "0/8 live" on a working fleet. Any replacement claim must be scored first.
 # First call per worker warms the lazy model load (the pinpoint threads race on
 # _SEMANTIC_MODEL_TRIED during the very first rescue), second call is the check.
 # Each call goes through the normal REST search path, i.e. with LLM query
 # expansion (Haiku, 2 s timeout) when LLM_EXPANSION_ENABLED: up to 2*n small
 # Anthropic requests per run and a non-deterministic top-5. Accepted; there is
 # no request-level switch to turn expansion off.
-Q='q=l%C3%A9gislateur%20maintenir%20syst%C3%A8me%20double%20d%C3%A9lai%20prescription%20amiante&court=bge&date_from=2019-11-06&date_to=2019-11-06&limit=5&include_pinpoint=true'
+Q='q=Le%20Conseil%20des%20Etats%20avait%20propos%C3%A9%20une%20solution%20transitoire%20sp%C3%A9ciale%20pour%20les%20dommages%20corporels%20caus%C3%A9s%20par%20l%27amiante%2C%20supprim%C3%A9e%20ensuite%20en%20raison%20de%20la%20cr%C3%A9ation%20du%20fonds%20d%27indemnisation%20des%20victimes%20de%20l%27amiante.&court=bge&date_from=2019-11-06&date_to=2019-11-06&limit=5&include_pinpoint=true'
 WANT=bge_BGE_146_III_25
 check_port() {
   curl -s --max-time 120 "http://127.0.0.1:$1/api/decisions?$Q" | python3 -c '
@@ -152,7 +158,7 @@ hit = [r for r in rs if r.get("decision_id") == want]
 if not hit:
     print(p, want, "not in top", len(rs), [r.get("decision_id") for r in rs]); sys.exit(0)
 pp = hit[0].get("pinpoint")
-ok = isinstance(pp, dict) and pp.get("source") == "semantic"
+ok = isinstance(pp, dict) and pp.get("source") == "semantic" and str(pp.get("e_number")) == "3.2"
 print(p, want, "OK semantic" if ok else "NOT semantic", json.dumps(pp, ensure_ascii=False)[:200])
 ' "$1" "$WANT"
 }

@@ -296,10 +296,12 @@ for p in $PORTS; do
 done
 # Expect: HF_HOME=1 on every line
 
-# 5b. Live check. French claim against the German Erwägungen of BGE 146 III 25:
-#     no lexical match is possible, so the pinpoint stays null unless the
-#     rescue fires. Baseline before the fix (2026-09-03): pinpoint null.
-Q='q=l%C3%A9gislateur%20maintenir%20syst%C3%A8me%20double%20d%C3%A9lai%20prescription%20amiante&court=bge&date_from=2019-11-06&date_to=2019-11-06&limit=5&include_pinpoint=true'
+# 5b. Live check. French paraphrase of E. 3.2 of BGE 146 III 25 against the
+#     German judgment: lexical finds nothing usable, the rescue scores 0.82 on
+#     E. 3.2 (measured against the stored vectors and verified through a
+#     worker on 2026-09-04). Score any replacement claim first: the former
+#     keyword-bag claim scored 0.35 (< 0.55) and reported a live fleet as dead.
+Q='q=Le%20Conseil%20des%20Etats%20avait%20propos%C3%A9%20une%20solution%20transitoire%20sp%C3%A9ciale%20pour%20les%20dommages%20corporels%20caus%C3%A9s%20par%20l%27amiante%2C%20supprim%C3%A9e%20ensuite%20en%20raison%20de%20la%20cr%C3%A9ation%20du%20fonds%20d%27indemnisation%20des%20victimes%20de%20l%27amiante.&court=bge&date_from=2019-11-06&date_to=2019-11-06&limit=5&include_pinpoint=true'
 for p in $PORTS; do
   curl -s --max-time 120 "http://127.0.0.1:$p/api/decisions?$Q" >/dev/null     # warm: lazy load
   curl -s --max-time 120 "http://127.0.0.1:$p/api/decisions?$Q" | python3 -c '
@@ -308,7 +310,7 @@ rs = [r for r in (json.load(sys.stdin).get("results") or []) if r.get("decision_
 pp = (rs[0].get("pinpoint") if rs else None) or {}
 print(sys.argv[1], pp.get("source"), pp.get("e_number"), pp.get("confidence"))' $p
 done
-# Expect: "<port> semantic <E.> high|medium" on every line. "None None None" means the
+# Expect: "<port> semantic 3.2 high" on every line. "None None None" means the
 # pinpoint stayed null on that worker: either the model did not load (5c shows
 # failed=1 / loaded=0), or paragraph_embeddings.db has no rows for
 # bge_BGE_146_III_25 (check `ls -l $(readlink -f /opt/caselaw/repo/output/paragraph_embeddings.db)`
