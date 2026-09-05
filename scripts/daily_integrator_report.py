@@ -1,11 +1,24 @@
 #!/usr/bin/env python3
 """Daily integrator detection report.
 
-Analyzes nginx access logs to identify:
+Analyzes the nginx tier-1 access log to identify:
 - High-volume IPs (potential commercial integrators)
 - Client types (Claude, ChatGPT, Cursor, custom bots)
 - MCP tool usage patterns
 - Suspicious or unusual access patterns
+
+Log source
+----------
+nginx's default ``access.log`` only receives the catch-all server's traffic
+(a few dozen 301s a day); every real request is written to ``tier1.log``
+(``/etc/nginx/conf.d/ocl-logging.conf``, 72 h retention, rotated as
+``tier1.log-YYYYMMDD-HH[.gz]``)::
+
+    log_format tier1 '$remote_addr $time_iso8601 "$request_method $uri" '
+                     '$status $request_time "$http_user_agent"';
+
+``$uri`` carries no query string and the format logs no byte count, so the
+``size`` / ``bytes_total`` fields are always 0 (kept for the report's shape).
 
 Output: JSON report + optional ntfy.sh push notification.
 Designed to run daily via systemd timer.
@@ -16,15 +29,22 @@ import json
 import re
 import sys
 from collections import Counter, defaultdict
+from collections.abc import Iterable, Iterator
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-# Nginx combined log format
+# nginx tier1 format: IP TIMESTAMP "METHOD PATH" STATUS TIME "UA"
+# The path may not be empty or contain a quote; a request line nginx could not
+# parse is logged as "POST " (400) and is skipped.
 LOG_RE = re.compile(
-    r'(?P<ip>\S+) \S+ \S+ \[(?P<time>[^\]]+)\] '
-    r'"(?P<method>\S+) (?P<path>\S+) \S+" (?P<status>\d+) (?P<size>\d+) '
-    r'"(?P<referer>[^"]*)" "(?P<ua>[^"]*)"'
+    r'^(?P<ip>\S+) (?P<time>\S+) '
+    r'"(?P<method>\S+) (?P<path>[^"\s]+)[^"]*" '
+    r'(?P<status>\d{3}) (?P<rtime>\S+) '
+    r'"(?P<ua>[^"]*)"'
 )
+
+LOG_DIR = Path("/var/log/nginx")
+LOG_GLOB = "tier1.log*"  # hot file + rotated tier1.log-YYYYMMDD-HH[.gz]
 
 # Known client signatures
 CLIENT_PATTERNS = [
@@ -40,8 +60,9 @@ CLIENT_PATTERNS = [
     ("browser", re.compile(r"Mozilla.*(?:Chrome|Firefox|Safari)", re.I)),
 ]
 
-# Paths that indicate MCP tool usage (not just crawling)
-MCP_PATHS = re.compile(r"^/(sse|messages/|$)")
+# Paths that indicate MCP tool usage (not just crawling): the legacy SSE
+# transport (/, /sse, /messages/) and the streamable-HTTP endpoint (/mcp).
+MCP_PATHS = re.compile(r"^/(sse|messages/|mcp(?:/|$)|$)")
 API_PATHS = re.compile(r"^/api/")
 SEO_PATHS = re.compile(r"^/(entscheid/|sitemap|robots\.txt)")
 
@@ -49,6 +70,7 @@ SEO_PATHS = re.compile(r"^/(entscheid/|sitemap|robots\.txt)")
 SKIP_PATHS = {"/health", "/metrics", "/metrics/all", "/dev", "/favicon.ico"}
 
 OUTPUT_DIR = Path("/opt/caselaw/repo/logs/integrator_reports")
+PRINT_FLAGS_MAX = 20  # --print lists at most this many flagged IPs
 
 
 def classify_client(ua: str) -> str:
@@ -58,10 +80,30 @@ def classify_client(ua: str) -> str:
     return "unknown"
 
 
-def parse_logs(log_files: list[Path], since: datetime | None = None) -> list[dict]:
-    """Parse nginx log entries from given files."""
-    entries = []
+def _as_utc(dt: datetime) -> datetime:
+    return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
+
+
+def _may_contain_entries_since(lf: Path, since: datetime) -> bool:
+    """A log file's mtime is its last write, so a file last written before
+    ``since`` cannot hold entries in the window. Skips the stale rotations
+    (and their gunzip) on every run."""
+    try:
+        return lf.stat().st_mtime >= since.timestamp()
+    except OSError:
+        return True
+
+
+def parse_logs(log_files: Iterable[Path], since: datetime | None = None) -> Iterator[dict]:
+    """Yield tier1 log entries from the given files, oldest file first as given.
+
+    Streams: a day is ~400k lines and the report only needs per-IP aggregates.
+    """
+    since_tz = _as_utc(since) if since is not None else None
     for lf in log_files:
+        lf = Path(lf)
+        if since_tz is not None and not _may_contain_entries_since(lf, since_tz):
+            continue
         opener = gzip.open if lf.suffix == ".gz" else open
         try:
             with opener(lf, "rt", errors="replace") as f:
@@ -70,32 +112,22 @@ def parse_logs(log_files: list[Path], since: datetime | None = None) -> list[dic
                     if not m:
                         continue
                     d = m.groupdict()
-                    # Parse time
                     try:
-                        ts = datetime.strptime(d["time"], "%d/%b/%Y:%H:%M:%S %z")
+                        ts = _as_utc(datetime.fromisoformat(d["time"]))
                     except ValueError:
                         continue
-                    # Ensure tz-aware comparison: since is tz-aware (UTC), ts is tz-aware
-                    # from "%z". Previously we stripped tz from ts but compared against
-                    # a tz-aware since — crashed on every .gz file.
-                    if since is not None:
-                        since_tz = since if since.tzinfo else since.replace(tzinfo=timezone.utc)
-                        if ts < since_tz:
-                            continue
+                    if since_tz is not None and ts < since_tz:
+                        continue
                     d["timestamp"] = ts
                     d["status"] = int(d["status"])
-                    d["size"] = int(d["size"])
-                    entries.append(d)
+                    d["size"] = 0  # tier1 logs no byte count
+                    yield d
         except Exception as e:
             print(f"Warning: could not read {lf}: {e}", file=sys.stderr)
-    return entries
 
 
-def analyze(entries: list[dict]) -> dict:
+def analyze(entries: Iterable[dict]) -> dict:
     """Produce integrator analysis report."""
-    if not entries:
-        return {"error": "no log entries found", "generated": datetime.now(timezone.utc).isoformat()}
-
     # Per-IP stats
     ip_stats = defaultdict(lambda: {
         "requests": 0, "mcp_requests": 0, "api_requests": 0,
@@ -105,16 +137,23 @@ def analyze(entries: list[dict]) -> dict:
     })
 
     # Global stats
-    total = len(entries)
+    total = 0
+    first_ts = last_ts = None
     client_counts = Counter()
     tool_calls = Counter()  # MCP tool call paths
     hourly = Counter()
 
     for e in entries:
+        total += 1
+        ts = e["timestamp"]
+        if first_ts is None or ts < first_ts:
+            first_ts = ts
+        if last_ts is None or ts > last_ts:
+            last_ts = ts
+
         ip = e["ip"]
         path = e["path"]
         ua = e["ua"]
-        ts = e["timestamp"]
         client = classify_client(ua)
 
         # Skip noise
@@ -147,6 +186,9 @@ def analyze(entries: list[dict]) -> dict:
         # Track MCP message paths (tool invocations)
         if "/messages/" in path:
             tool_calls[path] += 1
+
+    if not total:
+        return {"error": "no log entries found", "generated": datetime.now(timezone.utc).isoformat()}
 
     # Identify high-volume non-bot IPs (potential integrators)
     integrator_candidates = []
@@ -200,8 +242,8 @@ def analyze(entries: list[dict]) -> dict:
         "generated": datetime.now(timezone.utc).isoformat(),
         "period": {
             "entries_analyzed": total,
-            "first": min(e["timestamp"] for e in entries).isoformat() if entries else None,
-            "last": max(e["timestamp"] for e in entries).isoformat() if entries else None,
+            "first": first_ts.isoformat() if first_ts else None,
+            "last": last_ts.isoformat() if last_ts else None,
         },
         "summary": {
             "total_requests": total,
@@ -245,7 +287,43 @@ def notify(title: str, message: str, topic: str = "opencaselaw"):
         pass
 
 
-def main():
+def print_summary(report: dict) -> None:
+    if "error" in report or "summary" not in report:
+        print(f"\n[integrator_report] No data: {report.get('error', 'summary missing')}")
+        return
+    s = report["summary"]
+    print(f"\n{'='*60}")
+    print(f"Period: {report['period']['first']} → {report['period']['last']}")
+    print(f"Total requests: {s['total_requests']}, Unique IPs: {s['unique_ips']}")
+    print(f"MCP sessions: {s['mcp_sessions']}")
+    print("\nClient breakdown:")
+    for client, count in s["client_breakdown"].items():
+        print(f"  {client}: {count}")
+
+    candidates = report.get("integrator_candidates", [])
+    print(f"\nIntegrator candidates: {len(candidates)} (top 10 by volume)")
+    for c in candidates[:10]:
+        print(
+            f"  {c['ip']} — {c['requests']} req, {c['mcp_requests']} mcp, "
+            f"{c['api_requests']} api, {c['duration_hours']}h ({c['client_type']})"
+        )
+
+    flags = report.get("commercial_flags", [])
+    if flags:
+        # A real day flags hundreds of IPs; the JSON keeps them all, the
+        # journal gets the top of the list.
+        print(f"\n⚠️  Commercial integrator candidates ({len(flags)}, top {PRINT_FLAGS_MAX} by volume):")
+        for f in flags[:PRINT_FLAGS_MAX]:
+            print(f"  {f['ip']} — {f['requests']} req ({f['client_type']})")
+            for r in f["flags"]:
+                print(f"    → {r}")
+        if len(flags) > PRINT_FLAGS_MAX:
+            print(f"  ... and {len(flags) - PRINT_FLAGS_MAX} more in the JSON report")
+    else:
+        print("\nNo commercial integrators flagged.")
+
+
+def main(argv: list[str] | None = None):
     import argparse
 
     parser = argparse.ArgumentParser(description="Daily integrator detection report")
@@ -253,52 +331,41 @@ def main():
     parser.add_argument("--notify", action="store_true", help="Send ntfy alert if commercial use detected")
     parser.add_argument("--output", type=Path, help="Output JSON file (default: auto-dated in logs/)")
     parser.add_argument("--print", action="store_true", dest="print_report", help="Print summary to stdout")
-    args = parser.parse_args()
+    parser.add_argument("--log-dir", type=Path, default=LOG_DIR,
+                        help=f"Directory holding {LOG_GLOB} (default: {LOG_DIR})")
+    parser.add_argument("--dry-run", action="store_true",
+                        help="Analyze and print only: write no report file, send no notification")
+    args = parser.parse_args(argv)
 
     since = datetime.now(timezone.utc) - timedelta(days=args.days)
 
     # Find log files
-    log_dir = Path("/var/log/nginx")
-    log_files = sorted(log_dir.glob("access.log*"))
+    log_files = sorted(args.log_dir.glob(LOG_GLOB))
+    if not log_files:
+        print(f"Warning: no {LOG_GLOB} files in {args.log_dir}", file=sys.stderr)
 
-    entries = parse_logs(log_files, since=since)
-    report = analyze(entries)
+    report = analyze(parse_logs(log_files, since=since))
 
     # Save report
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    out_path = args.output or OUTPUT_DIR / f"{datetime.now(timezone.utc).strftime('%Y-%m-%d')}.json"
-    with open(out_path, "w") as f:
-        json.dump(report, f, indent=2, default=str)
-    print(f"Report saved to {out_path}")
+    if args.dry_run:
+        print("[dry-run] report not written, no notification sent")
+    else:
+        out_path = args.output or OUTPUT_DIR / f"{datetime.now(timezone.utc).strftime('%Y-%m-%d')}.json"
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(out_path, "w") as f:
+            json.dump(report, f, indent=2, default=str)
+        print(f"Report saved to {out_path}")
 
     # Print summary
     if args.print_report:
-        if "error" in report or "summary" not in report:
-            print(f"\n[integrator_report] No data: {report.get('error', 'summary missing')}")
-            return
-        s = report["summary"]
-        print(f"\n{'='*60}")
-        print(f"Period: {report['period']['first']} → {report['period']['last']}")
-        print(f"Total requests: {s['total_requests']}, Unique IPs: {s['unique_ips']}")
-        print(f"MCP sessions: {s['mcp_sessions']}")
-        print(f"\nClient breakdown:")
-        for client, count in s["client_breakdown"].items():
-            print(f"  {client}: {count}")
-
-        flags = report.get("commercial_flags", [])
-        if flags:
-            print(f"\n⚠️  Commercial integrator candidates ({len(flags)}):")
-            for f in flags:
-                print(f"  {f['ip']} — {f['requests']} req ({f['client_type']})")
-                for r in f["flags"]:
-                    print(f"    → {r}")
-        else:
-            print("\nNo commercial integrators flagged.")
+        print_summary(report)
 
     # Send alert
     if args.notify:
         alert = generate_alert(report)
-        if alert:
+        if alert and args.dry_run:
+            print(f"\n[dry-run] alert that would be sent:\n{alert}")
+        elif alert:
             notify("OpenCaseLaw Integrator Alert", alert)
             print("Alert sent via ntfy.sh")
 
