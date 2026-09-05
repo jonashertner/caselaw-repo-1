@@ -129,6 +129,11 @@ class _AttestBody(BaseModel):
     redacted_text: str | None = None
     draft_text: str | None = None  # legacy field, accepted but deprecated
     audit_grounding: bool = False
+    # Stays opt-in over REST (2026-09-05): the callers here are the Word
+    # add-in's "Audit Document" and scripted whole-document scans of a
+    # lawyer's own text, where the 2026-05-11 false positives came from
+    # (party narrative, contract excerpts, witness statements). The MCP
+    # tool, whose drafts quote decisions and statutes, defaults to True.
     audit_quotes: bool = False
     client_redactor_version: str | None = None
     client_redactor_summary: dict | None = None
@@ -16193,7 +16198,7 @@ def _handle_reflect(*, redacted_text: str, lang: str = "de") -> dict:
 
 def _handle_attest_response(*, draft_text: str,
                              audit_grounding: bool = False,
-                             audit_quotes: bool = False) -> dict:
+                             audit_quotes: bool = True) -> dict:
     """Post-draft audit: parse every Swiss-case citation in the LLM's
     response and verify existence + pinpoint validity.
 
@@ -16201,14 +16206,18 @@ def _handle_attest_response(*, draft_text: str,
     an answer containing any citation. Returns an annotated text with each
     citation marked OK or ISSUE, plus a structured issues list.
 
-    ``audit_quotes`` defaults to FALSE as of 2026-05-11: even with the
-    nearby-citation scoping, the quote audit produced too many false
-    positives for legitimate non-legal-source quotations (witness
-    statements, contract excerpts, scholarly commentary, defined
-    terms). Quote-verification is now opt-in via the per-selection
-    Verify Pro feature, where the user has explicitly marked the
-    span as needing source-grounding. Callers that still want the
-    whole-document quote audit can pass ``audit_quotes=True``.
+    ``audit_quotes`` history. Off by default from 2026-05-11: the
+    whole-document scan flagged legitimate non-legal-source quotations
+    (witness statements, contract excerpts, scholarly commentary, defined
+    terms), and the statute mirror spliced amendment notes into article
+    bodies, so even a correct statute quote could fail. On by default again
+    from 2026-09-05 for the MCP tool: the notes now live in `footnote`, the
+    rail pools all three languages untruncated, and
+    scripts/measure_quote_rail_fp.py measured 0.0 % false positives over
+    3,964 statute paragraphs on the rebuilt production DB. The REST body
+    (Word add-in "Audit Document", a lawyer's own whole document) keeps the
+    opt-in default — see _AttestBody. Callers pass ``audit_quotes=False``
+    to leave quotes alone.
     """
     if not draft_text or not draft_text.strip():
         return {"error": "Provide draft_text to audit."}
@@ -16220,10 +16229,9 @@ def _handle_attest_response(*, draft_text: str,
         # verbatim Art. X quote (with no accompanying case citation)
         # is not falsely flagged as unsourced.
         statute_issues = _audit_statutes(draft_text)
-        # Quote-audit is opt-in (audit_quotes=True) as of 2026-05-11 —
-        # default scan leaves user-supplied quotes alone because they
-        # are routinely NOT legal-source claims (party narrative,
-        # commentary, witness statements, defined terms, …).
+        # Quote audit on by default for the MCP tool since 2026-09-05
+        # (see the docstring); audit_quotes=False leaves user-supplied
+        # quotes alone (party narrative, witness statements, defined terms).
         quote_issues = (_audit_quotes(draft_text, _statute_source_pool(draft_text))
                         if audit_quotes else [])
         empty_issues = statute_issues + quote_issues
@@ -16413,9 +16421,9 @@ def _handle_attest_response(*, draft_text: str,
     # list without rebuilding annotated_text (markers attach only to
     # case citations because their spans are unambiguous).
     statute_issues = _audit_statutes(draft_text)
-    # Quote-audit is opt-in (audit_quotes=True) as of 2026-05-11.
-    # When enabled, we still augment the source pool with statute
-    # texts so verbatim Art. X quotes don't trip the audit.
+    # Quote audit on by default for the MCP tool since 2026-09-05, opt-in
+    # over REST (see the docstring). When enabled, the source pool is
+    # augmented with statute texts so verbatim Art. X quotes don't trip it.
     if audit_quotes:
         cited_sources.extend(_statute_source_pool(draft_text))
         quote_issues = _audit_quotes(draft_text, cited_sources)
@@ -16928,16 +16936,30 @@ def _get_related_cases(decision_id: str, *, limit: int = 3) -> dict:
 # see the prior file until restarted (every deploy). So the cache is
 # safe and bounded by the universe of (law_code, article) pairs the
 # server is ever asked about (typically <2k in normal traffic).
-def _articles_has_section(conn) -> bool:
-    """True when statutes.db carries the 2026-09 `section` column (transitional
-    / final-provision articles tagged with their eId prefix). The read side
-    serves both the old and the rebuilt schema during the rollout."""
+def _articles_columns(conn) -> frozenset[str]:
+    """Column names of statutes.db `articles`, empty when unprobeable.
+
+    One PRAGMA answers every schema question of the rollout (`section`
+    since the 2026-09 rebuild, `footnote` since the 2026-09 parser); the
+    read side serves both the old and the rebuilt schema."""
     try:
-        return any(r[1] == "section" for r in conn.execute("PRAGMA table_info(articles)"))
+        return frozenset(r[1] for r in conn.execute("PRAGMA table_info(articles)"))
     except Exception:
         # Not only sqlite3.Error: tests hand in minimal fake connections, and
         # an unprobeable connection must simply mean "old schema".
-        return False
+        return frozenset()
+
+
+def _articles_has_section(conn) -> bool:
+    """True when statutes.db carries the 2026-09 `section` column (transitional
+    / final-provision articles tagged with their eId prefix)."""
+    return "section" in _articles_columns(conn)
+
+
+def _articles_has_footnote(conn) -> bool:
+    """True when statutes.db carries the `footnote` column (amendment notes
+    routed out of the body by the 2026-09 parser)."""
+    return "footnote" in _articles_columns(conn)
 
 
 _statute_text_cache: dict[tuple, dict] = {}
@@ -16982,10 +17004,12 @@ def _fetch_statute_text(*, law_code: str, article: str, lang: str = "de",
             sr = law_row["sr_number"]
             art_row, served = None, None
             # Main-body article only: transitional blocks reuse its number.
-            main_only = " AND section = ''" if _articles_has_section(conn) else ""
+            _cols = _articles_columns(conn)   # one schema probe
+            main_only = " AND section = ''" if "section" in _cols else ""
+            fn_col = ", footnote" if "footnote" in _cols else ""
             for cand in dict.fromkeys((lang or "de", "de", "fr", "it")):
                 art_row = conn.execute(
-                    "SELECT article_num, text, lang FROM articles "
+                    "SELECT article_num, text, lang" + fn_col + " FROM articles "
                     "WHERE sr_number = ? AND article_num = ? AND lang = ?" + main_only + " LIMIT 1",
                     (sr, article, cand),
                 ).fetchone()
@@ -16999,6 +17023,12 @@ def _fetch_statute_text(*, law_code: str, article: str, lang: str = "de",
                 result = {"law_code": law_code, "article": article, "sr_number": sr}
             else:
                 body = art_row["text"] or ""
+                if fn_col and body and body == (art_row["footnote"] or ""):
+                    # Repealed stub built before 2026-09-05: the stored body
+                    # is the amendment note ("Aufgehoben durch ..."), not the
+                    # article's wording. The quote rail must not verify a
+                    # quote of the note as statute text.
+                    body = ""
                 result = {
                     "law_code": law_code,
                     "article": article,
@@ -19269,6 +19299,29 @@ def _select_historical_articles(articles: list[dict], sr_number: str,
     )}
 
 
+def _label_statute_stubs(articles: list[dict]) -> None:
+    """Blank the body of articles whose only content is their amendment note.
+
+    A repealed article on Fedlex is a number plus a note ("Aufgehoben durch
+    ...") and no body; a few are left empty on purpose (OR Art. 6
+    "Gegenstandslos.", StGB Art. 108). Rows built before 2026-09-05 carry
+    that note as the body, so "the text of Art. 10 ZGB" was its footnote —
+    what the LawRider edition comparison (2026-09-03) counted as a spliced
+    note on every repealed article. The body becomes "" , the note stays in
+    `footnote`, and `empty_body` tells the renderer to say why there is no
+    text. In place; rows without a footnote are untouched, so a DB without
+    the column is a no-op.
+    """
+    for art in articles:
+        note = art.get("footnote")
+        if not note:
+            continue
+        body = art.get("text") or ""
+        if body == note or not re.search(r"\w", body):
+            art["text"] = ""
+            art["empty_body"] = True
+
+
 def _fetch_historical_law_version(
     sr_number: str, article: str | None, language: str, as_of: str,
 ) -> dict | None:
@@ -19285,7 +19338,9 @@ def _fetch_historical_law_version(
     machine-readable text in that language, download failure. Errors are
     never cached; editions are (a dated consolidation never changes).
     """
-    cache_key = f"hist_law:v3:{sr_number}:{article or 'all'}:{language}:{as_of}"
+    # v4 (2026-09-05): repealed stubs carry an empty body + `empty_body`
+    # instead of the note as body; cached v3 editions would keep serving it.
+    cache_key = f"hist_law:v4:{sr_number}:{article or 'all'}:{language}:{as_of}"
     cached = _lexfind_cache_get(cache_key)
     if cached is not None:
         return cached
@@ -19380,6 +19435,7 @@ def _fetch_historical_law_version(
                 if article and parsed.get("xml"):
                     entry["xml"] = parsed["xml"]
                 all_articles.append(entry)
+            _label_statute_stubs(all_articles)
             result.update({
                 "text_source": "fedlex_xml",
                 "structure": "articles",
@@ -19661,6 +19717,12 @@ def get_law(
             if "section" in _cols:
                 _has_section = True
                 _art_cols += ", section, section_heading"
+            # 2026-09 parser: amendment notes live in `footnote`, not in the
+            # body. Serve them on the current path too (until 2026-09-05 only
+            # as_of editions did), so a caller sees "Fassung gemäss ..." as a
+            # note and never as article text.
+            if "footnote" in _cols:
+                _art_cols += ", footnote"
         except sqlite3.Error:
             pass
         _main = " AND section = ''" if _has_section else ""
@@ -19776,7 +19838,9 @@ def get_law(
                             f"Art. {article} exists only in the transitional / final "
                             f"provisions of this act, not in its main body."
                         )
-            result["articles"] = [dict(a) for a in articles]
+            _rows = [dict(a) for a in articles]
+            _label_statute_stubs(_rows)
+            result["articles"] = _rows
 
             # Enrich with Materialien (legislative history) when fetching
             # a specific article — gives the LLM the "why" alongside the "what".
@@ -21098,7 +21162,11 @@ def _format_get_law_response(result: dict) -> str:
                          f"(unstructured PDF text{where})\n\n")
             else:
                 text += f"### {marker} {art['article_num']}{heading}\n\n"
-            text += (art.get("text") or "") + "\n\n"
+            if art.get("empty_body"):
+                text += ("_No article text in this edition (repealed or left empty); "
+                         "see the footnote._\n\n")
+            else:
+                text += (art.get("text") or "") + "\n\n"
             if art.get("footnote"):
                 text += f"> Footnote: {art['footnote']}\n\n"
     else:
@@ -23621,9 +23689,10 @@ def _list_tools() -> list[Tool]:
                 "in the corpus and any pinpoint (E. X.Y / consid. X.Y) "
                 "resolves to a real Erwägung; (2) every 'Art. X LAW' statute "
                 "reference resolves (known abbreviation, existing article); "
-                "(3) with audit_quotes=true, quoted passages (60-400 chars) near "
-                "a citation or 'Art. X LAW' reference appear verbatim in the cited "
-                "decision or statute (DE/FR/IT); (4) decision dates adjacent to citations "
+                "(3) quoted passages (60-400 chars) near a citation or 'Art. X LAW' "
+                "reference are verbatim in the cited decision or statute "
+                "(DE/FR/IT; audit_quotes, on by default); "
+                "(4) decision dates adjacent to citations "
                 "match the stored dates; (5) with audit_grounding=true, an "
                 "independent LLM judge checks that each cited source "
                 "actually supports the claim sentence preceding it (one "
@@ -23659,15 +23728,17 @@ def _list_tools() -> list[Tool]:
                     },
                     "audit_quotes": {
                         "type": "boolean",
-                        "default": False,
+                        "default": True,
                         "description": (
-                            "When true, also verifies that every quoted passage "
-                            "(60-400 chars) within ~250 chars of a case citation "
-                            "or an 'Art. X LAW' reference appears verbatim in the "
-                            "cited decision or in that statute article (DE/FR/IT). "
-                            "Off by default while the statute mirror's footnote "
-                            "fix rolls out; set true when you quoted statute or "
-                            "Erwägung text and want it checked."
+                            "Verifies that every quoted passage (60-400 chars) "
+                            "within ~250 chars of a case citation or an 'Art. X LAW' "
+                            "reference appears verbatim in the cited decision or in "
+                            "that statute article (DE/FR/IT). On by default since "
+                            "2026-09-05 (0.0 % false positives measured on 3,964 "
+                            "statute paragraphs after the footnote fix). Pass false "
+                            "when the draft quotes material that is not a decision "
+                            "or a statute (party submissions, witness statements, "
+                            "contracts) to keep those quotes out of the audit."
                         ),
                     },
                 },
@@ -25790,7 +25861,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 _handle_attest_response,
                 draft_text=arguments["draft_text"],
                 audit_grounding=bool(arguments.get("audit_grounding", False)),
-                audit_quotes=bool(arguments.get("audit_quotes", False)),
+                audit_quotes=bool(arguments.get("audit_quotes", True)),
             )
             return [TextContent(type="text", text=json.dumps(result, indent=2, ensure_ascii=False))]
 
@@ -27627,6 +27698,9 @@ setInterval(load, 30000);
                             "heading":     {"type": "string", "nullable": True},
                             "text":        {"type": "string"},
                             "footnote":    {"type": "string", "nullable": True},
+                            "empty_body":  {"type": "boolean", "description":
+                                            "True when the article has no text in this edition "
+                                            "(repealed or left empty); `footnote` says why."},
                             "section":     {"type": "string", "nullable": True},
                         },
                     },

@@ -247,24 +247,26 @@ def test_attest_empty_draft_clean(m):
 
 
 def test_attest_no_case_but_unsourced_quote_flagged(m):
-    """Quote near a citation anchor + not in any cited source → flagged
-    ONLY when the caller opts in with audit_quotes=True.
+    """Quote near a citation anchor + not in any cited source: flagged
+    by default; audit_quotes=False leaves it alone.
 
-    Updated 2026-05-11 (second pass): the document-wide scan now
-    leaves all quotes alone by default — quotes that aren't legal-
-    source claims (party narrative, contract text, foreign-law
-    extract, witness statement) routinely trip the audit even with
-    the nearby-citation guard. Quote verification is opt-in via the
-    per-selection Verify Pro feature."""
+    2026-05-11: the document-wide scan was switched to opt-in because
+    quotes that aren't legal-source claims (party narrative, contract
+    text, witness statements) tripped it, and the statute mirror spliced
+    footnotes into bodies. 2026-09-05: back on by default for the handler
+    (the MCP tool) after the footnote fix measured 0.0 % false positives
+    on statute quotes; the REST body keeps opt-in (_AttestBody)."""
     draft = ('BGE 140 III 86 E. 2: '
              '\u201eDies ist ein erfundenes Zitat von mehr als sechzig '
              'Zeichen, das so im Urteil gar nicht vorkommt.\u201c')
-    # Default: opt-out, no quote issues raised.
+    # Default: the invented quote is flagged.
     res = m._handle_attest_response(draft_text=draft)
-    assert res["issues_by_category"]["quote"] == 0
-    # Explicit opt-in: the same draft now flags the quote.
-    res2 = m._handle_attest_response(draft_text=draft, audit_quotes=True)
-    assert res2["issues_by_category"]["quote"] == 1
+    assert res["issues_by_category"]["quote"] == 1
+    # Explicit opt-out: the same draft raises no quote issue.
+    res2 = m._handle_attest_response(draft_text=draft, audit_quotes=False)
+    assert res2["issues_by_category"]["quote"] == 0
+    # The REST body keeps quote verification opt-in.
+    assert m._AttestBody(redacted_text="x").audit_quotes is False
 
 
 def test_attest_standalone_unsourced_quote_NOT_flagged(m):
@@ -280,14 +282,17 @@ def test_attest_standalone_unsourced_quote_NOT_flagged(m):
     assert res["issues_by_category"]["quote"] == 0
 
 
-def test_attest_quotes_off_by_default(m):
-    """The whole-document scan path no longer audits quotes by
-    default. Citation + statute + date audits still run."""
+def test_attest_quotes_on_by_default_and_opt_out(m):
+    """The handler audits quotes by default (2026-09-05); audit_quotes=False
+    skips them while citation + statute + date audits still run."""
     draft = ('BGE 140 III 86 E. 2.3 hielt fest: '
              '\u201eDas ist ein langer Satz von mehr als sechzig Zeichen '
              'und steht so im Urteil gar nicht.\u201c')
     res = m._handle_attest_response(draft_text=draft)
+    assert res["issues_by_category"]["quote"] == 1
+    res = m._handle_attest_response(draft_text=draft, audit_quotes=False)
     assert res["issues_by_category"]["quote"] == 0
+    assert "citations_found" in res and "issues_by_category" in res
 
 
 def test_attest_returns_required_keys(m):
@@ -512,9 +517,9 @@ def test_statute_text_cache_hits(m, monkeypatch, tmp_path):
     r2 = m._fetch_statute_text(law_code="OR", article="41")
     assert r1 == r2
     assert r1.get("sr_number") == "220"
-    # Three statements on the first call (laws lookup, the `section` schema
-    # probe added with the 2026-09 rebuild, article text), ZERO on the cached
-    # second call.
+    # Three statements on the first call (laws lookup, ONE schema probe for
+    # the `section` / `footnote` columns of the 2026-09 rebuild, article
+    # text), ZERO on the cached second call.
     assert calls["n"] == 3, f"expected 3 DB calls (uncached only), got {calls['n']}"
 
 

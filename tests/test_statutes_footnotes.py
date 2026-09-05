@@ -89,9 +89,9 @@ def test_notes_collected_in_document_order_and_deduplicated():
     assert text == "1 Eins.\n2 Zwei."
 
 
-def test_pure_repeal_article_serves_note_as_body():
-    # ZGB Art. 10: <num> plus a note and nothing else. The note is exactly
-    # what the row contained before, so keep it; do not drop the article.
+def test_pure_repeal_article_has_empty_body_and_keeps_the_note():
+    # ZGB Art. 10: <num> plus a note and nothing else. The note is not the
+    # article's wording (2026-09-05): body "", note in `footnote`.
     art = _article(
         "<num><b>Art. 10</b><authorialNote><p>Aufgehoben durch Anhang 1 Ziff. II 3 der "
         "Zivilprozessordnung vom 19. Dez. 2008.</p></authorialNote></num>",
@@ -99,21 +99,22 @@ def test_pure_repeal_article_serves_note_as_body():
     )
     num, _heading, text, footnote = b.parse_article(art)
     assert num == "10"
-    assert footnote and text == footnote
-    assert text.startswith("Aufgehoben durch")
+    assert text == ""
+    assert footnote.startswith("Aufgehoben durch")
 
 
-def test_ellipsis_body_with_note_serves_note_as_body():
+def test_ellipsis_body_with_note_has_empty_body():
     # 32 rows on the slice have a body of just "…" plus the repeal note.
     art = _article(
         "<num>Art. 42<authorialNote><p>Aufgehoben in der Volksabstimmung vom 28. Nov. 2004.</p>"
         "</authorialNote></num><paragraph><content><p>…</p></content></paragraph>"
     )
     _n, _h, text, footnote = b.parse_article(art)
-    assert text == footnote
+    assert text == ""
+    assert footnote == "Aufgehoben in der Volksabstimmung vom 28. Nov. 2004."
 
 
-def test_empty_content_paragraph_with_note_survives():
+def test_empty_content_paragraph_with_note_keeps_the_note():
     # OR it disp_u16/art_4: <content><paragraph><content/></paragraph></content>
     art = _article(
         "<num><b>Art</b><b>. 4</b><authorialNote><p>Abrogato dall’all. n. 2 della LF del 3 ott. "
@@ -122,7 +123,20 @@ def test_empty_content_paragraph_with_note_survives():
     )
     num, _h, text, footnote = b.parse_article(art)
     assert num == "4"
-    assert text == footnote
+    assert text == ""
+    assert footnote.startswith("Abrogato")
+
+
+def test_live_article_with_note_keeps_its_body():
+    art = _article(
+        "<num><b>Art. 94</b><authorialNote><p>Fassung gemäss Ziff. I des BG vom 18. Dez. 2020.</p>"
+        "</authorialNote></num><paragraph><content><p>Die Ehe kann von zwei Personen eingegangen "
+        "werden.</p></content></paragraph>",
+        eid="art_94",
+    )
+    _n, _h, text, footnote = b.parse_article(art)
+    assert text == "Die Ehe kann von zwei Personen eingegangen werden."
+    assert footnote == "Fassung gemäss Ziff. I des BG vom 18. Dez. 2020."
 
 
 def test_article_without_note_and_without_text_has_empty_text():
@@ -141,9 +155,23 @@ def test_pure_repeal_row_survives_parse_xml(tmp_path, caplog):
     ), encoding="utf-8")
     with caplog.at_level(logging.WARNING, logger="build_statutes"):
         arts = b.parse_xml(p)
+    # The repealed article is a row (empty body, note kept), not a drop.
     assert [a["article_num"] for a in arts] == ["10", "11"]
-    assert arts[0]["text"] == "Aufgehoben." == arts[0]["footnote"]
+    assert arts[0]["text"] == "" and arts[0]["footnote"] == "Aufgehoben."
     assert not [r for r in caplog.records if "drop" in r.getMessage()]
+
+
+def test_article_with_neither_text_nor_note_is_still_dropped(tmp_path, caplog):
+    p = tmp_path / "de.xml"
+    p.write_text(_doc(
+        '<article eId="art_7"><num>Art. 7</num></article>'
+        '<article eId="art_8"><num>Art. 8</num><paragraph><content><p>Text.</p></content></paragraph>'
+        "</article>"
+    ), encoding="utf-8")
+    with caplog.at_level(logging.WARNING, logger="build_statutes"):
+        arts = b.parse_xml(p)
+    assert [a["article_num"] for a in arts] == ["8"]
+    assert [r for r in caplog.records if "drop (no text)" in r.getMessage()]
 
 
 def test_fallback_branch_excludes_num_heading_and_notes():

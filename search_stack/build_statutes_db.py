@@ -352,18 +352,25 @@ def parse_article(article_elem) -> tuple[str, str | None, str, str | None]:
             paragraphs.append(text)
 
     full_text = "\n".join(paragraphs)
-    # A repealed article is a number plus a note ("Aufgehoben durch ...") and
-    # nothing else; some carry a body of just "…". That note is the only text
-    # the article has, and it is exactly what these rows contained before the
-    # notes were routed out of the body, so keep serving it as the body rather
-    # than dropping the article (ZGB Art. 10, 135 keep rendering and matching).
-    if footnote and not re.search(r"\w", full_text):
-        full_text = footnote
-    elif heading and not re.search(r"\w", full_text):
-        # A deleted rule of a treaty regulation is a number plus the heading
-        # "[Gelöscht]" and nothing else (77 rows corpus-wide). The heading is
-        # the only content there is; the old fallback served the number.
-        full_text = heading
+    if not re.search(r"\w", full_text):
+        if footnote:
+            # A repealed article is a number plus a note ("Aufgehoben durch
+            # ...") and nothing else; some carry a body of just "…". The note
+            # is not statute text, so it stays in `footnote` and the body is
+            # served empty: parse_root keeps the row (the article exists, it
+            # is repealed), the read side labels it (`empty_body`), and a
+            # quote of the note can never verify as the article's wording.
+            # Until 2026-09-05 the note doubled as the body — 250 rows on the
+            # dev slice, every repealed ZGB / DSG article in the LawRider
+            # edition comparison — which read as a footnote spliced into the
+            # article.
+            full_text = ""
+        elif heading:
+            # A deleted rule of a treaty regulation is a number plus the
+            # heading "[Gelöscht]" and nothing else (77 rows corpus-wide). The
+            # heading is the only content there is; the old fallback served
+            # the number.
+            full_text = heading
     return article_num, heading, full_text, footnote
 
 
@@ -407,7 +414,7 @@ def parse_root(root, stats: Counter | None = None, source: str = "") -> list[dic
             stats["dropped_no_num"] += 1
             log.warning("%sdrop (no article number) eId=%r num=%r", where, eid, raw)
             continue
-        if not text:
+        if not text and not footnote:
             stats["dropped_no_text"] += 1
             log.warning("%sdrop (no text) eId=%r article_num=%r", where, eid, article_num)
             continue
@@ -424,8 +431,10 @@ def parse_root(root, stats: Counter | None = None, source: str = "") -> list[dic
             log.info("%sshared key (section=%r, article_num=%r) eId=%r, keeping both",
                      where, section, article_num, eid)
         seen.add(key)
-        if footnote and text == footnote:
-            stats["footnote_as_body"] += 1
+        if not text:
+            # Repealed (or deliberately empty) article: the row is kept with
+            # an empty body and its note in `footnote`.
+            stats["empty_body_with_note"] += 1
 
         stats["articles"] += 1
         articles.append({

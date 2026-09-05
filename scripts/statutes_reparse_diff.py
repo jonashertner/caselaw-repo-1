@@ -132,10 +132,11 @@ def main() -> int:
         if not n_num:
             dropped_no_num.append((sr, lang, elem.get("eId"), _raw_num(elem)))
             continue
-        if not n_text:
-            empty_rows.append((sr, lang, section, n_num))
-        elif n_foot and n_text == n_foot:
+        if not n_text and n_foot:
+            # repealed / deliberately empty article: empty body, note kept
             footnote_as_body += 1
+        elif not n_text:
+            empty_rows.append((sr, lang, section, n_num))
 
         keys[(sr, lang, section, n_num)] += 1
         chars_old += len(o_text or "")
@@ -180,7 +181,7 @@ def main() -> int:
     print(f"{'rows that would be empty':40s} {len(empty_rows):8d}")
     for e in empty_rows[:10]:
         print(f"    {e}")
-    print(f"{'rows served from footnote (repealed)':40s} {footnote_as_body:8d}")
+    print(f"{'empty body with note (repealed)':40s} {footnote_as_body:8d}")
     print(f"{'colliding (sr,lang,section,article_num)':40s} {len(collisions):8d}  "
           f"(surplus rows {sum(v - 1 for v in collisions.values())})")
     main_coll = {k: v for k, v in collisions.items() if not k[2]}

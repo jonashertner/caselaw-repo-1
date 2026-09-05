@@ -192,12 +192,17 @@ def test_space_split_letter_suffix_is_detected_and_normalised():
     assert hits.get("OR") == "32" and "und" not in hits
 
 
-def test_audit_quotes_is_declared_default_off_and_description_is_truthful():
+def test_audit_quotes_is_declared_default_on_and_description_is_truthful():
+    # 2026-09-05: on by default for the MCP tool (0.0 % FP measured on the
+    # rebuilt statutes.db); the description must say so and name the opt-out.
     tools = m._list_tools()
     attest = next(t for t in tools if t.name == "attest_response")
     prop = attest.inputSchema["properties"]["audit_quotes"]
-    assert prop["type"] == "boolean" and prop["default"] is False
+    assert prop["type"] == "boolean" and prop["default"] is True
     assert "60-400" in prop["description"]
-    assert "audit_quotes=true" in attest.description
+    assert "On by default" in prop["description"]
+    assert "Pass false" in prop["description"]
+    assert "audit_quotes, on by default" in attest.description
     assert "60-400" in attest.description
     assert "30+ chars" not in attest.description
+    assert "with audit_quotes=true" not in attest.description
