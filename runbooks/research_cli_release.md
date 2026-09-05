@@ -145,12 +145,23 @@ About five minutes. The revert also restores the website. Workers keep serving t
 in-memory code throughout; nothing in the databases or the pipeline is touched. The CLI
 keeps working after a rollback because it only uses pre-existing REST routes.
 
-## 7. PyPI publication (separate, optional, not part of this release)
+## 7. PyPI publication (separate, optional)
 
-The public docs say the client is installed from the checkout and is not on PyPI. When
-publishing: register `opencaselaw-cli` (name is free), build with `uv build clients/python`
-(build from the merged commit; the wheel retained in the project wiki predates the review fixes), then
-`uv publish` with a project-scoped token or set up trusted publishing in a dedicated
-workflow on a `cli-v*` tag. `release.yml` publishes the ROOT package on `v*` tags; do not
-reuse it. Update README, `docs/research-cli.md`, `clients/python/README.md` and the API
-page wording afterwards.
+The docs say the client installs from a checkout. `.github/workflows/release-cli.yml`
+publishes `clients/python` with trusted publishing when a `cli-v<version>` tag is pushed
+(the tag must equal the version in `clients/python/pyproject.toml`; the workflow builds,
+`twine check`s, smoke-installs the wheel, runs the client tests, then uploads). Nothing is
+uploaded until PyPI trusts this repository. One-time setup, in Jonas's PyPI account:
+
+1. PyPI → Publishing → "Add a new pending publisher": PyPI project name `opencaselaw-cli`,
+   owner `jonashertner`, repository `opencaselaw`, workflow name `release-cli.yml`,
+   environment name `pypi-cli`.
+2. GitHub → repository Settings → Environments → create `pypi-cli` (optionally with a
+   required reviewer).
+3. Tag and push: `git tag cli-v0.1.0 <merged sha> && git push origin cli-v0.1.0`.
+4. After the first upload: switch the install instructions (guide, README, API page,
+   `docs/cli/index.html`, package README, dataset card) to `pipx install opencaselaw-cli`
+   and remove the "not on PyPI" sentences.
+
+The root package's `release.yml` publishes `swiss-caselaw-scrapers` on `v*` tags; do not
+reuse it for the client.

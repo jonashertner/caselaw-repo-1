@@ -61,6 +61,7 @@
       '<div><h4 data-t="foot_build">Build</h4><ul>' +
         '<li><a href="/mcp/">MCP server</a></li>' +
         '<li><a href="/api/">REST API</a></li>' +
+        '<li><a href="/cli/">Research CLI</a></li>' +
         '<li><a href="https://word.opencaselaw.ch/">Word add-in</a></li>' +
         '<li><a href="https://huggingface.co/datasets/voilaj/swiss-caselaw" rel="noopener">HuggingFace</a></li></ul></div>' +
       '<div><h4 data-t="foot_trust">Trust</h4><ul>' +
