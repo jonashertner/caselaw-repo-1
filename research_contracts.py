@@ -72,6 +72,7 @@ class SearchDecisionsResponse(ResearchModel):
     query_condensed: bool | None = None
     condensed_terms: list[str] | None = None
     note: str | None = None
+    degraded: bool | None = Field(default=None, description="True when the search hit its time budget and skipped ranking strategies; the page is a degraded ranking, not the best matches.")
     decisions: list[dict[str, Any]] | None = Field(default=None, description="Legacy MCP widget records, retained alongside results.")
 
 
@@ -178,6 +179,7 @@ class LookupHit(DecisionRecord):
 class LookupResponse(ResearchModel):
     query: str
     is_case_number: bool
+    exact: bool | None = Field(default=None, description="True when only decisions carrying the reference as their own docket or BGE label were returned (exact=true).")
     total: int = Field(description="Returned hits, not an uncapped count; inspect all hits for ambiguity and treat a full page conservatively.")
     results: list[LookupHit]
     hint: str | None = None

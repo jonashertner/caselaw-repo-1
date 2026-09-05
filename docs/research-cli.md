@@ -366,3 +366,13 @@ host. The client calls existing REST research routes and does not need the new
 schema endpoint to be deployed. The schema describes returned evidence and
 pagination; it does not certify legal relevance, corpus completeness or the
 accuracy of every upstream record.
+
+Three fields matter for honest scripting. `degraded: true` on a search means
+the service hit its time budget and returned a reduced ranking; retry later or
+narrow the query rather than treating the page as the best matches. On a
+passage, `text_source` is `structure_index` (the normal case) or
+`full_text_heading` (the numbered heading was located in the decision text
+because the index has no row for it; check the block's boundaries before
+quoting). `/api/lookup?exact=true` returns only decisions whose own docket or
+BGE label is the reference, which is what `citations resolve` uses to detect a
+docket reused by another court.

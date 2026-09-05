@@ -85,6 +85,7 @@ Health-gated, one worker at a time. A few `RuntimeError: Expected ASGI message
 
 ```bash
 make smoke
+make smoke-cli                                            # client + contract + description examples, live (~15 requests)
 .venv/bin/python scripts/tool_surface_check.py          # all 42 tools answer (~2 min)
 curl -s https://mcp.opencaselaw.ch/api/research/openapi.json | python3 -c 'import sys,json; s=json.load(sys.stdin); print(s["openapi"], s["x-opencaselaw-contract-version"], len(s["paths"]), "paths", len(s["components"]["schemas"]), "schemas")'
 # expected: 3.0.3 1.0.0 7 paths 15 schemas

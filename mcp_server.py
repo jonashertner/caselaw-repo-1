@@ -3728,6 +3728,10 @@ def _search_fts5_inner(
         # degrades to fewer-strategy BM25 instead of a >50s pile-up.
         if idx > 0 and _past_deadline(_deadline):
             _trace["deadline_hit_strategy"] = idx
+            if meta is not None:
+                # Fewer strategies ran than planned: the ranking is degraded,
+                # and callers paging or scripting on it deserve to know.
+                meta["deadline_partial"] = True
             break
         match_query = strategy["query"]
         strategy_name = strategy.get("name", "")
@@ -10937,7 +10941,7 @@ server = Server(
         "[BGE 140 III 86](https://mcp.opencaselaw.ch/entscheid/bge_BGE_140_III_86) "
         "E. 2.3 fest, dass ...\n"
         "   Example — DON'T:\n"
-        "     Das Bundesgericht hielt in BGE 140 III 86 E. 2.3 fest, dass ...\n"
+        "     Das Bundesgericht hielt in BGE 136 III 513 E. 2.3 fest, dass ...\n"
         "     (plain text — user can't click through to verify)\n\n"
 
         "R7. After calling `attest_response` and receiving `ok=true`, "
@@ -11034,9 +11038,9 @@ server = Server(
         "══════════════════════════════════════════════════════════════\n"
         "CITATION WORKFLOW — THE ONLY LEGITIMATE PATH\n"
         "══════════════════════════════════════════════════════════════\n"
-        "Before writing \"per BGE 140 III 86 E. 2.3 …\" (or any other "
+        "Before writing \"per BGE 136 III 513 E. 2.3 …\" (or any other "
         "case reference), do ONE of:\n"
-        "   a) Call `cite(reference=\"BGE 140 III 86\", pinpoint=\"2.3\")` "
+        "   a) Call `cite(reference=\"BGE 136 III 513\", pinpoint=\"2.3\")` "
         "to get the canonical citation_string, URL, and rule_statement.\n"
         "   b) Call `get_decision(decision_id=\"bge_140_III_86\")` — the "
         "response starts with a \"Citation — copy verbatim\" block.\n"
@@ -11099,7 +11103,7 @@ server = Server(
         "• 'Is BGE X still good law?'              → find_citations (incoming)\n"
         "• 'What does [canton] law say about Y?'   → search_laws with canton\n"
         "• 'How has Swiss law on Y evolved?'       → analyze_legal_trend\n"
-        "• 'What is BGE 140 III 86 E. 2.3?'        → get_erwaegung\n"
+        "• 'What is BGE 136 III 513 E. 2.3?'        → get_erwaegung\n"
         "• 'Which E. supports [claim] in BGE X?'   → find_relevant_erwaegung\n"
         "• 'Read several decisions from a search'  → get_decisions (1-10 ids in ONE\n"
         "     call — ALWAYS prefer this over repeated get_decision; clients cap tool\n"
@@ -12243,6 +12247,53 @@ def _handle_get_decision_structure(*, decision_id: str, paragraph_excerpt_chars:
     }
 
 
+_DISPOSITIVE_RE = re.compile(
+    r"^\s*(Demnach erkennt|Demnach beschliesst|Par ces motifs|Per questi motivi|Dispositiv)\b",
+    re.IGNORECASE | re.MULTILINE)
+
+
+def _erwaegung_from_text(full_text: str | None, e_number: str) -> dict | None:
+    """Locate a numbered Erwägung in the decision's full text when the structure
+    index has no row for it (many cantonal decisions and some BGE are stored as
+    one block). Returns the verbatim block from the heading line to the next
+    heading of the same or a higher level, or None when no heading matches.
+
+    Read-only string work on the served text; nothing is rewritten. The caller
+    labels the result as a text fallback so a quotation from it is traceable.
+    """
+    if not full_text or not e_number:
+        return None
+    text = full_text.replace("\r\n", "\n")
+    number = re.escape(e_number)
+    depth = e_number.count(".")
+    # "2.3", "2.3.", "E. 2.3", "Erw. 2.3", "consid. 2.3", "2.3 -", "2.3:" at a line start
+    heading = re.compile(
+        r"^[ \t]*(?:(?:E|Erw|Erwägung|consid|cons|c)\.?[ \t]*)?" + number + r"\.?(?=[ \t]*(?:[-–—:]|[A-Za-zÀ-ÿ(«\"']|$))",
+        re.MULTILINE)
+    start = heading.search(text)
+    if not start:
+        return None
+    # next heading: a line-leading number with depth <= requested that is not a descendant
+    next_heading = re.compile(r"^[ \t]*(?:(?:E|Erw|Erwägung|consid|cons|c)\.?[ \t]*)?(\d+(?:\.\d+)*)\.?(?=[ \t]+[A-Za-zÀ-ÿ(«\"']|[ \t]*[-–—:])", re.MULTILINE)
+    end = len(text)
+    for m in next_heading.finditer(text, start.end()):
+        num = m.group(1)
+        if num == e_number or num.startswith(e_number + "."):
+            continue
+        if num.count(".") <= depth:
+            end = m.start()
+            break
+    disp = _DISPOSITIVE_RE.search(text, start.end())
+    if disp and disp.start() < end:
+        end = disp.start()
+    block = text[start.start():end].strip()
+    if len(block) < 20:
+        return None
+    return {"e_number": e_number, "depth": depth + 1,
+            "parent": e_number.rsplit(".", 1)[0] if "." in e_number else None,
+            "text": block[:60000]}
+
+
 def _handle_get_erwaegung(*, decision_id: str, e_number: str) -> dict:
     """Return verbatim text of a specific Erwägung paragraph."""
     if not decision_id or not e_number:
@@ -12250,10 +12301,18 @@ def _handle_get_erwaegung(*, decision_id: str, e_number: str) -> dict:
     resolved = _resolve_decision_id(decision_id.strip())
     e_clean = _strip_erw_prefix(e_number)
     paragraphs = _fetch_structure_paragraphs(resolved)
+    text_fallback = False
     if not paragraphs:
-        return {"error": f"No structured Erwägungen found for {decision_id!r}."}
+        # No structure row at all: try the heading in the served full text.
+        main_for_text = get_decision_by_id(resolved)
+        fallback = _erwaegung_from_text((main_for_text or {}).get("full_text"), e_clean)
+        if not fallback:
+            return {"error": f"No structured Erwägungen found for {decision_id!r}, and the decision text "
+                             f"has no heading numbered {e_clean!r}. Fetch the decision and locate the passage.",
+                    "text_source": "none"}
+        paragraphs, text_fallback = [], True
     para_map = {p["e_number"]: p for p in paragraphs}
-    target = para_map.get(e_clean)
+    target = para_map.get(e_clean) if not text_fallback else fallback
     composed_of: list[str] | None = None
     composed_parts: list[dict] | None = None
     if not target:
@@ -12287,13 +12346,25 @@ def _handle_get_erwaegung(*, decision_id: str, e_number: str) -> dict:
                 "text": "\n\n".join(k["text"] for k in kids if k.get("text")),
             }
     if not target:
+        # The index has other numbers but not this one: the decision may be
+        # stored as coarser blocks. Look for the heading in the served text.
+        main_for_text = get_decision_by_id(resolved)
+        fallback = _erwaegung_from_text((main_for_text or {}).get("full_text"), e_clean)
+        if fallback:
+            target, text_fallback = fallback, True
+    if not target:
         # Sort siblings by numeric key for a useful error message
         all_nums = sorted(para_map.keys(), key=_e_number_sort_key)
         return {
             "error": f"E. {e_clean!r} not found in {decision_id!r}.",
             "available_e_numbers": all_nums,
+            "text_source": "none",
+            "hint": (f"Neither the structure index nor a heading in the decision text names E. {e_clean}. "
+                     "The passage may sit inside a larger numbered block; fetch the decision and read it."),
         }
-    if composed_of:
+    if text_fallback:
+        siblings = sorted(para_map.keys(), key=_e_number_sort_key)
+    elif composed_of:
         # Siblings of a composed parent are the other subtrees at its level,
         # derived from the leaves (E. 2 -> ['2', '3']); the stored `parent`
         # field cannot answer this because the parent rows do not exist.
@@ -12352,6 +12423,15 @@ def _handle_get_erwaegung(*, decision_id: str, e_number: str) -> dict:
            if _is_ecthr_court(decision_for_citation.get("court")) else {}),
         "rule_statement": _rule_statement(decision_for_citation, pinpoint_text=target["text"]),
         "_citation_format": citation["citation_string_de"],  # kept for backwards compat
+        # Where the text came from: the structure index (default) or a heading
+        # located in the served full text when the index has no such row.
+        **({"text_source": "full_text_heading",
+            "verbatim_quotation": "text_fallback",
+            "_fallback_note": (
+                f"E. {target['e_number']} is not a row in the structure index; `text` is the block "
+                f"from the heading '{target['e_number']}' in the decision text to the next heading of the "
+                "same or a higher level, verbatim. Check its boundaries against the decision before quoting."
+            )} if text_fallback else {"text_source": "structure_index"}),
         # GitHub #86: present only when the requested E. is a parent level that
         # the Regeste cites but the corpus stores only as leaves. `text` is the
         # children concatenated in order; `parts` keeps them addressable so a
@@ -23263,7 +23343,7 @@ def _list_tools() -> list[Tool]:
             outputSchema=_research_output_schema("get_erwaegung"),
             description=(
                 "Verbatim text of ONE numbered Erwägung — the citable unit in Swiss practice "
-                "(e.g. 'BGE 140 III 86 E. 2.3'). Use when the user already gave an e_number. "
+                "(e.g. 'BGE 136 III 513 E. 2.3'). Use when the user already gave an e_number. "
                 "If only a claim was given (no e_number): use find_relevant_erwaegung — never guess. "
                 "Returns text + sibling Erwägung numbers. e_number: '1', '2.3', '5.2.1', …"
             ),
@@ -24550,7 +24630,66 @@ DEEP_RESEARCH_SEARCH_LIMIT = 10
 _FETCH_TEXT_CAP = 200_000
 
 
-def _lookup_case_number(q: str, limit: int = 8) -> dict:
+def _lookup_exact(qn: str, limit: int = 25) -> dict:
+    """Decisions whose own docket or BGE label IS the reference: no topical
+    padding, no substring matching. Separator-agnostic for federal dockets
+    (4A_747/2012 = 4A 747/2012), alias-aware for joined proceedings, exact
+    (vol, division, page) for BGE/ATF/DTF. Several hits mean the label is
+    reused across courts; zero means the label is not a stored docket."""
+    conn = get_db()
+    ids: list[str] = []
+    for cid in _bge_ref_candidates(qn):
+        if cid not in ids:
+            ids.append(cid)
+    key = docket_aliases.normalize_docket_key(qn)
+    variants = []
+    if key:
+        variants = list(dict.fromkeys([key, key.replace("_", " "), key.replace("_", "."), qn]))
+    else:
+        variants = [qn]
+    rows = []
+    try:
+        if ids:
+            rows += conn.execute(
+                f"SELECT decision_id, docket_number, court, canton, decision_date, title, collection, bge_reference "
+                f"FROM decisions WHERE decision_id IN ({','.join('?' * len(ids))})", ids).fetchall()
+        rows += conn.execute(
+            f"SELECT decision_id, docket_number, court, canton, decision_date, title, collection, bge_reference "
+            f"FROM decisions WHERE docket_number IN ({','.join('?' * len(variants))}) LIMIT ?",
+            [*variants, int(limit)]).fetchall()
+        for alias_id in _lookup_docket_alias(conn, qn):
+            rows += conn.execute(
+                "SELECT decision_id, docket_number, court, canton, decision_date, title, collection, bge_reference "
+                "FROM decisions WHERE decision_id = ?", (alias_id,)).fetchall()
+    except sqlite3.OperationalError as exc:
+        # A fixture or older DB without every column: fall back to the lean shape.
+        logger.debug("exact lookup degraded: %s", exc)
+        try:
+            rows = conn.execute(
+                f"SELECT decision_id, docket_number, court, canton, decision_date, title FROM decisions "
+                f"WHERE decision_id IN ({','.join('?' * max(1, len(ids)))}) OR docket_number IN ({','.join('?' * len(variants))}) LIMIT ?",
+                [*(ids or [""]), *variants, int(limit)]).fetchall()
+        except sqlite3.OperationalError:
+            rows = []
+    out, seen = [], set()
+    for r in rows:
+        r = dict(r) if not isinstance(r, dict) else r
+        did = r.get("decision_id")
+        if not did or did in seen:
+            continue
+        seen.add(did)
+        cit = _build_citation_strings(r)  # R1: citations from the pipeline, never built here
+        out.append({"decision_id": did, "docket_number": r.get("docket_number"), "court": r.get("court"),
+                    "canton": r.get("canton"), "decision_date": r.get("decision_date"), "title": r.get("title"),
+                    "citation": cit.get("citation_string_de"),
+                    "url": cit.get("canonical_url") or _canonical_decision_url(did)})
+        if len(out) >= limit:
+            break
+    return {"query": qn, "is_case_number": True, "exact": True, "total": len(out), "results": out,
+            **({} if out else {"hint": "No stored decision carries this exact docket or BGE label."})}
+
+
+def _lookup_case_number(q: str, limit: int = 8, exact: bool = False) -> dict:
     """Instant case-number / docket lookup for the public site search box.
 
     Guards to docket-style input via _looks_like_docket_query, so it never triggers the
@@ -24569,6 +24708,10 @@ def _lookup_case_number(q: str, limit: int = 8) -> dict:
     # the docket gate. Caught 2026-08-23 when the /search/ capabilities text
     # promised the ATF form and verification showed it failing.
     qn = re.sub(r"^(ATF|DTF)(?=\s+\d)", "BGE", qn, flags=re.IGNORECASE)
+    if exact:
+        # Exact mode is a set of indexed equality lookups, safe for any input;
+        # it does not need the docket-shape gate that protects the FTS path.
+        return _lookup_exact(qn, max(1, min(int(limit), 25)))
     if not _looks_like_docket_query(qn):
         return {"query": qn, "is_case_number": False, "total": 0, "results": [],
                 "hint": "Not a recognised Swiss case number — use full-text search for topics."}
@@ -25412,13 +25555,18 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
             }
             if _search_meta.get("result_set_id"):
                 _struct["result_set_id"] = _search_meta["result_set_id"]
+            _degraded_note = ""
+            if _search_meta.get("deadline_partial"):
+                _struct["degraded"] = True
+                _degraded_note = ("The search exceeded its time budget and returned a degraded ranking; "
+                                  "retry later or narrow the query before treating this page as the best matches.")
             if _search_meta.get("query_condensed"):
                 _struct["query_condensed"] = True
                 _struct["condensed_terms"] = _search_meta.get("condensed_terms", [])
-            if _condense_note or _page_note:
-                _struct["note"] = " ".join(p.strip() for p in (_condense_note, _page_note) if p)
-            if _page_note:
-                text += "\n" + _page_note.strip() + "\n"
+            if _condense_note or _page_note or _degraded_note:
+                _struct["note"] = " ".join(p.strip() for p in (_condense_note, _page_note, _degraded_note) if p)
+            if _page_note or _degraded_note:
+                text += "\n" + " ".join(p.strip() for p in (_page_note, _degraded_note) if p) + "\n"
             if _DECISION_TOOL_META is not None:
                 # Preserve every legacy widget field while adding the shared
                 # research records and pagination independently of the flag.
@@ -25516,7 +25664,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
             if result.get("regeste"):
                 # Inline citations in the regeste text are auto-linked so
                 # if the LLM quotes the regeste to the user, the internal
-                # cross-references ("vgl. BGE 121 III 350 E. 4") are
+                # cross-references ("vgl. BGE 119 II 380 E. 4") are
                 # clickable rather than plain text.
                 text += f"\n## Regeste\n{_auto_link_citations(result['regeste'])}\n"
             if include_full_text and result.get("full_text"):
@@ -27958,8 +28106,10 @@ setInterval(load, 30000);
         q: str = Query(None, description="A Swiss case number / docket (BGE/BGer/cantonal)"),
         query: str = Query(None, description="Alias for `q`."),
         limit: int = Query(8, ge=1, le=25),
+        exact: bool = Query(False, description="Only decisions whose own docket or BGE label is the reference "
+                                               "(separator-agnostic, alias-aware); no related or citing decisions."),
     ):
-        return await asyncio.to_thread(_lookup_case_number, (q or query or ""), limit)
+        return await asyncio.to_thread(_lookup_case_number, (q or query or ""), limit, exact)
 
     @rest_api.get("/decisions", tags=["Case Law"],
                   summary="Search court decisions",
@@ -28098,6 +28248,13 @@ setInterval(load, 30000);
         # nothing, and the offline session join covers them anyway.
         if _search_meta.get("result_set_id"):
             resp["result_set_id"] = _search_meta["result_set_id"]
+        if _search_meta.get("deadline_partial"):
+            # The search hit its wall-clock budget and skipped strategies or
+            # aborted a match: results are a degraded ranking, not the full one.
+            resp["degraded"] = True
+            note = ((note + " ") if note else "") + (
+                "The search exceeded its time budget and returned a degraded ranking; "
+                "retry later or narrow the query before treating this page as the best matches.")
         if _search_meta.get("query_condensed"):
             resp["query_condensed"] = True
             resp["condensed_terms"] = _search_meta.get("condensed_terms", [])

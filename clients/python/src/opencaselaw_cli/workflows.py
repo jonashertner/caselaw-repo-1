@@ -499,7 +499,10 @@ def _resolve_one(client, item, language):
             # matches fragments. The lookup window shows other decisions that
             # carry the same label; it is padded with related decisions, so
             # only label-matching rows count.
-            lookup = _get(client, "/api/lookup", {"q": reference, "limit": LOOKUP_WINDOW})
+            # exact=true (servers from 2026-09-05) returns only decisions carrying the
+            # label; older servers ignore it and pad the window with related cases,
+            # which the label comparison below filters out either way.
+            lookup = _get(client, "/api/lookup", {"q": reference, "limit": LOOKUP_WINDOW, "exact": True})
             candidates = lookup.get("results", [])
             if not isinstance(candidates, list) or any(
                 not isinstance(candidate, dict) or not isinstance(candidate.get("decision_id"), str)
@@ -513,6 +516,7 @@ def _resolve_one(client, item, language):
             row["lookup"] = lookup
             row["identity_check"] = {"method": "exact_server_docket" if docket_match else "exact_candidate_label",
                                      "matching_candidates": matching,
+                                     "lookup_exact": bool(lookup.get("exact")),
                                      "candidate_window_may_be_capped": len(candidates) >= LOOKUP_WINDOW}
             distinct = ids | ({decision_id} if docket_match else set())
             if len(distinct) > 1 or (ids and decision_id not in ids):
