@@ -102,3 +102,7 @@ is not kept; the rebuild from JSONL takes ~1 min without BSV.
 - Copy the repo timer (Persistent=false) into /etc before `enable --now`; the stamp file is newer than the last
   scheduled elapse, so enabling does not fire a run. Enable only after the Saturday incremental has exited if the
   deploy slips to Saturday, because the timer fires at 21:30 UTC and repeats crawl, rebuild and rolling restart.
+- While the Vaud backfill runs the 01:00 scrape to its 4 h cap (2026-09-05 and one or two more nights, see
+  `runbooks/vd_uuid_identity_2026-09.md`) the evening window shrinks to nothing: the full build starts ~05:40 UTC and
+  ends ~22:30-23:00, the queued incremental then runs to ~01:15-01:35 UTC. A Sunday night is the clean slot: no
+  incremental on Sundays, so the window opens when the Sunday full build exits and lasts until Monday 01:00 UTC.
