@@ -1,12 +1,21 @@
 [Unit]
 Description=OpenCaseLaw publish pipeline (full rebuild)
-After=network.target opencaselaw-scrape.service
+# Deliberately NOT After=opencaselaw-scrape.service. That is a job-ordering
+# dependency, and because the scrape is Type=oneshot its start job stays
+# "running" for the whole scrape, so the timer's start job for this unit was
+# held in the queue with no log line and no time bound (2026-08-28: 37 min;
+# 2026-09-04: 2h18m, until vd_gerichte hit its 4h cap; 2026-09-05: 2h06m).
+# The ExecStartPre loop below is the bounded, logged version of the same wait.
+After=network.target
 
 [Service]
 Type=oneshot
 WorkingDirectory=/opt/caselaw/repo
-# Wait up to 2h for scrape to finish before starting
-ExecStartPre=/bin/bash -c "for i in $(seq 1 240); do systemctl is-active --quiet opencaselaw-scrape.service || exit 0; echo \"Waiting for scrape to finish ($i/240)...\"; sleep 30; done; echo \"WARNING: scrape still running after 2h, proceeding anyway\""
+# Wait up to 2h for the scrape to finish before starting, then proceed anyway
+# (run_scraper appends and flushes per decision; build_fts5 skips a torn last
+# line). A oneshot that is still running reports ActiveState=activating and
+# `systemctl is-active` exits 3 for it, so test ActiveState explicitly.
+ExecStartPre=/bin/bash -c "for i in $(seq 1 240); do systemctl show -p ActiveState --value opencaselaw-scrape.service | grep -qxE 'active|activating|reloading|deactivating' || exit 0; echo \"Waiting for opencaselaw-scrape.service to finish ($$i/240, 30 s)...\"; sleep 30; done; echo \"WARNING: scrape still running after 2h, proceeding anyway\""
 ExecStart=/usr/bin/python3 publish.py --full-rebuild
 EnvironmentFile=/opt/caselaw/repo/.env.publish
 # Resource fence (2026-07-06): keep the nightly build from starving the 8
