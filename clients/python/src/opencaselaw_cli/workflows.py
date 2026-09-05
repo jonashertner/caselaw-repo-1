@@ -9,6 +9,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import quote
@@ -28,6 +29,20 @@ _LAW_LANGUAGES = ("de", "fr", "it")
 
 def _now():
     return datetime.now(timezone.utc).isoformat()
+
+
+def _progress(message: str | None) -> None:
+    """One updating status line on stderr for a person watching; nothing when piped."""
+    try:
+        if not sys.stderr.isatty():
+            return
+    except (AttributeError, ValueError):
+        return
+    if message is None:
+        sys.stderr.write("\r\x1b[2K")
+    else:
+        sys.stderr.write("\r\x1b[2K" + message[:120])
+    sys.stderr.flush()
 
 
 def _bytes(value):
@@ -264,7 +279,9 @@ def create_bundle(args, client):
                         "legal_support": "Not assessed; retrieval or citation existence does not establish that a decision supports a legal proposition"}}
         _checkpoint(directory, manifest)
     _select(directory, manifest, client)
-    for decision_id in manifest["selection"]["decision_ids"]:
+    selected = manifest["selection"]["decision_ids"]
+    for index, decision_id in enumerate(selected, 1):
+        _progress(f"saving decision {index}/{len(selected)}: {decision_id}")
         encoded = quote(decision_id, safe="")
         _collect(directory, manifest, client, kind="decision", identifier=decision_id,
                  path="/api/decisions/" + encoded)
@@ -272,9 +289,11 @@ def create_bundle(args, client):
             _collect(directory, manifest, client, kind="passage", identifier=decision_id + ":" + passage,
                      path=f"/api/erwaegung/{encoded}/{quote(passage, safe='')}")
     for law in request["laws"]:
+        _progress(f"saving statute {law['abbreviation']} Art. {law['article']}")
         _collect(directory, manifest, client, kind="law", identifier=law["abbreviation"] + ":" + law["article"],
                  path="/api/laws/" + quote(law["abbreviation"], safe=""),
                  params={"article": law["article"], "language": request.get("law_language", "de")})
+    _progress(None)
     failed = [item for item in manifest["items"].values() if item["status"] != "saved"]
     selection = manifest["selection"]
     complete = selection["finished"] and not selection["error"] and not failed
@@ -459,7 +478,11 @@ def resolve_citations(args, client):
         if pinpoint is not None and (not isinstance(pinpoint, str) or not pinpoint
                                     or not all(part.isdigit() for part in pinpoint.split("."))):
             raise ValueError("A pinpoint must be an Erwägung number string such as 2.3")
-    results = [_resolve_one(client, item, args.language or "de") for item in inputs]
+    results = []
+    for index, item in enumerate(inputs, 1):
+        _progress(f"resolving {index}/{len(inputs)}: {item['reference']}")
+        results.append(_resolve_one(client, item, args.language or "de"))
+    _progress(None)
     counts = {}
     for row in results:
         counts[row["status"]] = counts.get(row["status"], 0) + 1

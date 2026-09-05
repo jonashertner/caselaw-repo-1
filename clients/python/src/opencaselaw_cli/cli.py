@@ -10,6 +10,7 @@ import sys
 from pathlib import Path
 from urllib.parse import quote
 
+from . import render
 from .client import APIError, Client
 from .workflows import RANKED_MAX_RESULTS, reference_key
 
@@ -40,8 +41,10 @@ def _common():
     parser.add_argument("--base-url", help="API origin (default: https://mcp.opencaselaw.ch)")
     parser.add_argument("--timeout", type=float, help="per-request timeout in seconds (default: 30)")
     parser.add_argument("--retries", type=nonnegative_int, help="retries per request, 0-5 (default: 2)")
-    parser.add_argument("--format", choices=["json", "jsonl"], help="output encoding (default: json)")
-    parser.add_argument("--fields", help="comma-separated result fields; pagination/errors are always retained")
+    parser.add_argument("--format", choices=["text", "json", "jsonl"],
+                        help="text is the default at a terminal, json when piped; jsonl writes one record per line")
+    parser.add_argument("--fields", help="comma-separated result fields for json/jsonl; pagination/errors are always retained")
+    parser.add_argument("--color", choices=["auto", "always", "never"], help="colour in text output (default: auto; NO_COLOR is respected)")
     return parser
 
 
@@ -72,7 +75,8 @@ _EXAMPLES = """examples:
   ocl citations resolve 'BGE 136 III 513' '4A_747/2012'
   ocl bundle create 'Rachekündigung Art. 336 OR' --max-results 5 --passage 2 --law OR:336 --out evidence
 
-Output is JSON (or JSONL with --format jsonl) on stdout; messages go to stderr.
+At a terminal, results are shown as readable text; piped or with --format json/jsonl
+they are JSON on stdout. Messages go to stderr.
 Exit codes: 0 complete, 2 invalid input, 3 API or network failure, 4 partial or unresolved.
 Guide: https://github.com/jonashertner/opencaselaw/blob/main/docs/research-cli.md
 """
@@ -87,7 +91,7 @@ def build_parser():
                      "read-only call to the public OpenCaseLaw API; identifiers, citation strings and "
                      "passage text come back from the service unchanged."),
         epilog=_EXAMPLES)
-    parser.set_defaults(base_url="https://mcp.opencaselaw.ch", timeout=30, retries=2, format="json", fields=None)
+    parser.set_defaults(base_url="https://mcp.opencaselaw.ch", timeout=30, retries=2, format=None, fields=None, color="auto")
     parser.add_argument("--version", action="version", version="ocl 0.1.0")
     commands = parser.add_subparsers(dest="command", required=True, metavar="COMMAND")
 
@@ -323,11 +327,38 @@ def _project(row, fields):
     return selected
 
 
+def output_format(args) -> str:
+    fmt = getattr(args, "format", None)
+    if fmt:
+        return fmt
+    try:
+        return "text" if sys.stdout.isatty() else "json"
+    except (AttributeError, ValueError):
+        return "json"
+
+
+def colour_enabled(args, stream) -> bool:
+    choice = getattr(args, "color", "auto") or "auto"
+    if choice == "never" or (choice == "auto" and (os.environ.get("NO_COLOR") or os.environ.get("TERM") == "dumb")):
+        return False
+    if choice == "always":
+        return True
+    try:
+        return bool(stream.isatty())
+    except (AttributeError, ValueError):
+        return False
+
+
 def emit(value, args):
+    fmt = output_format(args)
+    if fmt == "text":
+        style = render.Style(colour_enabled(args, sys.stdout))
+        print(render.render(value, args, style, render.terminal_width()))
+        return
     fields = [field.strip() for field in args.fields.split(",") if field.strip()] if args.fields else None
     collections = [key for key in ("results", "incoming", "outgoing")
                    if isinstance(value, dict) and isinstance(value.get(key), list)]
-    if args.format == "jsonl" and collections:
+    if fmt == "jsonl" and collections:
         for key in collections:
             for row in value[key]:
                 row = _project(row, fields)
@@ -341,7 +372,12 @@ def emit(value, args):
             value = {**value, **{key: [_project(row, fields) for row in value[key]] for key in collections}}
         else:
             value = _project(value, fields)
-        print(json.dumps(value, ensure_ascii=False, allow_nan=False, indent=None if args.format == "jsonl" else 2))
+        print(json.dumps(value, ensure_ascii=False, allow_nan=False, indent=None if fmt == "jsonl" else 2))
+
+
+def _diagnostic(message: str, args=None) -> None:
+    style = render.Style(colour_enabled(args, sys.stderr) if args is not None else False)
+    print(style.yellow("ocl: ") + message, file=sys.stderr)
 
 
 def create_client(args):
@@ -434,16 +470,20 @@ def run(args, client):
 
 def main(argv=None):
     parser = build_parser()
+    args = None
     try:
         args = parser.parse_args(argv)
         value, code = run(args, create_client(args))
         emit(value, args)
         if code:
-            print("ocl: some requested items failed or did not resolve; see the structured output for details", file=sys.stderr)
+            _diagnostic("some requested items failed or did not resolve; see the output for details", args)
         sys.stdout.flush()
         return code
     except APIError as exc:
-        print(json.dumps({"error": exc.to_dict()}, ensure_ascii=False), file=sys.stderr)
+        if output_format(args) == "text":
+            _diagnostic(f"{exc.message}" + (f" (HTTP {exc.status})" if exc.status else ""), args)
+        else:
+            print(json.dumps({"error": exc.to_dict()}, ensure_ascii=False), file=sys.stderr)
         return 3
     except BrokenPipeError:
         # Prevent a second BrokenPipeError from Python's interpreter shutdown.
@@ -455,7 +495,7 @@ def main(argv=None):
             pass
         return 0
     except (ValueError, OSError) as exc:
-        print("ocl: " + str(exc), file=sys.stderr)
+        _diagnostic(str(exc), args)
         return 2
     except KeyboardInterrupt:
         return 130

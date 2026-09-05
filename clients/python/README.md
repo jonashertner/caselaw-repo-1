@@ -24,6 +24,8 @@ offline snapshot. Preserve returned source evidence and pagination metadata.
 
 Exit codes: 0 success (including a bounded selection); 2 invalid input; 3 API
 or transport failure; 4 partial or unresolved result; 130 interruption.
-JSON/JSONL goes to stdout, diagnostics to stderr. The client retries at most
+At a terminal the output is readable text (`--color never` or `NO_COLOR` for
+plain text); piped, or with `--format json|jsonl`, it is JSON on stdout.
+Diagnostics go to stderr. The client retries at most
 twice by default, spaces requests by at least 200 ms, and respects Retry-After
 up to 30 seconds; longer server delays fail without an early retry.

@@ -23,10 +23,12 @@ ocl --help
 Every command is a read-only call to the public service at
 `mcp.opencaselaw.ch`. Nothing is downloaded, no account or key is needed.
 Queries are subject to the [privacy notice](https://opencaselaw.ch/datenschutz/);
-`--base-url` points at a separately operated server. Results are JSON on
-standard output (one record per line with `--format jsonl`), messages go to
-standard error, and the exit code says how it went: 0 complete, 2 invalid
-input, 3 the service or network failed, 4 partial or unresolved.
+`--base-url` points at a separately operated server. At a terminal, results
+are shown as readable, coloured text; when piped, or with `--format json` or
+`--format jsonl`, they are JSON on standard output, so the same command feeds
+both a person and a script. `--color never` or `NO_COLOR` turns colour off.
+Messages go to standard error, and the exit code says how it went: 0 complete,
+2 invalid input, 3 the service or network failed, 4 partial or unresolved.
 
 Your first search:
 
@@ -64,7 +66,8 @@ JSONL
 ocl citations resolve --input references.jsonl --format jsonl --fields reference,decision_id > resolution.jsonl
 ```
 
-Each reference comes back with a status:
+At a terminal the same command prints a table, one line per reference with a
+coloured status; the JSON lines below are what a script receives:
 
 ```
 {"reference": "BGE 136 III 513", "status": "resolved", "decision_id": "bge_BGE_136_III_513", "pinpoint_status": "retrieved"}
@@ -207,7 +210,10 @@ rather than in the model's memory.
 
 ## Reference: search and retrieval
 
-JSON is the default. Search JSON keeps a result envelope with the server's
+Text mode (the default at a terminal) renders search hits, decisions,
+passages, statutes, citation lists, resolution reports and bundle summaries
+for reading; it folds Markdown link markup inside served text for display and
+ignores `--fields`. JSON is the default when output is piped. Search JSON keeps a result envelope with the server's
 pagination fields and `_client` retrieval metadata; JSONL writes one decision
 per line followed by a record with `_type: "pagination"`. Batch commands
 (`decisions get`, `citations resolve`, `cite`) accept plain lines or JSONL
