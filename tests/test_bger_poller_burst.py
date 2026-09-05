@@ -184,3 +184,19 @@ def test_uncovered_rows_set_pending(tmp_path, monkeypatch):
     st = poller._load_state()
     assert st["pending_publish"] is True      # publish debt recorded
     assert st["dockets"] == []                # but NOT marked seen
+
+
+# ── ingestion lookback is the day, not three hours (2026-09-05) ───────────
+
+def test_ingestion_window_reaches_back_to_midnight_utc():
+    from datetime import datetime, timezone
+    at_1639 = datetime(2026, 9, 4, 16, 39, tzinfo=timezone.utc)
+    w = poller._ingestion_window_seconds(now=at_1639)
+    assert w >= 16 * 3600 + 39 * 60                  # covers the 10:43 rows
+    assert w == 16 * 3600 + 39 * 60 + 3600
+
+
+def test_ingestion_window_never_below_the_floor():
+    from datetime import datetime, timezone
+    early = datetime(2026, 9, 4, 0, 30, tzinfo=timezone.utc)
+    assert poller._ingestion_window_seconds(now=early) == 10800

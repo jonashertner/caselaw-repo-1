@@ -292,6 +292,25 @@ def _save_state(today: str, dockets: set[str],
     }))
 
 
+def _ingestion_window_seconds(now: datetime | None = None,
+                              floor: int = 10800) -> int:
+    """Lookback for the JSONL truth check: back to the start of the UTC
+    day, never less than ``floor``.
+
+    The poller's unit of accounting is the day (a Neuheiten page lists one
+    day's publications, state is kept per day), and quick_publish is
+    routinely deferred behind the full build's lock for three to four
+    hours. With a fixed 3 h lookback, rows the scraper fetched in the
+    morning had aged out by the time the publish went through, so the
+    poller reported them "NOT in JSONL" every hour and raised a false
+    ingestion-failure streak (2026-09-04: 26 dockets fetched 10:43,
+    published 14:21, flagged 14:59, 15:39 and 16:39).
+    """
+    now = now or datetime.now(timezone.utc)
+    midnight = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    return max(floor, int((now - midnight).total_seconds()) + 3600)
+
+
 def _recently_ingested_dockets(window_seconds: int = 3600) -> set[str]:
     """Return docket_numbers in bger.jsonl whose ``scraped_at`` is within
     the last ``window_seconds`` seconds.
@@ -898,7 +917,7 @@ def main():
                 pending_publish = _next_pending(
                     pending_publish, qp_ran, qp_ok)
                 ingested_now = _recently_ingested_dockets(
-                    window_seconds=10800)
+                    window_seconds=_ingestion_window_seconds())
                 # Accumulate: a fixed lookback window must not age
                 # attempt-1 rows out of the accounting late in a long run.
                 ingested_all.update(ingested_now)

@@ -80,11 +80,19 @@ SEARCH_HOST = "https://search.bger.ch"
 AZA_INITIAL_URL = (
     HOST + "/ext/eurospider/live/de/php/aza/http/index.php"
 )
-AZA_SEARCH_URL = (
-    HOST + "/ext/eurospider/live/de/php/aza/http/index.php?"
+AZA_SEARCH_PATH = (
+    "/ext/eurospider/live/de/php/aza/http/index.php?"
     "lang=de&type=simple_query&query_words=&top_subcollection_aza=all"
     "&from_date={von}&to_date={bis}"
 )
+AZA_SEARCH_URL = HOST + AZA_SEARCH_PATH
+# Both hosts serve the same AZA search. www.bger.ch is the default (it was
+# the only host reachable from the datacenter IP after search.bger.ch started
+# blocking at the TLS level in Feb 2026); search.bger.ch is the fallback —
+# on 2026-09-05 www.bger.ch stopped answering through the residential tunnel
+# (connection failures, 503 direct) while search.bger.ch served the same
+# pages, and the nightly run logged 46 "Max retries exceeded" windows.
+AZA_HOSTS = (HOST, SEARCH_HOST)
 
 # CLIR search — BGE Leitentscheide
 CLIR_SEARCH_URL = (
@@ -1024,49 +1032,71 @@ class BgerScraper(BaseScraper):
 
             logger.info(f"Searching {von_str} - {bis_str}")
 
-            url = AZA_SEARCH_URL.format(von=von_str, bis=bis_str)
-            try:
-                resp = self._get_with_pow(url)
-                soup = BeautifulSoup(resp.text, "html.parser")
+            # Host fallback: the preferred host first, then the other one.
+            # A window that fails on both is logged once per host and
+            # skipped, as before; a window that succeeds on the fallback
+            # makes that host the preferred one for the rest of the run.
+            for host in self._aza_host_sequence():
+                url = self._aza_url(host, von_str, bis_str)
+                try:
+                    resp = self._get_with_pow(url)
+                    soup = BeautifulSoup(resp.text, "html.parser")
 
-                # Check hit count
-                treffer_count = self._get_hit_count(soup)
+                    # Check hit count
+                    treffer_count = self._get_hit_count(soup)
 
-                if treffer_count is not None and treffer_count > 100:
-                    # Too many results — split into daily requests
+                    if treffer_count is not None and treffer_count > 100:
+                        # Too many results — split into daily requests
 
-                    logger.warning(
-                        f"Window {von_str}-{bis_str}: {treffer_count} hits > 100, "
-                        f"splitting to daily"
-                    )
-                    day = current
-                    while day <= end:
-                        day_str = day.strftime("%d.%m.%Y")
-                        day_url = AZA_SEARCH_URL.format(von=day_str, bis=day_str)
-                        try:
-                            day_resp = self._get_with_pow(day_url)
-                            day_soup = BeautifulSoup(day_resp.text, "html.parser")
-                            yield from self._parse_search_results(
-                                day_soup, "de", fallback_date=day
-                            )
-                            yield from self._follow_pagination(
-                                day_soup, "de", day, day
-                            )
-                        except Exception as e:
-                            logger.error(f"Daily search {day_str}: {e}")
-                        day += timedelta(days=1)
-                elif treffer_count == 0 or self._is_no_results(soup):
-                    logger.debug(f"No results for {von_str}-{bis_str}")
-                else:
-                    yield from self._parse_search_results(
-                        soup, "de", fallback_date=current
-                    )
-                    yield from self._follow_pagination(soup, "de", current, end)
+                        logger.warning(
+                            f"Window {von_str}-{bis_str}: {treffer_count} hits > 100, "
+                            f"splitting to daily"
+                        )
+                        day = current
+                        while day <= end:
+                            day_str = day.strftime("%d.%m.%Y")
+                            day_url = self._aza_url(host, day_str, day_str)
+                            try:
+                                day_resp = self._get_with_pow(day_url)
+                                day_soup = BeautifulSoup(day_resp.text, "html.parser")
+                                yield from self._parse_search_results(
+                                    day_soup, "de", fallback_date=day
+                                )
+                                yield from self._follow_pagination(
+                                    day_soup, "de", day, day
+                                )
+                            except Exception as e:
+                                logger.error(f"Daily search {day_str}: {e}")
+                            day += timedelta(days=1)
+                    elif treffer_count == 0 or self._is_no_results(soup):
+                        logger.debug(f"No results for {von_str}-{bis_str}")
+                    else:
+                        yield from self._parse_search_results(
+                            soup, "de", fallback_date=current
+                        )
+                        yield from self._follow_pagination(soup, "de", current, end)
 
-            except Exception as e:
-                logger.error(f"Search {von_str}-{bis_str}: {e}")
+                    if host != getattr(self, "_aza_host", HOST):
+                        logger.warning(
+                            f"AZA search answered on {host} after "
+                            f"{getattr(self, '_aza_host', HOST)} failed — "
+                            f"using {host} for the rest of this run"
+                        )
+                    self._aza_host = host
+                    break
+                except Exception as e:
+                    logger.error(f"Search {von_str}-{bis_str} via {host}: {e}")
 
             current = end + timedelta(days=1)
+
+    def _aza_host_sequence(self) -> list[str]:
+        """Preferred AZA host first, then the alternative."""
+        preferred = getattr(self, "_aza_host", HOST)
+        return [preferred] + [h for h in AZA_HOSTS if h != preferred]
+
+    @staticmethod
+    def _aza_url(host: str, von: str, bis: str) -> str:
+        return host + AZA_SEARCH_PATH.format(von=von, bis=bis)
 
     # ───────────────────────────────────────────────────────────────────────
     # Search result parsing
