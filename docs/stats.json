@@ -2,7 +2,10 @@
   "total": 1071112,
   "source_representations": 1071112,
   "representation_method_version": "2026-07-23.1",
-  "unique_decisions_status": "stale",
+  "unique_decisions": 930294,
+  "unique_decisions_lower_bound": 930244,
+  "duplicate_representations": 140818,
+  "unique_decisions_status": "current",
   "by_court": [
     {
       "court": "bger",
@@ -730,11 +733,6 @@
       "count": 667,
       "earliest": "1998-04-03",
       "latest": "2026-07-13",
-: "ubi",
-      "canton": "CH",
-      "count": 667,
-      "earliest": "1998-04-03",
-      "latest": "2026-07-13",
       "last_scraped": "2026-08-12T01:54:12.993601+00:00",
       "languages": [
         "de",
@@ -1098,10 +1096,7 @@
       "count": 49,
       "earliest": "2024-06-28",
       "latest": "2025-10-03",
-      
-      ]
-    },
-"2026-03-02T11:20:04.089639+00:00",
+      "last_scraped": "2026-03-02T11:20:04.089639+00:00",
       "languages": [
         "de",
         "it",
@@ -1472,7 +1467,7 @@
       "count": 2,
       "earliest": "2004-05-27",
       "latest": "2004-05-27",
-      "last_scr"sav_ka"2026-04-06T22:01:19.902999+00:00",
+      "last_scraped": "2026-04-06T22:01:19.902999+00:00",
       "languages": [
         "fr"
       ]
@@ -1914,7 +1909,7 @@
     "1946": 215,
     "1947": 243,
     "1948": 212,
-    "1949""1956,
+    "1949": 188,
     "1950": 201,
     "1951": 239,
     "1952": 204,
@@ -2386,7 +2381,8 @@
     "2025-01": 4336,
     "2025-02": 4208,
     "2025-03": 4396,
-    "2025-04": 40"2025-10"2025-05": 4327,
+    "2025-04": 4072,
+    "2025-05": 4327,
     "2025-06": 4718,
     "2025-07": 3896,
     "2025-08": 3797,
@@ -2404,7 +2400,7 @@
     "2026-08": 1040,
     "2026-09": 12
   },
-  "generated_at": "2026-09-05T13:17:54.041272+00:00",
+  "generated_at": "2026-09-05T21:56:48.810129+00:00",
   "scraper_health": {
     "run_at": "2026-09-05T05:36:50.057033+00:00",
     "run_duration_s": 16549.1,
@@ -2692,7 +2688,7 @@
         "portal_count": null,
         "gap": null,
         "duration_s": 1.6,
-        "erro"2026-09,
+        "error": null,
         "note": null,
         "state_count": 455,
         "jsonl_size_mb": 1.0,
@@ -2745,9 +2741,9 @@
         "duration_s": 746.6,
         "error": "46 discovery-phase connection failures (portal unreachable)",
         "note": null,
-        "state_count": 98785,
-        "jsonl_size_mb": 1493.3,
-        "jsonl_mtime": "2026-09-05T01:13:38.197912+00:00"
+        "state_count": 98828,
+        "jsonl_size_mb": 1493.9,
+        "jsonl_mtime": "2026-09-05T21:01:07.903057+00:00"
       },
       "finma_versicherungsrecht": {
         "success": true,
@@ -2981,7 +2977,8 @@
         "portal_count": null,
         "gap": null,
         "duration_s": 58.5,
-        "er"2026-09-05T01:22:37.206785+null,
+        "error": null,
+        "note": null,
         "state_count": 5,
         "jsonl_size_mb": 0.3,
         "jsonl_mtime": "2026-09-05T01:22:37.206785+00:00"
@@ -3276,9 +3273,8 @@
         "jsonl_mtime": "2026-09-05T01:40:45.238748+00:00"
       },
       "zg_obergericht": {
-        "succ,
-        "none_count": 0,
-      false,
+        "success": true,
+        "timed_out": false,
         "new_count": 0,
         "skip_count": 0,
         "error_count": 0,
@@ -3585,8 +3581,8 @@
       "ZH": 135
     },
     "commentaries": 1173,
-    "scholarship_publications": 44495,"e_periodica_polsci": 3089,
-   
+    "scholarship_publications": 44495,
+    "scholarship_by_source": {
       "zora_law": 14022,
       "boris_law": 7319,
       "unige_law": 6507,
@@ -3623,19 +3619,19 @@
       "reference_article": 40,
       "bachelor_thesis": 3
     },
-    "citation_edges": 9911083,
-    "statute_edges": 12558578
+    "citation_edges": 9983764,
+    "statute_edges": 12668616
   },
   "interesting_stats": {
     "most_cited_decision": {
       "docket": "BGE 125 V 351",
-      "citation_count": 77786,
+      "citation_count": 77815,
       "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
     },
     "most_cited_statute": {
       "law_code": "LTF",
       "article": "100",
-      "ref_count": 187486
+      "ref_count": 192596
     },
     "oldest_decision": {
       "docket": "1_I_26",
@@ -3644,20 +3640,20 @@
       "url": "https://mcp.opencaselaw.ch/entscheid/bge_1_I_26"
     },
     "language_split": {
-      "de_pct": 47.4,
-      "fr_pct": 44.1,
-      "it_pct": 8.6,
-      "total": 1061638
+      "de_pct": 47.1,
+      "fr_pct": 44.3,
+      "it_pct": 8.5,
+      "total": 1067158
     },
     "regeste_coverage": {
-      "pct": 38.7,
-      "with_regeste": 412417,
-      "total": 1065592
+      "pct": 38.5,
+      "with_regeste": 412423,
+      "total": 1071112
     },
     "graph_size": {
-      "decision_edges": 11587553,
-      "statute_edges": 12558578,
-      "total": 24146131
+      "decision_edges": 11709332,
+      "statute_edges": 12668616,
+      "total": 24377948
     },
     "echr_switzerland": {
       "total": 1526,
@@ -3674,31 +3670,31 @@
     "top_5_decisions": [
       {
         "docket": "BGE 125 V 351",
-        "citation_count": 77786,
+        "citation_count": 77815,
         "regeste_excerpt": "Regeste\n Art. 4 BV; Art. 108 Abs. 1 lit. b UVG; Art. 40 BZP in Verbindung mit Art. 19 VwVG; Art. 95 Abs. 2 in Verbindung mit Art. 113 und 132 OG: Beweiswürdigun",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
       },
       {
         "docket": "125 V 351",
-        "citation_count": 76271,
+        "citation_count": 76310,
         "regeste_excerpt": "Regeste\n Art. 4 BV; Art. 108 Abs. 1 lit. b UVG; Art. 40 BZP in Verbindung mit Art. 19 VwVG; Art. 95 Abs. 2 in Verbindung mit Art. 113 und 132 OG: Beweiswürdigun",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_125 V 351"
       },
       {
         "docket": "BGE 122 V 157",
-        "citation_count": 40358,
+        "citation_count": 40364,
         "regeste_excerpt": "Regeste\n Art. 4 BV, Art. 6 Ziff. 1 EMRK. - Art. 4 BV und Art. 6 Ziff. 1 EMRK umfassen keinen formellen Anspruch auf Beizug versicherungsexterner medizinischer G",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_122_V_157"
       },
       {
         "docket": "BGE 134 V 231",
-        "citation_count": 39572,
+        "citation_count": 39587,
         "regeste_excerpt": "Regeste\n Art. 6 Abs. 1 UVG; Beweiswert diagnostischer Methoden; funktionelle Magnetresonanztomographie; Schleudertrauma. Eine medizinisch-diagnostische Methode ",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_134_V_231"
       },
       {
         "docket": "BGE 115 V 133",
-        "citation_count": 34633,
+        "citation_count": 34635,
         "regeste_excerpt": "Regeste\n Art. 67 und 76 KUVG, Art. 6 und 18 UVG. Präzisierung der in BGE 113 V 307 veröffentlichten Rechtsprechung zum adäquaten Kausalzusammenhang.\nRegeste\n Ar",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_115_V_133"
       }
@@ -3707,22 +3703,22 @@
       {
         "law_code": "LTF",
         "article": "100",
-        "ref_count": 187486
+        "ref_count": 192596
       },
       {
         "law_code": "LTF",
         "article": "113",
-        "ref_count": 116209
+        "ref_count": 118201
       },
       {
         "law_code": "LTF",
         "article": "42",
-        "ref_count": 108680
+        "ref_count": 108695
       },
       {
         "law_code": "BGG",
         "article": "42",
-        "ref_count": 96708
+        "ref_count": 96737
       },
       {
         "law_code": "BGG",
@@ -3731,13 +3727,13 @@
       }
     ],
     "materialien_coverage": {
-      "total_documents": 6160,
-      "paragraphs": 421908,
-      "article_links": 19898,
+      "total_documents": 6166,
+      "paragraphs": 423556,
+      "article_links": 20204,
       "by_language": {
-        "de": 2053,
-        "fr": 2054,
-        "it": 2053
+        "de": 2055,
+        "fr": 2056,
+        "it": 2055
       },
       "year_range": {
         "from": 1999,
@@ -3785,7 +3781,7 @@
         "earliest": "1908-11-08",
         "latest": "2026-08-31",
         "span_years": 118,
-        "decision_count": 170180
+        "decision_count": 170186
       }
     ]
   },
@@ -3916,11 +3912,8 @@
         "class": "wellknown",
         "n": 17813
       },
-    ,
-        "n": 6379
-      }
-    ],
-  ,
+      {
+        "class": "rest_citations",
         "n": 7394
       },
       {
@@ -4408,7 +4401,10 @@
       "AG": 10,
       "BS": 5
     },
-    "corpus": {},
+    "corpus": {
+      "citation_edges": 72681,
+      "statute_edges": 110038
+    },
     "previous_generated_at": "2026-09-04T22:55:39.402529+00:00"
   }
 }
