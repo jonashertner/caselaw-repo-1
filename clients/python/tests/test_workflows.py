@@ -423,3 +423,42 @@ def test_concurrent_fetches_are_recorded_in_order(tmp_path):
     saved = manifest(tmp_path)
     assert [k for k in saved["items"] if k.startswith("decision:")] == ["decision:" + i for i in ids]
     assert all(item["status"] == "saved" for item in saved["items"].values())
+
+
+def test_long_form_references_resolve_through_their_docket():
+    assert workflows.extract_docket("BGer 4A_747/2012 vom 5. April 2013") == "4A_747/2012"
+    assert workflows.extract_docket("Urteil des Verwaltungsgerichts des Kantons Aargau WBE.2026.33") == "WBE.2026.33"
+    assert workflows.extract_docket("4A_747/2012") is None and workflows.extract_docket("BGE 136 III 513") is None
+    calls = []
+    def cite(params):
+        calls.append(params["reference"])
+        if params["reference"] == "4A_747/2012":
+            return {"exists": True, "decision_id": "bger_4A_747_2012", "citation_string_de": "BGer 4A_747/2012 vom 5. April 2013"}
+        return {"exists": False, "queried": params["reference"], "close_matches": [{"decision_id": "bger_4A_747_2012"}]}
+    client = FakeClient({"/api/cite": cite,
+                         "/api/decisions/bger_4A_747_2012": {"decision_id": "bger_4A_747_2012", "docket_number": "4A_747/2012",
+                                                             "citation_string_de": "BGer 4A_747/2012 vom 5. April 2013"},
+                         "/api/lookup": {"is_case_number": True, "exact": True, "results": [{"decision_id": "bger_4A_747_2012", "docket_number": "4A_747/2012"}]}})
+    result, code = workflows.run(resolution_args("BGer 4A_747/2012 vom 5. April 2013"), client)
+    row = result["results"][0]
+    assert code == 0 and row["status"] == "resolved" and row["docket_extracted"] == "4A_747/2012"
+    assert row["citation_as_written"]["exists"] is False and row["identity_check"]["method"] == "exact_server_docket"
+    assert calls == ["BGer 4A_747/2012 vom 5. April 2013", "4A_747/2012"]
+    assert result["requests"] is None or isinstance(result["requests"], int)
+    # a reference with no docket inside stays missing, with a note that close matches are not substitutes
+    result, code = workflows.run(resolution_args("Bundesgericht, Urteil vom 5. April 2013"), FakeClient({"/api/cite": {"exists": False, "close_matches": [{"decision_id": "x"}]}}))
+    assert code == 4 and result["results"][0]["status"] == "missing" and "never substitutes" in result["results"][0]["note"]
+
+
+def test_unavailable_items_are_told_apart_from_failures(tmp_path):
+    client = FakeClient({"/api/erwaegung/test_case/2.3": {"error": "No structured Erwägungen found for 'test_case'."},
+                         "/api/laws/TEST": APIError(None, "Request failed: connection reset")})
+    args = bundle_args(tmp_path, "--passage", "2.3", "--law", "TEST:41")
+    result, code = workflows.run(args, client)
+    saved = manifest(tmp_path)
+    assert code == 4 and saved["items"]["passage:test_case:2.3"]["status"] == "unavailable"
+    assert saved["items"]["law:TEST:41"]["status"] == "failed"
+    assert result["completeness"] == {**result["completeness"], "failed_items": 2, "unavailable_items": 1}
+    index = (tmp_path / "bundle" / "INDEX.md").read_text(encoding="utf-8")
+    assert "1 item(s) the service does not have" in index and "1 item(s) failed to download" in index
+    assert isinstance(saved.get("requests"), (int, type(None)))

@@ -136,3 +136,16 @@ def test_json_contract_is_untouched_by_text_mode(monkeypatch):
                           [dict(payload)], tty=True)
     lines = [json.loads(l) for l in out.splitlines()]
     assert lines[0] == {"decision_id": "a"} and lines[1]["_type"] == "pagination"
+
+
+def test_resolution_table_shows_the_decision_label_not_a_missing_pinpoint():
+    report = {"status": "partial", "counts": {"pinpoint_unavailable": 1}, "results": [
+        {"reference": "BGE 140 III 86", "status": "pinpoint_unavailable", "decision_id": "bge_BGE_140_III_86",
+         "pinpoint": "2.3", "pinpoint_status": "unavailable",
+         "citation": {"citation_string_de": "BGE 140 III 86, E. 2.3"},
+         "provenance": {"citation_string_de": "BGE 140 III 86"}}]}
+    class A: command = "citations"; action = "resolve"
+    cols, rows = render.tabular(report, A())
+    assert cols[5] == "decision" and rows[0][5] == "BGE 140 III 86" and "E. 2.3" not in rows[0][5]
+    text = render.render_resolution(report, PLAIN, 100)
+    assert "E. 2.3 not in the index" in text and "BGE 140 III 86, E. 2.3" not in text

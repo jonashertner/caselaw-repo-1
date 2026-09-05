@@ -14,7 +14,7 @@ from urllib.parse import quote
 from . import render
 from ._version import __version__
 from .client import APIError, Client
-from .workflows import BREAKER_THRESHOLD, DEFAULT_JOBS, RANKED_MAX_RESULTS, reference_key
+from .workflows import BREAKER_THRESHOLD, DEFAULT_JOBS, RANKED_MAX_RESULTS, extract_docket, reference_key
 
 DEFAULT_BASE_URL = "https://mcp.opencaselaw.ch"
 FORMATS = ("text", "json", "jsonl", "table", "csv", "md")
@@ -92,6 +92,7 @@ def _common():
     parser.add_argument("--fields", help="comma-separated result fields for json/jsonl; pagination/errors are always retained")
     parser.add_argument("--color", choices=["auto", "always", "never"], help="colour in text output (default: auto; NO_COLOR and OCL_COLOR respected)")
     parser.add_argument("--jobs", type=positive_int, help=f"concurrent requests for batch commands, 1-8 (default: {DEFAULT_JOBS}; OCL_JOBS)")
+    parser.add_argument("--verbose", action="store_true", help="log every request (URL, status, time) to stderr")
     return parser
 
 
@@ -144,7 +145,7 @@ def build_parser(config: dict | None = None):
         epilog=_EXAMPLES)
     parser.set_defaults(base_url=cfg.get("base_url", DEFAULT_BASE_URL), timeout=cfg.get("timeout", 30),
                         retries=cfg.get("retries", 2), format=cfg.get("format"), fields=None,
-                        color=cfg.get("color", "auto"), jobs=cfg.get("jobs", DEFAULT_JOBS))
+                        color=cfg.get("color", "auto"), jobs=cfg.get("jobs", DEFAULT_JOBS), verbose=False)
     parser.add_argument("--version", action="version", version=f"ocl {__version__}")
     commands = parser.add_subparsers(dest="command", required=True, metavar="COMMAND")
 
@@ -218,8 +219,13 @@ def build_parser(config: dict | None = None):
         help="check references from a draft: found, missing, ambiguous; verify pinpoints",
         description=("Check a list of references. Each comes back as resolved, missing, ambiguous, "
                      "resolution_incomplete, unrecognized or error, with the service's evidence. A "
-                     "reference with a pinpoint is only 'resolved' if that Erwägung exists. Existence "
-                     "is not legal support: the report never says a decision backs a proposition."),
+                     "reference with a pinpoint is only 'resolved' if that Erwägung exists. A long-form "
+                     "reference (BGer 4A_747/2012 vom 5. April 2013; Verwaltungsgericht ... WBE.2026.33) is "
+                     "retried with the docket it contains and reported with docket_extracted. "
+                     "identity_check.method says why a match is trusted: exact_canonical_id, the service's "
+                     "own citation string, the decision's own docket, or an exact label among lookup "
+                     "candidates; candidate_window_may_be_capped is true when the lookup page was full. "
+                     "Existence is not legal support: the report never says a decision backs a proposition."),
         epilog="examples:\n  ocl citations resolve 'BGE 136 III 513' '4A_747/2012'\n  ocl citations resolve --input references.jsonl --format jsonl > resolution.jsonl\n\nreferences.jsonl lines look like {\"reference\": \"BGE 136 III 513\", \"pinpoint\": \"2.3\"}\n")
     _input(resolve, "references", "references such as 'BGE 136 III 513' or '4A_747/2012'")
     resolve.add_argument("--language", choices=["de", "fr", "it"], default=lang, help="language of the returned citation string (default: de; OCL_LANGUAGE)")
@@ -419,7 +425,7 @@ def search(client, params: dict, max_results: int, page_size: int = 50) -> tuple
             break
     envelope = {**last, "results": results, "returned": len(results), "offset": start,
                 "limit": max_results, "total_is_lower_bound": any(p["total_is_lower_bound"] for p in pages),
-                "_client": {"pages": pages, "errors": errors,
+                "_client": {"pages": pages, "errors": errors, "requests": getattr(client, "requests", None),
                             "ranked_single_request": ranked,
                             "duplicates_dropped": duplicates,
                             "max_results_reached": len(results) >= max_results,
@@ -520,7 +526,8 @@ def _diagnostic(message: str, args=None) -> None:
 
 
 def create_client(args):
-    return Client(base_url=args.base_url, timeout=args.timeout, retries=args.retries)
+    log = (lambda line: print("ocl: " + line, file=sys.stderr)) if getattr(args, "verbose", False) else None
+    return Client(base_url=args.base_url, timeout=args.timeout, retries=args.retries, log=log)
 
 
 def _decision_id(client, reference):
@@ -531,6 +538,11 @@ def _decision_id(client, reference):
     citation = client.get("/api/cite", {"reference": reference})
     if citation.get("error"):
         raise APIError(200, str(citation["error"]))
+    if citation.get("exists") is False and extract_docket(reference):
+        # Long-form reference: retry with the docket it contains; the label
+        # check below still requires the resolved decision to carry it.
+        reference = extract_docket(reference)
+        citation = client.get("/api/cite", {"reference": reference})
     if citation.get("exists") is False:
         raise APIError(404, "Reference not found in the corpus: " + reference)
     decision_id = citation.get("decision_id")
@@ -601,7 +613,8 @@ def _batch(args, client, kind):
     if len(inputs) == 1 and not errors:
         return rows[0], 4 if unresolved else 0
     code = ((4 if rows else 3) if errors else (4 if unresolved else 0))
-    return {"results": rows, "errors": errors, "requested": len(inputs), "returned": len(rows)}, code
+    return {"results": rows, "errors": errors, "requested": len(inputs), "returned": len(rows),
+            "requests": getattr(client, "requests", None)}, code
 
 
 def _response(value):

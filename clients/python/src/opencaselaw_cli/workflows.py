@@ -31,6 +31,10 @@ DEFAULT_JOBS = 4
 # network is down; stop instead of burning the retry budget on every item.
 BREAKER_THRESHOLD = 5
 _LAW_SPEC = re.compile(r"^(?:(?P<canton>[A-Za-z]{2})/)?(?P<abbr>[^:/]+):(?P<article>[^:]+)$")
+# A docket embedded in a longer reference: the federal form the service itself
+# prints ("BGer 4A_747/2012 vom 5. April 2013") and dotted cantonal files
+# ("Verwaltungsgericht des Kantons Aargau WBE.2026.33").
+_EMBEDDED_DOCKET = re.compile(r"\b(\d[A-Z]{1,2}[ _.]\d{1,5}/\d{4}|[A-Z]{2,6}\.\d{4}\.\d{1,5})\b")
 
 
 def _now():
@@ -121,8 +125,19 @@ def _get(client, path, params=None):
     if not isinstance(result, dict):
         raise APIError(None, "Expected a JSON object from the research API")
     if result.get("error"):
-        raise APIError(None, str(result["error"]))
+        # The service answered: the item does not exist or is not indexed.
+        # Status 200 tells callers apart from a transport failure (None).
+        raise APIError(200, str(result["error"]))
     return result
+
+
+def extract_docket(reference: str) -> str | None:
+    """The docket inside a longer reference, if any, else None."""
+    match = _EMBEDDED_DOCKET.search(reference or "")
+    if not match:
+        return None
+    docket = match.group(1)
+    return None if docket.strip() == (reference or "").strip() else docket
 
 
 def _request(args, client):
@@ -253,7 +268,10 @@ def _record(directory, manifest, *, kind, identifier, path, params, result, erro
     item = {"kind": kind, "identifier": identifier, "request": {"path": path, "params": params}}
     manifest["items"][job_key] = item
     if error is not None:
-        item.update(status="failed", error=error.to_dict())
+        # "unavailable": the service answered that the item is not there (a
+        # passage the index lacks, an unknown article); "failed": transport or
+        # validation failure that a retry may fix.
+        item.update(status="unavailable" if error.status == 200 else "failed", error=error.to_dict())
         manifest["attempt_errors"].append({"stage": kind, "identifier": identifier,
                                             "at": _now(), **error.to_dict()})
         _checkpoint(directory, manifest)
@@ -366,13 +384,16 @@ def create_bundle(args, client):
     specs = _item_specs(request, manifest["selection"]["decision_ids"]) + _law_specs(request)
     _collect_all(directory, manifest, client, specs, _jobs(args))
     failed = [item for item in manifest["items"].values() if item["status"] != "saved"]
+    unavailable = [item for item in failed if item["status"] == "unavailable"]
     selection = manifest["selection"]
     complete = selection["finished"] and not selection["error"] and not failed
     manifest["status"] = "complete" if complete else "partial"
+    manifest["requests"] = getattr(client, "requests", None)
     manifest["completeness"] = {"selected_items_saved": complete,
                                 "exhaustive_legal_research": False,
                                 "selected_decisions": len(selection["decision_ids"]),
-                                "failed_items": len(failed), "search_error": selection["error"],
+                                "failed_items": len(failed), "unavailable_items": len(unavailable),
+                                "search_error": selection["error"],
                                 "max_results_reached": selection["max_results_reached"],
                                 "ranked_single_request": bool(request.get("ranked_single_request")),
                                 "corpus_generation": (manifest.get("corpus_snapshot") or {}).get("db_generation"),
@@ -431,8 +452,15 @@ def _write_index(directory, manifest):
         lines.append("")
     completeness = manifest.get("completeness") or {}
     if completeness.get("failed_items"):
-        lines += [f"{completeness['failed_items']} requested item(s) could not be saved; rerun with --resume "
-                  "after the cause is fixed, or keep this as a partial collection.", ""]
+        unavailable = completeness.get("unavailable_items", 0)
+        transport = completeness["failed_items"] - unavailable
+        parts = []
+        if unavailable:
+            parts.append(f"{unavailable} item(s) the service does not have (for example a passage that is not "
+                         "indexed for that decision); these will not appear on a rerun")
+        if transport:
+            parts.append(f"{transport} item(s) failed to download; rerun with --resume")
+        lines += ["; ".join(parts) + ".", ""]
     (directory / "INDEX.md").write_text("\n".join(lines), encoding="utf-8")
 
 
@@ -471,8 +499,22 @@ def _resolve_one(client, item, language):
     try:
         citation = _get(client, "/api/cite", {"reference": reference, "pinpoint": pinpoint, "language": language})
         row["citation"] = citation
+        lookup_reference = reference
+        if citation.get("exists") is False:
+            # A long-form reference ("BGer 4A_747/2012 vom 5. April 2013") the
+            # service does not parse: retry with the docket it contains. The
+            # docket-label identity check below still has to pass.
+            docket = extract_docket(reference)
+            if docket:
+                retry = _get(client, "/api/cite", {"reference": docket, "pinpoint": pinpoint, "language": language})
+                if retry.get("exists") is True:
+                    row["citation_as_written"] = citation
+                    row["citation"] = citation = retry
+                    row["docket_extracted"] = docket
+                    lookup_reference = docket
         if citation.get("exists") is False:
             row["status"] = "missing"
+            row["note"] = "No decision carries this label; close_matches are for the author to inspect, never substitutes"
             return row
         decision_id = citation.get("decision_id")
         if citation.get("exists") is not True or not isinstance(decision_id, str) or not decision_id:
@@ -482,12 +524,12 @@ def _resolve_one(client, item, language):
             raise APIError(None, "Decision retrieval disagrees with citation resolution")
         row.update(decision_id=decision_id, provenance=_provenance(decision))
         row["official_source_available"] = bool(decision.get("source_url"))
-        key = reference_key(reference)
+        key = reference_key(lookup_reference)
         canonical_labels = {reference_key(record.get(name))
                             for record in (decision, citation)
                             for name in ("citation_string", "citation_string_de", "citation_string_fr", "citation_string_it")}
         docket_match = key is not None and key == reference_key(decision.get("docket_number"))
-        if reference == decision_id:
+        if lookup_reference == decision_id:
             row["identity_check"] = {"method": "exact_canonical_id"}
         elif key in canonical_labels:
             # /lookup can return topical hits that only cite the requested BGE.
@@ -502,7 +544,7 @@ def _resolve_one(client, item, language):
             # exact=true (servers from 2026-09-05) returns only decisions carrying the
             # label; older servers ignore it and pad the window with related cases,
             # which the label comparison below filters out either way.
-            lookup = _get(client, "/api/lookup", {"q": reference, "limit": LOOKUP_WINDOW, "exact": True})
+            lookup = _get(client, "/api/lookup", {"q": lookup_reference, "limit": LOOKUP_WINDOW, "exact": True})
             candidates = lookup.get("results", [])
             if not isinstance(candidates, list) or any(
                 not isinstance(candidate, dict) or not isinstance(candidate.get("decision_id"), str)
@@ -585,6 +627,7 @@ def resolve_citations(args, client):
     return {"schema_version": SCHEMA_VERSION, "kind": "opencaselaw-citation-resolution",
             "client_version": __version__, "base_url": client.base_url, "generated_at": _now(),
             "status": "complete" if complete else "partial", "results": results, "counts": counts,
+            "requests": getattr(client, "requests", None),
             "scope": "Decision existence and requested pinpoint retrieval in the OpenCaseLaw corpus; no assessment of legal support or original-source accuracy"}, 0 if complete else 4
 
 

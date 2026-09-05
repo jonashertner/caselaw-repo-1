@@ -155,7 +155,9 @@ decisions, because the corpus is rebuilt nightly.
   the service's own citation string, the decision's own docket label, or an
   exact label among the service's lookup candidates.
 - A bundle is `complete` when every requested item was saved, otherwise
-  `partial` with each failed item listed. Complete describes the requested
+  `partial`. An `unavailable` item is one the service does not have (a
+  passage that is not indexed for that decision); a `failed` item is a
+  download that `--resume` will retry. Complete describes the requested
   collection, not the law: `exhaustive_legal_research` is always `false`.
 - `total_is_lower_bound: true` means "at least this many". A text query is
   ranked over a bounded candidate pool, so `has_more: false` never proves that
@@ -177,6 +179,7 @@ table, `--format csv` for a spreadsheet, `--format md` for a memo appendix
 `decisions passage`). Batch commands and bundles run up to `--jobs` requests
 at once (default 4) under the same 200 ms pacing, and stop after five
 consecutive transport failures instead of retrying every remaining item.
+`--verbose` logs every request to stderr; outputs carry the request count.
 
 ## Recipes
 
@@ -307,7 +310,11 @@ decisions citing that case; inspect the selected IDs.
 ## Reference: citation resolution
 
 Input is one reference per line, or JSONL records with `reference` and an
-optional `pinpoint`; `--stdin` and positional references also work. Exact
+optional `pinpoint`; `--stdin` and positional references also work. A
+long-form reference (`BGer 4A_747/2012 vom 5. April 2013`, `Urteil des
+Verwaltungsgerichts des Kantons Aargau WBE.2026.33`) is retried with the
+docket it contains and reported with `docket_extracted`; the resolved
+decision must still carry that docket label. Exact
 canonical IDs and the service's own citation strings confirm identity directly
 (a trailing pinpoint such as `, E. 2.3`, the `ATF`/`DTF` labels and the
 federal docket separator `4A_747/2012` = `4A 747/2012` are folded for the
