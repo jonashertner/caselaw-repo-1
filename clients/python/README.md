@@ -1,7 +1,10 @@
 # OpenCaseLaw research CLI
 
 Dependency-free Python 3.10+ client for the public, read-only research API.
-Install from the repository with `python3 -m pip install ./clients/python`.
+Install from the repository with `pipx install ./clients/python` (or
+`uv tool install ./clients/python`); both create the isolated environment
+that current Python installations require. Without them, use a virtual
+environment: `python3 -m venv .venv && .venv/bin/pip install ./clients/python`.
 This package does not install scraper/server dependencies or a local corpus.
 
 ```sh

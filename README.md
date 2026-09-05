@@ -41,7 +41,7 @@ keeping the evidence behind a memo in a folder you can share. Install from
 this checkout (the client is not on PyPI yet):
 
 ```bash
-python3 -m pip install ./clients/python
+pipx install ./clients/python        # or: uv tool install ./clients/python
 ocl citations resolve 'BGE 136 III 513' '4A_747/2012' 'BGE 999 III 1'
 ocl bundle create 'Rachekündigung Art. 336 OR' --max-results 10 --passage 2 --law OR:336 --out evidence
 ```

@@ -106,7 +106,7 @@
 
       <h2 id="cli" data-t="cli_h">Automate research from a terminal</h2>
       <p data-t="cli_p">Install the lightweight client from a repository checkout. Save bounded search results, retrieve exact passages, resolve citation lists and preserve evidence bundles. The separate client is not yet published on PyPI.</p>
-      <pre class="code">python3 -m pip install ./clients/python
+      <pre class="code">pipx install ./clients/python   # or: uv tool install ./clients/python
 ocl --help
 ocl bundle create 'missbräuchliche Kündigung Rachekündigung' \
   --max-results 5 --law OR:336 --out research-bundle</pre>
