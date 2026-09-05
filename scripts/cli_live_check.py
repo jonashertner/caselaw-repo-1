@@ -67,7 +67,12 @@ def main() -> int:
     statuses = {r.get("reference"): r.get("status") for r in rows if r.get("_type") != "pagination"}
     check("resolve: BGE, canonical id, docket, ATF all resolved", code == 0 and set(statuses.values()) == {"resolved"}, str(statuses)[:120])
     code, out, err = ocl(base, "decisions", "passage", "247/2020", "2")
-    check("docket fragment rejected", code == 3 and not out.strip(), err.strip()[:100])
+    check("docket fragment rejected", code == 4 and not out.strip() and '"kind": "resolution"' in err, err.strip()[:100])
+    code, out, _ = ocl(base, "citations", "resolve", "BGer 4A_255/2012", "Obergericht ZH NG190020 vom 30. November 2020",
+                       "BGE 136 III 510 E. 99", "BGer 4A_714/2014 vom 22. Mai 2016", "--format", "jsonl", "--fields", "reference")
+    rows = {r.get("reference"): r.get("status") for r in (json.loads(l) for l in out.splitlines() if l.strip()) if r.get("_type") != "pagination"}
+    check("resolve: long forms, inline pinpoint and a wrong date are told apart",
+          code == 4 and list(rows.values()) == ["resolved", "resolved", "pinpoint_unavailable", "discrepancy"], str(rows)[:160])
     code, out, _ = ocl(base, "cite", "BGE 140 III 86", "--pinpoint", "2.3", "--format", "json", "--fields", "pinpoint_exists")
     check("cite verifies a pinpoint that the index lacks", code == 4 and json.loads(out).get("pinpoint_exists") is False)
     with tempfile.TemporaryDirectory() as tmp:

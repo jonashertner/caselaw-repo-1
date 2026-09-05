@@ -441,10 +441,25 @@ def test_long_form_references_resolve_through_their_docket():
                          "/api/lookup": {"is_case_number": True, "exact": True, "results": [{"decision_id": "bger_4A_747_2012", "docket_number": "4A_747/2012"}]}})
     result, code = workflows.run(resolution_args("BGer 4A_747/2012 vom 5. April 2013"), client)
     row = result["results"][0]
-    assert code == 0 and row["status"] == "resolved" and row["docket_extracted"] == "4A_747/2012"
-    assert row["citation_as_written"]["exists"] is False and row["identity_check"]["method"] == "exact_server_docket"
-    assert calls == ["BGer 4A_747/2012 vom 5. April 2013", "4A_747/2012"]
+    assert code == 0 and row["status"] == "resolved" and row["query"] == "4A_747/2012"
+    assert row["identity_check"]["method"] == "exact_server_citation"  # the service's own string equals the reference
+    assert calls == ["4A_747/2012"]  # the docket inside the long form is queried directly
     assert result["requests"] is None or isinstance(result["requests"], int)
+    # a long form around a docket stored with a space, identity through the docket, scoped to the federal court
+    client = FakeClient({"/api/cite": {"exists": True, "decision_id": "bger_4A_255_2012", "citation_string_de": "BGer 4A_255/2012 vom 20. Juli 2012"},
+                         "/api/decisions/bger_4A_255_2012": {"decision_id": "bger_4A_255_2012", "docket_number": "4A 255/2012", "court": "bger",
+                                                             "citation_string_de": "BGer 4A_255/2012 vom 20. Juli 2012"},
+                         "/api/erwaegung/bger_4A_255_2012/3": {"decision_id": "bger_4A_255_2012", "e_number": "3", "text": "served"},
+                         "/api/lookup": {"is_case_number": True, "exact": True, "results": [
+                             {"decision_id": "bger_4A_255_2012", "docket_number": "4A 255/2012", "court": "bger"},
+                             {"decision_id": "ge_gerichte_4A_255_2012", "docket_number": "4A_255/2012", "court": "ge_gerichte", "canton": "GE"}]}})
+    row = workflows.run(resolution_args("Urteil des Bundesgerichts 4A_255/2012, E. 3"), client)[0]["results"][0]
+    assert row["status"] == "resolved" and row["identity_check"]["method"] == "exact_server_docket"
+    assert [c["decision_id"] for c in row["identity_check"]["out_of_scope_candidates"]] == ["ge_gerichte_4A_255_2012"]
+    assert row["pinpoint"] == "3" and row["pinpoint_source"] == "reference" and row["pinpoint_status"] == "retrieved"
+    # the bare docket, with no court named, stays ambiguous and lists both carriers
+    row = workflows.run(resolution_args("4A_255/2012"), client)[0]["results"][0]
+    assert row["status"] == "ambiguous" and {c["decision_id"] for c in row["candidates"]} == {"bger_4A_255_2012", "ge_gerichte_4A_255_2012"}
     # a reference with no docket inside stays missing, with a note that close matches are not substitutes
     result, code = workflows.run(resolution_args("Bundesgericht, Urteil vom 5. April 2013"), FakeClient({"/api/cite": {"exists": False, "close_matches": [{"decision_id": "x"}]}}))
     assert code == 4 and result["results"][0]["status"] == "missing" and "never substitutes" in result["results"][0]["note"]
@@ -458,7 +473,90 @@ def test_unavailable_items_are_told_apart_from_failures(tmp_path):
     saved = manifest(tmp_path)
     assert code == 4 and saved["items"]["passage:test_case:2.3"]["status"] == "unavailable"
     assert saved["items"]["law:TEST:41"]["status"] == "failed"
-    assert result["completeness"] == {**result["completeness"], "failed_items": 2, "unavailable_items": 1}
+    assert result["completeness"] == {**result["completeness"], "failed_items": 1, "unavailable_items": 1, "saved_items": 1}
     index = (tmp_path / "bundle" / "INDEX.md").read_text(encoding="utf-8")
     assert "1 item(s) the service does not have" in index and "1 item(s) failed to download" in index
     assert isinstance(saved.get("requests"), (int, type(None)))
+
+
+def test_discrepancies_flag_a_wrong_date_and_a_docket_that_names_another_ruling():
+    def cite(params):
+        ref = params["reference"]
+        if ref == "4A_714/2014":
+            return {"exists": True, "decision_id": "bger_4A_714_2014", "citation_string_de": "BGer 4A_714/2014 vom 22. Mai 2015"}
+        if ref == "BGE 134 III 354":
+            return {"exists": True, "decision_id": "bge_BGE_134_III_354", "citation_string_de": "BGE 134 III 354"}
+        if ref == "4A_45/2008":
+            return {"exists": True, "decision_id": "bger_4A_45_2008", "citation_string_de": "BGer 4A_45/2008 vom 23. April 2008"}
+        if ref == "4A_47/2008":
+            return {"exists": True, "decision_id": "bger_4A_47_2008", "citation_string_de": "BGer 4A_47/2008 vom 29. April 2008"}
+        return {"exists": False, "close_matches": []}
+    client = FakeClient({"/api/cite": cite,
+                         "/api/decisions/bger_4A_714_2014": {"decision_id": "bger_4A_714_2014", "docket_number": "4A_714/2014", "court": "bger", "decision_date": "2015-05-22"},
+                         "/api/decisions/bge_BGE_134_III_354": {"decision_id": "bge_BGE_134_III_354", "citation_string_de": "BGE 134 III 354", "decision_date": "2008-04-29"},
+                         "/api/decisions/bger_4A_45_2008": {"decision_id": "bger_4A_45_2008", "decision_date": "2008-04-23"},
+                         "/api/decisions/bger_4A_47_2008": {"decision_id": "bger_4A_47_2008", "decision_date": "2008-04-29"},
+                         "/api/lookup": {"is_case_number": True, "exact": True, "results": [{"decision_id": "bger_4A_714_2014", "docket_number": "4A_714/2014", "court": "bger"}]}})
+    result, code = workflows.run(resolution_args("BGer 4A_714/2014 vom 22. Mai 2016", "BGE 134 III 354 (4A_45/2008)", "BGE 134 III 354 (4A_47/2008)"), client)
+    rows = result["results"]
+    assert code == 4 and rows[0]["status"] == "discrepancy" and rows[0]["decision_id"] == "bger_4A_714_2014"
+    assert rows[0]["discrepancies"] == [{"kind": "date", "written": "2016-05-22", "decision": "2015-05-22"}]
+    assert rows[1]["status"] == "discrepancy" and rows[1]["discrepancies"][0]["kind"] == "docket" and rows[1]["discrepancies"][0]["resolves_to"] == "bger_4A_45_2008"
+    assert rows[2]["status"] == "resolved" and rows[2]["related_docket"]["decision_id"] == "bger_4A_47_2008"
+    assert result["counts"] == {"discrepancy": 2, "resolved": 1}
+
+
+def test_service_strings_among_close_matches_resolve_and_fragments_do_not():
+    own = "Obergericht ZH NG190020 vom 30. November 2020"
+    def cite(params):
+        if params["reference"] == "zh_obergericht_NG190020":
+            return {"exists": True, "decision_id": "zh_obergericht_NG190020", "citation_string_de": own}
+        return {"exists": False, "close_matches": [{"decision_id": "zh_obergericht_NG190020", "citation_string_de": own, "docket_number": "NG190020"},
+                                                   {"decision_id": "zh_obergericht_NG190021", "citation_string_de": "Obergericht ZH NG190021 vom 1. Dezember 2020"}]}
+    client = FakeClient({"/api/cite": cite,
+                         "/api/decisions/zh_obergericht_NG190020": {"decision_id": "zh_obergericht_NG190020", "docket_number": "NG190020", "court": "zh_obergericht", "canton": "ZH", "citation_string_de": own}})
+    row = workflows.run(resolution_args("Obergericht ZH, NG190020, 30.11.2020"), client)[0]["results"][0]
+    assert row["status"] == "resolved" and row["matched_via"] == "close_match_label" and row["identity_check"]["method"] == "exact_server_docket"
+    # a fragment that the service matches by substring is proposed, not adopted
+    client = FakeClient({"/api/cite": {"exists": True, "decision_id": "bvger_D-1100_2015", "citation_string_de": "BVGer D-1100/2015 vom 7. November 2018"},
+                         "/api/decisions/bvger_D-1100_2015": {"decision_id": "bvger_D-1100_2015", "docket_number": "D-1100/2015", "court": "bvger"},
+                         "/api/lookup": {"is_case_number": False, "exact": True, "results": []}})
+    row = workflows.run(resolution_args("100/2015"), client)[0]["results"][0]
+    assert row["status"] == "unrecognized" and "decision_id" not in row and row["service_candidate"]["decision_id"] == "bvger_D-1100_2015"
+
+
+def test_pinpoint_rows_carry_input_keys_and_fail_only_themselves(tmp_path):
+    path = tmp_path / "refs.jsonl"
+    path.write_text('{"reference": "server citation", "pinpoint": "consid. 2.3", "id": "row-7"}\n'
+                    '{"reference": "server citation", "pinpoint": "nonsense"}\n'
+                    '{"reference": "server citation E. 2a"}\n', encoding="utf-8")
+    client = FakeClient({"/api/erwaegung/test_case/2a": {"error": "E. '2a' not found", "available_e_numbers": ["1", "2"]},
+                         "/api/erwaegung/test_case/2": {"decision_id": "test_case", "e_number": "2", "text": "a) [BGE 1 I 1](https://x) text"}})
+    result, code = workflows.run(resolution_args("--input", str(path)), client)
+    rows = result["results"]
+    assert code == 4
+    assert rows[0]["status"] == "resolved" and rows[0]["pinpoint"] == "2.3" and rows[0]["pinpoint_source"] == "input" and rows[0]["input"] == {"id": "row-7"}
+    assert rows[1]["status"] == "error" and rows[1]["error"]["status"] == 400 and "nonsense" in rows[1]["error"]["message"]
+    assert rows[2]["status"] == "pinpoint_unavailable" and rows[2]["pinpoint_status"] == "parent_retrieved" and rows[2]["pinpoint_source"] == "reference"
+    assert rows[2]["passage"]["e_number"] == "2" and rows[2]["passage"]["text_plain"] == "a) BGE 1 I 1 text"
+    assert "E. 2 was retrieved" in rows[2]["pinpoint_note"]
+
+
+def test_resume_retries_added_decisions_and_skips_unavailable_items(tmp_path):
+    args = bundle_args(tmp_path, "--passage", "2.3")
+    client = FakeClient({"/api/erwaegung/test_case/2.3": {"error": "not indexed"}})
+    workflows.run(args, client)
+    add = build_parser().parse_args(["bundle", "add", str(tmp_path / "bundle"), "added_case"])
+    workflows.run(add, FakeClient({"/api/decisions/added_case": APIError(None, "Request failed: reset"),
+                                   "/api/erwaegung/added_case/2.3": APIError(404, "Not Found")}))
+    saved = manifest(tmp_path)
+    assert saved["items"]["decision:added_case"]["status"] == "failed" and saved["items"]["passage:added_case:2.3"]["status"] == "unavailable"
+    assert saved["completeness"] == {**saved["completeness"], "failed_items": 1, "unavailable_items": 2, "added_decisions": 1}
+    index = (tmp_path / "bundle" / "INDEX.md").read_text(encoding="utf-8")
+    assert "2 item(s) the service does not have" in index and "1 item(s) failed to download" in index
+    resume = bundle_args(tmp_path, "--passage", "2.3", "--resume")
+    client = FakeClient({"/api/erwaegung/test_case/2.3": {"error": "not indexed"}})
+    workflows.run(resume, client)
+    fetched = [path for path, _ in client.calls]
+    assert "/api/decisions/added_case" in fetched and "/api/erwaegung/test_case/2.3" not in fetched and "/api/erwaegung/added_case/2.3" not in fetched
+    assert manifest(tmp_path)["items"]["decision:added_case"]["status"] == "saved"
