@@ -3,6 +3,26 @@
 The client follows semantic versioning. The research API contract it consumes is
 versioned separately (`x-opencaselaw-contract-version` in `/api/research/openapi.json`).
 
+## 0.2.1 (2026-09-05)
+
+Findings from an agent running the citation-check procedure on a draft memo:
+
+- Long-form references such as `BGer 4A_747/2012 vom 5. April 2013` or
+  `Verwaltungsgericht des Kantons Aargau WBE.2026.33` no longer come back
+  `missing`: the docket they contain is retried, reported as
+  `docket_extracted`, and the decision must carry that docket label.
+  `decisions get`, `passage` and `citations list` accept the same forms.
+- Bundles tell apart `unavailable` (the service answered that a passage or
+  article is not there; a rerun will not change it) from `failed` (transport
+  or validation; `--resume` retries). `completeness.unavailable_items` and
+  INDEX.md say which is which.
+- `--verbose` logs every request to stderr; search, batch, resolution and
+  bundle outputs carry the request count.
+- The resolution table and text show the decision-level citation, never a
+  pinpointed string for a pinpoint the index lacks; a `missing` row notes
+  that close matches are for the author, not substitutes.
+- `citations resolve --help` explains `identity_check`.
+
 ## 0.2.0 (2026-09-05, first release on PyPI)
 
 - `cite --pinpoint` verifies that the Erwägung exists; a missing passage reports

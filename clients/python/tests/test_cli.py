@@ -383,3 +383,26 @@ def test_table_csv_and_md_formats(monkeypatch, capsys):
     assert code == 0 and output.out.startswith("**BGE 1 I 1, E. 2** (https://u)") and "> Quoted law text" in output.out
     _, code, output = invoke(monkeypatch, capsys, ["decisions", "passage", "a", "2", "--format", "csv"], [{"decision_id": "a", "e_number": "2", "text": "t"}])
     assert code == 2 and "needs a list result" in output.err
+
+
+def test_long_form_docket_reference_in_get_and_passage(monkeypatch, capsys):
+    client, code, output = invoke(monkeypatch, capsys, ["decisions", "passage", "BGer 4A_747/2012 vom 5. April 2013", "1", "--format", "json", "--fields", "e_number"],
+        [{"exists": False, "close_matches": []},
+         {"exists": True, "decision_id": "bger_4A_747_2012"},
+         {"decision_id": "bger_4A_747_2012", "docket_number": "4A 747/2012"},
+         {"decision_id": "bger_4A_747_2012", "e_number": "1", "text": "served"}])
+    assert code == 0 and json.loads(output.out)["e_number"] == "1"
+    assert [c[1].get("reference") for c in client.calls[:2]] == ["BGer 4A_747/2012 vom 5. April 2013", "4A_747/2012"]
+
+
+def test_verbose_logs_requests_and_counts_them(monkeypatch, capsys):
+    from opencaselaw_cli.client import Client
+    import io as _io
+    lines = []
+    client = Client(opener=lambda request, timeout: _io.BytesIO(b'{"results": [], "total": 0, "total_is_lower_bound": false, "has_more": false, "next_offset": null}'),
+                    sleep=lambda s: None, log=lines.append)
+    result, code = cli.search(client, {"court": "bge"}, 5, 5)
+    assert code == 0 and result["_client"]["requests"] == 1 and client.requests == 1
+    assert lines and lines[0].startswith("GET https://mcp.opencaselaw.ch/api/decisions?") and " 200 " in lines[0]
+    args = cli.build_parser(config={}).parse_args(["decisions", "search", "--verbose"])
+    assert args.verbose is True

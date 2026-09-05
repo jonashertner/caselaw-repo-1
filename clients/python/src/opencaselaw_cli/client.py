@@ -36,7 +36,7 @@ class Client:
 
     def __init__(self, base_url: str = "https://mcp.opencaselaw.ch",
                  timeout: float = 30, retries: int = 2, *, opener=None,
-                 sleep=None, monotonic=None, wall_time=None):
+                 sleep=None, monotonic=None, wall_time=None, log=None):
         parsed = urlsplit(base_url)
         if (parsed.scheme not in {"http", "https"} or not parsed.netloc
                 or parsed.username or parsed.password or parsed.query
@@ -55,6 +55,8 @@ class Client:
         self._wall_time = wall_time or time.time
         self._last_start: float | None = None
         self._lock = threading.Lock()  # pacing is shared by concurrent workers
+        self._log = log  # callable(str) for --verbose request lines, or None
+        self.requests = 0  # every request start, retries included
 
     def _pace(self):
         with self._lock:
@@ -87,9 +89,14 @@ class Client:
         request = Request(url, headers={"Accept": "application/json", "User-Agent": f"opencaselaw-cli/{__version__}"})
         for attempt in range(self.retries + 1):
             self._pace()
+            started = self._monotonic()
+            with self._lock:
+                self.requests += 1
             try:
                 with self._open(request, timeout=self.timeout) as response:
                     raw = response.read()
+                if self._log:
+                    self._log(f"GET {url} 200 {len(raw)}B {1000 * (self._monotonic() - started):.0f}ms")
                 try:
                     result = json.loads(raw)
                 except (ValueError, UnicodeError) as exc:
@@ -108,6 +115,8 @@ class Client:
                 finally:
                     exc.close()
                 error = APIError(exc.code, str(message))
+                if self._log:
+                    self._log(f"GET {url} {exc.code} {1000 * (self._monotonic() - started):.0f}ms attempt {attempt + 1}")
                 delay = self._retry_delay(exc.headers, attempt)
                 if exc.code not in {429, 502, 503, 504} or attempt == self.retries or delay > 30:
                     raise error from exc

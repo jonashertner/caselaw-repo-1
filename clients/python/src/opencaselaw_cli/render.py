@@ -79,7 +79,7 @@ def _label(row: dict) -> str:
 
 
 _STATUS_COLOUR = {
-    "resolved": "green", "complete": "green", "saved": "green",
+    "resolved": "green", "complete": "green", "saved": "green", "verified": "green",
     "missing": "red", "error": "red", "failed": "red",
 }
 
@@ -265,10 +265,12 @@ def render_resolution(value: dict, s: Style, width: int) -> str:
         ref = str(row.get("reference", ""))
         decision_id = str(row.get("decision_id") or "")
         detail = []
-        citation = row.get("citation") or {}
-        label = citation.get("citation_string_de") if isinstance(citation, dict) else None
-        if label and reference_like(label) != reference_like(ref) and not row.get("pinpoint"):
+        provenance = row.get("provenance") or {}
+        label = provenance.get("citation_string_de") or provenance.get("citation_string")
+        if label and reference_like(label) != reference_like(ref):
             detail.append(s.dim(label))
+        if row.get("docket_extracted"):
+            detail.append(s.dim(f"via docket {row['docket_extracted']}"))
         if row.get("pinpoint"):
             ps = row.get("pinpoint_status")
             detail.append(s.green(f"E. {row['pinpoint']} retrieved") if ps == "retrieved"
@@ -388,12 +390,14 @@ def tabular(value, args):
                  cell(r.get("docket_number")), cell(r.get("title"))] for r in value.get("results") or []]
         return cols, rows
     if command == "citations" and action == "resolve":
-        cols = ["reference", "status", "decision_id", "pinpoint", "pinpoint_status", "citation", "identity"]
+        cols = ["reference", "status", "decision_id", "pinpoint", "pinpoint_status", "decision", "identity"]
         rows = []
         for r in value.get("results") or []:
-            citation = r.get("citation") or {}
+            # The decision-level label from provenance, never the pinpointed
+            # string: a pinpoint the index lacks must not read as if it existed.
+            provenance = r.get("provenance") or {}
             rows.append([cell(r.get("reference")), cell(r.get("status")), cell(r.get("decision_id")), cell(r.get("pinpoint")),
-                         cell(r.get("pinpoint_status")), cell(citation.get("citation_string_de") if isinstance(citation, dict) else ""),
+                         cell(r.get("pinpoint_status")), cell(provenance.get("citation_string_de") or provenance.get("citation_string")),
                          cell((r.get("identity_check") or {}).get("method"))])
         return cols, rows
     if command == "citations" and action == "list":
