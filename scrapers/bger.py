@@ -699,6 +699,15 @@ class BgerScraper(BaseScraper):
 
         Adds exponential backoff between retries.
         """
+        # Host fallback safety net: once a run has switched the AZA host
+        # (www.bger.ch unreachable, search.bger.ch answering), every URL
+        # still pointing at www.bger.ch's eurospider app is served by the
+        # same application on the other host. Rewriting here covers callers
+        # that build URLs from constants (pagination, daily splits).
+        aza_host = getattr(self, "_aza_host", HOST)
+        if aza_host != HOST and url.startswith(HOST + "/ext/eurospider/"):
+            url = aza_host + url[len(HOST):]
+
         # Only send PoW cookies if PoW is required
         cookies = self._session_cookies if self._pow_required else {}
         if self._pow_required:
@@ -1040,6 +1049,17 @@ class BgerScraper(BaseScraper):
                 url = self._aza_url(host, von_str, bis_str)
                 try:
                     resp = self._get_with_pow(url)
+                    # Commit to the host that answered BEFORE parsing, so
+                    # this window's pagination and daily splits already use
+                    # it (page 2+ on the dead host cost minutes each on the
+                    # 2026-09-05 10:20 run).
+                    if host != getattr(self, "_aza_host", HOST):
+                        logger.warning(
+                            f"AZA search answered on {host} after "
+                            f"{getattr(self, '_aza_host', HOST)} failed — "
+                            f"using {host} for the rest of this run"
+                        )
+                    self._aza_host = host
                     soup = BeautifulSoup(resp.text, "html.parser")
 
                     # Check hit count
@@ -1076,13 +1096,6 @@ class BgerScraper(BaseScraper):
                         )
                         yield from self._follow_pagination(soup, "de", current, end)
 
-                    if host != getattr(self, "_aza_host", HOST):
-                        logger.warning(
-                            f"AZA search answered on {host} after "
-                            f"{getattr(self, '_aza_host', HOST)} failed — "
-                            f"using {host} for the rest of this run"
-                        )
-                    self._aza_host = host
                     break
                 except Exception as e:
                     logger.error(f"Search {von_str}-{bis_str} via {host}: {e}")
@@ -1274,8 +1287,11 @@ class BgerScraper(BaseScraper):
             # extract from response HTML (PoW redirects produce garbage URLs)
             von_str = von.strftime("%d.%m.%Y")
             bis_str = bis.strftime("%d.%m.%Y")
+            # Same host as the window's page 1: after the host fallback
+            # switched to search.bger.ch, pages 2+ built on www.bger.ch
+            # failed for minutes each (2026-09-05 10:20 run).
             page_url = (
-                AZA_SEARCH_URL.format(von=von_str, bis=bis_str)
+                self._aza_url(getattr(self, "_aza_host", HOST), von_str, bis_str)
                 + f"&page={page}"
             )
 
