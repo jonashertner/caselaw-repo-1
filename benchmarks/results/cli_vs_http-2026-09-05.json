@@ -1,0 +1,43 @@
+{
+  "base": "https://mcp.opencaselaw.ch",
+  "tasks": {
+    "citation_check": {
+      "references": 8,
+      "http": {
+        "seconds": 0.7,
+        "requests": 11,
+        "correct": 8,
+        "lines_of_code": 14,
+        "identity_checked": false
+      },
+      "ocl": {
+        "seconds": 11.5,
+        "correct": 8,
+        "exit_code": 4,
+        "identity_checked": true,
+        "command": "ocl citations resolve --input refs.jsonl"
+      }
+    },
+    "evidence_bundle": {
+      "http": {
+        "seconds": 4.8,
+        "requests": 5,
+        "files": 4,
+        "manifest": false,
+        "hashes": false,
+        "resumable": false,
+        "lines_of_code": 12
+      },
+      "ocl": {
+        "seconds": 6.3,
+        "files": 8,
+        "manifest": true,
+        "hashes": true,
+        "resumable": true,
+        "corpus_generation": 1788612167,
+        "exit_code": 0,
+        "command": "ocl bundle create 'Rachekündigung Art. 336 OR' --max-results 3 --law OR:336 --out cli"
+      }
+    }
+  }
+}
