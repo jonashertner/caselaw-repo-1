@@ -34,6 +34,10 @@ benchmarks/latest_search_benchmark.json
 !docs/
 !docs/**
 docs/**/.DS_Store
+# generate_feeds.py writes each feed via a sibling .tmp + os.replace. A
+# watchdog kill mid-write would leave that .tmp under docs/, and step 6
+# `git add docs/feeds` would commit it (docs/** is un-ignored above).
+docs/**/*.tmp
 docs/GOAL_*.md
 scrapers/probe_*
 scrapers/scrape_*
