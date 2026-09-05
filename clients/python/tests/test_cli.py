@@ -30,6 +30,8 @@ def invoke(monkeypatch, capsys, argv, responses, stdin=""):
     client = FakeClient(responses)
     monkeypatch.setattr(cli, "create_client", lambda args: client)
     monkeypatch.setattr(cli.sys, "stdin", io.StringIO(stdin))
+    monkeypatch.setenv("OCL_JOBS", "1")  # the fake answers in order; batches would interleave
+    monkeypatch.setenv("OCL_CONFIG", "/nonexistent/ocl-config")
     code = cli.main(argv)
     out = capsys.readouterr()
     return client, code, out
@@ -283,3 +285,101 @@ def test_projection_retains_citation_identity_evidence():
     payload = {"decision_id": "a", "status": "resolution_incomplete",
                "identity_check": {"method": "exact_candidate_label", "candidate_window_may_be_capped": True}}
     assert cli._project(payload, ["decision_id"]) == payload
+
+
+def test_config_file_and_environment_set_defaults(tmp_path, monkeypatch):
+    config = tmp_path / "config"
+    config.write_text("base_url = https://research.example\nlanguage = fr\njobs = 2\n# comment\nformat = jsonl\n")
+    monkeypatch.setenv("OCL_CONFIG", str(config))
+    monkeypatch.delenv("OCL_LANGUAGE", raising=False)
+    args = cli.build_parser().parse_args(["laws", "get", "OR"])
+    assert (args.base_url, args.language, args.jobs, args.format) == ("https://research.example", "fr", 2, "jsonl")
+    monkeypatch.setenv("OCL_LANGUAGE", "it")
+    monkeypatch.setenv("OCL_JOBS", "5")
+    args = cli.build_parser().parse_args(["laws", "get", "OR", "--jobs", "1"])
+    assert (args.language, args.jobs) == ("it", 1)  # environment beats file; flag beats both
+    config.write_text("colour = red\n")
+    with pytest.raises(ValueError, match="config line 1"):
+        cli.load_config()
+    config.write_text("format = yaml\n")
+    with pytest.raises(ValueError, match="format must be one of"):
+        cli.load_config()
+
+
+def test_completion_candidates_follow_the_parser():
+    parser = cli.build_parser(config={})
+    assert "decisions" in cli.complete(parser, [""]) and "__complete" not in cli.complete(parser, [""])
+    assert cli.complete(parser, ["dec"]) == ["decisions"]
+    level = cli.complete(parser, ["decisions", ""])
+    assert {"get", "passage", "search", "--help", "--format"} <= set(level) and "__complete" not in level
+    assert "--max-results" in cli.complete(parser, ["decisions", "search", "--"])
+    assert cli.complete(parser, ["decisions", "search", "--sort", ""]) == ["date_asc", "date_desc", "relevance"]
+    assert cli.complete(parser, ["decisions", "search", "--sort", "date_desc", "--m"]) == ["--marked-for-publication", "--max-results"]
+    assert "--sort" not in cli.complete(parser, ["decisions", "search", "--sort", "date_desc", "--"])
+    for shell in ("bash", "zsh", "fish"):
+        script = cli._COMPLETION_SCRIPTS[shell]
+        assert "ocl __complete" in script
+
+
+def test_completion_and_complete_commands_print_scripts(monkeypatch, capsys):
+    monkeypatch.setenv("OCL_CONFIG", "/nonexistent/ocl-config")
+    assert cli.main(["completion", "zsh"]) == 0
+    assert capsys.readouterr().out.startswith("#compdef ocl")
+    assert cli.main(["__complete", "--", "laws", "get", "OR", "--lang"]) == 0
+    assert capsys.readouterr().out.strip() == "--language"
+
+
+def test_cite_pinpoint_is_verified_before_it_is_formatted(monkeypatch, capsys):
+    hit = {"exists": True, "decision_id": "bge_BGE_140_III_86", "citation_string": "BGE 140 III 86, E. 2.3"}
+    client, code, output = invoke(monkeypatch, capsys, ["cite", "BGE 140 III 86", "--pinpoint", "2.3", "--format", "json"],
+                                  [dict(hit), {"error": "E. '2.3' not found", "available_e_numbers": ["2", "4.1"]}])
+    assert code == 4 and client.calls[1][0] == "/api/erwaegung/bge_BGE_140_III_86/2.3"
+    out = json.loads(output.out)
+    assert out["pinpoint_exists"] is False and out["available_e_numbers"] == ["2", "4.1"] and "not in the structure index" in out["pinpoint_note"]
+    client, code, output = invoke(monkeypatch, capsys, ["cite", "BGE 140 III 86", "--pinpoint", "2.3", "--format", "json"],
+                                  [dict(hit), {"decision_id": "bge_BGE_140_III_86", "e_number": "2.3", "text": "served"}])
+    assert code == 0 and json.loads(output.out)["pinpoint_status"] == "retrieved"
+    client, code, _ = invoke(monkeypatch, capsys, ["cite", "BGE 140 III 86", "--pinpoint", "2.3", "--no-verify-pinpoint", "--format", "json"], [dict(hit)])
+    assert code == 0 and len(client.calls) == 1
+
+
+def test_batch_runs_concurrently_and_keeps_input_order(monkeypatch):
+    import threading, time
+    class OrderedClient:
+        def __init__(self):
+            self.lock = threading.Lock(); self.active = 0; self.peak = 0
+        def get(self, path, params=None):
+            with self.lock:
+                self.active += 1; self.peak = max(self.peak, self.active)
+            time.sleep(0.02)
+            with self.lock:
+                self.active -= 1
+            return {"decision_id": path.rsplit("/", 1)[-1]}
+    client = OrderedClient()
+    args = cli.build_parser(config={"jobs": 4}).parse_args(["decisions", "get", "a", "b", "c", "d", "e", "f"])
+    result, code = cli._batch(args, client, "get")
+    assert code == 0 and [r["decision_id"] for r in result["results"]] == list("abcdef") and client.peak > 1
+
+
+def test_batch_breaker_stops_after_repeated_transport_failures(monkeypatch, capsys):
+    responses = [APIError(None, "Request failed: refused")] * 5
+    client, code, output = invoke(monkeypatch, capsys, ["decisions", "get"] + [f"id{i}" for i in range(9)] + ["--format", "json"], responses)
+    assert code == 3 and len(client.calls) == 5
+    errors = json.loads(output.out)["errors"]
+    assert len(errors) == 9 and "skipped after 5 consecutive" in errors[-1]["message"]
+
+
+def test_table_csv_and_md_formats(monkeypatch, capsys):
+    rows = [page(["a", "b"], more=False, lower=False, total=2)]
+    rows[0]["results"][0]["citation_string_de"] = "BGE 1 I 1"; rows[0]["results"][0]["decision_date"] = "2020-01-01"
+    _, code, output = invoke(monkeypatch, capsys, ["decisions", "search", "x", "--max-results", "2", "--format", "table"], [json.loads(json.dumps(rows[0]))])
+    assert code == 0 and output.out.splitlines()[0].startswith("decision_id  citation") and "2 shown of 2 matching" in output.out
+    _, code, output = invoke(monkeypatch, capsys, ["decisions", "search", "x", "--max-results", "2", "--format", "csv"], [json.loads(json.dumps(rows[0]))])
+    assert code == 0 and output.out.splitlines()[0] == "decision_id,citation,court,decision_date,docket_number,title" and "a,BGE 1 I 1,bger,2020-01-01,," in output.out
+    _, code, output = invoke(monkeypatch, capsys, ["decisions", "search", "x", "--max-results", "2", "--format", "md"], [json.loads(json.dumps(rows[0]))])
+    assert code == 0 and output.out.startswith("| decision_id | citation | court | decision_date |") and "| a | BGE 1 I 1 |" in output.out
+    _, code, output = invoke(monkeypatch, capsys, ["decisions", "passage", "a", "2", "--format", "md"],
+                             [{"decision_id": "a", "e_number": "2", "citation_string_de": "BGE 1 I 1, E. 2", "text": "Quoted [law](https://x) text", "canonical_url": "https://u"}])
+    assert code == 0 and output.out.startswith("**BGE 1 I 1, E. 2** (https://u)") and "> Quoted law text" in output.out
+    _, code, output = invoke(monkeypatch, capsys, ["decisions", "passage", "a", "2", "--format", "csv"], [{"decision_id": "a", "e_number": "2", "text": "t"}])
+    assert code == 2 and "needs a list result" in output.err

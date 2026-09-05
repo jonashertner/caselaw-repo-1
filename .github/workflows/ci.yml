@@ -78,6 +78,32 @@ jobs:
           print('OK: wheel ships', len(required), 'required modules')
           PY
 
+  client:
+    name: ocl client (${{ matrix.os }}, py${{ matrix.python }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python: ["3.10", "3.13"]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install the client and pytest
+        run: pip install ./clients/python pytest
+      - name: Client tests
+        run: pytest clients/python/tests -q -p no:cacheprovider
+      - name: Entry point and completion
+        run: |
+          ocl --version
+          ocl --help
+          ocl completion bash
+          ocl completion zsh
+          ocl completion fish
+
   frontend:
     runs-on: ubuntu-latest
     timeout-minutes: 5

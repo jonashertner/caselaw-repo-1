@@ -10,6 +10,7 @@ import hashlib
 import json
 import re
 import sys
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import quote
@@ -25,6 +26,11 @@ SCHEMA_VERSION = "1.0.0"
 RANKED_MAX_RESULTS = 800
 LOOKUP_WINDOW = 25
 _LAW_LANGUAGES = ("de", "fr", "it")
+DEFAULT_JOBS = 4
+# Five transport failures in a row (no HTTP status) mean the service or the
+# network is down; stop instead of burning the retry budget on every item.
+BREAKER_THRESHOLD = 5
+_LAW_SPEC = re.compile(r"^(?:(?P<canton>[A-Za-z]{2})/)?(?P<abbr>[^:/]+):(?P<article>[^:]+)$")
 
 
 def _now():
@@ -93,6 +99,23 @@ def _validate_saved(directory, manifest):
             raise ValueError("Saved evidence changed or is missing: " + item["path"])
 
 
+def _jobs(args) -> int:
+    value = getattr(args, "jobs", None) or DEFAULT_JOBS
+    return max(1, min(int(value), 8))
+
+
+def _snapshot(client) -> dict:
+    """What the service reported about the corpus when this run started. The
+    database generation changes with every nightly rebuild; it identifies the
+    corpus state, it is not an immutable snapshot anyone can fetch later."""
+    try:
+        health = client.get("/health")
+    except APIError as error:
+        return {"captured_at": _now(), "base_url": client.base_url, "error": error.to_dict()}
+    return {"captured_at": _now(), "base_url": client.base_url,
+            "db_generation": health.get("db_generation"), "decisions": health.get("decisions")}
+
+
 def _get(client, path, params=None):
     result = client.get(path, params)
     if not isinstance(result, dict):
@@ -123,10 +146,12 @@ def _request(args, client):
             raise ValueError("--passage must be an Erwägung number such as 2.3")
     laws = []
     for item in getattr(args, "law", None) or []:
-        abbreviation, separator, article = item.partition(":")
-        if not separator or not abbreviation.strip() or not article.strip():
-            raise ValueError("--law requires ABBREVIATION:ARTICLE, for example OR:41")
-        law = {"abbreviation": abbreviation.strip(), "article": article.strip()}
+        match = _LAW_SPEC.match(item.strip())
+        if not match or not match.group("abbr").strip() or not match.group("article").strip():
+            raise ValueError("--law requires ABBREVIATION:ARTICLE for federal law or CANTON/ABBREVIATION:ARTICLE "
+                             "for cantonal law, for example OR:41 or ZH/StG:1")
+        law = {"abbreviation": match.group("abbr").strip(), "article": match.group("article").strip(),
+               "canton": (match.group("canton") or "CH").upper()}
         if law not in laws:
             laws.append(law)
     return {"base_url": client.base_url, "query": args.query,
@@ -199,13 +224,9 @@ def _validate_passage(result, decision_id, number):
         raise APIError(None, "No passage text returned")
 
 
-def _collect(directory, manifest, client, *, kind, identifier, path, params=None):
-    job_key = kind + ":" + identifier
-    item = manifest["items"].get(job_key)
-    if item and item["status"] == "saved":
-        return
-    item = {"kind": kind, "identifier": identifier, "request": {"path": path, "params": params}}
-    manifest["items"][job_key] = item
+def _fetch(client, *, kind, identifier, path, params=None):
+    """Network half of an item: returns (result, None) or (None, error). No manifest access,
+    so several fetches can run at once."""
     try:
         result = _get(client, path, params)
         if kind == "decision" and result.get("decision_id") != identifier:
@@ -221,29 +242,79 @@ def _collect(directory, manifest, client, *, kind, identifier, path, params=None
                 for article in articles
             ):
                 raise APIError(None, "No text returned for the requested statute article")
-        # A resumed attempt may return a different record. Keep the earlier
-        # saved response rather than overwriting it or colliding with its name.
-        name = f"{kind}s/{_slug(identifier)}-{uuid4().hex[:8]}.json"
-        artifact = _artifact(directory, name, result)
-        manifest["artifacts"].append(artifact)
-        item.update(status="saved", retrieved_at=_now(), artifact=artifact, provenance=_provenance(result))
-        # Preserve exactly the served full_text/text string, including line breaks.
-        text = result.get("full_text") if kind == "decision" else result.get("text") if kind == "passage" else None
-        if isinstance(text, str):
-            text_artifact = _artifact(directory, name[:-5] + ".txt", text, text=True)
-            manifest["artifacts"].append(text_artifact)
-            item["text_artifact"] = text_artifact
-        if kind == "decision" and (not isinstance(result.get("full_text"), str) or not result["full_text"].strip()):
-            item["status"] = "missing_text"
-            item["error"] = {"status": None, "message": "Decision metadata returned without full text"}
-        if kind == "passage":
-            item["pinpoint"] = result.get("e_number")
-            item["composed_of"] = result.get("composed_of")
+        return result, None
     except APIError as error:
+        return None, error
+
+
+def _record(directory, manifest, *, kind, identifier, path, params, result, error):
+    """Manifest half of an item: runs sequentially, one checkpoint per item."""
+    job_key = kind + ":" + identifier
+    item = {"kind": kind, "identifier": identifier, "request": {"path": path, "params": params}}
+    manifest["items"][job_key] = item
+    if error is not None:
         item.update(status="failed", error=error.to_dict())
         manifest["attempt_errors"].append({"stage": kind, "identifier": identifier,
                                             "at": _now(), **error.to_dict()})
+        _checkpoint(directory, manifest)
+        return
+    # A resumed attempt may return a different record. Keep the earlier
+    # saved response rather than overwriting it or colliding with its name.
+    name = f"{kind}s/{_slug(identifier)}-{uuid4().hex[:8]}.json"
+    artifact = _artifact(directory, name, result)
+    manifest["artifacts"].append(artifact)
+    item.update(status="saved", retrieved_at=_now(), artifact=artifact, provenance=_provenance(result))
+    # Preserve exactly the served full_text/text string, including line breaks.
+    text = result.get("full_text") if kind == "decision" else result.get("text") if kind == "passage" else None
+    if isinstance(text, str):
+        text_artifact = _artifact(directory, name[:-5] + ".txt", text, text=True)
+        manifest["artifacts"].append(text_artifact)
+        item["text_artifact"] = text_artifact
+    if kind == "decision" and (not isinstance(result.get("full_text"), str) or not result["full_text"].strip()):
+        item["status"] = "missing_text"
+        item["error"] = {"status": None, "message": "Decision metadata returned without full text"}
+    if kind == "passage":
+        item["pinpoint"] = result.get("e_number")
+        item["composed_of"] = result.get("composed_of")
     _checkpoint(directory, manifest)
+
+
+def _collect_all(directory, manifest, client, specs, jobs):
+    """Fetch pending items concurrently, record them in order with a checkpoint each."""
+    pending = [spec for spec in specs
+               if (manifest["items"].get(spec["kind"] + ":" + spec["identifier"]) or {}).get("status") != "saved"]
+    if not pending:
+        return
+    with ThreadPoolExecutor(max_workers=jobs) as pool:
+        fetched = pool.map(lambda spec: _fetch(client, **spec), pending)
+        for index, (spec, (result, error)) in enumerate(zip(pending, fetched), 1):
+            _progress(f"saving {index}/{len(pending)}: {spec['identifier']}")
+            _record(directory, manifest, kind=spec["kind"], identifier=spec["identifier"], path=spec["path"],
+                    params=spec.get("params"), result=result, error=error)
+    _progress(None)
+
+
+def _item_specs(request, decision_ids, passages=None):
+    specs = []
+    for decision_id in decision_ids:
+        encoded = quote(decision_id, safe="")
+        specs.append({"kind": "decision", "identifier": decision_id, "path": "/api/decisions/" + encoded})
+        for passage in (passages if passages is not None else request["passages"]):
+            specs.append({"kind": "passage", "identifier": decision_id + ":" + passage,
+                          "path": f"/api/erwaegung/{encoded}/{quote(passage, safe='')}"})
+    return specs
+
+
+def _law_specs(request):
+    specs = []
+    for law in request["laws"]:
+        params = {"article": law["article"], "language": request.get("law_language", "de")}
+        if law.get("canton", "CH") != "CH":
+            params["canton"] = law["canton"]
+        identifier = (f"{law['canton']}/" if law.get("canton", "CH") != "CH" else "") + law["abbreviation"] + ":" + law["article"]
+        specs.append({"kind": "law", "identifier": identifier,
+                      "path": "/api/laws/" + quote(law["abbreviation"], safe=""), "params": params})
+    return specs
 
 
 def create_bundle(args, client):
@@ -265,6 +336,7 @@ def create_bundle(args, client):
         directory.mkdir(parents=True)
         manifest = {"schema_version": SCHEMA_VERSION, "kind": "opencaselaw-research-bundle",
                     "client_version": __version__, "created_at": _now(), "request": request,
+                    "corpus_snapshot": _snapshot(client),
                     "status": "collecting", "artifacts": [], "items": {}, "attempt_errors": [],
                     "selection": {"finished": False, "pages": [], "decision_ids": [], "next_offset": 0,
                                   "error": None, "max_results_reached": False},
@@ -272,28 +344,27 @@ def create_bundle(args, client):
                         "representation": "UTF-8 JSON serialization of API responses and unmodified served text strings; not original court response bytes",
                         "artifact_hash_algorithm": "SHA-256 over the saved file bytes",
                         "server_content_hash": "Preserved as supplied; its algorithm and original-source equivalence are not asserted",
-                        "corpus_snapshot": None,
+                        "corpus_snapshot": "corpus_snapshot records the service's database generation and decision count when the run started; it identifies the corpus state, it is not an immutable copy",
                         "passage_text": "Served /api/erwaegung text; cross-references inside it can carry Markdown links added by the service",
                         "replay": "Only manifest-listed artifacts form this collection. Saved artifacts can be inspected offline; a later live query can return different results",
                         "licensing": "Per-record licence metadata is preserved when supplied; absence does not grant reuse rights",
                         "legal_support": "Not assessed; retrieval or citation existence does not establish that a decision supports a legal proposition"}}
         _checkpoint(directory, manifest)
+    if getattr(args, "resume", False):
+        pending_before = (not manifest["selection"]["finished"]) or any(
+            item.get("status") != "saved" for item in manifest["items"].values())
+        expected = len(_item_specs(request, manifest["selection"]["decision_ids"])) + len(_law_specs(request))
+        if pending_before or len(manifest["items"]) < expected:
+            # Something is left to fetch: note which corpus state answers the rest.
+            latest = _snapshot(client)
+            manifest["corpus_snapshot_latest"] = latest
+            if latest.get("db_generation") and manifest.get("corpus_snapshot", {}).get("db_generation") not in (None, latest["db_generation"]):
+                manifest.setdefault("notes", []).append(
+                    f"Resumed against database generation {latest['db_generation']}; the bundle started on "
+                    f"{manifest['corpus_snapshot']['db_generation']}. Later responses can differ from earlier ones.")
     _select(directory, manifest, client)
-    selected = manifest["selection"]["decision_ids"]
-    for index, decision_id in enumerate(selected, 1):
-        _progress(f"saving decision {index}/{len(selected)}: {decision_id}")
-        encoded = quote(decision_id, safe="")
-        _collect(directory, manifest, client, kind="decision", identifier=decision_id,
-                 path="/api/decisions/" + encoded)
-        for passage in request["passages"]:
-            _collect(directory, manifest, client, kind="passage", identifier=decision_id + ":" + passage,
-                     path=f"/api/erwaegung/{encoded}/{quote(passage, safe='')}")
-    for law in request["laws"]:
-        _progress(f"saving statute {law['abbreviation']} Art. {law['article']}")
-        _collect(directory, manifest, client, kind="law", identifier=law["abbreviation"] + ":" + law["article"],
-                 path="/api/laws/" + quote(law["abbreviation"], safe=""),
-                 params={"article": law["article"], "language": request.get("law_language", "de")})
-    _progress(None)
+    specs = _item_specs(request, manifest["selection"]["decision_ids"]) + _law_specs(request)
+    _collect_all(directory, manifest, client, specs, _jobs(args))
     failed = [item for item in manifest["items"].values() if item["status"] != "saved"]
     selection = manifest["selection"]
     complete = selection["finished"] and not selection["error"] and not failed
@@ -304,6 +375,7 @@ def create_bundle(args, client):
                                 "failed_items": len(failed), "search_error": selection["error"],
                                 "max_results_reached": selection["max_results_reached"],
                                 "ranked_single_request": bool(request.get("ranked_single_request")),
+                                "corpus_generation": (manifest.get("corpus_snapshot") or {}).get("db_generation"),
                                 "server_last_page": selection.get("last_page"),
                                 "note": "Complete means the requested bounded collection was saved; relevance-ranked search can use a capped candidate pool"}
     _checkpoint(directory, manifest)
@@ -321,6 +393,9 @@ def _write_index(directory, manifest):
              f"Query: {request['query']!r}" + (f", filters {request['filters']}" if request.get("filters") else ""),
              f"Status: {manifest['status']} (created {manifest.get('created_at', '')[:19]} UTC, "
              f"updated {manifest.get('updated_at', '')[:19]} UTC, client {manifest.get('client_version')})",
+             (f"Corpus: database generation {manifest['corpus_snapshot'].get('db_generation')} "
+              f"({manifest['corpus_snapshot'].get('decisions')} decisions) at {manifest['corpus_snapshot'].get('captured_at', '')[:19]} UTC"
+              if manifest.get("corpus_snapshot", {}).get("db_generation") else "Corpus: generation not recorded"),
              "", "Files are the service's responses saved as received (see manifest.json for hashes, "
              "timestamps and source links). Saved evidence is not an assessment of legal support.", ""]
     kinds = (("decision", "## Decisions"), ("passage", "## Passages (Erwägungen)"), ("law", "## Statute articles"))
@@ -479,9 +554,25 @@ def resolve_citations(args, client):
                                     or not all(part.isdigit() for part in pinpoint.split("."))):
             raise ValueError("A pinpoint must be an Erwägung number string such as 2.3")
     results = []
-    for index, item in enumerate(inputs, 1):
-        _progress(f"resolving {index}/{len(inputs)}: {item['reference']}")
-        results.append(_resolve_one(client, item, args.language or "de"))
+    language = args.language or "de"
+    jobs = _jobs(args)
+    consecutive_transport_failures = 0
+    with ThreadPoolExecutor(max_workers=jobs) as pool:
+        for start in range(0, len(inputs), jobs):
+            chunk = inputs[start:start + jobs]
+            _progress(f"resolving {start + 1}-{start + len(chunk)}/{len(inputs)}")
+            for row in pool.map(lambda item: _resolve_one(client, item, language), chunk):
+                results.append(row)
+                if row.get("status") == "error" and (row.get("error") or {}).get("status") is None:
+                    consecutive_transport_failures += 1
+                else:
+                    consecutive_transport_failures = 0
+            if consecutive_transport_failures >= BREAKER_THRESHOLD and start + jobs < len(inputs):
+                for item in inputs[start + jobs:]:
+                    results.append({"reference": item["reference"].strip(), "pinpoint": item.get("pinpoint"),
+                                    "status": "skipped", "legal_support_assessed": False,
+                                    "reason": f"Stopped after {BREAKER_THRESHOLD} consecutive transport failures; rerun when the service is reachable"})
+                break
     _progress(None)
     counts = {}
     for row in results:
@@ -493,9 +584,117 @@ def resolve_citations(args, client):
             "scope": "Decision existence and requested pinpoint retrieval in the OpenCaseLaw corpus; no assessment of legal support or original-source accuracy"}, 0 if complete else 4
 
 
+def _load_manifest(directory):
+    directory = Path(directory).expanduser()
+    try:
+        manifest = json.loads((directory / "manifest.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError) as error:
+        raise ValueError(f"{directory} is not a readable bundle (manifest.json missing or invalid)") from error
+    if manifest.get("kind") != "opencaselaw-research-bundle":
+        raise ValueError(f"{directory} is not an OpenCaseLaw research bundle")
+    return directory, manifest
+
+
+def verify_bundle(args):
+    """Re-hash every listed file; report changed, missing and unlisted files."""
+    directory, manifest = _load_manifest(args.bundle)
+    report = {"kind": "opencaselaw-bundle-verification", "bundle": str(directory.resolve()),
+              "checked_at": _now(), "client_version": __version__, "ok": [], "changed": [], "missing": [], "unlisted": []}
+    listed = set()
+    for item in manifest.get("artifacts", []):
+        listed.add(item["path"])
+        try:
+            path = _safe_file(directory, item["path"])
+        except ValueError:
+            report["changed"].append(item["path"])
+            continue
+        if not path.is_file():
+            report["missing"].append(item["path"])
+        elif hashlib.sha256(path.read_bytes()).hexdigest() != item["sha256"]:
+            report["changed"].append(item["path"])
+        else:
+            report["ok"].append(item["path"])
+    for path in sorted(directory.rglob("*")):
+        if not path.is_file():
+            continue
+        relative = path.relative_to(directory).as_posix()
+        if relative in listed or relative in ("manifest.json", "INDEX.md") or path.name.startswith(".manifest-"):
+            continue
+        report["unlisted"].append(relative)
+    report["counts"] = {key: len(report[key]) for key in ("ok", "changed", "missing", "unlisted")}
+    report["corpus_snapshot"] = manifest.get("corpus_snapshot")
+    report["status"] = "verified" if not report["changed"] and not report["missing"] else "failed"
+    report["scope"] = "File integrity against the manifest only; not a check of the original court publications"
+    return report, 0 if report["status"] == "verified" else 4
+
+
+def diff_bundles(args):
+    """What changed between two bundles of the same question."""
+    dir_a, a = _load_manifest(args.old)
+    dir_b, b = _load_manifest(args.new)
+    def decisions(manifest):
+        return {item["identifier"]: item for item in manifest.get("items", {}).values() if item["kind"] == "decision"}
+    da, db = decisions(a), decisions(b)
+    added = sorted(set(db) - set(da)); removed = sorted(set(da) - set(db))
+    changed_text, status_changes = [], []
+    for decision_id in sorted(set(da) & set(db)):
+        pa, pb = da[decision_id].get("provenance") or {}, db[decision_id].get("provenance") or {}
+        if pa.get("content_hash") and pb.get("content_hash") and pa["content_hash"] != pb["content_hash"]:
+            changed_text.append({"decision_id": decision_id, "old": pa["content_hash"], "new": pb["content_hash"]})
+        if da[decision_id].get("status") != db[decision_id].get("status"):
+            status_changes.append({"identifier": decision_id, "old": da[decision_id].get("status"), "new": db[decision_id].get("status")})
+    for key in sorted(set(a.get("items", {})) & set(b.get("items", {}))):
+        if not key.startswith("decision:") and a["items"][key].get("status") != b["items"][key].get("status"):
+            status_changes.append({"identifier": key, "old": a["items"][key].get("status"), "new": b["items"][key].get("status")})
+    request_changes = {key: {"old": a["request"].get(key), "new": b["request"].get(key)}
+                       for key in sorted(set(a["request"]) | set(b["request"])) if a["request"].get(key) != b["request"].get(key)}
+    ga = (a.get("corpus_snapshot") or {}).get("db_generation"); gb = (b.get("corpus_snapshot") or {}).get("db_generation")
+    report = {"kind": "opencaselaw-bundle-diff", "old": str(dir_a.resolve()), "new": str(dir_b.resolve()),
+              "compared_at": _now(), "request_changes": request_changes,
+              "corpus_generation": {"old": ga, "new": gb, "changed": ga != gb},
+              "decisions": {"added": added, "removed": removed, "unchanged": len(set(da) & set(db)),
+                            "text_changed": changed_text},
+              "status_changes": status_changes,
+              "note": ("Added and removed follow the saved selections; a decision can appear because it was newly decided, "
+                       "newly published or newly indexed, or because the ranking changed. The manifests record the "
+                       "corpus generation, not the reason.")}
+    return report, 0
+
+
+def add_to_bundle(args, client):
+    """Add decisions found elsewhere to an existing bundle, with the bundle's passages."""
+    directory, manifest = _load_manifest(args.bundle)
+    _validate_saved(directory, manifest)
+    from .cli import read_inputs
+    decision_ids = [row["decision_id"].strip() for row in read_inputs(args, "decision_id")]
+    passages = list(dict.fromkeys(list(manifest["request"].get("passages", [])) + list(getattr(args, "passage", None) or [])))
+    for passage in passages:
+        if not passage or not all(part.isdigit() for part in passage.split(".")):
+            raise ValueError("--passage must be an Erwägung number such as 2.3")
+    manifest.setdefault("additions", []).append({"at": _now(), "decision_ids": decision_ids, "passages": passages,
+                                                 "corpus_snapshot": _snapshot(client)})
+    _collect_all(directory, manifest, client, _item_specs(manifest["request"], decision_ids, passages), _jobs(args))
+    failed = [item for item in manifest["items"].values() if item["status"] != "saved"]
+    manifest["status"] = "complete" if not failed and not manifest["selection"].get("error") else "partial"
+    manifest.setdefault("completeness", {})["failed_items"] = len(failed)
+    manifest["completeness"]["added_decisions"] = sum(len(entry["decision_ids"]) for entry in manifest["additions"])
+    _checkpoint(directory, manifest)
+    _write_index(directory, manifest)
+    added = {key: item["status"] for key, item in manifest["items"].items()
+             if item["kind"] in ("decision", "passage") and item["identifier"].split(":")[0] in decision_ids}
+    return {"schema_version": SCHEMA_VERSION, "status": manifest["status"], "bundle": str(directory.resolve()),
+            "manifest": str((directory / "manifest.json").resolve()), "added": added}, 0 if not failed else 4
+
+
 def run(args, client):
     if args.command == "bundle" and args.action == "create":
         return create_bundle(args, client)
+    if args.command == "bundle" and args.action == "verify":
+        return verify_bundle(args)
+    if args.command == "bundle" and args.action == "diff":
+        return diff_bundles(args)
+    if args.command == "bundle" and args.action == "add":
+        return add_to_bundle(args, client)
     if args.command == "citations" and args.action == "resolve":
         return resolve_citations(args, client)
     raise ValueError("Unknown research workflow")

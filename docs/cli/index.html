@@ -228,7 +228,7 @@ OCL.init({
     "fit_scripts": "Skripte, Notebooks und Agenten: <code>ocl</code> oder direkt die <a href=\"/api/\">REST-API</a>. Gleiche Datensätze, gleiche Grenzen.",
     "fit_data": "Analysen über den ganzen Korpus: der <a href=\"https://huggingface.co/datasets/voilaj/swiss-caselaw\" rel=\"noopener\">Parquet-Datensatz</a>.",
     "limits_h": "Grenzen",
-    "limits_p": "Eine Textsuche wird als eine einzige gerankte Anfrage mit höchstens 800 Ergebnissen gesendet; reine Filtersuchen werden seitenweise geholt. Breite Abfragen können die Zeitgrenze überschreiten und werden als Fehler gemeldet, nicht als leeres Ergebnis. Kantonale Gesetze sind über <code>--law</code> nicht erreichbar. Abfragen gehen an den gehosteten Dienst und unterstehen der <a href=\"/datenschutz/\">Datenschutzerklärung</a>; <code>--base-url</code> verweist auf einen separat betriebenen Server.",
+    "limits_p": "Eine Textsuche wird als eine einzige gerankte Anfrage mit höchstens 800 Ergebnissen gesendet; reine Filtersuchen werden seitenweise geholt. Breite Abfragen können die Zeitgrenze überschreiten und werden als Fehler gemeldet, nicht als leeres Ergebnis. Kantonale Gesetze werden als <code>--law ZH/StG:1</code> angesprochen. Abfragen gehen an den gehosteten Dienst und unterstehen der <a href=\"/datenschutz/\">Datenschutzerklärung</a>; <code>--base-url</code> verweist auf einen separat betriebenen Server.",
     "guide_p": "Die vollständige Anleitung mit den Referenzteilen (Suche und Abruf, Pakete, Zitatauflösung, API-Vertrag) steht auf GitHub: <a href=\"https://github.com/jonashertner/opencaselaw/blob/main/docs/research-cli.md\">docs/research-cli.md</a>."
   },
   "fr": {
@@ -268,7 +268,7 @@ OCL.init({
     "fit_scripts": "Scripts, notebooks et agents : <code>ocl</code>, ou directement l’<a href=\"/api/\">API REST</a>. Mêmes enregistrements, mêmes limites.",
     "fit_data": "Analyse à l’échelle du corpus : le <a href=\"https://huggingface.co/datasets/voilaj/swiss-caselaw\" rel=\"noopener\">jeu de données Parquet</a>.",
     "limits_h": "Limites",
-    "limits_p": "Une recherche textuelle est envoyée en une seule requête classée de 800 résultats au plus ; les recherches par filtres seuls sont paginées. Les requêtes larges peuvent dépasser le délai et sont signalées comme un échec, pas comme un résultat vide. Les lois cantonales ne sont pas accessibles par <code>--law</code>. Les requêtes vont au service hébergé et relèvent de la <a href=\"/datenschutz/\">déclaration de confidentialité</a> ; <code>--base-url</code> désigne un serveur exploité séparément.",
+    "limits_p": "Une recherche textuelle est envoyée en une seule requête classée de 800 résultats au plus ; les recherches par filtres seuls sont paginées. Les requêtes larges peuvent dépasser le délai et sont signalées comme un échec, pas comme un résultat vide. Les lois cantonales s’indiquent sous la forme <code>--law ZH/StG:1</code>. Les requêtes vont au service hébergé et relèvent de la <a href=\"/datenschutz/\">déclaration de confidentialité</a> ; <code>--base-url</code> désigne un serveur exploité séparément.",
     "guide_p": "Le guide complet avec les sections de référence (recherche et récupération, dossiers, résolution des citations, contrat de l’API) est sur GitHub : <a href=\"https://github.com/jonashertner/opencaselaw/blob/main/docs/research-cli.md\">docs/research-cli.md</a>."
   },
   "it": {
@@ -308,7 +308,7 @@ OCL.init({
     "fit_scripts": "Script, notebook e agenti: <code>ocl</code>, oppure direttamente l’<a href=\"/api/\">API REST</a>. Stessi record, stessi limiti.",
     "fit_data": "Analisi sull’intero corpus: il <a href=\"https://huggingface.co/datasets/voilaj/swiss-caselaw\" rel=\"noopener\">dataset Parquet</a>.",
     "limits_h": "Limiti",
-    "limits_p": "Una ricerca testuale è inviata come un’unica richiesta ordinata di al massimo 800 risultati; le ricerche con soli filtri sono paginate. Le ricerche ampie possono superare il timeout e vengono segnalate come errore, non come risultato vuoto. Le leggi cantonali non sono raggiungibili con <code>--law</code>. Le richieste vanno al servizio ospitato e sono soggette all’<a href=\"/datenschutz/\">informativa sulla privacy</a>; <code>--base-url</code> indica un server gestito separatamente.",
+    "limits_p": "Una ricerca testuale è inviata come un’unica richiesta ordinata di al massimo 800 risultati; le ricerche con soli filtri sono paginate. Le ricerche ampie possono superare il timeout e vengono segnalate come errore, non come risultato vuoto. Le leggi cantonali si indicano come <code>--law ZH/StG:1</code>. Le richieste vanno al servizio ospitato e sono soggette all’<a href=\"/datenschutz/\">informativa sulla privacy</a>; <code>--base-url</code> indica un server gestito separatamente.",
     "guide_p": "La guida completa con le sezioni di riferimento (ricerca e recupero, raccolte, risoluzione delle citazioni, contratto dell’API) è su GitHub: <a href=\"https://github.com/jonashertner/opencaselaw/blob/main/docs/research-cli.md\">docs/research-cli.md</a>."
   },
   "rm": {
@@ -348,7 +348,7 @@ OCL.init({
     "fit_scripts": "Scripts, notebooks ed agents: <code>ocl</code>, u directamain l’<a href=\"/api/\">API REST</a>. Ils medems records, las medemas limitas.",
     "fit_data": "Analisas sin l’entir corpus: il <a href=\"https://huggingface.co/datasets/voilaj/swiss-caselaw\" rel=\"noopener\">set da datas Parquet</a>.",
     "limits_h": "Limitas",
-    "limits_p": "Ina tschertga da text vegn tramessa sco ina suletta dumonda ordinada cun maximalmain 800 resultats; tschertgas mo cun filters vegnan paginadas. Dumondas largas pon surpassar il temp maximal e vegnan annunziadas sco errur, betg sco resultat vid. Leschas chantunalas n’èn betg accessiblas via <code>--law</code>. Las dumondas van al servetsch hostà ed èn suttamessas a la <a href=\"/datenschutz/\">decleraziun da protecziun da datas</a>; <code>--base-url</code> inditgescha in server manà separadamain.",
+    "limits_p": "Ina tschertga da text vegn tramessa sco ina suletta dumonda ordinada cun maximalmain 800 resultats; tschertgas mo cun filters vegnan paginadas. Dumondas largas pon surpassar il temp maximal e vegnan annunziadas sco errur, betg sco resultat vid. Leschas chantunalas vegnan inditgadas sco <code>--law ZH/StG:1</code>. Las dumondas van al servetsch hostà ed èn suttamessas a la <a href=\"/datenschutz/\">decleraziun da protecziun da datas</a>; <code>--base-url</code> inditgescha in server manà separadamain.",
     "guide_p": "La guida cumpletta cun las parts da referenza (tschertga e retschaiver, pachets, resoluziun da citaziuns, contract da l’API) stat sin GitHub: <a href=\"https://github.com/jonashertner/opencaselaw/blob/main/docs/research-cli.md\">docs/research-cli.md</a>."
   },
   "en": {
@@ -388,7 +388,7 @@ OCL.init({
     "fit_scripts": "Scripts, notebooks and agents: <code>ocl</code>, or the <a href=\"/api/\">REST API</a> directly. Same records, same limits.",
     "fit_data": "Corpus-scale analysis: the <a href=\"https://huggingface.co/datasets/voilaj/swiss-caselaw\" rel=\"noopener\">Parquet dataset</a>.",
     "limits_h": "Limits",
-    "limits_p": "A text query is sent as one ranked request of at most 800 results; filter-only searches are paged. Broad queries can exceed the timeout and are reported as a failure, not as an empty result. Cantonal statutes are not reachable through <code>--law</code>. Queries go to the hosted service and are subject to the <a href=\"/datenschutz/\">privacy notice</a>; <code>--base-url</code> points at a separately operated server.",
+    "limits_p": "A text query is sent as one ranked request of at most 800 results; filter-only searches are paged. Broad queries can exceed the timeout and are reported as a failure, not as an empty result. Cantonal statutes are addressed as <code>--law ZH/StG:1</code>. Queries go to the hosted service and are subject to the <a href=\"/datenschutz/\">privacy notice</a>; <code>--base-url</code> points at a separately operated server.",
     "guide_p": "The full guide with the reference sections (search and retrieval, bundles, citation resolution, the research API contract) is on GitHub: <a href=\"https://github.com/jonashertner/opencaselaw/blob/main/docs/research-cli.md\">docs/research-cli.md</a>."
   }
 }

@@ -26,6 +26,8 @@ class FakeClient:
             if isinstance(value, BaseException):
                 raise value
             return deepcopy(value)
+        if path == "/health":
+            return {"status": "ok", "decisions": 25, "db_generation": 1700000000}
         if path == "/api/decisions":
             return {"results": [{"decision_id": "test_case"}], "total": 100,
                     "total_is_lower_bound": True, "has_more": True, "next_offset": 1,
@@ -63,7 +65,8 @@ def test_bundle_preserves_served_text_hashes_and_bounded_completeness(tmp_path):
     assert saved["completeness"]["exhaustive_legal_research"] is False
     assert saved["completeness"]["server_last_page"]["total_is_lower_bound"] is True
     assert saved["completeness"]["server_last_page"]["has_more"] is True
-    assert saved["evidence_contract"]["corpus_snapshot"] is None
+    assert "not an immutable copy" in saved["evidence_contract"]["corpus_snapshot"]
+    assert saved["corpus_snapshot"]["db_generation"] == 1700000000
     item = saved["items"]["decision:test_case"]
     assert item["provenance"]["content_hash"] == "server-hash"
     assert (tmp_path / "bundle" / item["text_artifact"]["path"]).read_bytes() == "Court text  \nété\n".encode()
@@ -120,7 +123,7 @@ def test_failed_fetch_resumes_without_reselecting_or_overwriting_evidence(tmp_pa
     args.resume = True
     retry = FakeClient()
     assert workflows.run(args, retry)[1] == 0
-    assert [path for path, _ in retry.calls] == ["/api/decisions/test_case"]
+    assert [path for path, _ in retry.calls if path != "/health"] == ["/api/decisions/test_case"]
     after = manifest(tmp_path)
     assert before["artifacts"][0] == after["artifacts"][0]
     assert after["attempt_errors"][0]["status"] == 503
@@ -207,7 +210,8 @@ def test_partial_search_resume_continues_original_offset(tmp_path):
     client = FakeClient({"/api/decisions": {"results": [{"decision_id": "other_case"}], "total": 2,
                                             "total_is_lower_bound": False, "has_more": False, "next_offset": None}})
     assert workflows.run(args, client)[1] == 0
-    assert client.calls[0][1]["offset"] == 1
+    searches = [params for path, params in client.calls if path == "/api/decisions"]
+    assert searches[0]["offset"] == 1
     assert "/api/decisions/test_case" not in [path for path, _ in client.calls]
 
 
@@ -346,3 +350,76 @@ def test_citation_label_normalization_is_only_for_comparison():
     assert key("4A_747/2012") == key("4A 747/2012")
     assert key("140 III 86") != key("140 III 860")
     assert key("BGE 100 Ia 5") == "bge100ia5" and key(None) is None
+
+
+def test_bundle_records_the_corpus_generation_and_cantonal_statutes(tmp_path):
+    args = bundle_args(tmp_path, "--law", "ZH/StG:1", "--law", "OR:41")
+    client = FakeClient({"/api/laws/StG": {"articles": [{"article_num": "1", "text": "Kantonaler Text"}]},
+                         "/api/laws/OR": {"articles": [{"article_num": "41", "text": "Bundesrecht"}]}})
+    result, code = workflows.run(args, client)
+    assert code == 0 and result["completeness"]["corpus_generation"] == 1700000000
+    saved = manifest(tmp_path)
+    assert saved["corpus_snapshot"]["decisions"] == 25
+    assert ("/api/laws/StG", {"article": "1", "language": "de", "canton": "ZH"}) in client.calls
+    assert saved["items"]["law:ZH/StG:1"]["status"] == "saved" and saved["items"]["law:OR:41"]["status"] == "saved"
+    assert "database generation 1700000000" in (tmp_path / "bundle" / "INDEX.md").read_text(encoding="utf-8")
+    with pytest.raises(ValueError, match="CANTON/ABBREVIATION"):
+        workflows.run(bundle_args(tmp_path / "x", "--law", "ZH/StG"), FakeClient())
+
+
+def test_bundle_verify_diff_and_add(tmp_path):
+    args = bundle_args(tmp_path)
+    workflows.run(args, FakeClient())
+    verify = build_parser(config={}).parse_args(["bundle", "verify", str(tmp_path / "bundle")])
+    report, code = workflows.run(verify, FakeClient())
+    assert code == 0 and report["status"] == "verified" and report["counts"]["changed"] == 0
+    saved = manifest(tmp_path)
+    (tmp_path / "bundle" / saved["artifacts"][0]["path"]).write_bytes(b"tampered")
+    (tmp_path / "bundle" / "stray.txt").write_text("not listed")
+    report, code = workflows.run(verify, FakeClient())
+    assert code == 4 and report["status"] == "failed"
+    assert report["changed"] == [saved["artifacts"][0]["path"]] and report["unlisted"] == ["stray.txt"]
+    # a second run of the same question against a changed corpus
+    later = FakeClient({"/health": {"decisions": 26, "db_generation": 1700000999},
+                        "/api/decisions": {"results": [{"decision_id": "other_case"}], "total": 1,
+                                           "total_is_lower_bound": False, "has_more": False, "next_offset": None}})
+    args2 = build_parser(config={}).parse_args(["bundle", "create", "test query", "--out", str(tmp_path / "later"), "--max-results", "1"])
+    assert workflows.run(args2, later)[1] == 0
+    diff = build_parser(config={}).parse_args(["bundle", "diff", str(tmp_path / "bundle"), str(tmp_path / "later")])
+    report, code = workflows.run(diff, FakeClient())
+    assert code == 0 and report["decisions"]["added"] == ["other_case"] and report["decisions"]["removed"] == ["test_case"]
+    assert report["corpus_generation"] == {"old": 1700000000, "new": 1700000999, "changed": True}
+    # add a decision found elsewhere, with the bundle's passages plus one more
+    add = build_parser(config={}).parse_args(["bundle", "add", str(tmp_path / "later"), "test_case", "--passage", "2.3"])
+    result, code = workflows.run(add, FakeClient())
+    assert code == 0 and result["added"] == {"decision:test_case": "saved", "passage:test_case:2.3": "saved"}
+    later_manifest = json.loads((tmp_path / "later" / "manifest.json").read_text())
+    assert later_manifest["additions"][0]["decision_ids"] == ["test_case"]
+    assert "test_case" in (tmp_path / "later" / "INDEX.md").read_text(encoding="utf-8")
+
+
+def test_resolution_stops_after_repeated_transport_failures():
+    client = FakeClient({"/api/cite": APIError(None, "Request failed: connection refused")})
+    args = resolution_args(*[f"BGE {n} III 1" for n in range(100, 112)])
+    args.jobs = 1
+    result, code = workflows.run(args, client)
+    statuses = [row["status"] for row in result["results"]]
+    assert code == 4 and statuses[:5] == ["error"] * 5 and set(statuses[5:]) == {"skipped"}
+    assert len([c for c in client.calls if c[0] == "/api/cite"]) == 5
+
+
+def test_concurrent_fetches_are_recorded_in_order(tmp_path):
+    import threading
+    class SlowClient(FakeClient):
+        def get(self, path, params=None):
+            if path.startswith("/api/decisions/case_"):
+                import time; time.sleep(0.01 * (3 - int(path[-1]) % 3))
+            return super().get(path, params)
+    ids = ["case_0", "case_1", "case_2", "case_3", "case_4"]
+    client = SlowClient({"/api/decisions": {"results": [{"decision_id": i} for i in ids], "total": 5,
+                                            "total_is_lower_bound": False, "has_more": False, "next_offset": None}})
+    args = bundle_args(tmp_path); args.max_results = 5; args.jobs = 4
+    assert workflows.run(args, client)[1] == 0
+    saved = manifest(tmp_path)
+    assert [k for k in saved["items"] if k.startswith("decision:")] == ["decision:" + i for i in ids]
+    assert all(item["status"] == "saved" for item in saved["items"].values())

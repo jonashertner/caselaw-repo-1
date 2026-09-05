@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "opencaselaw-cli"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Composable, read-only research client for OpenCaseLaw"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -17,6 +17,9 @@ ocl = "opencaselaw_cli.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.dynamic]
+version = {attr = "opencaselaw_cli._version.__version__"}
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

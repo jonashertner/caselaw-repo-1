@@ -6,10 +6,14 @@ import email.utils
 import http.client
 import json
 import math
+import ssl
+import threading
 import time
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode, urlsplit
 from urllib.request import Request, urlopen
+
+from ._version import __version__
 
 
 class APIError(Exception):
@@ -50,13 +54,15 @@ class Client:
         self._monotonic = monotonic or time.monotonic
         self._wall_time = wall_time or time.time
         self._last_start: float | None = None
+        self._lock = threading.Lock()  # pacing is shared by concurrent workers
 
     def _pace(self):
-        if self._last_start is not None:
-            delay = 0.2 - (self._monotonic() - self._last_start)
-            if delay > 0:
-                self._sleep(delay)
-        self._last_start = self._monotonic()
+        with self._lock:
+            if self._last_start is not None:
+                delay = 0.2 - (self._monotonic() - self._last_start)
+                if delay > 0:
+                    self._sleep(delay)
+            self._last_start = self._monotonic()
 
     def _retry_delay(self, headers, attempt: int) -> float:
         value = headers.get("Retry-After") if headers else None
@@ -73,12 +79,12 @@ class Client:
         return min(2 ** attempt, 8)
 
     def get(self, path: str, params: dict | None = None) -> dict:
-        if not path.startswith("/api/") or "?" in path or "#" in path:
+        if (not path.startswith("/api/") and path != "/health") or "?" in path or "#" in path:
             raise ValueError("GET path must start with /api/; pass query parameters separately")
         query = {k: str(v).lower() if isinstance(v, bool) else v
                  for k, v in (params or {}).items() if v is not None}
         url = self.base_url + path + ("?" + urlencode(query, doseq=True) if query else "")
-        request = Request(url, headers={"Accept": "application/json", "User-Agent": "opencaselaw-cli/0.1.0"})
+        request = Request(url, headers={"Accept": "application/json", "User-Agent": f"opencaselaw-cli/{__version__}"})
         for attempt in range(self.retries + 1):
             self._pace()
             try:
@@ -107,6 +113,10 @@ class Client:
                     raise error from exc
                 self._sleep(delay)
             except (URLError, TimeoutError, OSError, http.client.HTTPException) as exc:
+                # A certificate failure is deterministic: retrying only delays the answer.
+                reason = getattr(exc, "reason", exc)
+                if isinstance(exc, ssl.SSLCertVerificationError) or isinstance(reason, ssl.SSLCertVerificationError):
+                    raise APIError(None, "TLS certificate verification failed: " + str(reason)) from exc
                 # HTTPException covers IncompleteRead, BadStatusLine and LineTooLong,
                 # which urllib raises from a broken response rather than as URLError.
                 if attempt == self.retries:

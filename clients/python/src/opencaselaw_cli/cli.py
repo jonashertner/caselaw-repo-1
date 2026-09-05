@@ -7,12 +7,58 @@ import json
 import math
 import os
 import sys
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from urllib.parse import quote
 
 from . import render
+from ._version import __version__
 from .client import APIError, Client
-from .workflows import RANKED_MAX_RESULTS, reference_key
+from .workflows import BREAKER_THRESHOLD, DEFAULT_JOBS, RANKED_MAX_RESULTS, reference_key
+
+DEFAULT_BASE_URL = "https://mcp.opencaselaw.ch"
+FORMATS = ("text", "json", "jsonl", "table", "csv", "md")
+CONFIG_KEYS = ("base_url", "timeout", "retries", "format", "color", "language", "jobs")
+
+
+def config_path() -> str:
+    return os.environ.get("OCL_CONFIG") or os.path.join(os.path.expanduser("~"), ".config", "ocl", "config")
+
+
+def load_config(path: str | None = None) -> dict:
+    """Defaults from ~/.config/ocl/config (key = value lines) and OCL_* variables.
+    Precedence: command-line flag, then environment, then the file."""
+    values: dict = {}
+    try:
+        text = Path(path or config_path()).read_text(encoding="utf-8")
+    except OSError:
+        text = ""
+    for number, line in enumerate(text.splitlines(), 1):
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        key, separator, value = line.partition("=")
+        key = key.strip().lower().replace("-", "_")
+        if not separator or key not in CONFIG_KEYS:
+            raise ValueError(f"config line {number}: expected one of {', '.join(CONFIG_KEYS)} = value")
+        values[key] = value.strip()
+    for key in CONFIG_KEYS:
+        env = os.environ.get("OCL_" + key.upper())
+        if env is not None and env != "":
+            values[key] = env
+    try:
+        if "timeout" in values:
+            values["timeout"] = float(values["timeout"])
+        if "retries" in values:
+            values["retries"] = nonnegative_int(values["retries"])
+        if "jobs" in values:
+            values["jobs"] = positive_int(values["jobs"])
+    except (ValueError, argparse.ArgumentTypeError) as exc:
+        raise ValueError(f"config: {exc}") from exc
+    for key, choices in (("format", FORMATS), ("color", ("auto", "always", "never")), ("language", ("de", "fr", "it"))):
+        if key in values and values[key] not in choices:
+            raise ValueError(f"config: {key} must be one of {', '.join(choices)}")
+    return values
 
 
 def positive_int(value):
@@ -38,13 +84,14 @@ def confidence(value):
 
 def _common():
     parser = argparse.ArgumentParser(add_help=False, argument_default=argparse.SUPPRESS)
-    parser.add_argument("--base-url", help="API origin (default: https://mcp.opencaselaw.ch)")
-    parser.add_argument("--timeout", type=float, help="per-request timeout in seconds (default: 30)")
-    parser.add_argument("--retries", type=nonnegative_int, help="retries per request, 0-5 (default: 2)")
-    parser.add_argument("--format", choices=["text", "json", "jsonl"],
-                        help="text is the default at a terminal, json when piped; jsonl writes one record per line")
+    parser.add_argument("--base-url", help=f"API origin (default: {DEFAULT_BASE_URL}; OCL_BASE_URL)")
+    parser.add_argument("--timeout", type=float, help="per-request timeout in seconds (default: 30; OCL_TIMEOUT)")
+    parser.add_argument("--retries", type=nonnegative_int, help="retries per request, 0-5 (default: 2; OCL_RETRIES)")
+    parser.add_argument("--format", choices=list(FORMATS),
+                        help="text (default at a terminal), json (default when piped), jsonl, table, csv or md (OCL_FORMAT)")
     parser.add_argument("--fields", help="comma-separated result fields for json/jsonl; pagination/errors are always retained")
-    parser.add_argument("--color", choices=["auto", "always", "never"], help="colour in text output (default: auto; NO_COLOR is respected)")
+    parser.add_argument("--color", choices=["auto", "always", "never"], help="colour in text output (default: auto; NO_COLOR and OCL_COLOR respected)")
+    parser.add_argument("--jobs", type=positive_int, help=f"concurrent requests for batch commands, 1-8 (default: {DEFAULT_JOBS}; OCL_JOBS)")
     return parser
 
 
@@ -76,13 +123,17 @@ _EXAMPLES = """examples:
   ocl bundle create 'Rachekündigung Art. 336 OR' --max-results 5 --passage 2 --law OR:336 --out evidence
 
 At a terminal, results are shown as readable text; piped or with --format json/jsonl
-they are JSON on stdout. Messages go to stderr.
+they are JSON on stdout; table, csv and md are for pasting into documents. Messages go
+to stderr. Defaults can live in ~/.config/ocl/config (key = value) or OCL_* variables;
+`ocl completion zsh|bash|fish` prints a shell completion script.
 Exit codes: 0 complete, 2 invalid input, 3 API or network failure, 4 partial or unresolved.
 Guide: https://github.com/jonashertner/opencaselaw/blob/main/docs/research-cli.md
 """
 
 
-def build_parser():
+def build_parser(config: dict | None = None):
+    cfg = load_config() if config is None else config
+    lang = cfg.get("language", "de")
     fmt = argparse.RawDescriptionHelpFormatter
     common = _common()
     parser = argparse.ArgumentParser(
@@ -91,8 +142,10 @@ def build_parser():
                      "read-only call to the public OpenCaseLaw API; identifiers, citation strings and "
                      "passage text come back from the service unchanged."),
         epilog=_EXAMPLES)
-    parser.set_defaults(base_url="https://mcp.opencaselaw.ch", timeout=30, retries=2, format=None, fields=None, color="auto")
-    parser.add_argument("--version", action="version", version="ocl 0.1.0")
+    parser.set_defaults(base_url=cfg.get("base_url", DEFAULT_BASE_URL), timeout=cfg.get("timeout", 30),
+                        retries=cfg.get("retries", 2), format=cfg.get("format"), fields=None,
+                        color=cfg.get("color", "auto"), jobs=cfg.get("jobs", DEFAULT_JOBS))
+    parser.add_argument("--version", action="version", version=f"ocl {__version__}")
     commands = parser.add_subparsers(dest="command", required=True, metavar="COMMAND")
 
     decisions = commands.add_parser("decisions", parents=[common], formatter_class=fmt,
@@ -145,7 +198,7 @@ def build_parser():
     law.add_argument("--sr-number", help="SR number instead of an abbreviation, e.g. 220")
     law.add_argument("--as-of", help="historical federal edition in force on this date, YYYY-MM-DD")
     law.add_argument("--canton", default="CH", help="CH for federal law (default), or a canton code for cantonal law")
-    law.add_argument("--language", choices=["de", "fr", "it"], default="de", help="text language (default: de)")
+    law.add_argument("--language", choices=["de", "fr", "it"], default=lang, help="text language (default: de; OCL_LANGUAGE)")
 
     citations = commands.add_parser("citations", parents=[common], formatter_class=fmt,
                                     help="follow the citation graph, or check a list of references",
@@ -169,15 +222,16 @@ def build_parser():
                      "is not legal support: the report never says a decision backs a proposition."),
         epilog="examples:\n  ocl citations resolve 'BGE 136 III 513' '4A_747/2012'\n  ocl citations resolve --input references.jsonl --format jsonl > resolution.jsonl\n\nreferences.jsonl lines look like {\"reference\": \"BGE 136 III 513\", \"pinpoint\": \"2.3\"}\n")
     _input(resolve, "references", "references such as 'BGE 136 III 513' or '4A_747/2012'")
-    resolve.add_argument("--language", choices=["de", "fr", "it"], default="de", help="language of the returned citation string (default: de)")
+    resolve.add_argument("--language", choices=["de", "fr", "it"], default=lang, help="language of the returned citation string (default: de; OCL_LANGUAGE)")
 
     cite = commands.add_parser("cite", parents=[common], formatter_class=fmt,
                                help="get the canonical citation string for a reference",
-                               description="Get the canonical Swiss citation string (DE/FR/IT) and link for a reference. Formatting only: use `citations resolve` or `decisions passage` to check that a pinpoint exists.",
+                               description="Get the canonical Swiss citation string (DE/FR/IT) and link for a reference. A --pinpoint is checked against the structure index; a missing Erwägung is reported (pinpoint_exists=false, exit 4) rather than formatted as if it existed.",
                                epilog="example:\n  ocl cite 'BGE 136 III 513' --pinpoint 2.3 --language fr\n")
     _input(cite, "references", "references such as 'BGE 136 III 513' or '4A_747/2012'")
-    cite.add_argument("--pinpoint", help="Erwägung number to append, e.g. 2.3")
-    cite.add_argument("--language", choices=["de", "fr", "it"], default="de", help="primary language of citation_string (default: de)")
+    cite.add_argument("--pinpoint", help="Erwägung number to append, e.g. 2.3; its existence is verified unless --no-verify-pinpoint")
+    cite.add_argument("--no-verify-pinpoint", action="store_true", help="format the pinpoint without checking that the Erwägung exists")
+    cite.add_argument("--language", choices=["de", "fr", "it"], default=lang, help="primary language of citation_string (default: de; OCL_LANGUAGE)")
 
     bundle = commands.add_parser("bundle", parents=[common], formatter_class=fmt,
                                  help="save the evidence for a question into a folder you can keep or share",
@@ -197,8 +251,81 @@ def build_parser():
     _filters(create)
     create.add_argument("--resume", action="store_true", help="continue an interrupted or partly failed bundle with the same options")
     create.add_argument("--passage", action="append", default=[], metavar="NUMBER", help="also save this Erwägung of every selected decision; repeatable")
-    create.add_argument("--law", action="append", default=[], metavar="ABBR:ARTICLE", help="also save this federal statute article, e.g. OR:336; repeatable")
+    create.add_argument("--law", action="append", default=[], metavar="[CANTON/]ABBR:ARTICLE", help="also save this statute article, e.g. OR:336 or ZH/StG:1; repeatable")
+
+    verify = bundle_actions.add_parser("verify", parents=[common], formatter_class=fmt,
+                                       help="re-hash every saved file against the manifest",
+                                       description="Check a bundle folder: every file listed in manifest.json is re-hashed; changed, missing and unlisted files are reported. No network.",
+                                       epilog="example:\n  ocl bundle verify rachekuendigung-2026-09\n")
+    verify.add_argument("bundle", help="bundle folder")
+    diff = bundle_actions.add_parser("diff", parents=[common], formatter_class=fmt,
+                                     help="what changed between two bundles of the same question",
+                                     description="Compare two bundles: decisions added or removed, decisions whose served text changed, item statuses, request differences and the corpus generation. No network.",
+                                     epilog="example:\n  ocl bundle diff rachekuendigung-2026-08 rachekuendigung-2026-09\n")
+    diff.add_argument("old", help="earlier bundle folder")
+    diff.add_argument("new", help="later bundle folder")
+    add = bundle_actions.add_parser("add", parents=[common], formatter_class=fmt,
+                                    help="add decisions found elsewhere to an existing bundle",
+                                    description="Add decisions to an existing bundle, with the bundle's passages (and any extra --passage). Saved files are never overwritten.",
+                                    epilog="example:\n  ocl bundle add rachekuendigung-2026-09 bge_BGE_140_III_86 --passage 2\n")
+    add.add_argument("bundle", help="existing bundle folder")
+    _input(add, "ids", "decision IDs to add")
+    add.add_argument("--passage", action="append", default=[], metavar="NUMBER", help="also save this Erwägung of each added decision; repeatable")
+
+    completion = commands.add_parser("completion", parents=[common], formatter_class=fmt,
+                                     help="print a shell completion script",
+                                     description="Print a completion script. Install with, for example: ocl completion zsh > ~/.zfunc/_ocl (zsh), or eval \"$(ocl completion bash)\" in ~/.bashrc, or ocl completion fish > ~/.config/fish/completions/ocl.fish.")
+    completion.add_argument("shell", choices=["bash", "zsh", "fish"], help="shell")
+    hidden = commands.add_parser("__complete", parents=[common], add_help=False,
+                                 description="Internal: completion candidates for the shell scripts.")
+    hidden.add_argument("words", nargs="*", help="command line words so far")
     return parser
+
+
+_COMPLETION_SCRIPTS = {
+    "bash": ('_ocl_complete() {\n  local IFS=$\'\\n\'\n  COMPREPLY=($(ocl __complete -- "${COMP_WORDS[@]:1:COMP_CWORD}" 2>/dev/null))\n}\n'
+             'complete -o default -F _ocl_complete ocl\n'),
+    "zsh": ('#compdef ocl\n_ocl() {\n  local -a candidates\n  candidates=("${(@f)$(ocl __complete -- "${words[@]:1:$((CURRENT-1))}" 2>/dev/null)}")\n'
+            '  compadd -- "${candidates[@]}"\n}\ncompdef _ocl ocl\n'),
+    "fish": ('complete -c ocl -f -a \'(ocl __complete -- (commandline -cpo)[2..] (commandline -ct) 2>/dev/null)\'\n'),
+}
+
+
+def complete(parser, words: list[str]) -> list[str]:
+    """Candidates for the last (possibly empty) word, walking the parser tree."""
+    partial = words[-1] if words else ""
+    prior = words[:-1]
+    current = parser
+    previous_action = None
+    used: set[str] = set()
+    for word in prior:
+        sub = next((a for a in current._actions if isinstance(a, argparse._SubParsersAction)), None)
+        if previous_action is not None and previous_action.nargs is None and not word.startswith("-"):
+            previous_action = None
+            continue
+        previous_action = None
+        if sub is not None and word in sub.choices:
+            current = sub.choices[word]
+            used = set()
+            continue
+        if word.startswith("-"):
+            used.add(word)
+            action = next((a for a in current._actions if word in a.option_strings), None)
+            if action is not None and action.nargs is None and not isinstance(action, argparse._StoreConstAction):
+                previous_action = action
+    if previous_action is not None and previous_action.choices:
+        return sorted(str(c) for c in previous_action.choices if str(c).startswith(partial))
+    if previous_action is not None:
+        return []
+    candidates: list[str] = []
+    for action in current._actions:
+        if isinstance(action, argparse._SubParsersAction):
+            candidates += [c for c in action.choices if not c.startswith("__")]
+        elif action.option_strings and action.help != argparse.SUPPRESS:
+            candidates += [o for o in action.option_strings if o.startswith("--") and o not in used]
+        elif not action.option_strings and action.choices:
+            candidates += [str(c) for c in action.choices]
+    return sorted(c for c in candidates if c.startswith(partial))
 
 
 def read_inputs(args, field="decision_id") -> list[dict]:
@@ -350,10 +477,22 @@ def colour_enabled(args, stream) -> bool:
 
 
 def emit(value, args):
+    if isinstance(value, dict) and "_raw" in value:
+        sys.stdout.write(value["_raw"] if value["_raw"].endswith("\n") or not value["_raw"] else value["_raw"] + "\n")
+        return
     fmt = output_format(args)
     if fmt == "text":
         style = render.Style(colour_enabled(args, sys.stdout))
         print(render.render(value, args, style, render.terminal_width()))
+        return
+    if fmt == "table":
+        print(render.render_table(value, args, render.terminal_width(maximum=200)))
+        return
+    if fmt == "csv":
+        print(render.render_csv(value, args))
+        return
+    if fmt == "md":
+        print(render.render_md(value, args, render.terminal_width(maximum=200)))
         return
     fields = [field.strip() for field in args.fields.split(",") if field.strip()] if args.fields else None
     collections = [key for key in ("results", "incoming", "outgoing")
@@ -410,25 +549,54 @@ def _decision_id(client, reference):
     return decision_id
 
 
+def _one(args, client, kind, field, index, row):
+    """Fetch one batch item; returns (result, None) or (None, error dict)."""
+    try:
+        if kind == "get":
+            decision_id = _decision_id(client, row[field])
+            result = client.get("/api/decisions/" + quote(decision_id, safe=""), {"full_text": not args.no_full_text})
+        else:
+            pinpoint = row["pinpoint"] if row.get("pinpoint") is not None else args.pinpoint
+            result = client.get("/api/cite", {"reference": row[field], "pinpoint": pinpoint, "language": args.language})
+            if (pinpoint and result.get("exists") is True and isinstance(result.get("decision_id"), str)
+                    and not getattr(args, "no_verify_pinpoint", False)):
+                # A formatted pinpoint must point at a passage that exists.
+                passage = client.get(f"/api/erwaegung/{quote(result['decision_id'], safe='')}/{quote(str(pinpoint), safe='')}")
+                exists = not passage.get("error") and isinstance(passage.get("text"), str) and passage["text"].strip() != ""
+                result["pinpoint_exists"] = bool(exists)
+                result["pinpoint_status"] = "retrieved" if exists else "unavailable"
+                if not exists:
+                    result["pinpoint_note"] = f"E. {pinpoint} is not in the structure index of {result['decision_id']}; check the decision text before citing it"
+                    if passage.get("available_e_numbers"):
+                        result["available_e_numbers"] = passage["available_e_numbers"]
+        if result.get("error"):
+            return None, {"index": index, field: row[field], "status": 200, "message": str(result["error"]), "response": result}
+        return result, None
+    except APIError as exc:
+        return None, {"index": index, field: row[field], **exc.to_dict()}
+
+
 def _batch(args, client, kind):
     field = "decision_id" if kind == "get" else "reference"
     inputs = read_inputs(args, field)
+    jobs = max(1, min(int(getattr(args, "jobs", None) or DEFAULT_JOBS), 8))
     rows, errors = [], []
-    for index, row in enumerate(inputs):
-        try:
-            if kind == "get":
-                decision_id = _decision_id(client, row[field])
-                result = client.get("/api/decisions/" + quote(decision_id, safe=""), {"full_text": not args.no_full_text})
-            else:
-                pinpoint = row["pinpoint"] if row.get("pinpoint") is not None else args.pinpoint
-                result = client.get("/api/cite", {"reference": row[field], "pinpoint": pinpoint, "language": args.language})
-            if result.get("error"):
-                errors.append({"index": index, field: row[field], "status": 200,
-                               "message": str(result["error"]), "response": result})
-                continue
-            rows.append(result)
-        except APIError as exc:
-            errors.append({"index": index, field: row[field], **exc.to_dict()})
+    consecutive_transport_failures = 0
+    with ThreadPoolExecutor(max_workers=jobs) as pool:
+        for start in range(0, len(inputs), jobs):
+            chunk = list(enumerate(inputs[start:start + jobs], start))
+            for result, error in pool.map(lambda pair: _one(args, client, kind, field, pair[0], pair[1]), chunk):
+                if error is not None:
+                    errors.append(error)
+                    consecutive_transport_failures = consecutive_transport_failures + 1 if error.get("status") is None else 0
+                else:
+                    rows.append(result)
+                    consecutive_transport_failures = 0
+            if consecutive_transport_failures >= BREAKER_THRESHOLD and start + jobs < len(inputs):
+                for index, row in enumerate(inputs[start + jobs:], start + jobs):
+                    errors.append({"index": index, field: row[field], "status": None,
+                                   "message": f"skipped after {BREAKER_THRESHOLD} consecutive transport failures; rerun when the service is reachable"})
+                break
     unresolved = any(row.get("exists") is False or row.get("pinpoint_exists") is False for row in rows)
     if len(inputs) == 1 and not errors:
         return rows[0], 4 if unresolved else 0
@@ -444,6 +612,10 @@ def run(args, client):
     if args.command == "bundle" or (args.command == "citations" and args.action == "resolve"):
         from . import workflows
         return workflows.run(args, client)
+    if args.command == "completion":
+        return {"_raw": _COMPLETION_SCRIPTS[args.shell]}, 0
+    if args.command == "__complete":
+        return {"_raw": "\n".join(complete(build_parser(config={}), list(args.words)))}, 0
     if args.command == "decisions":
         if args.action == "search":
             params = {name: getattr(args, name) for name in ("query", "court", "canton", "language", "date_from", "date_to", "chamber", "marked_for_publication", "sort", "offset")}
@@ -469,9 +641,15 @@ def run(args, client):
 
 
 def main(argv=None):
-    parser = build_parser()
+    if sys.platform == "win32":
+        for stream in (sys.stdout, sys.stderr):
+            try:
+                stream.reconfigure(encoding="utf-8", errors="replace")
+            except (AttributeError, ValueError):
+                pass
     args = None
     try:
+        parser = build_parser()
         args = parser.parse_args(argv)
         value, code = run(args, create_client(args))
         emit(value, args)

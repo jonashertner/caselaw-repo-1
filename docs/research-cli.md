@@ -161,6 +161,23 @@ decisions, because the corpus is rebuilt nightly.
   ranked over a bounded candidate pool, so `has_more: false` never proves that
   every relevant decision was seen. Nothing here replaces reading the decision.
 
+## Reusable setup
+
+Defaults can live in `~/.config/ocl/config` (one `key = value` per line:
+`base_url`, `timeout`, `retries`, `format`, `color`, `language`, `jobs`) or in
+`OCL_BASE_URL`, `OCL_TIMEOUT`, `OCL_RETRIES`, `OCL_FORMAT`, `OCL_COLOR`,
+`OCL_LANGUAGE`, `OCL_JOBS`. A flag beats the environment, which beats the file.
+`ocl completion zsh > ~/.zfunc/_ocl` (or `eval "$(ocl completion bash)"`, or
+`ocl completion fish > ~/.config/fish/completions/ocl.fish`) installs tab
+completion for commands, options and choices.
+
+Output formats beyond text and JSON: `--format table` for an aligned plain
+table, `--format csv` for a spreadsheet, `--format md` for a memo appendix
+(a Markdown table for lists, a quoted passage with its citation for
+`decisions passage`). Batch commands and bundles run up to `--jobs` requests
+at once (default 4) under the same 200 ms pacing, and stop after five
+consecutive transport failures instead of retrying every remaining item.
+
 ## Recipes
 
 Search, then fetch the full decisions, in one pipeline:
@@ -202,6 +219,15 @@ Finish an interrupted bundle:
 ocl bundle create 'Rachekündigung Art. 336 OR' --max-results 10 --passage 2 --law OR:336 --out rachekuendigung-2026-09 --resume
 ```
 
+Check a bundle a colleague sent, compare it with last month's run of the same
+question, and add a decision found elsewhere:
+
+```bash
+ocl bundle verify rachekuendigung-2026-09
+ocl bundle diff rachekuendigung-2026-08 rachekuendigung-2026-09
+ocl bundle add rachekuendigung-2026-09 bge_BGE_140_III_86 --passage 2
+```
+
 Coding agents such as Claude Code or Codex can run the same commands from a
 shell and read the JSON, which keeps the evidence in files you can check
 rather than in the model's memory.
@@ -240,9 +266,9 @@ the filters enumerate an exact, stably ordered set in pages of `--page-size`
 A reference containing a slash (a docket such as `4A_747/2012`) is resolved
 through the service first; `ocl` then requires the resolved decision to carry
 that exact docket or citation label and otherwise stops, because the service
-also matches docket fragments. `ocl cite --pinpoint` formats a citation without
-checking that the passage exists; use `decisions passage` or
-`citations resolve` for that. Statute responses can carry consolidation or
+also matches docket fragments. `ocl cite --pinpoint` checks that the Erwägung exists
+before it formats the citation and reports `pinpoint_exists: false` (exit 4)
+otherwise; `--no-verify-pinpoint` restores formatting only. Statute responses can carry consolidation or
 edition information; inspect it before relying on the text for a historical
 question. `--as-of` covers federal law only.
 
@@ -250,8 +276,8 @@ question. `--as-of` covers federal law only.
 
 `--passage NUMBER` (repeatable) requests that Erwägung from every selected
 decision; `--law ABBREVIATION:ARTICLE` (repeatable) requests federal statute
-articles, in the search language when it is `de`, `fr` or `it`, otherwise in
-German. `--court`, `--canton`, `--language`, `--date-from` and `--date-to`
+articles and `--law CANTON/ABBREVIATION:ARTICLE` cantonal ones, in the search
+language when it is `de`, `fr` or `it`, otherwise in German. `--court`, `--canton`, `--language`, `--date-from` and `--date-to`
 filter the search.
 
 The manifest links the request parameters and every response with retrieval
@@ -262,7 +288,14 @@ original publication or the service's wire encoding; the service's own
 exact served full text; passage `.txt` files are the served passage text, in
 which cross-references can carry Markdown links added by the service.
 `INDEX.md` is a convenience view regenerated on every run; only files listed
-in the manifest form the collection.
+in the manifest form the collection. The manifest also records the service's
+database generation and decision count when the run started
+(`corpus_snapshot`); it identifies the corpus state, it is not a copy anyone
+can fetch later. `bundle verify` re-hashes every listed file and reports
+changed, missing and unlisted files; `bundle diff` compares two bundles
+(decisions added or removed, decisions whose served text changed, item
+statuses, the corpus generation); `bundle add` appends decisions with the
+bundle's passages.
 
 Resume requires the same query, filters and options in the same directory.
 A crash between saving a response and checkpointing the manifest can leave an

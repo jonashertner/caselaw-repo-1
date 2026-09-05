@@ -371,3 +371,144 @@ def render(value, args, s: Style, width: int) -> str:
     if command == "bundle":
         return render_bundle(value, s, width)
     return json.dumps(value, ensure_ascii=False, indent=2)
+
+
+# ── tabular formats: table, csv, md ────────────────────────────────────────
+
+def tabular(value, args):
+    """(columns, rows) for list-shaped results, else None. Cells are plain strings."""
+    if not isinstance(value, dict):
+        return None
+    command, action = getattr(args, "command", None), getattr(args, "action", None)
+    def cell(v):
+        return "" if v is None else str(v)
+    if command == "decisions" and action == "search":
+        cols = ["decision_id", "citation", "court", "decision_date", "docket_number", "title"]
+        rows = [[cell(r.get("decision_id")), cell(_label(r)), cell(r.get("court")), cell(r.get("decision_date")),
+                 cell(r.get("docket_number")), cell(r.get("title"))] for r in value.get("results") or []]
+        return cols, rows
+    if command == "citations" and action == "resolve":
+        cols = ["reference", "status", "decision_id", "pinpoint", "pinpoint_status", "citation", "identity"]
+        rows = []
+        for r in value.get("results") or []:
+            citation = r.get("citation") or {}
+            rows.append([cell(r.get("reference")), cell(r.get("status")), cell(r.get("decision_id")), cell(r.get("pinpoint")),
+                         cell(r.get("pinpoint_status")), cell(citation.get("citation_string_de") if isinstance(citation, dict) else ""),
+                         cell((r.get("identity_check") or {}).get("method"))])
+        return cols, rows
+    if command == "citations" and action == "list":
+        cols = ["direction", "label", "decision_id", "court", "decision_date", "confidence"]
+        rows = []
+        for direction in ("incoming", "outgoing"):
+            for e in value.get(direction) or []:
+                target = e.get("source_decision_id") if direction == "incoming" else e.get("target_decision_id")
+                conf = e.get("confidence_score")
+                rows.append([direction, cell(_edge_label(e)), cell(target), cell(e.get("court")), cell(e.get("decision_date")),
+                             f"{conf:.2f}" if isinstance(conf, (int, float)) else ""])
+        return cols, rows
+    if command == "laws":
+        cols = ["article", "heading", "section", "text"]
+        rows = [[cell(a.get("article_num")), cell(a.get("heading")), cell(a.get("section")), cell(a.get("text"))]
+                for a in value.get("articles") or [] if isinstance(a, dict)]
+        return cols, rows
+    if command == "decisions" and action == "get" and "requested" in value:
+        cols = ["decision_id", "citation", "court", "decision_date", "docket_number"]
+        rows = [[cell(r.get("decision_id")), cell(_label(r)), cell(r.get("court")), cell(r.get("decision_date")), cell(r.get("docket_number"))]
+                for r in value.get("results") or []]
+        return cols, rows
+    if command == "cite" and "requested" in value:
+        cols = ["citation_string", "exists", "decision_id", "canonical_url"]
+        rows = [[cell(r.get("citation_string")), cell(r.get("exists")), cell(r.get("decision_id")), cell(r.get("canonical_url"))]
+                for r in value.get("results") or []]
+        return cols, rows
+    return None
+
+
+def render_table(value, args, width: int) -> str:
+    """Aligned plain-text table for list results; falls back to the text renderer."""
+    shaped = tabular(value, args)
+    if shaped is None:
+        return render(value, args, Style(False), width)
+    cols, rows = shaped
+    if not rows:
+        return "(no rows)"
+    # drop columns that are empty everywhere, cap wide cells
+    keep = [i for i, c in enumerate(cols) if any(r[i] for r in rows)]
+    cols = [cols[i] for i in keep]; rows = [[r[i] for i in keep] for r in rows]
+    cap = max(24, (width - 3 * len(cols)) // max(1, len(cols)))
+    rows = [[(c if len(c) <= cap else c[:cap - 1] + "…").replace("\n", " ") for c in r] for r in rows]
+    widths = [max(len(cols[i]), *(len(r[i]) for r in rows)) for i in range(len(cols))]
+    line = lambda cells: "  ".join(c.ljust(widths[i]) for i, c in enumerate(cells)).rstrip()
+    out = [line(cols), line(["-" * w for w in widths])] + [line(r) for r in rows]
+    if isinstance(value, dict) and value.get("counts"):
+        out += ["", f"{value.get('status')}: " + ", ".join(f"{n} {k}" for k, n in value["counts"].items())]
+    if isinstance(value, dict) and value.get("total") is not None and getattr(args, "action", None) == "search":
+        out += ["", f"{len(rows)} shown of {'at least ' if value.get('total_is_lower_bound') else ''}{value['total']} matching"
+                + ("; more retrievable" if value.get("has_more") else "")]
+    return "\n".join(out)
+
+
+def render_csv(value, args) -> str:
+    import csv, io
+    shaped = tabular(value, args)
+    if shaped is None:
+        raise ValueError("--format csv needs a list result (search, get in batch, cite in batch, citations, laws)")
+    cols, rows = shaped
+    buffer = io.StringIO()
+    writer = csv.writer(buffer, lineterminator="\n")
+    writer.writerow(cols); writer.writerows(rows)
+    return buffer.getvalue().rstrip("\n")
+
+
+def _md_escape(text: str) -> str:
+    return str(text).replace("|", "\\|").replace("\n", " ")
+
+
+def render_md(value, args, width: int) -> str:
+    """Markdown for a memo appendix: tables for lists, headings and quotes for single records."""
+    shaped = tabular(value, args)
+    if shaped is not None:
+        cols, rows = shaped
+        keep = [i for i, c in enumerate(cols) if any(r[i] for r in rows)] or list(range(len(cols)))
+        head = "| " + " | ".join(cols[i] for i in keep) + " |"
+        sep = "|" + "|".join(" --- " for _ in keep) + "|"
+        body = ["| " + " | ".join(_md_escape(r[i]) for i in keep) + " |" for r in rows]
+        lines = [head, sep, *body]
+        if isinstance(value, dict) and value.get("counts"):
+            lines += ["", f"**{value.get('status')}**: " + ", ".join(f"{n} {k}" for k, n in value["counts"].items())
+                      + ". Existence and pinpoints only; no assessment of legal support."]
+        return "\n".join(lines)
+    if not isinstance(value, dict):
+        return "```json\n" + json.dumps(value, ensure_ascii=False, indent=2) + "\n```"
+    command, action = getattr(args, "command", None), getattr(args, "action", None)
+    if value.get("error"):
+        return "**Error**: " + str(value["error"] if not isinstance(value["error"], dict) else value["error"].get("message"))
+    if command == "decisions" and action == "passage":
+        header = value.get("citation_string_de") or f"{value.get('decision_id')} E. {value.get('e_number')}"
+        quote = "\n".join("> " + l for l in _display_text(str(value.get("text") or "")).split("\n"))
+        return f"**{header}**" + (f" ({value['canonical_url']})" if value.get("canonical_url") else "") + "\n\n" + quote
+    if command == "cite":
+        lines = [f"**{value.get('citation_string') or value.get('citation_string_de') or ''}**"]
+        for key in ("citation_string_fr", "citation_string_it"):
+            if value.get(key):
+                lines.append(str(value[key]))
+        if value.get("canonical_url"):
+            lines.append(f"<{value['canonical_url']}>")
+        return "  \n".join(lines)
+    if command == "laws":
+        return render_law(value, Style(False), width)
+    if command == "decisions" and action == "get":
+        lines = [f"## {_label(value)}", "", " · ".join(str(x) for x in (value.get("decision_id"), value.get("court"), value.get("decision_date")) if x)]
+        if value.get("source_url"):
+            lines.append(f"<{value['source_url']}>")
+        if value.get("regeste"):
+            lines += ["", "**Regeste**", "", _display_text(str(value["regeste"]))]
+        if value.get("full_text"):
+            lines += ["", _display_text(str(value["full_text"]))]
+        return "\n".join(lines)
+    if command == "bundle":
+        try:
+            return Path(str(value.get("bundle"))).joinpath("INDEX.md").read_text(encoding="utf-8")
+        except (OSError, TypeError):
+            pass
+    return "```json\n" + json.dumps(value, ensure_ascii=False, indent=2) + "\n```"
