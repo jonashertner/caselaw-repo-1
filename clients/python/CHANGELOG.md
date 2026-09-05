@@ -3,7 +3,7 @@
 The client follows semantic versioning. The research API contract it consumes is
 versioned separately (`x-opencaselaw-contract-version` in `/api/research/openapi.json`).
 
-## 0.2.0 (2026-09-05)
+## 0.2.0 (2026-09-05, first release on PyPI)
 
 - `cite --pinpoint` verifies that the Erwägung exists; a missing passage reports
   `pinpoint_exists: false` and exits 4 (`--no-verify-pinpoint` restores formatting only).

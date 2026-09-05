@@ -105,8 +105,8 @@
     <div class="prose">
 
       <h2 id="cli" data-t="cli_h">Automate research from a terminal</h2>
-      <p data-t="cli_p">Install the lightweight client from a repository checkout. Save bounded search results, retrieve exact passages, resolve citation lists and preserve evidence bundles. The separate client is not yet published on PyPI.</p>
-      <pre class="code">pipx install ./clients/python   # or: uv tool install ./clients/python
+      <p data-t="cli_p">Install the lightweight client with pipx or uv. Save bounded search results, retrieve exact passages, resolve citation lists and preserve evidence bundles. The client is published on PyPI as opencaselaw-cli.</p>
+      <pre class="code">pipx install opencaselaw-cli   # or: uv tool install opencaselaw-cli
 ocl --help
 ocl bundle create 'missbräuchliche Kündigung Rachekündigung' \
   --max-results 5 --law OR:336 --out research-bundle</pre>
@@ -233,7 +233,7 @@ OCL.init({
   i18n:{
     de:{
       cli_h:"Recherche im Terminal automatisieren",
-      cli_p:"Installieren Sie den schlanken Client aus einer lokalen Repository-Kopie. Speichern Sie begrenzte Suchergebnisse, rufen Sie genaue Erwägungen ab, lösen Sie Zitationslisten auf und sichern Sie Quellenpakete. Der separate Client ist noch nicht auf PyPI veröffentlicht.",
+      cli_p:"Installieren Sie den schlanken Client mit pipx oder uv. Speichern Sie begrenzte Suchergebnisse, rufen Sie genaue Erwägungen ab, lösen Sie Zitationslisten auf und sichern Sie Quellenpakete. Der Client ist auf PyPI als opencaselaw-cli veröffentlicht.",
       cli_link:"CLI-Anleitung: Pipelines, Quellenpakete und Zitationsauflösung →",
       kicker:'REST-API · OpenAPI 3.0.3',
       h1:'Den OpenCaseLaw-Korpus aus jeder Programmiersprache abfragen',
@@ -294,7 +294,7 @@ OCL.init({
     },
     fr:{
       cli_h:"Automatiser la recherche depuis un terminal",
-      cli_p:"Installez le client léger depuis une copie locale du dépôt. Enregistrez des résultats bornés, récupérez les considérants exacts, résolvez des listes de citations et conservez les sources. Le client séparé n’est pas encore publié sur PyPI.",
+      cli_p:"Installez le client léger avec pipx ou uv. Enregistrez des résultats bornés, récupérez les considérants exacts, résolvez des listes de citations et conservez les sources. Le client est publié sur PyPI sous le nom opencaselaw-cli.",
       cli_link:"Guide CLI : pipelines, dossiers de sources et résolution de citations →",
       kicker:'API REST · OpenAPI 3.0.3',
       h1:"Interroger le corpus OpenCaseLaw depuis n'importe quel langage",
@@ -355,7 +355,7 @@ OCL.init({
     },
     it:{
       cli_h:"Automatizzare la ricerca dal terminale",
-      cli_p:"Installate il client leggero da una copia locale del repository. Salvate risultati limitati, recuperate considerandi esatti, risolvete liste di citazioni e conservate le fonti. Il client separato non è ancora pubblicato su PyPI.",
+      cli_p:"Installate il client leggero con pipx o uv. Salvate risultati limitati, recuperate considerandi esatti, risolvete liste di citazioni e conservate le fonti. Il client è pubblicato su PyPI come opencaselaw-cli.",
       cli_link:"Guida CLI: pipeline, raccolte di fonti e risoluzione delle citazioni →",
       kicker:'API REST · OpenAPI 3.0.3',
       h1:'Interrogare il corpus OpenCaseLaw da qualsiasi linguaggio',
@@ -416,7 +416,7 @@ OCL.init({
     },
     rm:{
       cli_h:"Automatisar la retschertga en il terminal",
-      cli_p:"Installai il client lev ord ina copia locala dal repository. Salvai resultats limitads, consultai consideraziuns exactas, schliai glistas da citaziuns e conservai las funtaunas. Il client separà n’è anc betg publitgà sin PyPI.",
+      cli_p:"Installai il client lev cun pipx u uv. Salvai resultats limitads, consultai consideraziuns exactas, schliai glistas da citaziuns e conservai las funtaunas. Il client è publitgà sin PyPI sco opencaselaw-cli.",
       cli_link:"Guida CLI: pipelines, pachets da funtaunas e resoluziun da citaziuns →",
       kicker:'API REST · OpenAPI 3.0.3',
       h1:'Interrogar il corpus OpenCaseLaw da mintga linguatg',
@@ -477,7 +477,7 @@ OCL.init({
     },
     en:{
       cli_h:"Automate research from a terminal",
-      cli_p:"Install the lightweight client from a repository checkout. Save bounded search results, retrieve exact passages, resolve citation lists and preserve evidence bundles. The separate client is not yet published on PyPI.",
+      cli_p:"Install the lightweight client with pipx or uv. Save bounded search results, retrieve exact passages, resolve citation lists and preserve evidence bundles. The client is published on PyPI as opencaselaw-cli.",
       cli_link:"CLI guide: pipelines, bundles and citation resolution →",
       kicker:'REST API · OpenAPI 3.0.3',
       h1:'Call the OpenCaseLaw corpus from any language',

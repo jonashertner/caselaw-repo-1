@@ -4,7 +4,7 @@ Scope: one commit on `codex/research-cli-20260905` (based on origin/main 8fda0c8
 fixed on 2026-09-05 (see `docs/agent-loop/proposals/2026-09-05-research-cli-release.md`).
 Serving change: `mcp_server.py` + new `research_contracts.py` (deploy together).
 Site change: `docs/index.html`, `docs/api/index.html`, `docs/research-cli.md` (GitHub Pages from `main:/docs`).
-Client: `clients/python` (`opencaselaw-cli` 0.1.0, console script `ocl`); works against the already-deployed REST API.
+Client: `clients/python` (`opencaselaw-cli`, console script `ocl`, on PyPI since 0.2.0); works against the already-deployed REST API.
 Untouched: databases, `publish.py`, scrapers, `state/`, systemd units, billing, secrets, nginx.
 
 Repository rule (AGENTS.md): no commit, push or deploy without explicit approval plus
@@ -146,9 +146,9 @@ About five minutes. The revert also restores the website. Workers keep serving t
 in-memory code throughout; nothing in the databases or the pipeline is touched. The CLI
 keeps working after a rollback because it only uses pre-existing REST routes.
 
-## 7. PyPI publication (separate, optional)
+## 7. PyPI publication
 
-The docs say the client installs from a checkout. `.github/workflows/release-cli.yml`
+Published since 2026-09-05 (0.2.0, trusted publisher registered by Jonas). `.github/workflows/release-cli.yml`
 publishes `clients/python` with trusted publishing when a `cli-v<version>` tag is pushed
 (the tag must equal `__version__` in `clients/python/src/opencaselaw_cli/_version.py`, currently 0.2.0; the workflow builds,
 `twine check`s, smoke-installs the wheel, runs the client tests, then uploads). Nothing is
@@ -160,9 +160,8 @@ uploaded until PyPI trusts this repository. One-time setup, in Jonas's PyPI acco
 2. GitHub → repository Settings → Environments → create `pypi-cli` (optionally with a
    required reviewer).
 3. Tag and push: `git tag cli-v0.2.0 <merged sha> && git push origin cli-v0.2.0`.
-4. After the first upload: switch the install instructions (guide, README, API page,
-   `docs/cli/index.html`, package README, dataset card) to `pipx install opencaselaw-cli`
-   and remove the "not on PyPI" sentences.
+4. Done for 0.2.0: install instructions everywhere say `pipx install opencaselaw-cli`.
+   Later releases: bump `__version__`, merge, push the matching `cli-v` tag.
 
 The root package's `release.yml` publishes `swiss-caselaw-scrapers` on `v*` tags; do not
 reuse it for the client.

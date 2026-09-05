@@ -105,8 +105,7 @@
 
       <h2 id="install" data-t="install_h">Install</h2>
       <p data-t="install_p"></p>
-      <pre class="code">git clone https://github.com/jonashertner/opencaselaw.git &amp;&amp; cd opencaselaw
-pipx install ./clients/python        # or: uv tool install ./clients/python
+      <pre class="code">pipx install opencaselaw-cli        # or: uv tool install opencaselaw-cli
 ocl --help</pre>
       <p data-t="install_note"></p>
 
@@ -198,8 +197,8 @@ OCL.init({
     "cta_guide": "Vollständige Anleitung auf GitHub",
     "cta_source": "Quellcode: clients/python",
     "install_h": "Installation",
-    "install_p": "Python 3.10 oder neuer. Aus einer lokalen Kopie des Repositorys als Werkzeug mit <code>pipx</code> oder <code>uv</code> installieren; beide erstellen die isolierte Umgebung, die aktuelle Python-Installationen verlangen. Der Client ist noch nicht auf PyPI.",
-    "install_note": "Ohne pipx oder uv eine virtuelle Umgebung verwenden: <code>python3 -m venv .venv &amp;&amp; .venv/bin/pip install ./clients/python</code>, dann <code>.venv/bin/ocl</code> ausführen. Ein blosses <code>pip install</code> ausserhalb einer virtuellen Umgebung lehnen Homebrew- und Debian-Python ab. Für ein Update nach <code>git pull</code> die Installation mit <code>--force</code> wiederholen.",
+    "install_p": "Python 3.10 oder neuer. Als Werkzeug mit <code>pipx</code> oder <code>uv</code> installieren; beide erstellen die isolierte Umgebung, die aktuelle Python-Installationen verlangen. Der Client ist auf PyPI als <code>opencaselaw-cli</code> veröffentlicht.",
+    "install_note": "Ohne pipx oder uv eine virtuelle Umgebung verwenden: <code>python3 -m venv .venv &amp;&amp; .venv/bin/pip install opencaselaw-cli</code>, dann <code>.venv/bin/ocl</code> ausführen. Ein blosses <code>pip install</code> ausserhalb einer virtuellen Umgebung lehnen Homebrew- und Debian-Python ab. Aktualisieren mit <code>pipx upgrade opencaselaw-cli</code>.",
     "job1_h": "1. Die Zitate eines Entwurfs prüfen",
     "job1_p": "Die Referenzen aus dem Entwurf in eine Datei schreiben, eine pro Zeile, oder als JSON-Zeilen, wenn eine Referenz eine Erwägung nennt. Jede kommt als resolved, missing oder ambiguous zurück, mit dem gefundenen Entscheid; eine genannte Erwägung gilt nur als resolved, wenn sie im Index existiert.",
     "output_label": "Am Terminal erscheint:",
@@ -238,8 +237,8 @@ OCL.init({
     "cta_guide": "Guide complet sur GitHub",
     "cta_source": "Code source : clients/python",
     "install_h": "Installation",
-    "install_p": "Python 3.10 ou plus récent. Depuis une copie locale du dépôt, installez-le comme outil avec <code>pipx</code> ou <code>uv</code> ; les deux créent l’environnement isolé qu’exigent les installations Python actuelles. Le client n’est pas encore sur PyPI.",
-    "install_note": "Sans pipx ni uv, utilisez un environnement virtuel : <code>python3 -m venv .venv &amp;&amp; .venv/bin/pip install ./clients/python</code>, puis lancez <code>.venv/bin/ocl</code>. Un simple <code>pip install</code> hors environnement virtuel est refusé par les Python de Homebrew et de Debian. Pour mettre à jour après <code>git pull</code>, répétez l’installation avec <code>--force</code>.",
+    "install_p": "Python 3.10 ou plus récent. Installez-le comme outil avec <code>pipx</code> ou <code>uv</code> ; les deux créent l’environnement isolé qu’exigent les installations Python actuelles. Le client est publié sur PyPI sous le nom <code>opencaselaw-cli</code>.",
+    "install_note": "Sans pipx ni uv, utilisez un environnement virtuel : <code>python3 -m venv .venv &amp;&amp; .venv/bin/pip install opencaselaw-cli</code>, puis lancez <code>.venv/bin/ocl</code>. Un simple <code>pip install</code> hors environnement virtuel est refusé par les Python de Homebrew et de Debian. Mise à jour : <code>pipx upgrade opencaselaw-cli</code>.",
     "job1_h": "1. Vérifier les citations d’un projet",
     "job1_p": "Placez les références de votre projet dans un fichier, une par ligne, ou en lignes JSON lorsqu’une référence vise un considérant. Chacune revient comme resolved, missing ou ambiguous avec la décision trouvée ; un considérant n’est resolved que s’il existe dans l’index.",
     "output_label": "Au terminal, cela affiche :",
@@ -278,8 +277,8 @@ OCL.init({
     "cta_guide": "Guida completa su GitHub",
     "cta_source": "Codice sorgente: clients/python",
     "install_h": "Installazione",
-    "install_p": "Python 3.10 o più recente. Da una copia locale del repository, installatelo come strumento con <code>pipx</code> o <code>uv</code>; entrambi creano l’ambiente isolato richiesto dalle installazioni Python attuali. Il client non è ancora su PyPI.",
-    "install_note": "Senza pipx o uv, usate un ambiente virtuale: <code>python3 -m venv .venv &amp;&amp; .venv/bin/pip install ./clients/python</code>, poi eseguite <code>.venv/bin/ocl</code>. Un semplice <code>pip install</code> fuori da un ambiente virtuale viene rifiutato dai Python di Homebrew e Debian. Per aggiornare dopo <code>git pull</code>, ripetete l’installazione con <code>--force</code>.",
+    "install_p": "Python 3.10 o più recente. Installatelo come strumento con <code>pipx</code> o <code>uv</code>; entrambi creano l’ambiente isolato richiesto dalle installazioni Python attuali. Il client è pubblicato su PyPI come <code>opencaselaw-cli</code>.",
+    "install_note": "Senza pipx o uv, usate un ambiente virtuale: <code>python3 -m venv .venv &amp;&amp; .venv/bin/pip install opencaselaw-cli</code>, poi eseguite <code>.venv/bin/ocl</code>. Un semplice <code>pip install</code> fuori da un ambiente virtuale viene rifiutato dai Python di Homebrew e Debian. Aggiornamento: <code>pipx upgrade opencaselaw-cli</code>.",
     "job1_h": "1. Verificare le citazioni di una bozza",
     "job1_p": "Mettete i riferimenti della bozza in un file, uno per riga, oppure come righe JSON quando un riferimento indica un considerando. Ognuno torna come resolved, missing o ambiguous con la decisione trovata; un considerando conta come resolved solo se esiste nell’indice.",
     "output_label": "Al terminale compare:",
@@ -318,8 +317,8 @@ OCL.init({
     "cta_guide": "Guida cumpletta sin GitHub",
     "cta_source": "Code da funtauna: clients/python",
     "install_h": "Installaziun",
-    "install_p": "Python 3.10 u pli nov. Ord ina copia locala dal repository installai il client sco utensil cun <code>pipx</code> u <code>uv</code>; omadus creeschan l’ambient isolà che las installaziuns actualas da Python pretendan. Il client n’è anc betg sin PyPI.",
-    "install_note": "Senza pipx u uv duvrai in ambient virtual: <code>python3 -m venv .venv &amp;&amp; .venv/bin/pip install ./clients/python</code>, lura <code>.venv/bin/ocl</code>. In simpel <code>pip install</code> ordaifer in ambient virtual vegn refusà da Python da Homebrew e da Debian. Per actualisar suenter <code>git pull</code> repetai l’installaziun cun <code>--force</code>.",
+    "install_p": "Python 3.10 u pli nov. Installai il client sco utensil cun <code>pipx</code> u <code>uv</code>; omadus creeschan l’ambient isolà che las installaziuns actualas da Python pretendan. Il client è publitgà sin PyPI sco <code>opencaselaw-cli</code>.",
+    "install_note": "Senza pipx u uv duvrai in ambient virtual: <code>python3 -m venv .venv &amp;&amp; .venv/bin/pip install opencaselaw-cli</code>, lura <code>.venv/bin/ocl</code>. In simpel <code>pip install</code> ordaifer in ambient virtual vegn refusà da Python da Homebrew e da Debian. Actualisar cun <code>pipx upgrade opencaselaw-cli</code>.",
     "job1_h": "1. Controllar las citaziuns d’in sboz",
     "job1_p": "Mettai las referenzas da voss sboz en ina datoteca, ina per lingia, u sco lingias JSON sch’ina referenza numna ina consideraziun. Mintga referenza returna sco resolved, missing u ambiguous cun la decisiun chattada; ina consideraziun vala sco resolved mo sch’ella exista en l’index.",
     "output_label": "Al terminal cumpara:",
@@ -358,8 +357,8 @@ OCL.init({
     "cta_guide": "Full guide on GitHub",
     "cta_source": "Source: clients/python",
     "install_h": "Install",
-    "install_p": "Python 3.10 or newer. From a checkout of the repository, install it as a tool with <code>pipx</code> or <code>uv</code>; both create the isolated environment that current Python installations require. The client is not on PyPI yet.",
-    "install_note": "Without pipx or uv, use a virtual environment: <code>python3 -m venv .venv &amp;&amp; .venv/bin/pip install ./clients/python</code>, then run <code>.venv/bin/ocl</code>. A plain <code>pip install</code> outside a virtual environment is refused by Homebrew and Debian Pythons. To upgrade after <code>git pull</code>, repeat the install with <code>--force</code>.",
+    "install_p": "Python 3.10 or newer. Install it as a tool with <code>pipx</code> or <code>uv</code>; both create the isolated environment that current Python installations require. The client is published on PyPI as <code>opencaselaw-cli</code>.",
+    "install_note": "Without pipx or uv, use a virtual environment: <code>python3 -m venv .venv &amp;&amp; .venv/bin/pip install opencaselaw-cli</code>, then run <code>.venv/bin/ocl</code>. A plain <code>pip install</code> outside a virtual environment is refused by Homebrew and Debian Pythons. Upgrade with <code>pipx upgrade opencaselaw-cli</code>.",
     "job1_h": "1. Check the citations in a draft",
     "job1_p": "Put the references from your draft in a file, one per line, or as JSON lines when a reference carries a pinpoint. Each comes back as resolved, missing or ambiguous with the decision it found; a pinpoint counts as resolved only if that Erwägung exists in the index.",
     "output_label": "At a terminal this prints:",

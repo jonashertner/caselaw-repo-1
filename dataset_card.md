@@ -117,7 +117,7 @@ curl "https://datasets-server.huggingface.co/info?dataset=voilaj/swiss-caselaw"
 
 ### Command-line client (scripts and agents)
 
-`ocl` is a dependency-free Python client over the same public API, made for two jobs: checking the citations in a draft (each reference comes back resolved, missing or ambiguous, with pinpoints verified against the structure index) and saving the evidence behind a memo into a folder with the full texts, the requested Erwägungen, statute articles, a plain-language `INDEX.md` and a hashed `manifest.json`. Install from the repository checkout (`pipx install ./clients/python` or `uv tool install ./clients/python`); guide: [docs/research-cli.md](https://github.com/jonashertner/opencaselaw/blob/main/docs/research-cli.md).
+`ocl` is a dependency-free Python client over the same public API, made for two jobs: checking the citations in a draft (each reference comes back resolved, missing or ambiguous, with pinpoints verified against the structure index) and saving the evidence behind a memo into a folder with the full texts, the requested Erwägungen, statute articles, a plain-language `INDEX.md` and a hashed `manifest.json`. Install with `pipx install opencaselaw-cli` (or `uv tool install opencaselaw-cli`); guide: [docs/research-cli.md](https://github.com/jonashertner/opencaselaw/blob/main/docs/research-cli.md).
 
 ### Full-text search via MCP
 

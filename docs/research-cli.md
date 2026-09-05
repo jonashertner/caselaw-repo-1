@@ -12,20 +12,20 @@ later.
 
 ## Start here
 
-Python 3.10 or newer. From a checkout of this repository (the client is not
-on PyPI yet), install it as a tool with `pipx` or `uv`, which create the
-isolated environment that current Python installations require:
+Python 3.10 or newer. Install it as a tool with `pipx` or `uv`, which create
+the isolated environment that current Python installations require:
 
 ```bash
-pipx install ./clients/python
+pipx install opencaselaw-cli
 ocl --help
 ```
 
-`uv tool install ./clients/python` does the same. Without either, use a
+`uv tool install opencaselaw-cli` does the same. Without either, use a
 virtual environment: `python3 -m venv .venv && .venv/bin/pip install
-./clients/python`, then run `.venv/bin/ocl`. A plain `pip install` outside a
-virtual environment is refused by Homebrew and Debian Pythons (PEP 668). To
-upgrade after `git pull`, repeat the install with `--force`.
+opencaselaw-cli`, then run `.venv/bin/ocl`. A plain `pip install` outside a
+virtual environment is refused by Homebrew and Debian Pythons (PEP 668).
+Upgrade with `pipx upgrade opencaselaw-cli` (or `uv tool upgrade
+opencaselaw-cli`). The source lives in `clients/python` of the repository.
 
 Every command is a read-only call to the public service at
 `mcp.opencaselaw.ch`. Nothing is downloaded, no account or key is needed.

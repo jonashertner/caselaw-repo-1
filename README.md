@@ -37,11 +37,11 @@ clients are at [opencaselaw.ch/mcp](https://opencaselaw.ch/mcp/).
 
 `ocl` is a small command-line client over the public research API, made for
 two jobs a chat window does badly: checking the citations in a draft, and
-keeping the evidence behind a memo in a folder you can share. Install from
-this checkout (the client is not on PyPI yet):
+keeping the evidence behind a memo in a folder you can share. It is on PyPI
+as `opencaselaw-cli`:
 
 ```bash
-pipx install ./clients/python        # or: uv tool install ./clients/python
+pipx install opencaselaw-cli        # or: uv tool install opencaselaw-cli
 ocl citations resolve 'BGE 136 III 513' '4A_747/2012' 'BGE 999 III 1'
 ocl bundle create 'Rachekündigung Art. 336 OR' --max-results 10 --passage 2 --law OR:336 --out evidence
 ```
@@ -169,7 +169,7 @@ OpenCaseLaw fixes this. **Every published Swiss court decision, every federal an
 - Remote MCP server at `mcp.opencaselaw.ch` (SSE + Streamable HTTP) — 30-second setup in any MCP client (Claude, ChatGPT, Cursor, Gemini, Windsurf)
 - [OpenAI-compatible tool definitions](docs/openai-tools.json) for Grok/xAI and any function-calling LLM API
 - Local MCP server — full offline capability, all 44 tools (the 2 local-only update tools are available offline), ~65 GB disk
-- [Lightweight research CLI](docs/research-cli.md) — JSON/JSONL, batch input, saved evidence bundles and citation resolution; install from `clients/python/`
+- [Lightweight research CLI](docs/research-cli.md) — JSON/JSONL, batch input, saved evidence bundles and citation resolution; `pipx install opencaselaw-cli`; source in `clients/python/`
 - REST API with [interactive documentation](https://mcp.opencaselaw.ch/api/docs) (Swagger UI + OpenAPI spec)
 - Bulk Parquet download via the [HuggingFace dataset](https://huggingface.co/datasets/voilaj/swiss-caselaw) (~7 GB)
 - Live dashboard + browsing UI at [opencaselaw.ch](https://opencaselaw.ch)
