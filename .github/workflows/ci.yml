@@ -137,9 +137,21 @@ jobs:
         # Tectonic is a hermetic LaTeX engine; one-binary install, fetches
         # packages on demand. Catches regressions like the underscore-package
         # / hyperref clash that broke the v3 paper compile in 2026-05.
+        # The drop-sh installer host resets connections now and then (2026-09-05:
+        # "Recv failure: Connection reset by peer" twice in one hour), which turned an
+        # unrelated docs/paper job into a merge blocker. Prefer the pinned GitHub
+        # release asset; fall back to the installer script only if that download fails.
         run: |
-          curl --proto '=https' --tlsv1.2 -fsSL https://drop-sh.fullyjustified.net | sh
+          set -o pipefail
+          ASSET="https://github.com/tectonic-typesetting/tectonic/releases/download/tectonic%400.17.0/tectonic-0.17.0-x86_64-unknown-linux-gnu.tar.gz"
+          if curl --proto '=https' --tlsv1.2 -fsSL --retry 3 --retry-delay 5 "$ASSET" | tar -xz tectonic; then
+            echo "tectonic 0.17.0 from GitHub releases"
+          else
+            echo "release download failed; using the drop-sh installer"
+            curl --proto '=https' --tlsv1.2 -fsSL --retry 3 --retry-delay 5 https://drop-sh.fullyjustified.net | sh
+          fi
           sudo mv tectonic /usr/local/bin/
+          tectonic --version
       - name: Compile docs/paper/v3/paper.tex
         working-directory: docs/paper/v3
         run: tectonic --keep-logs paper.tex
