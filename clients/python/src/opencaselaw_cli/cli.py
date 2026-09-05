@@ -6,6 +6,7 @@ import argparse
 import json
 import math
 import os
+import re
 import sys
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -14,7 +15,9 @@ from urllib.parse import quote
 from . import render
 from ._version import __version__
 from .client import APIError, Client
-from .workflows import BREAKER_THRESHOLD, DEFAULT_JOBS, RANKED_MAX_RESULTS, extract_docket, reference_key
+from .references import normalise_pinpoint, parse_reference
+from .workflows import (BREAKER_THRESHOLD, DEFAULT_JOBS, RANKED_MAX_RESULTS, ResolutionError, extract_docket,
+                        fetch_passage, identify, identify_row, reference_key)
 
 DEFAULT_BASE_URL = "https://mcp.opencaselaw.ch"
 FORMATS = ("text", "json", "jsonl", "table", "csv", "md")
@@ -89,7 +92,7 @@ def _common():
     parser.add_argument("--retries", type=nonnegative_int, help="retries per request, 0-5 (default: 2; OCL_RETRIES)")
     parser.add_argument("--format", choices=list(FORMATS),
                         help="text (default at a terminal), json (default when piped), jsonl, table, csv or md (OCL_FORMAT)")
-    parser.add_argument("--fields", help="comma-separated result fields for json/jsonl; pagination/errors are always retained")
+    parser.add_argument("--fields", help="comma-separated result fields for json/jsonl; reference, status, errors, notes and pagination are always retained")
     parser.add_argument("--color", choices=["auto", "always", "never"], help="colour in text output (default: auto; NO_COLOR and OCL_COLOR respected)")
     parser.add_argument("--jobs", type=positive_int, help=f"concurrent requests for batch commands, 1-8 (default: {DEFAULT_JOBS}; OCL_JOBS)")
     parser.add_argument("--verbose", action="store_true", help="log every request (URL, status, time) to stderr")
@@ -166,7 +169,7 @@ def build_parser(config: dict | None = None):
     search_parser.add_argument("--chamber", help="chamber or division, substring match")
     search_parser.add_argument("--marked-for-publication", action="store_true", default=None, help="only BGer rulings flagged for the official BGE collection")
     search_parser.add_argument("--sort", choices=["relevance", "date_desc", "date_asc"], default="relevance", help="ordering (default: relevance)")
-    search_parser.add_argument("--detail", choices=["full", "compact"], default="compact", help="record detail requested from the service (default: compact; full adds regeste, snippet and pinpoint)")
+    search_parser.add_argument("--detail", choices=["full", "compact"], default="compact", help="record detail requested from the service (default: compact, which carries citation_string_de only; full adds regeste, snippet, pinpoint and the French/Italian citation strings)")
     search_parser.add_argument("--no-pinpoint", action="store_true", help="skip the per-result pinpoint lookup for full detail (faster)")
     search_parser.add_argument("--max-results", type=positive_int, default=50, help="bound for the selection (default: 50; a text query allows at most 800)")
     search_parser.add_argument("--page-size", type=positive_int, default=50, help="results per request for filter-only enumeration, at most 800 (default: 50)")
@@ -184,7 +187,7 @@ def build_parser(config: dict | None = None):
                                  description="Fetch the exact text of one numbered Erwägung (consid.), the citable unit in Swiss practice.",
                                  epilog="example:\n  ocl decisions passage bge_BGE_136_III_513 2.3\n")
     passage.add_argument("decision_id", help="decision ID or docket, e.g. bge_BGE_136_III_513 or 4A_747/2012")
-    passage.add_argument("number", help="Erwägung number, e.g. 2 or 2.3")
+    passage.add_argument("number", help="Erwägung number, e.g. 2, 2.3 or 3b (a lettered sub-number the index lacks returns its parent number with a note, exit 4)")
 
     laws = commands.add_parser("laws", parents=[common], formatter_class=fmt,
                                help="fetch statute text (federal and cantonal, current or historical)",
@@ -217,14 +220,19 @@ def build_parser(config: dict | None = None):
     resolve = citation_actions.add_parser(
         "resolve", parents=[common], formatter_class=fmt,
         help="check references from a draft: found, missing, ambiguous; verify pinpoints",
-        description=("Check a list of references. Each comes back as resolved, missing, ambiguous, "
-                     "resolution_incomplete, unrecognized or error, with the service's evidence. A "
-                     "reference with a pinpoint is only 'resolved' if that Erwägung exists. A long-form "
-                     "reference (BGer 4A_747/2012 vom 5. April 2013; Verwaltungsgericht ... WBE.2026.33) is "
-                     "retried with the docket it contains and reported with docket_extracted. "
-                     "identity_check.method says why a match is trusted: exact_canonical_id, the service's "
-                     "own citation string, the decision's own docket, or an exact label among lookup "
-                     "candidates; candidate_window_may_be_capped is true when the lookup page was full. "
+        description=("Check a list of references as written in a draft. Each comes back as resolved, "
+                     "pinpoint_unavailable, discrepancy, missing, ambiguous, unrecognized, resolution_incomplete "
+                     "or error, with the service's evidence. The reference is parsed the way it is written: "
+                     "BGE/ATF/DTF label, docket (4A_747/2012, 4A 747/2012, LA210005, C/11532/2013), court words, "
+                     "date, page references and an inline pinpoint (E. 2.3, consid. 3b). The decision the service "
+                     "proposes must carry the label written first in the reference (identity_check.method: "
+                     "exact_canonical_id; exact_server_citation, the service's own string; exact_server_docket, the "
+                     "decision's own docket; exact_candidate_label, a docket the lookup index knows in another form); "
+                     "a docket the reference only mentions later is a cross-reference, not the citation. A docket carried by several "
+                     "decisions at courts the reference does not rule out is ambiguous. An inline or input pinpoint is "
+                     "retrieved and verified (pinpoint_status retrieved, parent_retrieved for a lettered sub-number "
+                     "the index lacks, unavailable). A date or a docket written next to the label that contradicts "
+                     "the record is a discrepancy. Nothing is ever substituted: close matches are listed for the author. "
                      "Existence is not legal support: the report never says a decision backs a proposition."),
         epilog="examples:\n  ocl citations resolve 'BGE 136 III 513' '4A_747/2012'\n  ocl citations resolve --input references.jsonl --format jsonl > resolution.jsonl\n\nreferences.jsonl lines look like {\"reference\": \"BGE 136 III 513\", \"pinpoint\": \"2.3\"}\n")
     _input(resolve, "references", "references such as 'BGE 136 III 513' or '4A_747/2012'")
@@ -232,7 +240,7 @@ def build_parser(config: dict | None = None):
 
     cite = commands.add_parser("cite", parents=[common], formatter_class=fmt,
                                help="get the canonical citation string for a reference",
-                               description="Get the canonical Swiss citation string (DE/FR/IT) and link for a reference. A --pinpoint is checked against the structure index; a missing Erwägung is reported (pinpoint_exists=false, exit 4) rather than formatted as if it existed.",
+                               description="Get the canonical Swiss citation string (DE/FR/IT) and link for a reference. A long-form reference (court, docket, date) is identified the way `citations resolve` does it. A pinpoint given with --pinpoint or written inline (BGE 136 III 513 E. 2.3) is checked against the structure index; a missing Erwägung is reported (pinpoint_exists=false, exit 4) and the decision-level string is returned rather than a string formatted as if the Erwägung existed.",
                                epilog="example:\n  ocl cite 'BGE 136 III 513' --pinpoint 2.3 --language fr\n")
     _input(cite, "references", "references such as 'BGE 136 III 513' or '4A_747/2012'")
     cite.add_argument("--pinpoint", help="Erwägung number to append, e.g. 2.3; its existence is verified unless --no-verify-pinpoint")
@@ -433,14 +441,25 @@ def search(client, params: dict, max_results: int, page_size: int = 50) -> tuple
     return envelope, 4 if errors else 0
 
 
+_RESOLUTION_ROW_KEYS = ("checked_at", "legal_support_assessed", "reference")
+
+
 def _project(row, fields):
     if not fields or not isinstance(row, dict):
         return row
     selected = {key: row[key] for key in fields if key in row}
+    if all(key in row for key in _RESOLUTION_ROW_KEYS):
+        # A resolution row: a real projection. What must survive is the
+        # verdict and anything that qualifies it, never the evidence blocks.
+        for key in ("reference", "status", "error", "reason", "note", "notes", "discrepancies",
+                    "pinpoint_status", "pinpoint_note", "available_e_numbers", "input"):
+            if key in row:
+                selected[key] = row[key]
+        return selected
     # Errors and uncertainty must survive convenience projections.
     for key in ("error", "errors", "status", "ambiguous", "candidates", "_client",
                 "exists", "pinpoint_exists", "close_matches", "warning", "warnings",
-                "note", "_note", "hint", "recency_note", "completeness", "manifest",
+                "note", "_note", "hint", "recency_note", "completeness", "manifest", "requested_e_number",
                 "bundle", "scope", "provenance", "official_source_available",
                 "pinpoint_status", "legal_support_assessed", "reason", "available_e_numbers", "identity_check"):
         if key in row:
@@ -530,57 +549,107 @@ def create_client(args):
     return Client(base_url=args.base_url, timeout=args.timeout, retries=args.retries, log=log)
 
 
-def _decision_id(client, reference):
-    # ASGI servers decode %2F before route matching. Resolve docket forms such
-    # as 4A_747/2012 using the query-based citation endpoint first.
-    if "/" not in reference:
-        return reference
-    citation = client.get("/api/cite", {"reference": reference})
-    if citation.get("error"):
-        raise APIError(200, str(citation["error"]))
-    if citation.get("exists") is False and extract_docket(reference):
-        # Long-form reference: retry with the docket it contains; the label
-        # check below still requires the resolved decision to carry it.
-        reference = extract_docket(reference)
-        citation = client.get("/api/cite", {"reference": reference})
-    if citation.get("exists") is False:
-        raise APIError(404, "Reference not found in the corpus: " + reference)
-    decision_id = citation.get("decision_id")
-    if citation.get("exists") is not True or not isinstance(decision_id, str) or not decision_id or "/" in decision_id:
-        raise APIError(None, "Citation response does not identify a canonical decision ID")
-    # The service also matches docket fragments by substring. Only operate on
-    # a decision whose own docket or citation label is the given reference.
-    decision = client.get("/api/decisions/" + quote(decision_id, safe=""), {"full_text": False})
-    labels = {reference_key(record.get(name)) for record in (decision, citation)
-              for name in ("docket_number", "citation_string", "citation_string_de",
-                           "citation_string_fr", "citation_string_it")}
-    if decision.get("decision_id") != decision_id or reference_key(reference) not in labels:
-        raise APIError(None, (
-            f"{reference} is not the exact docket of the resolved decision {decision_id} "
-            f"(docket {decision.get('docket_number')!r}); use the canonical decision_id or `citations resolve`"))
-    return decision_id
+# A canonical id: lowercase court slug, underscore, label (bge_BGE_136_III_513, zh_obergericht_LA210005).
+_ID_LIKE = re.compile(r"^[a-z][a-z0-9]*(?:_[a-z0-9]+)*_\S")
+
+
+def _decision_id(client, reference, language="de"):
+    """The decision an id, docket, citation or long-form reference names; ResolutionError otherwise.
+    A canonical id, or a bare token that is neither a docket nor a collection label, is used as is."""
+    reference = reference.strip()
+    parsed = parse_reference(reference)
+    if _ID_LIKE.match(parsed.core) and "/" not in parsed.core:
+        return parsed.core
+    if "/" in reference or parsed.long_form or parsed.dockets or parsed.bge_label:
+        return identify(client, reference, language)
+    return reference
+
+
+def _transport(error: dict) -> bool:
+    """A failure a retry may fix: no HTTP answer, a server-side error, or a refusal that
+    is about the client's standing (rate limit, authorisation) rather than the item."""
+    status = error.get("status")
+    if error.get("kind") == "resolution":
+        return False
+    return status is None or (isinstance(status, int) and (status >= 500 or status in (401, 403, 408, 429)))
 
 
 def _one(args, client, kind, field, index, row):
     """Fetch one batch item; returns (result, None) or (None, error dict)."""
     try:
         if kind == "get":
-            decision_id = _decision_id(client, row[field])
+            decision_id = _decision_id(client, row[field], getattr(args, "language", None) or "de")
             result = client.get("/api/decisions/" + quote(decision_id, safe=""), {"full_text": not args.no_full_text})
         else:
-            pinpoint = row["pinpoint"] if row.get("pinpoint") is not None else args.pinpoint
-            result = client.get("/api/cite", {"reference": row[field], "pinpoint": pinpoint, "language": args.language})
-            if (pinpoint and result.get("exists") is True and isinstance(result.get("decision_id"), str)
-                    and not getattr(args, "no_verify_pinpoint", False)):
-                # A formatted pinpoint must point at a passage that exists.
-                passage = client.get(f"/api/erwaegung/{quote(result['decision_id'], safe='')}/{quote(str(pinpoint), safe='')}")
-                exists = not passage.get("error") and isinstance(passage.get("text"), str) and passage["text"].strip() != ""
-                result["pinpoint_exists"] = bool(exists)
-                result["pinpoint_status"] = "retrieved" if exists else "unavailable"
-                if not exists:
-                    result["pinpoint_note"] = f"E. {pinpoint} is not in the structure index of {result['decision_id']}; check the decision text before citing it"
-                    if passage.get("available_e_numbers"):
-                        result["available_e_numbers"] = passage["available_e_numbers"]
+            reference = row[field].strip()
+            parsed = parse_reference(reference)
+            explicit = row["pinpoint"] if row.get("pinpoint") is not None else args.pinpoint
+            try:
+                pinpoint = normalise_pinpoint(explicit) if explicit else parsed.pinpoint
+            except ValueError as exc:
+                return None, {"index": index, field: row[field], "status": 400, "kind": "input", "message": str(exc)}
+            language = args.language
+            if _ID_LIKE.match(parsed.core) and "/" not in parsed.core:
+                decision_id = parsed.core
+                result = client.get("/api/cite", {"reference": decision_id, "language": language})
+                if result.get("error"):
+                    raise APIError(200, str(result["error"]))
+            else:
+                # Every other reference is identified the way `citations resolve`
+                # does it: the decision must carry the label the author wrote. A
+                # docket fragment the service matches by substring is never cited.
+                try:
+                    resolved = identify_row(client, reference, language)
+                except ResolutionError as exc:
+                    if exc.outcome == "missing" and isinstance(exc.row.get("citation"), dict):
+                        result = dict(exc.row["citation"])
+                        result.setdefault("exists", False)
+                        result["reference_as_written"] = reference
+                        return result, None
+                    raise
+                decision_id = resolved["decision_id"]
+                result = dict(resolved["citation"])
+                if result.get("decision_id") != decision_id:
+                    result = client.get("/api/cite", {"reference": decision_id, "language": language})
+                    if result.get("error"):
+                        raise APIError(200, str(result["error"]))
+                result["reference_as_written"] = reference
+                result["resolved_decision_id"] = decision_id
+                result["identity_check"] = resolved.get("identity_check")
+                for key in ("query", "other_dockets"):
+                    if resolved.get(key):
+                        result[key] = resolved[key]
+            if pinpoint and result.get("exists") is True and isinstance(result.get("decision_id"), str):
+                result["pinpoint"] = pinpoint
+                if parsed.pinpoint and not explicit:
+                    result["pinpoint_source"] = "reference"
+                if getattr(args, "no_verify_pinpoint", False):
+                    formatted = client.get("/api/cite", {"reference": result["decision_id"], "pinpoint": pinpoint, "language": language})
+                    if isinstance(formatted.get("citation_string"), str):
+                        result["citation_string"] = formatted["citation_string"]
+                    result["pinpoint_status"] = "not_checked"
+                else:
+                    # A formatted pinpoint must point at a passage that exists; a
+                    # missing one leaves the decision-level string in place.
+                    passage, status, error = fetch_passage(client, result["decision_id"], pinpoint)
+                    if error is not None and error.status not in (200, 404):
+                        raise error
+                    result["pinpoint_exists"] = status == "retrieved"
+                    result["pinpoint_status"] = status
+                    if status == "retrieved":
+                        formatted = client.get("/api/cite", {"reference": result["decision_id"], "pinpoint": pinpoint, "language": language})
+                        if isinstance(formatted.get("citation_string"), str):
+                            result["citation_string"] = formatted["citation_string"]
+                    elif status == "parent_retrieved":
+                        result["parent_e_number"] = passage.get("e_number")
+                        result["pinpoint_note"] = (f"E. {pinpoint} is not indexed as such; E. {passage.get('e_number')} exists and "
+                                                   "contains it. Locate the lettered part in that text before citing it")
+                    else:
+                        result["pinpoint_note"] = (f"E. {pinpoint} is not in the structure index of {result['decision_id']}; the "
+                                                   "citation string is the decision-level one. Check the decision text before citing it")
+                        response = getattr(error, "response", None)
+                        if isinstance(response, dict) and response.get("available_e_numbers"):
+                            result["available_e_numbers"] = response["available_e_numbers"]
         if result.get("error"):
             return None, {"index": index, field: row[field], "status": 200, "message": str(result["error"]), "response": result}
         return result, None
@@ -600,7 +669,7 @@ def _batch(args, client, kind):
             for result, error in pool.map(lambda pair: _one(args, client, kind, field, pair[0], pair[1]), chunk):
                 if error is not None:
                     errors.append(error)
-                    consecutive_transport_failures = consecutive_transport_failures + 1 if error.get("status") is None else 0
+                    consecutive_transport_failures = consecutive_transport_failures + 1 if _transport(error) else 0
                 else:
                     rows.append(result)
                     consecutive_transport_failures = 0
@@ -612,13 +681,16 @@ def _batch(args, client, kind):
     unresolved = any(row.get("exists") is False or row.get("pinpoint_exists") is False for row in rows)
     if len(inputs) == 1 and not errors:
         return rows[0], 4 if unresolved else 0
-    code = ((4 if rows else 3) if errors else (4 if unresolved else 0))
+    # 3 only for failures a retry may fix; a decision or passage the service does
+    # not have, or a reference that names no single decision, is 4.
+    code = (3 if any(_transport(error) for error in errors) else 4) if errors else (4 if unresolved else 0)
     return {"results": rows, "errors": errors, "requested": len(inputs), "returned": len(rows),
             "requests": getattr(client, "requests", None)}, code
 
 
 def _response(value):
-    return value, 3 if value.get("error") else 0
+    """A service answer that carries an error is 'not there' (4); transport failures raise APIError."""
+    return value, 4 if value.get("error") else 0
 
 
 def run(args, client):
@@ -637,7 +709,24 @@ def run(args, client):
         if args.action == "get":
             return _batch(args, client, "get")
         decision_id = _decision_id(client, args.decision_id)
-        return _response(client.get("/api/erwaegung/" + quote(decision_id, safe="") + "/" + quote(args.number, safe="")))
+        number = normalise_pinpoint(args.number)
+        if not number:
+            raise ValueError("Give an Erwägung number such as 2.3, 3b or 3c/aa")
+        passage, status, error = fetch_passage(client, decision_id, number)
+        if status == "retrieved":
+            return passage, 0
+        if status == "parent_retrieved":
+            passage.update(requested_e_number=number,
+                           note=(f"E. {number} is not indexed as such; this is E. {passage.get('e_number')}, which contains it. "
+                                 "Locate the lettered part before quoting."))
+            return passage, 4
+        if error.status not in (200, 404):
+            raise error
+        value = {"error": error.to_dict(), "decision_id": decision_id, "requested_e_number": number}
+        response = getattr(error, "response", None)
+        if isinstance(response, dict):
+            value.update({key: item for key, item in response.items() if key != "error"})
+        return value, 4
     if args.command == "laws":
         params = {name: getattr(args, name) for name in ("article", "sr_number", "as_of", "canton", "language")}
         result, code = _response(client.get("/api/laws/" + quote(args.abbreviation, safe=""), params))
@@ -675,7 +764,7 @@ def main(argv=None):
             _diagnostic(f"{exc.message}" + (f" (HTTP {exc.status})" if exc.status else ""), args)
         else:
             print(json.dumps({"error": exc.to_dict()}, ensure_ascii=False), file=sys.stderr)
-        return 3
+        return 4 if isinstance(exc, ResolutionError) or not _transport(exc.to_dict()) else 3
     except BrokenPipeError:
         # Prevent a second BrokenPipeError from Python's interpreter shutdown.
         try:

@@ -18,6 +18,8 @@ from uuid import uuid4
 
 from . import __version__
 from .client import APIError
+from .references import (docket_in_reference, docket_variants, fold_docket, label_key, normalise_pinpoint,
+                         parse_reference, pinpoint_parent)
 
 SCHEMA_VERSION = "1.0.0"
 # The server ranks a text query over one bounded candidate pool sized from the
@@ -31,10 +33,6 @@ DEFAULT_JOBS = 4
 # network is down; stop instead of burning the retry budget on every item.
 BREAKER_THRESHOLD = 5
 _LAW_SPEC = re.compile(r"^(?:(?P<canton>[A-Za-z]{2})/)?(?P<abbr>[^:/]+):(?P<article>[^:]+)$")
-# A docket embedded in a longer reference: the federal form the service itself
-# prints ("BGer 4A_747/2012 vom 5. April 2013") and dotted cantonal files
-# ("Verwaltungsgericht des Kantons Aargau WBE.2026.33").
-_EMBEDDED_DOCKET = re.compile(r"\b(\d[A-Z]{1,2}[ _.]\d{1,5}/\d{4}|[A-Z]{2,6}\.\d{4}\.\d{1,5})\b")
 
 
 def _now():
@@ -127,17 +125,10 @@ def _get(client, path, params=None):
     if result.get("error"):
         # The service answered: the item does not exist or is not indexed.
         # Status 200 tells callers apart from a transport failure (None).
-        raise APIError(200, str(result["error"]))
+        error = APIError(200, str(result["error"]))
+        error.response = result
+        raise error
     return result
-
-
-def extract_docket(reference: str) -> str | None:
-    """The docket inside a longer reference, if any, else None."""
-    match = _EMBEDDED_DOCKET.search(reference or "")
-    if not match:
-        return None
-    docket = match.group(1)
-    return None if docket.strip() == (reference or "").strip() else docket
 
 
 def _request(args, client):
@@ -155,10 +146,13 @@ def _request(args, client):
     # Statutes exist in de/fr/it only; a search language such as en or rm
     # would make every statute request fail.
     law_language = filters.get("language") if filters.get("language") in _LAW_LANGUAGES else "de"
-    passages = list(dict.fromkeys(getattr(args, "passage", None) or []))
-    for passage in passages:
-        if not passage or not all(part.isdigit() for part in passage.split(".")):
-            raise ValueError("--passage must be an Erwägung number such as 2.3")
+    passages = []
+    for passage in getattr(args, "passage", None) or []:
+        number = normalise_pinpoint(passage)
+        if not number:
+            raise ValueError("--passage must be an Erwägung number such as 2.3 or 3b")
+        if number not in passages:
+            passages.append(number)
     laws = []
     for item in getattr(args, "law", None) or []:
         match = _LAW_SPEC.match(item.strip())
@@ -271,7 +265,7 @@ def _record(directory, manifest, *, kind, identifier, path, params, result, erro
         # "unavailable": the service answered that the item is not there (a
         # passage the index lacks, an unknown article); "failed": transport or
         # validation failure that a retry may fix.
-        item.update(status="unavailable" if error.status == 200 else "failed", error=error.to_dict())
+        item.update(status="unavailable" if error.status in (200, 404) else "failed", error=error.to_dict())
         manifest["attempt_errors"].append({"stage": kind, "identifier": identifier,
                                             "at": _now(), **error.to_dict()})
         _checkpoint(directory, manifest)
@@ -300,7 +294,7 @@ def _record(directory, manifest, *, kind, identifier, path, params, result, erro
 def _collect_all(directory, manifest, client, specs, jobs):
     """Fetch pending items concurrently, record them in order with a checkpoint each."""
     pending = [spec for spec in specs
-               if (manifest["items"].get(spec["kind"] + ":" + spec["identifier"]) or {}).get("status") != "saved"]
+               if (manifest["items"].get(spec["kind"] + ":" + spec["identifier"]) or {}).get("status") not in ("saved", "unavailable")]
     if not pending:
         return
     with ThreadPoolExecutor(max_workers=jobs) as pool:
@@ -382,28 +376,44 @@ def create_bundle(args, client):
                     f"{manifest['corpus_snapshot']['db_generation']}. Later responses can differ from earlier ones.")
     _select(directory, manifest, client)
     specs = _item_specs(request, manifest["selection"]["decision_ids"]) + _law_specs(request)
+    for addition in manifest.get("additions") or []:
+        # Decisions added with `bundle add` belong to the bundle; a resume retries theirs too.
+        specs += _item_specs(request, addition.get("decision_ids") or [], addition.get("passages"))
     _collect_all(directory, manifest, client, specs, _jobs(args))
-    failed = [item for item in manifest["items"].values() if item["status"] != "saved"]
-    unavailable = [item for item in failed if item["status"] == "unavailable"]
+    _finalise(manifest, client)
+    _checkpoint(directory, manifest)
+    _write_index(directory, manifest)
+    return {"schema_version": SCHEMA_VERSION, "status": manifest["status"],
+            "bundle": str(directory.resolve()), "manifest": str((directory / "manifest.json").resolve()),
+            "completeness": manifest["completeness"]}, 0 if manifest["status"] == "complete" else 4
+
+
+def _finalise(manifest, client):
+    """Status and completeness counters computed from the item statuses themselves."""
+    items = list(manifest["items"].values())
+    failed = [item for item in items if item["status"] == "failed"]
+    unavailable = [item for item in items if item["status"] == "unavailable"]
+    missing_text = [item for item in items if item["status"] == "missing_text"]
     selection = manifest["selection"]
-    complete = selection["finished"] and not selection["error"] and not failed
+    request = manifest["request"]
+    complete = bool(selection["finished"] and not selection["error"] and not failed and not unavailable and not missing_text)
     manifest["status"] = "complete" if complete else "partial"
     manifest["requests"] = getattr(client, "requests", None)
     manifest["completeness"] = {"selected_items_saved": complete,
                                 "exhaustive_legal_research": False,
                                 "selected_decisions": len(selection["decision_ids"]),
+                                "added_decisions": sum(len(entry.get("decision_ids") or []) for entry in manifest.get("additions") or []),
+                                "items": len(items), "saved_items": sum(1 for item in items if item["status"] == "saved"),
                                 "failed_items": len(failed), "unavailable_items": len(unavailable),
+                                "missing_text_items": len(missing_text),
                                 "search_error": selection["error"],
                                 "max_results_reached": selection["max_results_reached"],
                                 "ranked_single_request": bool(request.get("ranked_single_request")),
                                 "corpus_generation": (manifest.get("corpus_snapshot") or {}).get("db_generation"),
                                 "server_last_page": selection.get("last_page"),
-                                "note": "Complete means the requested bounded collection was saved; relevance-ranked search can use a capped candidate pool"}
-    _checkpoint(directory, manifest)
-    _write_index(directory, manifest)
-    return {"schema_version": SCHEMA_VERSION, "status": manifest["status"],
-            "bundle": str(directory.resolve()), "manifest": str((directory / "manifest.json").resolve()),
-            "completeness": manifest["completeness"]}, 0 if complete else 4
+                                "note": ("Complete means every requested item was saved; relevance-ranked search can use a capped "
+                                         "candidate pool. failed_items are retried by --resume; unavailable_items are answers "
+                                         "from the service that it does not have the item")}
 
 
 def _write_index(directory, manifest):
@@ -450,137 +460,375 @@ def _write_index(directory, manifest):
                 detail += f": {item['error'].get('message')}"
             lines.append(f"- {label}: {detail}" + (f" [{', '.join(files)}]" if files else ""))
         lines.append("")
-    completeness = manifest.get("completeness") or {}
-    if completeness.get("failed_items"):
-        unavailable = completeness.get("unavailable_items", 0)
-        transport = completeness["failed_items"] - unavailable
-        parts = []
-        if unavailable:
-            parts.append(f"{unavailable} item(s) the service does not have (for example a passage that is not "
-                         "indexed for that decision); these will not appear on a rerun")
-        if transport:
-            parts.append(f"{transport} item(s) failed to download; rerun with --resume")
+    statuses = [item.get("status") for item in manifest["items"].values()]
+    unavailable = statuses.count("unavailable")
+    failed = statuses.count("failed")
+    missing_text = statuses.count("missing_text")
+    parts = []
+    if unavailable:
+        parts.append(f"{unavailable} item(s) the service does not have (for example a passage that is not "
+                     "indexed for that decision, or an unknown decision); a rerun does not request them again")
+    if failed:
+        parts.append(f"{failed} item(s) failed to download; rerun with --resume")
+    if missing_text:
+        parts.append(f"{missing_text} decision(s) came without text; --resume requests them again")
+    if parts:
         lines += ["; ".join(parts) + ".", ""]
     (directory / "INDEX.md").write_text("\n".join(lines), encoding="utf-8")
 
 
-# A pinpoint marker must follow a separator: the "e." inside a docket such
-# as WBE.2026.33 is part of the label.
-_PINPOINT_TAIL = re.compile(r"[\s,;]+(?:e\.|erw\.|erwägung|consid\.|cons\.|c\.)\s*\d+(?:\.\d+)*[a-z]?\s*$")
-_BARE_BGE = re.compile(r"^\d{1,3}(?:ia|ib|iii|ii|iv|i|v)\d{1,4}$")
+# ── identity ───────────────────────────────────────────────────────────────
+
+_PLAIN_LINK = re.compile(r"\s*\[([^\]]+)\]\((?:https?://)[^)\s]+\)")
+_BARE_NUMERIC_DOCKET = re.compile(r"^\d{1,5}/\d{4}$")
+
+# Comparison key for labels (kept under its 0.2 name for callers).
+reference_key = label_key
+_reference_key = label_key
 
 
-def reference_key(value):
-    """Comparison key for source-supplied labels; never used to generate a citation.
+class ResolutionError(APIError):
+    """A reference that cannot be tied to exactly one decision; not a transport failure."""
 
-    Folds case, whitespace and the federal docket separator (4A_747/2012 and
-    4A 747/2012 name the same file), a trailing pinpoint (", E. 2.3") and the
-    official French/Italian BGE collection labels (ATF/DTF).
-    """
-    if not isinstance(value, str):
+    def __init__(self, message: str, outcome: str, row: dict | None = None):
+        super().__init__(None, message)
+        self.outcome = outcome
+        self.row = row or {}
+
+    def to_dict(self) -> dict:
+        return {"status": None, "kind": "resolution", "outcome": self.outcome, "message": self.message}
+
+
+def extract_docket(reference: str) -> str | None:
+    """The docket inside a longer reference, if any, else None."""
+    parsed = parse_reference(reference or "")
+    if not parsed.dockets:
         return None
-    key = _PINPOINT_TAIL.sub("", value.casefold().strip())
-    key = re.sub(r"[\s_]+", "", key).rstrip(".,;:")
-    if key.startswith(("atf", "dtf")) and len(key) > 3 and key[3].isdigit():
-        key = "bge" + key[3:]
-    elif _BARE_BGE.match(key):
-        key = "bge" + key
-    return key
+    docket = parsed.dockets[0]
+    return None if label_key(docket) == label_key(parsed.core) else docket
 
 
-_reference_key = reference_key
+def plain_text(text):
+    """Served passage text with the service's Markdown cross-reference links reduced to their labels.
+    Derived for comparisons with the decision text; `text` stays the served string."""
+    if not isinstance(text, str):
+        return None
+    return _PLAIN_LINK.sub(lambda m: " " + " ".join(m.group(1).split()), text)
+
+
+def fetch_passage(client, decision_id: str, pinpoint: str):
+    """One Erwägung by number. A lettered or slashed sub-number the index lacks (E. 2a,
+    E. 3c/aa) falls back to its parent number so the reader can locate the letter inside.
+    Returns (passage or None, status, error or None); status is retrieved, parent_retrieved
+    or unavailable."""
+    encoded = quote(decision_id, safe="")
+    parent = pinpoint_parent(pinpoint)
+    numbers = [parent] if "/" in pinpoint and parent else [pinpoint] + ([parent] if parent else [])
+    error = None
+    for number in numbers:
+        try:
+            passage = _get(client, f"/api/erwaegung/{encoded}/{quote(number, safe='')}")
+            _validate_passage(passage, decision_id, number)
+        except APIError as failure:
+            error = failure
+            if failure.status not in (200, 404):
+                return None, "unavailable", failure
+            continue
+        if isinstance(passage.get("text"), str):
+            passage["text_plain"] = plain_text(passage["text"])
+        return passage, "retrieved" if number == pinpoint else "parent_retrieved", None
+    return None, "unavailable", error or APIError(200, f"E. {pinpoint} is not addressable")
+
+
+def _cite(client, query, language):
+    response = _get(client, "/api/cite", {"reference": query, "language": language})
+    if response.get("exists") not in (True, False):
+        raise APIError(None, "Citation response does not say whether the decision exists")
+    return response
+
+
+def _labels(*records) -> set:
+    keys = {label_key(record.get(name)) for record in records if isinstance(record, dict)
+            for name in ("citation_string", "citation_string_de", "citation_string_fr", "citation_string_it")}
+    keys.discard(None)
+    return keys
+
+
+def _candidate_summary(candidate: dict) -> dict:
+    return {name: candidate.get(name) for name in ("decision_id", "docket_number", "court", "canton", "decision_date",
+                                                   "citation", "citation_string_de") if candidate.get(name) is not None}
+
+
+def _carries_written_label(parsed, record) -> bool:
+    """Whether a record's own docket is the label the reference writes first, or its
+    citation string is the reference itself. A docket the reference only mentions
+    later (a cross-reference, a joined file) does not count."""
+    docket = record.get("docket_number")
+    primary = parsed.primary_docket
+    if primary is not None:
+        return isinstance(docket, str) and fold_docket(docket) == fold_docket(primary)
+    return docket_in_reference(parsed.core, docket)
+
+
+def _close_match_candidates(parsed, responses):
+    """Close matches that carry the label written in the reference: their own citation
+    string equals it, or their docket is the one written first. The service's ranking
+    plays no part."""
+    core_key = label_key(parsed.core)
+    found = {}
+    for response in responses:
+        for match in response.get("close_matches") or []:
+            if not isinstance(match, dict) or not isinstance(match.get("decision_id"), str) or not match["decision_id"]:
+                continue
+            carried = core_key in _labels(match) or _carries_written_label(parsed, match)
+            if carried and parsed.in_scope(match):
+                found.setdefault(match["decision_id"], match)
+    return list(found.values())
+
+
+def _carriers_by_search(client, parsed, docket):
+    """Decisions whose stored docket equals a bare numeric docket such as 1/2020, which /api/lookup does not index."""
+    page = _get(client, "/api/decisions", {"q": f'"{docket}"', "limit": LOOKUP_WINDOW, "fields": "compact", "include_pinpoint": False})
+    rows = page.get("results") if isinstance(page.get("results"), list) else []
+    key = label_key(docket)
+    return [_candidate_summary(row) for row in rows
+            if isinstance(row, dict) and isinstance(row.get("decision_id"), str)
+            and label_key(row.get("docket_number")) == key and parsed.in_scope(row)]
+
+
+def _identify(client, reference, language, row, parsed=None):
+    """Tie a reference to the one decision it names. Fills `row`; returns (parsed, decision),
+    with decision None when the row reached a terminal status."""
+    parsed = parsed or parse_reference(reference)
+    responses, citation = [], None
+    for query in parsed.queries():
+        response = _cite(client, query, language)
+        responses.append(response)
+        if response["exists"] and isinstance(response.get("decision_id"), str) and response["decision_id"]:
+            citation = response
+            if query != reference:
+                row["query"] = query
+            break
+    if citation is None and responses:
+        candidates = _close_match_candidates(parsed, responses)
+        ids = {c["decision_id"] for c in candidates}
+        if len(ids) > 1:
+            row.update(status="ambiguous", citation=responses[-1], candidates=[_candidate_summary(c) for c in candidates],
+                       reason="More than one decision carries a label written in this reference; name the court or use an explicit decision_id")
+            return parsed, None
+        if len(ids) == 1:
+            response = _cite(client, candidates[0]["decision_id"], language)
+            if response["exists"] and response.get("decision_id") == candidates[0]["decision_id"]:
+                citation = response
+                row["query"] = candidates[0]["decision_id"]
+                row["matched_via"] = "close_match_label"
+    if citation is None:
+        row["citation"] = responses[-1] if responses else None
+        row.update(status="missing", note="No decision carries this label; close_matches are for the author to inspect, never substitutes")
+        return parsed, None
+    row["citation"] = citation
+    decision_id = citation["decision_id"]
+    decision = _get(client, "/api/decisions/" + quote(decision_id, safe=""), {"full_text": False})
+    if decision.get("decision_id") != decision_id:
+        raise APIError(None, "Decision retrieval disagrees with citation resolution")
+    labels = _labels(decision, citation)
+    dockets = [decision.get(name) for name in ("docket_number", "docket_number_2")
+               if isinstance(decision.get(name), str) and decision.get(name).strip()]
+    core_key = label_key(parsed.core)
+    primary = parsed.primary_docket
+    if primary is not None:
+        docket_hit = next((d for d in dockets if fold_docket(d) == fold_docket(primary)), None)
+    else:
+        docket_hit = next((d for d in dockets if docket_in_reference(parsed.core, d)), None)
+    if len(parsed.dockets) > 1:
+        row["other_dockets"] = parsed.dockets[1:]
+    proposed = {"decision_id": decision_id, "docket_number": decision.get("docket_number"), "court": decision.get("court"),
+                **{n: citation.get(n) for n in ("citation_string_de", "citation_string_fr", "citation_string_it") if citation.get(n)}}
+    if parsed.core == decision_id:
+        method = "exact_canonical_id"
+    elif core_key in labels or (parsed.bge_label and label_key(parsed.bge_label) in labels):
+        method = "exact_server_citation"
+    elif docket_hit is not None:
+        method = "exact_server_docket"
+    elif primary is not None and any(fold_docket(d) in {fold_docket(o) for o in parsed.dockets[1:]} for d in dockets):
+        row.update(status="unrecognized", service_candidate=proposed, identity_check={"method": "secondary_label"},
+                   reason=f"The decision the service proposed carries a docket the reference only mentions after its main label {primary}; "
+                          "nothing is guessed. Write that docket first if it is the one meant")
+        return parsed, None
+    else:
+        # Last resort: the label may be a docket the service's lookup index
+        # knows even though the record carries it in another form.
+        method = "exact_candidate_label"
+    if not parsed.in_scope(decision):
+        row.update(status="unrecognized", service_candidate=proposed, identity_check={"method": "court_mismatch"},
+                   reason=f"The reference names another court than {decision_id} ({decision.get('court')})")
+        return parsed, None
+    check = {"method": method}
+    if method in ("exact_server_docket", "exact_candidate_label"):
+        # A docket can be reused by another court, and the service also matches
+        # fragments. exact=true returns only decisions carrying the label (older
+        # servers pad the window with related cases; the label comparison filters
+        # them out either way). Candidates at a court the reference does not name
+        # are listed but do not make the reference ambiguous.
+        label = docket_hit if docket_hit is not None else parsed.core
+        lookup = _get(client, "/api/lookup", {"q": label, "limit": LOOKUP_WINDOW, "exact": True})
+        candidates = lookup.get("results", [])
+        if not isinstance(candidates, list) or any(
+            not isinstance(c, dict) or not isinstance(c.get("decision_id"), str) or not c["decision_id"] for c in candidates
+        ):
+            raise APIError(None, "Lookup returned invalid candidate identifiers")
+        label_k = label_key(label)
+        carrying = [c for c in candidates if label_k in {label_key(c.get(n)) for n in ("decision_id", "docket_number", "citation")}]
+        matching = [c for c in carrying if parsed.in_scope(c)]
+        excluded = [c for c in carrying if not parsed.in_scope(c)]
+        if not carrying and docket_hit is not None and _BARE_NUMERIC_DOCKET.match(docket_hit.strip()):
+            matching = _carriers_by_search(client, parsed, docket_hit)
+        ids = {c["decision_id"] for c in matching} | ({decision_id} if docket_hit is not None else set())
+        row["lookup"] = lookup
+        check.update(docket=label, matching_candidates=[_candidate_summary(c) for c in matching],
+                     lookup_exact=bool(lookup.get("exact")), candidate_window_may_be_capped=len(candidates) >= LOOKUP_WINDOW,
+                     uniqueness="verified" if matching else "unverified")
+        if excluded:
+            check["out_of_scope_candidates"] = [_candidate_summary(c) for c in excluded]
+        if len(ids) > 1 or (ids and decision_id not in ids):
+            listed = list(check["matching_candidates"])
+            if docket_hit is not None and decision_id not in {c.get("decision_id") for c in listed}:
+                listed.insert(0, _candidate_summary({**decision, "citation": citation.get("citation_string")}))
+            row.update(identity_check=check, status="ambiguous", candidates=listed,
+                       reason="Several decisions carry this label; name the court or use an explicit decision_id")
+            return parsed, None
+        if len(matching) >= LOOKUP_WINDOW:
+            row.update(identity_check=check, status="resolution_incomplete",
+                       reason="The candidate window is full of exact matches; use a canonical citation or explicit decision_id")
+            return parsed, None
+        if docket_hit is None and (not ids or not lookup.get("is_case_number")):
+            row.update(status="unrecognized", service_candidate=proposed, identity_check={"method": "no_label_match", **{k: v for k, v in check.items() if k != "method"}},
+                       reason="The decision the service proposed carries no label written in this reference; nothing is guessed. Write the docket or the canonical citation")
+            return parsed, None
+    row.update(decision_id=decision_id, provenance=_provenance(decision), official_source_available=bool(decision.get("source_url")),
+               identity_check=check, status="resolved")
+    return parsed, decision
+
+
+def identify_row(client, reference: str, language: str = "de") -> dict:
+    """The resolved row (decision_id, citation, identity_check, ...) for a reference, or
+    ResolutionError carrying the row that explains why there is not exactly one decision."""
+    row = {}
+    _identify(client, reference.strip(), language, row)
+    if row.get("status") == "resolved":
+        return row
+    outcome = row.get("status", "error")
+    message = row.get("reason") or row.get("note") or "Reference could not be resolved"
+    if outcome == "missing":
+        message = f"Reference not found in the corpus: {reference}"
+    elif row.get("service_candidate"):
+        candidate = row["service_candidate"]
+        message = (f"{reference}: {message} (the service proposed {candidate['decision_id']}"
+                   + (f", docket {candidate['docket_number']!r}" if candidate.get("docket_number") else "") + ")")
+    raise ResolutionError(message, outcome, row)
+
+
+def identify(client, reference: str, language: str = "de") -> str:
+    """The decision_id a reference names, or ResolutionError explaining why there is not exactly one."""
+    return identify_row(client, reference, language)["decision_id"]
+
+
+def _record_carries(decision, docket) -> bool:
+    """Whether a decision record itself names a docket: its own docket fields or the ECLI in canonical_key."""
+    key = fold_docket(docket)
+    for name in ("docket_number", "docket_number_2"):
+        if isinstance(decision.get(name), str) and fold_docket(decision[name]) == key:
+            return True
+    canonical = decision.get("canonical_key")
+    if isinstance(canonical, str) and canonical.upper().startswith("ECLI:"):
+        tail = canonical.rsplit(":", 1)[-1].replace(".", "/")
+        return fold_docket(tail) == key.replace(".", "/")
+    return False
+
+
+def _discrepancies(client, parsed, decision, language, row):
+    """What the author wrote about an identified decision that the record contradicts."""
+    found = []
+    decided = decision.get("decision_date")
+    if parsed.date and isinstance(decided, str) and decided[:10] != parsed.date and not decision.get("date_is_estimated"):
+        found.append({"kind": "date", "written": parsed.date, "decision": decided[:10]})
+    if parsed.bge_label and parsed.dockets:
+        docket = parsed.dockets[0]
+        other = None
+        for variant in docket_variants(docket):
+            response = _cite(client, variant, language)
+            if response["exists"] and isinstance(response.get("decision_id"), str) and response["decision_id"]:
+                other = response
+                break
+        if _record_carries(decision, docket):
+            row["related_docket"] = {"docket": docket, "decision_id": decision.get("decision_id"), "verified": True,
+                                     "note": "the BGE record itself names this docket"}
+        elif other is None:
+            row.setdefault("notes", []).append(f"the docket {docket} written with the BGE label is not in the corpus and was not checked")
+        elif other["decision_id"] != decision.get("decision_id"):
+            record = _get(client, "/api/decisions/" + quote(other["decision_id"], safe=""), {"full_text": False})
+            other_date = record.get("decision_date")
+            if isinstance(other_date, str) and isinstance(decided, str) and other_date[:10] == decided[:10]:
+                # Same day is consistent with one judgment published twice, but
+                # it is not proof: say so instead of affirming it.
+                row["related_docket"] = {"docket": docket, "decision_id": other["decision_id"], "verified": False,
+                                         "note": "a ruling of the same day; whether it is this BGE was not verified"}
+                row.setdefault("notes", []).append(f"the docket {docket} names {other['decision_id']}, decided the same day as this BGE; not verified as the same judgment")
+            else:
+                found.append({"kind": "docket", "written": docket, "resolves_to": other["decision_id"],
+                              "decision_date": other_date, "bge_decision_date": decided})
+    return found
 
 
 def _resolve_one(client, item, language):
     reference = item["reference"].strip()
-    pinpoint = item.get("pinpoint")
-    row = {"reference": reference, "pinpoint": pinpoint, "checked_at": _now(),
-           "legal_support_assessed": False}
+    row = {"reference": reference, "pinpoint": None, "checked_at": _now(), "legal_support_assessed": False}
+    extra = {key: value for key, value in item.items() if key not in ("reference", "pinpoint")}
+    if extra:
+        row["input"] = extra
     try:
-        citation = _get(client, "/api/cite", {"reference": reference, "pinpoint": pinpoint, "language": language})
-        row["citation"] = citation
-        lookup_reference = reference
-        if citation.get("exists") is False:
-            # A long-form reference ("BGer 4A_747/2012 vom 5. April 2013") the
-            # service does not parse: retry with the docket it contains. The
-            # docket-label identity check below still has to pass.
-            docket = extract_docket(reference)
-            if docket:
-                retry = _get(client, "/api/cite", {"reference": docket, "pinpoint": pinpoint, "language": language})
-                if retry.get("exists") is True:
-                    row["citation_as_written"] = citation
-                    row["citation"] = citation = retry
-                    row["docket_extracted"] = docket
-                    lookup_reference = docket
-        if citation.get("exists") is False:
-            row["status"] = "missing"
-            row["note"] = "No decision carries this label; close_matches are for the author to inspect, never substitutes"
+        parsed = parse_reference(reference)
+        try:
+            explicit = normalise_pinpoint(item.get("pinpoint"))
+        except ValueError as error:
+            row.update(status="error", error={"status": 400, "kind": "input", "message": str(error)})
             return row
-        decision_id = citation.get("decision_id")
-        if citation.get("exists") is not True or not isinstance(decision_id, str) or not decision_id:
-            raise APIError(None, "Citation response does not identify an existing decision")
-        decision = _get(client, "/api/decisions/" + quote(decision_id, safe=""), {"full_text": False})
-        if decision.get("decision_id") != decision_id:
-            raise APIError(None, "Decision retrieval disagrees with citation resolution")
-        row.update(decision_id=decision_id, provenance=_provenance(decision))
-        row["official_source_available"] = bool(decision.get("source_url"))
-        key = reference_key(lookup_reference)
-        canonical_labels = {reference_key(record.get(name))
-                            for record in (decision, citation)
-                            for name in ("citation_string", "citation_string_de", "citation_string_fr", "citation_string_it")}
-        docket_match = key is not None and key == reference_key(decision.get("docket_number"))
-        if lookup_reference == decision_id:
-            row["identity_check"] = {"method": "exact_canonical_id"}
-        elif key in canonical_labels:
-            # /lookup can return topical hits that only cite the requested BGE.
-            # The server's canonical citation plus fetched record is stronger
-            # identity evidence than that relevance-ranked candidate window.
-            row["identity_check"] = {"method": "exact_server_citation"}
-        else:
-            # A docket can be reused by another court, and the service also
-            # matches fragments. The lookup window shows other decisions that
-            # carry the same label; it is padded with related decisions, so
-            # only label-matching rows count.
-            # exact=true (servers from 2026-09-05) returns only decisions carrying the
-            # label; older servers ignore it and pad the window with related cases,
-            # which the label comparison below filters out either way.
-            lookup = _get(client, "/api/lookup", {"q": lookup_reference, "limit": LOOKUP_WINDOW, "exact": True})
-            candidates = lookup.get("results", [])
-            if not isinstance(candidates, list) or any(
-                not isinstance(candidate, dict) or not isinstance(candidate.get("decision_id"), str)
-                or not candidate["decision_id"] for candidate in candidates
-            ):
-                raise APIError(None, "Lookup returned invalid candidate identifiers")
-            matching = [candidate for candidate in candidates if key in {
-                reference_key(candidate.get(name)) for name in ("decision_id", "docket_number", "citation")
-            }]
-            ids = {candidate["decision_id"] for candidate in matching}
-            row["lookup"] = lookup
-            row["identity_check"] = {"method": "exact_server_docket" if docket_match else "exact_candidate_label",
-                                     "matching_candidates": matching,
-                                     "lookup_exact": bool(lookup.get("exact")),
-                                     "candidate_window_may_be_capped": len(candidates) >= LOOKUP_WINDOW}
-            distinct = ids | ({decision_id} if docket_match else set())
-            if len(distinct) > 1 or (ids and decision_id not in ids):
-                row.update(status="ambiguous", reason="Multiple exact matches or disagreement between resolvers; select an explicit decision_id")
-                return row
-            if len(matching) >= LOOKUP_WINDOW:
-                row.update(status="resolution_incomplete", reason="The candidate window is full of exact matches; use a canonical citation or explicit decision_id")
-                return row
-            if not docket_match and (not ids or not lookup.get("is_case_number")):
-                row.update(status="unrecognized", reason="The input did not match a canonical citation or an exact source docket; use an explicit decision_id")
-                return row
-        row["status"] = "resolved"
+        pinpoint = explicit or parsed.pinpoint
         if pinpoint:
-            try:
-                passage = _get(client, f"/api/erwaegung/{quote(decision_id, safe='')}/{quote(str(pinpoint), safe='')}")
-                _validate_passage(passage, decision_id, str(pinpoint))
+            row["pinpoint"] = pinpoint
+            row["pinpoint_source"] = "input" if explicit else "reference"
+            if explicit and parsed.pinpoint and explicit != parsed.pinpoint:
+                row["note"] = f"pinpoint {explicit} from the input row is checked; the reference itself names E. {parsed.pinpoint}"
+        parsed, decision = _identify(client, reference, language, row, parsed)
+        if decision is None:
+            return row
+        discrepancies = _discrepancies(client, parsed, decision, language, row)
+        if discrepancies:
+            row.update(status="discrepancy", discrepancies=discrepancies,
+                       reason="The decision was identified, but what the reference says about it does not match the record: "
+                              + ", ".join(d["kind"] for d in discrepancies))
+        if pinpoint:
+            passage, pinpoint_status, error = fetch_passage(client, decision["decision_id"], pinpoint)
+            row["pinpoint_status"] = pinpoint_status
+            if passage is not None:
                 row["passage"] = passage
-                row["pinpoint_status"] = "retrieved"
                 if passage.get("composed_of"):
                     row["composed_of"] = passage["composed_of"]
-            except APIError as error:
-                row.update(status="pinpoint_unavailable", pinpoint_status="unavailable", error=error.to_dict())
+            if pinpoint_status != "retrieved":
+                if error is not None and error.status not in (200, 404):
+                    # A transport failure on the passage fetch is not "not indexed".
+                    row.update(status="error", error=error.to_dict())
+                    return row
+                if row["status"] == "resolved":
+                    row["status"] = "pinpoint_unavailable"
+                if error is not None:
+                    row["error"] = error.to_dict()
+                    response = getattr(error, "response", None)
+                    if isinstance(response, dict) and response.get("available_e_numbers"):
+                        row["available_e_numbers"] = response["available_e_numbers"]
+                if pinpoint_status == "parent_retrieved":
+                    row["pinpoint_note"] = (f"E. {pinpoint} is not indexed as such; E. {passage.get('e_number')} was retrieved, "
+                                            "locate the lettered part inside it before quoting")
     except APIError as error:
         row.update(status="error", error=error.to_dict())
     return row
@@ -594,11 +842,6 @@ def resolve_citations(args, client):
         raise ValueError("Provide references, --input FILE or --stdin")
     if len(inputs) > 1000:
         raise ValueError("Resolve at most 1000 references per invocation")
-    for item in inputs:
-        pinpoint = item.get("pinpoint")
-        if pinpoint is not None and (not isinstance(pinpoint, str) or not pinpoint
-                                    or not all(part.isdigit() for part in pinpoint.split("."))):
-            raise ValueError("A pinpoint must be an Erwägung number string such as 2.3")
     results = []
     language = args.language or "de"
     jobs = _jobs(args)
@@ -714,23 +957,24 @@ def add_to_bundle(args, client):
     _validate_saved(directory, manifest)
     from .cli import read_inputs
     decision_ids = [row["decision_id"].strip() for row in read_inputs(args, "decision_id")]
-    passages = list(dict.fromkeys(list(manifest["request"].get("passages", [])) + list(getattr(args, "passage", None) or [])))
-    for passage in passages:
-        if not passage or not all(part.isdigit() for part in passage.split(".")):
-            raise ValueError("--passage must be an Erwägung number such as 2.3")
+    passages = list(manifest["request"].get("passages", []))
+    for passage in getattr(args, "passage", None) or []:
+        number = normalise_pinpoint(passage)
+        if not number:
+            raise ValueError("--passage must be an Erwägung number such as 2.3 or 3b")
+        if number not in passages:
+            passages.append(number)
     manifest.setdefault("additions", []).append({"at": _now(), "decision_ids": decision_ids, "passages": passages,
                                                  "corpus_snapshot": _snapshot(client)})
     _collect_all(directory, manifest, client, _item_specs(manifest["request"], decision_ids, passages), _jobs(args))
-    failed = [item for item in manifest["items"].values() if item["status"] != "saved"]
-    manifest["status"] = "complete" if not failed and not manifest["selection"].get("error") else "partial"
-    manifest.setdefault("completeness", {})["failed_items"] = len(failed)
-    manifest["completeness"]["added_decisions"] = sum(len(entry["decision_ids"]) for entry in manifest["additions"])
+    _finalise(manifest, client)
     _checkpoint(directory, manifest)
     _write_index(directory, manifest)
     added = {key: item["status"] for key, item in manifest["items"].items()
              if item["kind"] in ("decision", "passage") and item["identifier"].split(":")[0] in decision_ids}
     return {"schema_version": SCHEMA_VERSION, "status": manifest["status"], "bundle": str(directory.resolve()),
-            "manifest": str((directory / "manifest.json").resolve()), "added": added}, 0 if not failed else 4
+            "manifest": str((directory / "manifest.json").resolve()), "added": added,
+            "completeness": manifest["completeness"]}, 0 if all(status == "saved" for status in added.values()) else 4
 
 
 def run(args, client):

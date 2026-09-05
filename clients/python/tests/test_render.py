@@ -100,7 +100,7 @@ def test_bundle_summary_reads_the_manifest(tmp_path):
              "completeness": {"selected_decisions": 1, "failed_items": 1, "server_last_page": {"total": 3, "total_is_lower_bound": False}}}
     text = render.render_bundle(value, PLAIN, 100)
     assert text.startswith("partial  " + str(tmp_path))
-    assert "1 decision(s) selected, 3 matching, 1 requested item(s) failed" in text
+    assert "1 decision(s) selected, 3 matching, 1 item(s) failed to download" in text
     assert "saved         BGE 1 I 1  decisions/a-1.txt" in text
     assert "failed        BGE 1 I 1, E. 2  No structured Erwägungen found" in text
     assert "saved         OR Art. 336  laws/OR_336-1.json" in text and "--resume" in text
@@ -121,7 +121,7 @@ def test_passage_and_law_rendering_fold_link_markup_for_display_only():
 def test_errors_and_partial_batches_are_readable(monkeypatch):
     code, out, err = invoke(monkeypatch, ["decisions", "passage", "a", "9"],
                             [{"error": "E. '9' not found in 'a'.", "available_e_numbers": ["1", "2"]}], tty=True)
-    assert code == 3 and out.startswith("\x1b[31merror: \x1b[0mE. '9' not found") and "available: 1, 2" in out
+    assert code == 4 and out.startswith("\x1b[31merror: \x1b[0mE. '9' not found") and "available: 1, 2" in out
     code, out, err = invoke(monkeypatch, ["decisions", "get", "a", "b", "--no-full-text"],
                             [{"decision_id": "a", "citation_string_de": "BGE 1 I 1"}, APIError(404, "missing")], tty=True)
     assert code == 4 and "BGE 1 I 1" in out and "1 of 2 item(s) failed" in out and "missing" in out
@@ -149,3 +149,44 @@ def test_resolution_table_shows_the_decision_label_not_a_missing_pinpoint():
     assert cols[5] == "decision" and rows[0][5] == "BGE 140 III 86" and "E. 2.3" not in rows[0][5]
     text = render.render_resolution(report, PLAIN, 100)
     assert "E. 2.3 not in the index" in text and "BGE 140 III 86, E. 2.3" not in text
+
+
+def test_bundle_verify_and_diff_have_readable_text():
+    verification = {"kind": "opencaselaw-bundle-verification", "status": "failed", "bundle": "/b", "ok": ["a.json"], "changed": ["b.txt"],
+                    "missing": [], "unlisted": ["notes.md"], "counts": {"ok": 1, "changed": 1, "missing": 0, "unlisted": 1},
+                    "corpus_snapshot": {"db_generation": 17}, "scope": "File integrity only"}
+    class A: command = "bundle"; action = "verify"
+    text = render.render(verification, A(), PLAIN, 100)
+    assert text.startswith("failed  /b") and "1 ok, 1 changed, 0 missing, 1 unlisted" in text and "changed" in text and "b.txt" in text and "notes.md" in text
+    diff = {"kind": "opencaselaw-bundle-diff", "old": "/v1", "new": "/v2", "added": ["x"], "removed": [], "unchanged": ["y"],
+            "changed_text": [{"decision_id": "y", "old": "h1", "new": "h2"}], "status_changes": [], "request_changes": {},
+            "corpus_generation": {"old": 1, "new": 2}}
+    class B: command = "bundle"; action = "diff"
+    text = render.render(diff, B(), PLAIN, 100)
+    assert "1 added, 0 removed, 1 text changed" in text and "added             x" in text and "database generation 1 → 2" in text
+    added = {"status": "partial", "bundle": "/b", "added": {"decision:z": "saved", "passage:z:2": "unavailable"},
+             "completeness": {"saved_items": 3, "unavailable_items": 1, "failed_items": 0}}
+    class C: command = "bundle"; action = "add"
+    text = render.render(added, C(), PLAIN, 100)
+    assert "saved         decision:z" in text and "unavailable   passage:z:2" in text and "1 unavailable" in text
+
+
+def test_resolution_text_explains_discrepancies_parents_and_candidates():
+    report = {"status": "partial", "counts": {"discrepancy": 1, "pinpoint_unavailable": 1, "ambiguous": 1, "unrecognized": 1}, "results": [
+        {"reference": "BGer 4A_714/2014 vom 22. Mai 2016", "status": "discrepancy", "decision_id": "bger_4A_714_2014",
+         "provenance": {"citation_string_de": "BGer 4A_714/2014 vom 22. Mai 2015"},
+         "discrepancies": [{"kind": "date", "written": "2016-05-22", "decision": "2015-05-22"}]},
+        {"reference": "BGE 121 V 240 E. 3c/aa", "status": "pinpoint_unavailable", "decision_id": "bge_BGE_121_V_240", "pinpoint": "3c/aa",
+         "pinpoint_source": "reference", "pinpoint_status": "parent_retrieved", "passage": {"e_number": "3"}, "provenance": {"citation_string_de": "BGE 121 V 240"}},
+        {"reference": "4A_191/2019", "status": "ambiguous", "candidates": [{"decision_id": "bger_4A_191_2019", "court": "bger"}, {"decision_id": "ge_gerichte_4A_191_2019", "court": "ge_gerichte"}],
+         "reason": "Several decisions carry this label"},
+        {"reference": "100/2015", "status": "unrecognized", "service_candidate": {"decision_id": "bvger_D-1100_2015", "docket_number": "D-1100/2015"}},
+    ]}
+    text = render.render_resolution(report, PLAIN, 120)
+    assert "date written 2016-05-22, decision dated 2015-05-22" in text
+    assert "E. 3c/aa not indexed as such; E. 3 retrieved" in text and "(from the reference)" in text
+    assert "candidates: bger_4A_191_2019 (bger); ge_gerichte_4A_191_2019 (ge_gerichte)" in text
+    assert "service proposed bvger_D-1100_2015 (D-1100/2015); label not in the reference" in text
+    class A: command = "citations"; action = "resolve"
+    cols, rows = render.tabular(report, A())
+    assert cols[-1] == "detail" and rows[0][-1] == "date: written 2016-05-22, record 2015-05-22" and rows[1][-1] == "E. 3 retrieved instead"

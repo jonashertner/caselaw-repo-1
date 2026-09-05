@@ -58,17 +58,22 @@ results.
 
 ### Check the citations in a draft
 
-Before a brief goes out, you want to know that every cited decision exists and
-that every pinpointed Erwägung is really there. Put the references from your
-draft in a file, one per line, or as JSON lines when a reference carries a
-pinpoint. `ATF`/`DTF` labels and a trailing `, E. 2.3` are understood:
+Before a brief goes out, you want to know that every cited decision exists,
+that every pinpointed Erwägung is really there, and that what the draft says
+about a decision (its date, its docket) matches the record. Put the references
+in a file exactly as the draft writes them, one per line; JSON lines when you
+want to pass the pinpoint separately. Long forms are understood: `BGer
+4A_747/2012 vom 5. April 2013`, `arrêt du TF 4A_485/2015 du 15 février 2016
+consid. 3`, `Obergericht ZH LA210005 vom 15. Juni 2021`, `ATF 137 III 303
+consid. 2 p. 305`, `BGE 121 V 240 E. 3c/aa`:
 
 ```bash
 cat > references.jsonl <<'JSONL'
-{"reference":"BGE 136 III 513","pinpoint":"2.3"}
-{"reference":"4A_747/2012"}
+{"reference":"BGE 136 III 513 E. 2.3"}
+{"reference":"BGer 4A_747/2012 vom 5. April 2013"}
 {"reference":"BGE 999 III 1"}
 {"reference":"BGE 140 III 86","pinpoint":"2.3"}
+{"reference":"BGer 4A_714/2014 vom 22. Mai 2016"}
 JSONL
 ocl citations resolve --input references.jsonl --format jsonl --fields reference,decision_id > resolution.jsonl
 ```
@@ -77,20 +82,24 @@ At a terminal the same command prints a table, one line per reference with a
 coloured status; the JSON lines below are what a script receives:
 
 ```
-{"reference": "BGE 136 III 513", "status": "resolved", "decision_id": "bge_BGE_136_III_513", "pinpoint_status": "retrieved"}
-{"reference": "4A_747/2012", "status": "resolved", "decision_id": "bger_4A_747_2012"}
-{"reference": "BGE 999 III 1", "status": "missing"}
+{"reference": "BGE 136 III 513 E. 2.3", "status": "resolved", "decision_id": "bge_BGE_136_III_513", "pinpoint_status": "retrieved"}
+{"reference": "BGer 4A_747/2012 vom 5. April 2013", "status": "resolved", "decision_id": "bger_4A_747_2012"}
+{"reference": "BGE 999 III 1", "status": "missing", "note": "No decision carries this label; close_matches are for the author to inspect, never substitutes"}
 {"reference": "BGE 140 III 86", "status": "pinpoint_unavailable", "decision_id": "bge_BGE_140_III_86", "pinpoint_status": "unavailable"}
-{"_type": "pagination", "status": "partial", "counts": {"resolved": 2, "missing": 1, "pinpoint_unavailable": 1}, ...}
+{"reference": "BGer 4A_714/2014 vom 22. Mai 2016", "status": "discrepancy", "decision_id": "bger_4A_714_2014", "discrepancies": [{"kind": "date", "written": "2016-05-22", "decision": "2015-05-22"}]}
+{"_type": "pagination", "status": "partial", "counts": {"resolved": 2, "missing": 1, "pinpoint_unavailable": 1, "discrepancy": 1}, ...}
 ```
 
-The first reference exists and so does its E. 2.3. The docket resolved to a
-federal decision. `BGE 999 III 1` is not in the corpus: check the citation,
-or accept that coverage may have a gap. BGE 140 III 86 exists, but the index
-has no E. 2.3 for it, so quote from the decision itself, not from memory. The
-exit code is 4 because not everything resolved. Without `--fields`, each row
-also carries the service's citation strings in German, French and Italian,
-the source link, and the passage text when a pinpoint was found.
+The first reference exists and so does its E. 2.3, which was read from the
+reference itself. The long form resolved through its docket. `BGE 999 III 1`
+is not in the corpus: check the citation, or accept that coverage may have a
+gap. BGE 140 III 86 exists, but the index has no E. 2.3 for it, so quote from
+the decision itself, not from memory. The last reference names a real decision
+with the wrong year. The exit code is 4 because not everything resolved.
+`--fields` keeps the verdict and what qualifies it (status, errors, notes,
+discrepancies); without it, each row also carries the service's citation
+strings in German, French and Italian, the source link, the identity
+evidence, and the passage text when a pinpoint was found.
 
 What the check does not do: it never says that a decision supports your
 proposition, is still good law, or fits your facts. That reading is yours.
@@ -141,24 +150,53 @@ decisions, because the corpus is rebuilt nightly.
 
 ## What the results mean
 
-- `resolved`: the decision exists in the corpus. With a pinpoint, the named
-  Erwägung exists and its text is in the row.
+- `resolved`: the decision exists in the corpus and carries a label written in
+  the reference. With a pinpoint, the named Erwägung exists and its text is in
+  the row (`pinpoint_status: retrieved`; `pinpoint_source` says whether the
+  number came from the reference or from the input row).
 - `pinpoint_unavailable`: the decision exists; the numbered passage is not in
-  the structure index.
+  the structure index. The index holds numeric Erwägung numbers only (2, 2.3,
+  2.3.1). For a lettered sub-number the index lacks (`E. 2a`, `E. 3c/aa`, the
+  style of BGE before about 2000) the parent number is retrieved instead
+  (`pinpoint_status: parent_retrieved`): locate the letter inside that text.
+  Some Italian-language BGE volumes have no structure at all yet; for them
+  this is the normal outcome, and the decision text is the source to quote.
+- `discrepancy`: the decision was identified, but the reference says something
+  about it that the record contradicts: the date (`BGer 4A_714/2014 vom 22.
+  Mai 2016` for a ruling of 22 May 2015) or a docket written next to a BGE
+  label that names a different ruling. `discrepancies` lists each one.
 - `missing`: no decision with that citation or docket. A wrong citation or a
-  gap in coverage, never proof that a citation was invented.
+  gap in coverage, never proof that a citation was invented. The service's
+  `close_matches` are listed for the author; nothing is substituted.
 - `ambiguous`: more than one decision carries that label (dockets are reused
-  across courts). Pick a `decision_id`.
-- `resolution_incomplete`, `unrecognized`, `error`: identity could not be
-  established, or the request failed. Nothing is guessed.
-- `identity_check.method` says why a match is trusted: an exact `decision_id`,
-  the service's own citation string, the decision's own docket label, or an
-  exact label among the service's lookup candidates.
+  across courts, and some portals file summaries of federal rulings under the
+  federal docket). Name the court in the reference (`BGer 4A_191/2019`) or
+  pick a `decision_id` from `candidates`.
+- `unrecognized`: the service proposed a decision that carries no label
+  written in the reference (a docket fragment matched by substring, for
+  example). The proposal is under `service_candidate`, never in
+  `decision_id`. `resolution_incomplete` and `error` mean identity could not
+  be established or the request failed. Nothing is guessed.
+- `identity_check.method` says why a match is trusted: `exact_canonical_id`
+  (the reference is the id), `exact_server_citation` (the service's own
+  string), `exact_server_docket` (the decision's own docket is the label the
+  reference writes first) or `exact_candidate_label` (a docket the lookup
+  index knows in another form, whose only in-scope carrier is the proposed
+  decision). `uniqueness` says whether other carriers of that docket were
+  checked. A candidate at a court the reference rules out is listed under
+  `out_of_scope_candidates` and does not make the reference ambiguous. The
+  label written first is the citation; a docket mentioned later (`vgl. auch
+  BGer 4A_747/2012`, a joined file) is listed under `other_dockets` and never
+  taken for it.
+- Passage `text` is the served string; the service marks cross-references
+  inside it as Markdown links. `text_plain` is the same text with those links
+  reduced to their labels, for comparisons with the decision text.
 - A bundle is `complete` when every requested item was saved, otherwise
   `partial`. An `unavailable` item is one the service does not have (a
-  passage that is not indexed for that decision); a `failed` item is a
-  download that `--resume` will retry. Complete describes the requested
-  collection, not the law: `exhaustive_legal_research` is always `false`.
+  passage that is not indexed for that decision, an unknown decision); a
+  `failed` item is a download that `--resume` will retry. Complete describes
+  the requested collection, not the law: `exhaustive_legal_research` is
+  always `false`.
 - `total_is_lower_bound: true` means "at least this many". A text query is
   ranked over a bounded candidate pool, so `has_more: false` never proves that
   every relevant decision was seen. Nothing here replaces reading the decision.
@@ -255,9 +293,12 @@ per line followed by a record with `_type: "pagination"`. Batch commands
 (`decisions get`, `citations resolve`, `cite`) accept plain lines or JSONL
 from `--input FILE` or `--stdin` and skip pagination records, so a search can
 be piped straight into a fetch. `--fields a,b` projects result fields while
-always keeping errors, statuses and completeness metadata. `--detail compact`
-(the default) asks the service for lean records; `full` adds regeste, snippet
-and a pinpoint suggestion for the top results.
+always keeping errors, statuses and completeness metadata; on `citations
+resolve` rows it is a real projection (reference, status, errors, notes and
+discrepancies survive, the evidence blocks do not). `--detail compact` (the
+default) asks the service for lean records that carry `citation_string_de`
+only; `full` adds regeste, snippet, a pinpoint suggestion and the French and
+Italian citation strings (`decisions get` always has all three).
 
 A text query is ranked by relevance over one bounded candidate pool whose size
 depends on the requested window, so its pages are not composable: `ocl` sends
@@ -310,20 +351,28 @@ decisions citing that case; inspect the selected IDs.
 ## Reference: citation resolution
 
 Input is one reference per line, or JSONL records with `reference` and an
-optional `pinpoint`; `--stdin` and positional references also work. A
-long-form reference (`BGer 4A_747/2012 vom 5. April 2013`, `Urteil des
-Verwaltungsgerichts des Kantons Aargau WBE.2026.33`) is retried with the
-docket it contains and reported with `docket_extracted`; the resolved
-decision must still carry that docket label. Exact
-canonical IDs and the service's own citation strings confirm identity directly
-(a trailing pinpoint such as `, E. 2.3`, the `ATF`/`DTF` labels and the
-federal docket separator `4A_747/2012` = `4A 747/2012` are folded for the
-comparison only; nothing is ever rewritten for output). Other references are
-compared with the resolved decision's own docket label and with the docket
-labels of the service's lookup candidates; a docket carried by more than one
-decision stays `ambiguous`, and a lookup window filled with exact matches is
-reported as `resolution_incomplete`. A `--language` other than German only
-changes which citation string is primary.
+optional `pinpoint`; `--stdin` and positional references also work. Extra keys
+of a JSONL record come back under `input`, so rows can be correlated.
+
+Each reference is parsed the way it is written: the collection label
+(`BGE`/`ATF`/`DTF`), a docket in any of the separators the corpus stores
+(`4A_747/2012`, `4A 747/2012`, `4C.230/2005`) or a cantonal form
+(`LA210005`, `WBE.2026.33`, `C/11532/2013`, `HC / 2020 / 38`, `K 2015/3`,
+`810 16 9`), court words (`BGer`, `TF`, `Obergericht ZH`, `Cour de justice de
+Genève`), a date, page references (`S. 357`, `p. 305`, `ff.`) and an inline
+pinpoint (`E. 2.3`, `consid. 3b`, `E. 3c/aa`). The label is what is queried
+(`query` in the row says which); the decision the service proposes must carry
+a label written in the reference, compared after folding case, whitespace,
+the docket separators and the `ATF`/`DTF` spellings. Nothing is ever
+rewritten for output. Pinpoint fields accept the author's spelling
+(`consid. 2.3`, `E. 3b`); an invalid one fails that row, never the batch.
+
+A docket carried by more than one decision at courts the reference does not
+rule out is `ambiguous`; the court words in the reference scope the check, so
+`BGer 4A_191/2019` resolves even where a cantonal portal filed a summary under
+the same docket. A lookup window filled with exact matches is
+`resolution_incomplete`. A `--language` other than German only changes which
+citation string is primary.
 
 ## Bounds, errors and reusable scripts
 
@@ -347,8 +396,8 @@ the exit status as well as the output:
 |---|---|
 | `0` | Successful command, including an intentionally bounded search |
 | `2` | Invalid arguments or input |
-| `3` | API or transport failure |
-| `4` | Partial or unresolved result, including incomplete batches and workflows |
+| `3` | Transport or server failure; a retry may succeed |
+| `4` | Partial or unresolved result: a decision or passage the service does not have, a reference that names no single decision, an incomplete batch or workflow |
 | `130` | Interrupted |
 
 Leaf commands expose `--base-url`, `--timeout`, `--retries`, `--format` and
@@ -374,12 +423,15 @@ schema endpoint to be deployed. The schema describes returned evidence and
 pagination; it does not certify legal relevance, corpus completeness or the
 accuracy of every upstream record.
 
-Three fields matter for honest scripting. `degraded: true` on a search means
-the service hit its time budget and returned a reduced ranking; retry later or
-narrow the query rather than treating the page as the best matches. On a
-passage, `text_source` is `structure_index` (the normal case) or
+Three fields matter for honest scripting; each is absent rather than false
+when a server does not set it, so test for its presence. `degraded: true` on a
+search means the service hit its time budget and returned a reduced ranking;
+retry later or narrow the query rather than treating the page as the best
+matches. On a passage, `text_source` is `structure_index` (the normal case) or
 `full_text_heading` (the numbered heading was located in the decision text
 because the index has no row for it; check the block's boundaries before
-quoting). `/api/lookup?exact=true` returns only decisions whose own docket or
+quoting). Passage `text` is served with the service's Markdown links around
+cross-references; `text_plain`, added by the client, reduces them to their
+labels for comparisons with the decision text. `/api/lookup?exact=true` returns only decisions whose own docket or
 BGE label is the reference, which is what `citations resolve` uses to detect a
 docket reused by another court.

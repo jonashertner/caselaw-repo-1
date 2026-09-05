@@ -79,8 +79,8 @@ def _label(row: dict) -> str:
 
 
 _STATUS_COLOUR = {
-    "resolved": "green", "complete": "green", "saved": "green", "verified": "green",
-    "missing": "red", "error": "red", "failed": "red",
+    "resolved": "green", "complete": "green", "saved": "green", "verified": "green", "retrieved": "green",
+    "missing": "red", "error": "red", "failed": "red", "changed": "red",
 }
 
 
@@ -164,6 +164,8 @@ def render_passage(value: dict, s: Style, width: int) -> str:
     lines = [s.bold(str(header)), s.dim(meta)]
     if value.get("composed_of"):
         lines.append(s.dim("composed of " + ", ".join(f"E. {e}" for e in value["composed_of"])))
+    if value.get("note"):
+        lines += [s.yellow(l) for l in _wrap(str(value["note"]), width)]
     lines += [""] + _wrap(_display_text(str(value.get("text") or "")), width)
     return "\n".join(lines)
 
@@ -183,6 +185,10 @@ def render_cite(value: dict, s: Style, width: int) -> str:
             lines.append(value[key])
     if value.get("canonical_url"):
         lines.append(s.cyan(str(value["canonical_url"])))
+    if value.get("pinpoint_note"):
+        lines += [s.yellow(l) for l in _wrap(str(value["pinpoint_note"]), width)]
+        if value.get("available_e_numbers"):
+            lines.append("  " + s.dim("available: " + ", ".join(map(str, value["available_e_numbers"][:12]))))
     if value.get("rule_statement"):
         lines += ["", s.dim("Rule statement (verbatim excerpt):")] + _wrap(_display_text(str(value["rule_statement"])), width, "  ")
     return "\n".join(lines)
@@ -255,6 +261,12 @@ def render_citations(value: dict, s: Style, width: int) -> str:
     return "\n".join(lines)
 
 
+def _candidate_line(candidate: dict) -> str:
+    parts = [str(candidate.get("decision_id") or "")]
+    meta = " · ".join(str(x) for x in (candidate.get("court"), candidate.get("decision_date")) if x)
+    return parts[0] + (f" ({meta})" if meta else "")
+
+
 def render_resolution(value: dict, s: Style, width: int) -> str:
     rows = value.get("results") or []
     ref_w = min(36, max([len(str(r.get("reference", ""))) for r in rows] + [9]))
@@ -269,25 +281,50 @@ def render_resolution(value: dict, s: Style, width: int) -> str:
         label = provenance.get("citation_string_de") or provenance.get("citation_string")
         if label and reference_like(label) != reference_like(ref):
             detail.append(s.dim(label))
-        if row.get("docket_extracted"):
-            detail.append(s.dim(f"via docket {row['docket_extracted']}"))
+        if row.get("query") and row["query"] != ref and not decision_id.startswith(str(row["query"])):
+            detail.append(s.dim(f"via {row['query']}"))
+        for item in row.get("discrepancies") or []:
+            if item.get("kind") == "date":
+                detail.append(s.yellow(f"date written {item.get('written')}, decision dated {item.get('decision')}"))
+            elif item.get("kind") == "docket":
+                detail.append(s.yellow(f"docket {item.get('written')} names {item.get('resolves_to')}"
+                                       + (f" ({item['decision_date']})" if item.get("decision_date") else "")))
         if row.get("pinpoint"):
             ps = row.get("pinpoint_status")
-            detail.append(s.green(f"E. {row['pinpoint']} retrieved") if ps == "retrieved"
-                          else s.yellow(f"E. {row['pinpoint']} not in the index") if ps == "unavailable" else "")
+            origin = s.dim(" (from the reference)") if row.get("pinpoint_source") == "reference" else ""
+            if ps == "retrieved":
+                detail.append(s.green(f"E. {row['pinpoint']} retrieved") + origin)
+            elif ps == "parent_retrieved":
+                parent = (row.get("passage") or {}).get("e_number")
+                detail.append(s.yellow(f"E. {row['pinpoint']} not indexed as such; E. {parent} retrieved, locate the letter inside") + origin)
+            elif ps == "unavailable":
+                available = row.get("available_e_numbers")
+                detail.append(s.yellow(f"E. {row['pinpoint']} not in the index") + origin
+                              + (s.dim(f"  available: {', '.join(map(str, available[:12]))}") if available else ""))
         if status == "missing":
             detail.append(s.dim("not in the corpus"))
-        if row.get("reason"):
+        if status in ("unrecognized",) and row.get("service_candidate"):
+            candidate = row["service_candidate"]
+            detail.append(s.dim(f"service proposed {candidate.get('decision_id')} ({candidate.get('citation_string_de') or candidate.get('docket_number')}); label not in the reference"))
+        if status == "ambiguous" and row.get("candidates"):
+            detail.append(s.dim("candidates: " + "; ".join(_candidate_line(c) for c in row["candidates"][:6])))
+        if row.get("related_docket"):
+            detail.append(s.dim(f"docket {row['related_docket'].get('docket')} = {row['related_docket'].get('decision_id')}, same date"))
+        if row.get("reason") and status not in ("discrepancy", "ambiguous", "unrecognized"):
             detail.append(s.dim(str(row["reason"])))
+        elif status in ("ambiguous", "unrecognized") and not (row.get("candidates") or row.get("service_candidate")):
+            detail.append(s.dim(str(row.get("reason") or "")))
         if row.get("error") and status == "error":
             detail.append(s.dim(str(row["error"].get("message"))))
+        for note in row.get("notes") or []:
+            detail.append(s.dim(str(note)))
         line = f"{_status(s, status)}{' ' * max(1, 22 - len(status))}{ref:<{ref_w}}  "
         line += f"{s.cyan(decision_id)}{' ' * max(0, id_w - len(decision_id))}  " if id_w else ""
         lines.append((line + "  ".join(d for d in detail if d)).rstrip())
     counts = value.get("counts") or {}
     summary = ", ".join(f"{n} {k}" for k, n in counts.items())
     lines += ["", _status(s, str(value.get("status", ""))) + s.dim(f": {summary}." if summary else ".")]
-    lines.append(s.dim("Existence and pinpoints only; no assessment of legal support."))
+    lines.append(s.dim("Existence, identity and pinpoints only; no assessment of legal support."))
     return "\n".join(lines)
 
 
@@ -302,8 +339,10 @@ def render_bundle(value: dict, s: Style, width: int) -> str:
     page = completeness.get("server_last_page") or {}
     if page.get("total") is not None:
         parts.append(f"{'at least ' if page.get('total_is_lower_bound') else ''}{page['total']} matching")
+    if completeness.get("unavailable_items"):
+        parts.append(s.yellow(f"{completeness['unavailable_items']} item(s) the service does not have"))
     if completeness.get("failed_items"):
-        parts.append(s.yellow(f"{completeness['failed_items']} requested item(s) failed"))
+        parts.append(s.red(f"{completeness['failed_items']} item(s) failed to download"))
     lines.append("  " + s.dim(", ".join(parts)))
     manifest = None
     try:
@@ -333,6 +372,58 @@ def render_bundle(value: dict, s: Style, width: int) -> str:
     lines += ["", s.dim("INDEX.md lists the folder; manifest.json is the record with hashes and source links.")]
     if completeness.get("failed_items"):
         lines.append(s.dim("Rerun the same command with --resume to retry the failed items."))
+    return "\n".join(lines)
+
+
+def render_bundle_verification(value: dict, s: Style, width: int) -> str:
+    counts = value.get("counts") or {}
+    lines = [_status(s, str(value.get("status", ""))) + "  " + s.bold(str(value.get("bundle", ""))),
+             "  " + s.dim(", ".join(f"{counts.get(key, 0)} {key}" for key in ("ok", "changed", "missing", "unlisted")))]
+    for key, colour in (("changed", s.red), ("missing", s.red), ("unlisted", s.yellow)):
+        for path in value.get(key) or []:
+            lines.append(f"  {colour(key):<18}{path}")
+    snapshot = value.get("corpus_snapshot") or {}
+    if snapshot.get("db_generation"):
+        lines.append("  " + s.dim(f"collected on database generation {snapshot['db_generation']}"))
+    lines += ["", s.dim(str(value.get("scope") or "File integrity against the manifest only."))]
+    return "\n".join(lines)
+
+
+def render_bundle_diff(value: dict, s: Style, width: int) -> str:
+    lines = [s.bold("old ") + str(value.get("old", "")), s.bold("new ") + str(value.get("new", ""))]
+    added, removed = value.get("added") or [], value.get("removed") or []
+    changed, statuses = value.get("changed_text") or [], value.get("status_changes") or []
+    lines.append("  " + s.dim(f"{len(added)} added, {len(removed)} removed, {len(changed)} text changed, "
+                              f"{len(statuses)} status change(s), {len(value.get('unchanged') or [])} unchanged"))
+    for decision_id in added:
+        lines.append(f"  {s.green('added'):<18}{decision_id}")
+    for decision_id in removed:
+        lines.append(f"  {s.red('removed'):<18}{decision_id}")
+    for item in changed:
+        lines.append(f"  {s.yellow('text changed'):<18}{item.get('decision_id')}  " + s.dim(f"{str(item.get('old'))[:12]} → {str(item.get('new'))[:12]}"))
+    for item in statuses:
+        lines.append(f"  {s.yellow('status'):<18}{item.get('identifier')}  " + s.dim(f"{item.get('old')} → {item.get('new')}"))
+    for key, change in (value.get("request_changes") or {}).items():
+        lines.append(f"  {s.yellow('request'):<18}{key}: " + s.dim(f"{change.get('old')} → {change.get('new')}"))
+    generation = value.get("corpus_generation") or {}
+    if isinstance(generation, dict) and generation.get("old") != generation.get("new"):
+        lines.append("  " + s.dim(f"database generation {generation.get('old')} → {generation.get('new')}"))
+    if value.get("note"):
+        lines += ["", s.dim(str(value["note"]))]
+    return "\n".join(lines)
+
+
+def render_bundle_addition(value: dict, s: Style, width: int) -> str:
+    lines = [_status(s, str(value.get("status", ""))) + "  " + s.bold(str(value.get("bundle", "")))]
+    for key, status in (value.get("added") or {}).items():
+        lines.append(f"  {_status(s, str(status))}{' ' * max(1, 14 - len(str(status)))}{key}")
+    completeness = value.get("completeness") or {}
+    parts = [f"{completeness.get('saved_items', 0)} saved"]
+    if completeness.get("unavailable_items"):
+        parts.append(s.yellow(f"{completeness['unavailable_items']} unavailable"))
+    if completeness.get("failed_items"):
+        parts.append(s.red(f"{completeness['failed_items']} failed"))
+    lines += ["", "  " + s.dim(", ".join(parts) + " in the bundle")]
     return "\n".join(lines)
 
 
@@ -371,6 +462,13 @@ def render(value, args, s: Style, width: int) -> str:
     if command == "cite":
         return render_batch(value, s, width, render_cite) if "requested" in value else render_cite(value, s, width)
     if command == "bundle":
+        kind = value.get("kind")
+        if kind == "opencaselaw-bundle-verification":
+            return render_bundle_verification(value, s, width)
+        if kind == "opencaselaw-bundle-diff":
+            return render_bundle_diff(value, s, width)
+        if "added" in value:
+            return render_bundle_addition(value, s, width)
         return render_bundle(value, s, width)
     return json.dumps(value, ensure_ascii=False, indent=2)
 
@@ -390,15 +488,26 @@ def tabular(value, args):
                  cell(r.get("docket_number")), cell(r.get("title"))] for r in value.get("results") or []]
         return cols, rows
     if command == "citations" and action == "resolve":
-        cols = ["reference", "status", "decision_id", "pinpoint", "pinpoint_status", "decision", "identity"]
+        cols = ["reference", "status", "decision_id", "pinpoint", "pinpoint_status", "decision", "identity", "detail"]
         rows = []
         for r in value.get("results") or []:
             # The decision-level label from provenance, never the pinpointed
             # string: a pinpoint the index lacks must not read as if it existed.
             provenance = r.get("provenance") or {}
+            detail = []
+            for item in r.get("discrepancies") or []:
+                detail.append(f"{item.get('kind')}: written {item.get('written')}, record {item.get('decision') or item.get('resolves_to')}")
+            if r.get("status") == "unrecognized" and r.get("service_candidate"):
+                detail.append(f"service proposed {r['service_candidate'].get('decision_id')}")
+            if r.get("status") == "ambiguous" and r.get("candidates"):
+                detail.append("candidates: " + ", ".join(str(c.get("decision_id")) for c in r["candidates"][:5]))
+            if r.get("pinpoint_status") == "parent_retrieved":
+                detail.append(f"E. {(r.get('passage') or {}).get('e_number')} retrieved instead")
+            if r.get("status") == "error" and r.get("error"):
+                detail.append(str(r["error"].get("message")))
             rows.append([cell(r.get("reference")), cell(r.get("status")), cell(r.get("decision_id")), cell(r.get("pinpoint")),
                          cell(r.get("pinpoint_status")), cell(provenance.get("citation_string_de") or provenance.get("citation_string")),
-                         cell((r.get("identity_check") or {}).get("method"))])
+                         cell((r.get("identity_check") or {}).get("method")), "; ".join(detail)])
         return cols, rows
     if command == "citations" and action == "list":
         cols = ["direction", "label", "decision_id", "court", "decision_date", "confidence"]
@@ -490,7 +599,8 @@ def render_md(value, args, width: int) -> str:
     if command == "decisions" and action == "passage":
         header = value.get("citation_string_de") or f"{value.get('decision_id')} E. {value.get('e_number')}"
         quote = "\n".join("> " + l for l in _display_text(str(value.get("text") or "")).split("\n"))
-        return f"**{header}**" + (f" ({value['canonical_url']})" if value.get("canonical_url") else "") + "\n\n" + quote
+        note = f"\n\n*{value['note']}*" if value.get("note") else ""
+        return f"**{header}**" + (f" ({value['canonical_url']})" if value.get("canonical_url") else "") + note + "\n\n" + quote
     if command == "cite":
         lines = [f"**{value.get('citation_string') or value.get('citation_string_de') or ''}**"]
         for key in ("citation_string_fr", "citation_string_it"):
@@ -498,6 +608,10 @@ def render_md(value, args, width: int) -> str:
                 lines.append(str(value[key]))
         if value.get("canonical_url"):
             lines.append(f"<{value['canonical_url']}>")
+        if value.get("pinpoint_note"):
+            lines.append(f"*{value['pinpoint_note']}*")
+            if value.get("available_e_numbers"):
+                lines.append("available: " + ", ".join(map(str, value["available_e_numbers"][:12])))
         return "  \n".join(lines)
     if command == "laws":
         return render_law(value, Style(False), width)

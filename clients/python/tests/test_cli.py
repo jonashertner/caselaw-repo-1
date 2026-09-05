@@ -126,13 +126,30 @@ def test_invalid_batch_is_rejected_before_any_requests(monkeypatch, capsys):
 
 
 def test_cite_per_reference_pinpoint_overrides_common_default(monkeypatch, capsys):
+    # Every reference is identified (cite, then the decision record); the
+    # pinpoint is formatted only after the passage was found.
+    hit86 = {"exists": True, "decision_id": "bge_BGE_140_III_86", "citation_string": "ATF 140 III 86", "citation_string_de": "BGE 140 III 86"}
+    hit513 = {"exists": True, "decision_id": "bge_BGE_136_III_513", "citation_string": "ATF 136 III 513", "citation_string_de": "BGE 136 III 513"}
     client, code, output = invoke(monkeypatch, capsys, ["cite", "--stdin", "--pinpoint", "1", "--language", "fr"],
-        [{"citation_string": "server canonical citation"}, {"citation_string": "second"}],
+        [dict(hit86), {"decision_id": "bge_BGE_140_III_86", "citation_string_de": "BGE 140 III 86"},
+         {"decision_id": "bge_BGE_140_III_86", "e_number": "2.3", "text": "served"}, {"citation_string": "ATF 140 III 86, consid. 2.3"},
+         dict(hit513), {"decision_id": "bge_BGE_136_III_513", "citation_string_de": "BGE 136 III 513"},
+         {"decision_id": "bge_BGE_136_III_513", "e_number": "1", "text": "served"}, {"citation_string": "ATF 136 III 513, consid. 1"}],
         '{"reference":"BGE 140 III 86","pinpoint":"2.3"}\n{"reference":"BGE 136 III 513","pinpoint":null}\n')
     assert code == 0
-    assert client.calls == [("/api/cite", {"reference": "BGE 140 III 86", "pinpoint": "2.3", "language": "fr"}),
-                            ("/api/cite", {"reference": "BGE 136 III 513", "pinpoint": "1", "language": "fr"})]
-    assert json.loads(output.out)["results"][0]["citation_string"] == "server canonical citation"
+    assert [c[0] for c in client.calls] == ["/api/cite", "/api/decisions/bge_BGE_140_III_86", "/api/erwaegung/bge_BGE_140_III_86/2.3", "/api/cite",
+                                            "/api/cite", "/api/decisions/bge_BGE_136_III_513", "/api/erwaegung/bge_BGE_136_III_513/1", "/api/cite"]
+    assert client.calls[0] == ("/api/cite", {"reference": "BGE 140 III 86", "language": "fr"})
+    assert client.calls[3] == ("/api/cite", {"reference": "bge_BGE_140_III_86", "pinpoint": "2.3", "language": "fr"})
+    rows = json.loads(output.out)["results"]
+    assert rows[0]["citation_string"] == "ATF 140 III 86, consid. 2.3" and rows[0]["identity_check"]["method"] == "exact_server_citation"
+    assert rows[1]["citation_string"] == "ATF 136 III 513, consid. 1"
+    # one row with an invalid pinpoint fails alone; the batch goes on
+    client, code, output = invoke(monkeypatch, capsys, ["cite", "--stdin", "--format", "json"],
+        [dict(hit513), {"decision_id": "bge_BGE_136_III_513", "citation_string_de": "BGE 136 III 513"}],
+        '{"reference":"BGE 140 III 86","pinpoint":"foo"}\n{"reference":"BGE 136 III 513"}\n')
+    out = json.loads(output.out)
+    assert code == 4 and out["errors"][0]["status"] == 400 and "foo" in out["errors"][0]["message"] and out["results"][0]["decision_id"] == "bge_BGE_136_III_513"
 
 
 def test_plain_input_file(tmp_path, monkeypatch, capsys):
@@ -145,16 +162,20 @@ def test_plain_input_file(tmp_path, monkeypatch, capsys):
 
 
 def test_top_level_error_is_stderr_only(monkeypatch, capsys):
+    # A passage the service does not have is an answer (exit 4), reported on stdout.
     _, code, output = invoke(monkeypatch, capsys, ["decisions", "passage", "a", "2.3"], [APIError(404, "no passage")])
-    assert code == 3 and not output.out
-    assert json.loads(output.err)["error"]["status"] == 404
+    assert code == 4 and json.loads(output.out)["error"]["status"] == 404 and "ocl:" in output.err
+    _, code, output = invoke(monkeypatch, capsys, ["decisions", "passage", "a", "2.3"], [APIError(None, "Request failed: refused")])
+    assert code == 3 and not output.out and json.loads(output.err)["error"]["status"] is None
 
 
 def test_http_200_error_is_retained_with_failure_exit(monkeypatch, capsys):
     _, code, output = invoke(monkeypatch, capsys, ["decisions", "passage", "a", "2.3", "--fields", "text"],
                             [{"error": "no structured passage", "hint": "retrieve full decision"}])
-    assert code == 3
-    assert json.loads(output.out) == {"error": "no structured passage", "hint": "retrieve full decision"}
+    assert code == 4
+    out = json.loads(output.out)
+    assert out["error"] == {"status": 200, "message": "no structured passage"} and out["hint"] == "retrieve full decision"
+    assert out["requested_e_number"] == "2.3"
 
 
 def test_missing_citation_remains_explicit_under_field_projection(monkeypatch, capsys):
@@ -245,11 +266,13 @@ def test_docket_slashes_resolve_via_server_before_path_request(monkeypatch, caps
     client, code, _output = invoke(monkeypatch, capsys, argv,
         [{"exists": True, "decision_id": "bger_4A_747_2012"},
          {"decision_id": "bger_4A_747_2012", "docket_number": "4A 747/2012"},
-         {"decision_id": "bger_4A_747_2012"}])
+         {"is_case_number": True, "exact": True, "results": [{"decision_id": "bger_4A_747_2012", "docket_number": "4A 747/2012"}]},
+         {"decision_id": "bger_4A_747_2012", "e_number": "2.3", "text": "served"}])
     assert code == 0
-    assert client.calls[0] == ("/api/cite", {"reference": "4A_747/2012"})
+    assert client.calls[0] == ("/api/cite", {"reference": "4A_747/2012", "language": "de"})
     assert client.calls[1] == ("/api/decisions/bger_4A_747_2012", {"full_text": False})
-    assert client.calls[2][0] == path
+    assert client.calls[2][0] == "/api/lookup" and client.calls[2][1]["exact"] is True
+    assert client.calls[3][0] == path
 
 
 def test_docket_fragment_matched_by_substring_is_rejected(monkeypatch, capsys):
@@ -257,15 +280,18 @@ def test_docket_fragment_matched_by_substring_is_rejected(monkeypatch, capsys):
     # contains it; the client must not print another chamber's passage.
     client, code, output = invoke(monkeypatch, capsys, ["decisions", "passage", "247/2020", "2"],
         [{"exists": True, "decision_id": "bger_6B_1247_2020", "citation_string_de": "BGer 6B_1247/2020 vom 7. Oktober 2021"},
-         {"decision_id": "bger_6B_1247_2020", "docket_number": "6B_1247/2020"}])
-    assert code == 3 and len(client.calls) == 2 and not output.out
+         {"decision_id": "bger_6B_1247_2020", "docket_number": "6B_1247/2020"},
+         {"is_case_number": True, "exact": True, "results": []}])
+    assert code == 4 and len(client.calls) == 3 and not output.out
     assert "6B_1247/2020" in json.loads(output.err)["error"]["message"]
+    assert json.loads(output.err)["error"]["kind"] == "resolution"
 
 
 def test_unresolved_docket_never_fabricates_a_canonical_id(monkeypatch, capsys):
-    client, code, output = invoke(monkeypatch, capsys, ["decisions", "get", "4A_00000/2012"],
-                                  [{"exists": False, "close_matches": [{"decision_id": "different"}]}])
-    assert code == 3 and len(client.calls) == 1
+    miss = {"exists": False, "close_matches": [{"decision_id": "different"}]}
+    client, code, output = invoke(monkeypatch, capsys, ["decisions", "get", "4A_00000/2012"], [dict(miss), dict(miss)])
+    # the underscore form, then the pre-2007 dot form; the close match is never taken
+    assert code == 4 and [c[1]["reference"] for c in client.calls] == ["4A_00000/2012", "4A.00000/2012"]
     assert json.loads(output.out)["errors"][0]["decision_id"] == "4A_00000/2012"
 
 
@@ -331,16 +357,47 @@ def test_completion_and_complete_commands_print_scripts(monkeypatch, capsys):
 
 def test_cite_pinpoint_is_verified_before_it_is_formatted(monkeypatch, capsys):
     hit = {"exists": True, "decision_id": "bge_BGE_140_III_86", "citation_string": "BGE 140 III 86, E. 2.3"}
+    record = {"decision_id": "bge_BGE_140_III_86", "citation_string_de": "BGE 140 III 86"}
     client, code, output = invoke(monkeypatch, capsys, ["cite", "BGE 140 III 86", "--pinpoint", "2.3", "--format", "json"],
-                                  [dict(hit), {"error": "E. '2.3' not found", "available_e_numbers": ["2", "4.1"]}])
-    assert code == 4 and client.calls[1][0] == "/api/erwaegung/bge_BGE_140_III_86/2.3"
+                                  [dict(hit), dict(record), {"error": "E. '2.3' not found", "available_e_numbers": ["2", "4.1"]}])
+    assert code == 4 and client.calls[2][0] == "/api/erwaegung/bge_BGE_140_III_86/2.3" and len(client.calls) == 3
     out = json.loads(output.out)
     assert out["pinpoint_exists"] is False and out["available_e_numbers"] == ["2", "4.1"] and "not in the structure index" in out["pinpoint_note"]
+    assert out["citation_string"] == "BGE 140 III 86, E. 2.3"  # the fake's decision-level answer; never reformatted with the missing pinpoint
     client, code, output = invoke(monkeypatch, capsys, ["cite", "BGE 140 III 86", "--pinpoint", "2.3", "--format", "json"],
-                                  [dict(hit), {"decision_id": "bge_BGE_140_III_86", "e_number": "2.3", "text": "served"}])
+                                  [dict(hit), dict(record), {"decision_id": "bge_BGE_140_III_86", "e_number": "2.3", "text": "served"},
+                                   {"citation_string": "BGE 140 III 86, E. 2.3 (formatted)"}])
     assert code == 0 and json.loads(output.out)["pinpoint_status"] == "retrieved"
-    client, code, _ = invoke(monkeypatch, capsys, ["cite", "BGE 140 III 86", "--pinpoint", "2.3", "--no-verify-pinpoint", "--format", "json"], [dict(hit)])
-    assert code == 0 and len(client.calls) == 1
+    assert json.loads(output.out)["citation_string"] == "BGE 140 III 86, E. 2.3 (formatted)"
+    client, code, _ = invoke(monkeypatch, capsys, ["cite", "BGE 140 III 86", "--pinpoint", "2.3", "--no-verify-pinpoint", "--format", "json"],
+                             [dict(hit), dict(record), {"citation_string": "BGE 140 III 86, E. 2.3"}])
+    assert code == 0 and len(client.calls) == 3 and client.calls[2][1]["pinpoint"] == "2.3"
+    # a transport failure on the passage fetch is exit 3, not "pinpoint unavailable"
+    client, code, output = invoke(monkeypatch, capsys, ["cite", "BGE 140 III 86", "--pinpoint", "2.3", "--format", "json"],
+                                  [dict(hit), dict(record), APIError(None, "Request failed: reset")])
+    assert code == 3 and json.loads(output.out)["errors"][0]["status"] is None
+    # a docket fragment the service matches by substring is never cited (blocker from the review)
+    client, code, output = invoke(monkeypatch, capsys, ["cite", "247/2020", "--format", "json"],
+                                  [{"exists": True, "decision_id": "bger_6B_1247_2020", "citation_string": "BGer 6B_1247/2020 vom 7. Oktober 2021"},
+                                   {"decision_id": "bger_6B_1247_2020", "docket_number": "6B_1247/2020", "court": "bger"},
+                                   {"is_case_number": True, "exact": True, "results": []}])
+    assert code == 4 and json.loads(output.out)["errors"][0]["kind"] == "resolution" and "6B_1247/2020" in json.loads(output.out)["errors"][0]["message"]
+    # a missing reference still returns the service's answer with its close matches
+    client, code, output = invoke(monkeypatch, capsys, ["cite", "4A_00000/2012", "--format", "json"],
+                                  [{"exists": False, "close_matches": [{"decision_id": "x"}]}, {"exists": False, "close_matches": [{"decision_id": "x"}]}])
+    assert code == 4 and json.loads(output.out)["exists"] is False and json.loads(output.out)["close_matches"] == [{"decision_id": "x"}]
+    # a rate limit is a transport failure (3), a 404 is "not there" (4)
+    client, code, output = invoke(monkeypatch, capsys, ["decisions", "passage", "a", "2"], [APIError(429, "slow down")])
+    assert code == 3
+    client, code, output = invoke(monkeypatch, capsys, ["decisions", "get", "a", "b", "--no-full-text"], [{"decision_id": "a"}, APIError(429, "slow down")])
+    assert code == 3
+    # an inline pinpoint is read from the reference and verified the same way
+    client, code, output = invoke(monkeypatch, capsys, ["cite", "BGE 140 III 86 E. 99", "--format", "json"],
+                                  [dict(hit), {"decision_id": "bge_BGE_140_III_86", "citation_string_de": "BGE 140 III 86"},
+                                   {"error": "E. '99' not found", "available_e_numbers": ["2"]}])
+    out = json.loads(output.out)
+    assert code == 4 and out["pinpoint"] == "99" and out["pinpoint_source"] == "reference" and out["pinpoint_exists"] is False
+    assert len(client.calls) == 3  # the identifying cite answer is reused; no second decision-level request
 
 
 def test_batch_runs_concurrently_and_keeps_input_order(monkeypatch):
@@ -387,12 +444,19 @@ def test_table_csv_and_md_formats(monkeypatch, capsys):
 
 def test_long_form_docket_reference_in_get_and_passage(monkeypatch, capsys):
     client, code, output = invoke(monkeypatch, capsys, ["decisions", "passage", "BGer 4A_747/2012 vom 5. April 2013", "1", "--format", "json", "--fields", "e_number"],
-        [{"exists": False, "close_matches": []},
-         {"exists": True, "decision_id": "bger_4A_747_2012"},
-         {"decision_id": "bger_4A_747_2012", "docket_number": "4A 747/2012"},
+        [{"exists": True, "decision_id": "bger_4A_747_2012"},
+         {"decision_id": "bger_4A_747_2012", "docket_number": "4A 747/2012", "court": "bger"},
+         {"is_case_number": True, "exact": True, "results": [{"decision_id": "bger_4A_747_2012", "docket_number": "4A 747/2012", "court": "bger"}]},
          {"decision_id": "bger_4A_747_2012", "e_number": "1", "text": "served"}])
     assert code == 0 and json.loads(output.out)["e_number"] == "1"
-    assert [c[1].get("reference") for c in client.calls[:2]] == ["BGer 4A_747/2012 vom 5. April 2013", "4A_747/2012"]
+    assert client.calls[0][1]["reference"] == "4A_747/2012"  # the docket inside the long form is what is queried
+    # a lettered sub-number the index lacks returns its parent with a note and exit 4
+    client, code, output = invoke(monkeypatch, capsys, ["decisions", "passage", "bge_BGE_125_II_633", "2a", "--format", "json"],
+        [{"error": "E. '2a' not found", "available_e_numbers": ["1", "2", "3"]},
+         {"decision_id": "bge_BGE_125_II_633", "e_number": "2", "text": "a) Das Rekursgericht [BGE 1 I 1](https://x/1) hat"}])
+    out = json.loads(output.out)
+    assert code == 4 and out["e_number"] == "2" and out["requested_e_number"] == "2a" and "not indexed as such" in out["note"]
+    assert out["text_plain"] == "a) Das Rekursgericht BGE 1 I 1 hat"
 
 
 def test_verbose_logs_requests_and_counts_them(monkeypatch, capsys):
