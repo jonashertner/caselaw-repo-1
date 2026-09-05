@@ -43,5 +43,8 @@ Erwägung. Existence is checked against the corpus; legal support is not.
 ## Rules
 
 - Citation strings and quotations come from the service unchanged.
+- The label written first in a reference is the citation; a docket mentioned
+  later (`vgl. auch ...`, a joined file) is reported under `other_dockets` and
+  is never the decision cited.
 - Exit code 4 means partial or unresolved: say so, list the items.
 - Do not run broad text searches to "find a better citation" unless asked.

@@ -35,8 +35,16 @@ reshaped citation checking around how references are actually written.
   `service_candidate`. `--fields` on `citations resolve` is a real projection
   (reference, status, errors, notes and discrepancies always survive), and
   extra input keys come back under `input`.
-- `cite` identifies long forms the same way, verifies an inline pinpoint, and
-  returns the decision-level string when the Erwägung does not exist.
+- `cite` identifies every reference the same way (a bare docket the service
+  matches by substring, such as `247/2020`, is no longer cited as another
+  decision), verifies an inline pinpoint, and returns the decision-level
+  string when the Erwägung does not exist. A missing reference still returns
+  the service's `exists: false` answer with its close matches.
+- The label written first is the citation: a docket mentioned later in the
+  reference (`vgl. auch BGer 4A_747/2012`, a joined file) is listed under
+  `other_dockets`, never taken for the decision cited. A docket next to a BGE
+  label is reported as verified only when the BGE record itself names it; a
+  ruling of the same day is noted, not affirmed.
   `decisions get`, `passage` and `citations list` accept every reference
   form; `passage` returns a parent number with a note (exit 4) for a lettered
   sub-number.

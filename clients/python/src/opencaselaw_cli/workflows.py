@@ -18,7 +18,7 @@ from uuid import uuid4
 
 from . import __version__
 from .client import APIError
-from .references import (docket_in_reference, docket_variants, label_key, normalise_pinpoint,
+from .references import (docket_in_reference, docket_variants, fold_docket, label_key, normalise_pinpoint,
                          parse_reference, pinpoint_parent)
 
 SCHEMA_VERSION = "1.0.0"
@@ -559,16 +559,28 @@ def _candidate_summary(candidate: dict) -> dict:
                                                    "citation", "citation_string_de") if candidate.get(name) is not None}
 
 
+def _carries_written_label(parsed, record) -> bool:
+    """Whether a record's own docket is the label the reference writes first, or its
+    citation string is the reference itself. A docket the reference only mentions
+    later (a cross-reference, a joined file) does not count."""
+    docket = record.get("docket_number")
+    primary = parsed.primary_docket
+    if primary is not None:
+        return isinstance(docket, str) and fold_docket(docket) == fold_docket(primary)
+    return docket_in_reference(parsed.core, docket)
+
+
 def _close_match_candidates(parsed, responses):
-    """Close matches that carry a label written in the reference: their own citation string
-    equals it, or their docket appears whole in it. The service's ranking plays no part."""
+    """Close matches that carry the label written in the reference: their own citation
+    string equals it, or their docket is the one written first. The service's ranking
+    plays no part."""
     core_key = label_key(parsed.core)
     found = {}
     for response in responses:
         for match in response.get("close_matches") or []:
             if not isinstance(match, dict) or not isinstance(match.get("decision_id"), str) or not match["decision_id"]:
                 continue
-            carried = core_key in _labels(match) or docket_in_reference(parsed.core, match.get("docket_number"))
+            carried = core_key in _labels(match) or _carries_written_label(parsed, match)
             if carried and parsed.in_scope(match):
                 found.setdefault(match["decision_id"], match)
     return list(found.values())
@@ -623,15 +635,26 @@ def _identify(client, reference, language, row, parsed=None):
     dockets = [decision.get(name) for name in ("docket_number", "docket_number_2")
                if isinstance(decision.get(name), str) and decision.get(name).strip()]
     core_key = label_key(parsed.core)
-    docket_hit = next((d for d in dockets if docket_in_reference(parsed.core, d)), None)
+    primary = parsed.primary_docket
+    if primary is not None:
+        docket_hit = next((d for d in dockets if fold_docket(d) == fold_docket(primary)), None)
+    else:
+        docket_hit = next((d for d in dockets if docket_in_reference(parsed.core, d)), None)
+    if len(parsed.dockets) > 1:
+        row["other_dockets"] = parsed.dockets[1:]
     proposed = {"decision_id": decision_id, "docket_number": decision.get("docket_number"), "court": decision.get("court"),
                 **{n: citation.get(n) for n in ("citation_string_de", "citation_string_fr", "citation_string_it") if citation.get(n)}}
-    if reference.strip() == decision_id:
+    if parsed.core == decision_id:
         method = "exact_canonical_id"
     elif core_key in labels or (parsed.bge_label and label_key(parsed.bge_label) in labels):
         method = "exact_server_citation"
     elif docket_hit is not None:
         method = "exact_server_docket"
+    elif primary is not None and any(fold_docket(d) in {fold_docket(o) for o in parsed.dockets[1:]} for d in dockets):
+        row.update(status="unrecognized", service_candidate=proposed, identity_check={"method": "secondary_label"},
+                   reason=f"The decision the service proposed carries a docket the reference only mentions after its main label {primary}; "
+                          "nothing is guessed. Write that docket first if it is the one meant")
+        return parsed, None
     else:
         # Last resort: the label may be a docket the service's lookup index
         # knows even though the record carries it in another form.
@@ -687,12 +710,13 @@ def _identify(client, reference, language, row, parsed=None):
     return parsed, decision
 
 
-def identify(client, reference: str, language: str = "de") -> str:
-    """The decision_id a reference names, or ResolutionError explaining why there is not exactly one."""
+def identify_row(client, reference: str, language: str = "de") -> dict:
+    """The resolved row (decision_id, citation, identity_check, ...) for a reference, or
+    ResolutionError carrying the row that explains why there is not exactly one decision."""
     row = {}
     _identify(client, reference.strip(), language, row)
     if row.get("status") == "resolved":
-        return row["decision_id"]
+        return row
     outcome = row.get("status", "error")
     message = row.get("reason") or row.get("note") or "Reference could not be resolved"
     if outcome == "missing":
@@ -702,6 +726,24 @@ def identify(client, reference: str, language: str = "de") -> str:
         message = (f"{reference}: {message} (the service proposed {candidate['decision_id']}"
                    + (f", docket {candidate['docket_number']!r}" if candidate.get("docket_number") else "") + ")")
     raise ResolutionError(message, outcome, row)
+
+
+def identify(client, reference: str, language: str = "de") -> str:
+    """The decision_id a reference names, or ResolutionError explaining why there is not exactly one."""
+    return identify_row(client, reference, language)["decision_id"]
+
+
+def _record_carries(decision, docket) -> bool:
+    """Whether a decision record itself names a docket: its own docket fields or the ECLI in canonical_key."""
+    key = fold_docket(docket)
+    for name in ("docket_number", "docket_number_2"):
+        if isinstance(decision.get(name), str) and fold_docket(decision[name]) == key:
+            return True
+    canonical = decision.get("canonical_key")
+    if isinstance(canonical, str) and canonical.upper().startswith("ECLI:"):
+        tail = canonical.rsplit(":", 1)[-1].replace(".", "/")
+        return fold_docket(tail) == key.replace(".", "/")
+    return False
 
 
 def _discrepancies(client, parsed, decision, language, row):
@@ -718,14 +760,20 @@ def _discrepancies(client, parsed, decision, language, row):
             if response["exists"] and isinstance(response.get("decision_id"), str) and response["decision_id"]:
                 other = response
                 break
-        if other is None:
+        if _record_carries(decision, docket):
+            row["related_docket"] = {"docket": docket, "decision_id": decision.get("decision_id"), "verified": True,
+                                     "note": "the BGE record itself names this docket"}
+        elif other is None:
             row.setdefault("notes", []).append(f"the docket {docket} written with the BGE label is not in the corpus and was not checked")
         elif other["decision_id"] != decision.get("decision_id"):
             record = _get(client, "/api/decisions/" + quote(other["decision_id"], safe=""), {"full_text": False})
             other_date = record.get("decision_date")
             if isinstance(other_date, str) and isinstance(decided, str) and other_date[:10] == decided[:10]:
-                row["related_docket"] = {"docket": docket, "decision_id": other["decision_id"],
-                                         "note": "the same judgment under its docket; the dates agree"}
+                # Same day is consistent with one judgment published twice, but
+                # it is not proof: say so instead of affirming it.
+                row["related_docket"] = {"docket": docket, "decision_id": other["decision_id"], "verified": False,
+                                         "note": "a ruling of the same day; whether it is this BGE was not verified"}
+                row.setdefault("notes", []).append(f"the docket {docket} names {other['decision_id']}, decided the same day as this BGE; not verified as the same judgment")
             else:
                 found.append({"kind": "docket", "written": docket, "resolves_to": other["decision_id"],
                               "decision_date": other_date, "bge_decision_date": decided})
@@ -767,6 +815,10 @@ def _resolve_one(client, item, language):
                 if passage.get("composed_of"):
                     row["composed_of"] = passage["composed_of"]
             if pinpoint_status != "retrieved":
+                if error is not None and error.status not in (200, 404):
+                    # A transport failure on the passage fetch is not "not indexed".
+                    row.update(status="error", error=error.to_dict())
+                    return row
                 if row["status"] == "resolved":
                     row["status"] = "pinpoint_unavailable"
                 if error is not None:

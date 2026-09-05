@@ -502,8 +502,13 @@ def test_discrepancies_flag_a_wrong_date_and_a_docket_that_names_another_ruling(
     assert code == 4 and rows[0]["status"] == "discrepancy" and rows[0]["decision_id"] == "bger_4A_714_2014"
     assert rows[0]["discrepancies"] == [{"kind": "date", "written": "2016-05-22", "decision": "2015-05-22"}]
     assert rows[1]["status"] == "discrepancy" and rows[1]["discrepancies"][0]["kind"] == "docket" and rows[1]["discrepancies"][0]["resolves_to"] == "bger_4A_45_2008"
-    assert rows[2]["status"] == "resolved" and rows[2]["related_docket"]["decision_id"] == "bger_4A_47_2008"
+    assert rows[2]["status"] == "resolved" and rows[2]["related_docket"] == {**rows[2]["related_docket"], "decision_id": "bger_4A_47_2008", "verified": False}
+    assert "not verified as the same judgment" in rows[2]["notes"][0]
     assert result["counts"] == {"discrepancy": 2, "resolved": 1}
+    # a canonical id with an inline pinpoint is the id
+    client = FakeClient({"/api/erwaegung/test_case/2.3": {"decision_id": "test_case", "e_number": "2.3", "text": "served"}})
+    row = workflows.run(resolution_args("test_case E. 2.3"), client)[0]["results"][0]
+    assert row["status"] == "resolved" and row["identity_check"]["method"] == "exact_canonical_id" and row["pinpoint_status"] == "retrieved"
 
 
 def test_service_strings_among_close_matches_resolve_and_fragments_do_not():
@@ -517,6 +522,19 @@ def test_service_strings_among_close_matches_resolve_and_fragments_do_not():
                          "/api/decisions/zh_obergericht_NG190020": {"decision_id": "zh_obergericht_NG190020", "docket_number": "NG190020", "court": "zh_obergericht", "canton": "ZH", "citation_string_de": own}})
     row = workflows.run(resolution_args("Obergericht ZH, NG190020, 30.11.2020"), client)[0]["results"][0]
     assert row["status"] == "resolved" and row["matched_via"] == "close_match_label" and row["identity_check"]["method"] == "exact_server_docket"
+    # a docket mentioned after the main label is a cross-reference: a close match carrying it is not adopted,
+    # and a proposal that carries only it is unrecognized
+    def cite2(params):
+        if params["reference"] in ("4A_747/2012", "bger_4A_747_2012"):
+            return {"exists": True, "decision_id": "bger_4A_747_2012", "citation_string_de": "BGer 4A_747/2012 vom 5. April 2013"}
+        return {"exists": False, "close_matches": [{"decision_id": "bger_4A_747_2012", "docket_number": "4A_747/2012"}]}
+    client = FakeClient({"/api/cite": cite2, "/api/decisions/bger_4A_747_2012": {"decision_id": "bger_4A_747_2012", "docket_number": "4A_747/2012", "court": "bger"}})
+    row = workflows.run(resolution_args("BGer 4A_9999/2012 und 4A_747/2012"), client)[0]["results"][0]
+    assert row["status"] == "missing" and row["other_dockets"] == ["4A_747/2012"] if "other_dockets" in row else row["status"] == "missing"
+    row = workflows.run(resolution_args("Obergericht ZH LA210005 vom 15. Juni 2021, E. 3 (vgl. auch BGer 4A_747/2012)"),
+                        FakeClient({"/api/cite": {"exists": True, "decision_id": "bger_4A_747_2012", "citation_string_de": "BGer 4A_747/2012 vom 5. April 2013"},
+                                    "/api/decisions/bger_4A_747_2012": {"decision_id": "bger_4A_747_2012", "docket_number": "4A_747/2012", "court": "bger"}}))[0]["results"][0]
+    assert row["status"] == "unrecognized" and row["identity_check"]["method"] == "secondary_label" and "decision_id" not in row
     # a fragment that the service matches by substring is proposed, not adopted
     client = FakeClient({"/api/cite": {"exists": True, "decision_id": "bvger_D-1100_2015", "citation_string_de": "BVGer D-1100/2015 vom 7. November 2018"},
                          "/api/decisions/bvger_D-1100_2015": {"decision_id": "bvger_D-1100_2015", "docket_number": "D-1100/2015", "court": "bvger"},

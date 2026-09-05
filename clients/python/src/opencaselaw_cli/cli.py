@@ -17,7 +17,7 @@ from ._version import __version__
 from .client import APIError, Client
 from .references import normalise_pinpoint, parse_reference
 from .workflows import (BREAKER_THRESHOLD, DEFAULT_JOBS, RANKED_MAX_RESULTS, ResolutionError, extract_docket,
-                        fetch_passage, identify, reference_key)
+                        fetch_passage, identify, identify_row, reference_key)
 
 DEFAULT_BASE_URL = "https://mcp.opencaselaw.ch"
 FORMATS = ("text", "json", "jsonl", "table", "csv", "md")
@@ -225,8 +225,10 @@ def build_parser(config: dict | None = None):
                      "or error, with the service's evidence. The reference is parsed the way it is written: "
                      "BGE/ATF/DTF label, docket (4A_747/2012, 4A 747/2012, LA210005, C/11532/2013), court words, "
                      "date, page references and an inline pinpoint (E. 2.3, consid. 3b). The decision the service "
-                     "proposes must carry a label written in the reference (identity_check.method: "
-                     "exact_canonical_id, exact_server_citation, exact_server_docket); a docket carried by several "
+                     "proposes must carry the label written first in the reference (identity_check.method: "
+                     "exact_canonical_id; exact_server_citation, the service's own string; exact_server_docket, the "
+                     "decision's own docket; exact_candidate_label, a docket the lookup index knows in another form); "
+                     "a docket the reference only mentions later is a cross-reference, not the citation. A docket carried by several "
                      "decisions at courts the reference does not rule out is ambiguous. An inline or input pinpoint is "
                      "retrieved and verified (pinpoint_status retrieved, parent_retrieved for a lettered sub-number "
                      "the index lacks, unavailable). A date or a docket written next to the label that contradicts "
@@ -555,20 +557,21 @@ def _decision_id(client, reference, language="de"):
     """The decision an id, docket, citation or long-form reference names; ResolutionError otherwise.
     A canonical id, or a bare token that is neither a docket nor a collection label, is used as is."""
     reference = reference.strip()
-    if _ID_LIKE.match(reference) and "/" not in reference:
-        return reference
     parsed = parse_reference(reference)
+    if _ID_LIKE.match(parsed.core) and "/" not in parsed.core:
+        return parsed.core
     if "/" in reference or parsed.long_form or parsed.dockets or parsed.bge_label:
         return identify(client, reference, language)
     return reference
 
 
 def _transport(error: dict) -> bool:
-    """A failure a retry may fix: no HTTP answer, or a server-side error status."""
+    """A failure a retry may fix: no HTTP answer, a server-side error, or a refusal that
+    is about the client's standing (rate limit, authorisation) rather than the item."""
     status = error.get("status")
     if error.get("kind") == "resolution":
         return False
-    return status is None or (isinstance(status, int) and status >= 500)
+    return status is None or (isinstance(status, int) and (status >= 500 or status in (401, 403, 408, 429)))
 
 
 def _one(args, client, kind, field, index, row):
@@ -581,17 +584,41 @@ def _one(args, client, kind, field, index, row):
             reference = row[field].strip()
             parsed = parse_reference(reference)
             explicit = row["pinpoint"] if row.get("pinpoint") is not None else args.pinpoint
-            pinpoint = normalise_pinpoint(explicit) if explicit else parsed.pinpoint
+            try:
+                pinpoint = normalise_pinpoint(explicit) if explicit else parsed.pinpoint
+            except ValueError as exc:
+                return None, {"index": index, field: row[field], "status": 400, "kind": "input", "message": str(exc)}
             language = args.language
-            # Anything beyond a bare label (court words, a date, an inline pinpoint,
-            # a docket) goes through identification: the decision must carry the label.
-            decision_id = identify(client, reference, language) if (parsed.long_form or parsed.pinpoint) else None
-            result = client.get("/api/cite", {"reference": decision_id or reference, "language": language})
-            if result.get("error"):
-                raise APIError(200, str(result["error"]))
-            if decision_id:
+            if _ID_LIKE.match(parsed.core) and "/" not in parsed.core:
+                decision_id = parsed.core
+                result = client.get("/api/cite", {"reference": decision_id, "language": language})
+                if result.get("error"):
+                    raise APIError(200, str(result["error"]))
+            else:
+                # Every other reference is identified the way `citations resolve`
+                # does it: the decision must carry the label the author wrote. A
+                # docket fragment the service matches by substring is never cited.
+                try:
+                    resolved = identify_row(client, reference, language)
+                except ResolutionError as exc:
+                    if exc.outcome == "missing" and isinstance(exc.row.get("citation"), dict):
+                        result = dict(exc.row["citation"])
+                        result.setdefault("exists", False)
+                        result["reference_as_written"] = reference
+                        return result, None
+                    raise
+                decision_id = resolved["decision_id"]
+                result = dict(resolved["citation"])
+                if result.get("decision_id") != decision_id:
+                    result = client.get("/api/cite", {"reference": decision_id, "language": language})
+                    if result.get("error"):
+                        raise APIError(200, str(result["error"]))
                 result["reference_as_written"] = reference
                 result["resolved_decision_id"] = decision_id
+                result["identity_check"] = resolved.get("identity_check")
+                for key in ("query", "other_dockets"):
+                    if resolved.get(key):
+                        result[key] = resolved[key]
             if pinpoint and result.get("exists") is True and isinstance(result.get("decision_id"), str):
                 result["pinpoint"] = pinpoint
                 if parsed.pinpoint and not explicit:
@@ -605,6 +632,8 @@ def _one(args, client, kind, field, index, row):
                     # A formatted pinpoint must point at a passage that exists; a
                     # missing one leaves the decision-level string in place.
                     passage, status, error = fetch_passage(client, result["decision_id"], pinpoint)
+                    if error is not None and error.status not in (200, 404):
+                        raise error
                     result["pinpoint_exists"] = status == "retrieved"
                     result["pinpoint_status"] = status
                     if status == "retrieved":
@@ -735,7 +764,7 @@ def main(argv=None):
             _diagnostic(f"{exc.message}" + (f" (HTTP {exc.status})" if exc.status else ""), args)
         else:
             print(json.dumps({"error": exc.to_dict()}, ensure_ascii=False), file=sys.stderr)
-        return 4 if isinstance(exc, ResolutionError) or exc.status in (200, 404) else 3
+        return 4 if isinstance(exc, ResolutionError) or not _transport(exc.to_dict()) else 3
     except BrokenPipeError:
         # Prevent a second BrokenPipeError from Python's interpreter shutdown.
         try:

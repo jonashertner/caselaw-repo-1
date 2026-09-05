@@ -177,11 +177,17 @@ decisions, because the corpus is rebuilt nightly.
   example). The proposal is under `service_candidate`, never in
   `decision_id`. `resolution_incomplete` and `error` mean identity could not
   be established or the request failed. Nothing is guessed.
-- `identity_check.method` says why a match is trusted: an exact `decision_id`,
-  the service's own citation string, or the decision's own docket label
-  (`uniqueness` says whether other carriers of that docket were checked). A
-  candidate at a court the reference rules out is listed under
-  `out_of_scope_candidates` and does not make the reference ambiguous.
+- `identity_check.method` says why a match is trusted: `exact_canonical_id`
+  (the reference is the id), `exact_server_citation` (the service's own
+  string), `exact_server_docket` (the decision's own docket is the label the
+  reference writes first) or `exact_candidate_label` (a docket the lookup
+  index knows in another form, whose only in-scope carrier is the proposed
+  decision). `uniqueness` says whether other carriers of that docket were
+  checked. A candidate at a court the reference rules out is listed under
+  `out_of_scope_candidates` and does not make the reference ambiguous. The
+  label written first is the citation; a docket mentioned later (`vgl. auch
+  BGer 4A_747/2012`, a joined file) is listed under `other_dockets` and never
+  taken for it.
 - Passage `text` is the served string; the service marks cross-references
   inside it as Markdown links. `text_plain` is the same text with those links
   reduced to their labels, for comparisons with the decision text.

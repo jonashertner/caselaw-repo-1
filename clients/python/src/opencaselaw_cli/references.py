@@ -47,9 +47,25 @@ _DOCKET_SHAPES = (
     re.compile(r"(?<![A-Za-z0-9])([A-Z]{1,2}-\d{1,5}/\d{4})(?![0-9])"),                       # BVGer A-4843/2020
     re.compile(r"(?<![A-Za-z0-9])([A-Z]{1,6}\.\d{4}\.\d{1,6}(?:-[A-Z0-9]+)?)(?![A-Za-z0-9])"),  # AG/ZH admin WBE.2026.33, VB.2023.00538
     re.compile(r"(?<![A-Za-z0-9])([A-Z]{2}\d{6}(?:-[A-Z](?:_U\d+)?)?)(?![A-Za-z0-9])"),         # ZH courts LA210005, NG190020
+    re.compile(r"(?<![A-Za-z0-9])([A-Za-z]{2,6} \d{4}(?:/\d{2,4})? Nr\. \d{1,5})(?![0-9])"),      # OW AbR 1992/93 Nr. 8, TG RBOG 2008 Nr. 10
     re.compile(r"(?<![A-Za-z0-9])([A-Za-zÀ-ÿ]{1,8} ?/ ?\d{1,6} ?/ ?\d{1,6})(?![0-9])"),          # GE/VD ACJC/123/2024, C/11532/2013, HC / 2020 / 38
-    re.compile(r"(?<![A-Za-z0-9])([A-Z]{1,3} \d{4}/\d{1,4}|\d{3} \d{2} \d{1,4}|ZK \d{2} \d{1,4})(?![0-9])"),  # SG K 2015/3, BL 810 16 9, BE ZK 20 1
+    re.compile(r"(?<![A-Za-z0-9])([A-Z]{1,3} \d{4}/\d{1,4}|\d{3} \d{2} \d{1,4}|[A-Z]{2,4}\d? (?:19|20)\d{2} \d{1,4}|ZK \d{2} \d{1,4})(?![0-9])"),  # SG K 2015/3, BL 810 16 9, SZ ZK1 2023 26, BE ZK 20 1
+    re.compile(r"(?<![A-Za-z0-9/._-])(\d{1,5}/\d{4})(?![0-9/])"),                               # bare VD 1/2020 (last: the tail of any other shape)
 )
+# Words that precede a docket in a written reference: stripped to find a docket
+# whose shape the parser does not know.
+_COURT_WORDS = re.compile(
+    r"^(?:(?:Urteil|Entscheid|Beschluss|Verfügung|arrêt|décision|jugement|sentenza|decisione|Gericht\w*|Obergericht\w*|"
+    r"Verwaltungsgericht\w*|Kantonsgericht\w*|Appellationsgericht\w*|Handelsgericht\w*|Bezirksgericht\w*|Bundesgericht\w*|"
+    r"Bundesverwaltungsgericht\w*|Bundesstrafgericht\w*|Steuerrekursgericht\w*|Sozialversicherungsgericht\w*|Tribunal\w*|"
+    r"Tribunale|Cour|Corte|Chambre|Kammer|cantonal\w*|fédéral\w*|federale|vaudois\w*|Kantons|canton|Kanton|justice|"
+    r"des|der|du|de|di|del|della|la|le|les|il|und|et|e|i\.S\.|BGer|TF|OGer|KGer|VGer|BVGer|BStGer|TAF|TPF|"
+    r"[A-Z]{2})(?:[\s,.:]+|$))+", re.IGNORECASE)
+_DATE_PHRASE = re.compile(r"[\s,;]*(?:vom|du|del|am|le|il|of|dated|dal|vom:)?\s*(?:\d{1,2}(?:\.|er|re|º|°)?\s+[A-Za-zÀ-ÿ]+\s+\d{4}|\d{1,2}\.\d{1,2}\.\d{4})(?![\d/])")
+_COURT_CODE_CONTEXT = re.compile(
+    r"(?:gericht\w*|Gericht\w*|Tribunal\w*|Tribunale|Cour|Corte|Chambre|OGer|KGer|VGer|SozVGer|Kanton|canton|Kantons)\s+"
+    r"(?:(?:des|de|du|di|del|della|Kantons|cantonal|cantonale|administratif|administrative|civile|pénale|penale|supérieur|supérieure|"
+    r"des\s+avocats|of)\s+){0,2}(AG|AI|AR|BE|BL|BS|FR|GE|GL|GR|JU|LU|NE|NW|OW|SG|SH|SO|SZ|TG|TI|UR|VD|VS|ZG|ZH)(?![A-Za-z_])")
 
 _FEDERAL_COURT = re.compile(r"(?<![A-Za-z_])(?:BGer|BGE|ATF|DTF|TF|Bundesgericht(?:s|es)?|Tribunal f[ée]d[ée]ral|Tribunale federale|Federal Supreme Court)(?![A-Za-z_])")
 _BVGER_COURT = re.compile(r"(?<![A-Za-z_])(?:BVGer|BVGE|TAF|Bundesverwaltungsgericht(?:s|es)?|Tribunal administratif f[ée]d[ée]ral|Tribunale amministrativo federale)(?![A-Za-z_])")
@@ -80,6 +96,13 @@ class Reference:
     courts: set = field(default_factory=set)
     canton: str | None = None
     court_words: bool = False
+    bge_first: bool = True
+    residual: str | None = None
+
+    @property
+    def primary_docket(self) -> str | None:
+        """The docket written first; later ones are cross-references or joined files."""
+        return self.dockets[0] if self.dockets else None
 
     @property
     def long_form(self) -> bool:
@@ -89,14 +112,16 @@ class Reference:
                     or (self.bge_label and label_key(self.core) != label_key(self.bge_label)))
 
     def queries(self) -> list[str]:
-        """Labels to ask the service for, most specific first, without duplicates."""
+        """Labels to ask the service for: the label written first, then its spelling variants."""
         out = []
-        if self.bge_label:
+        if self.bge_label and (self.bge_first or not self.dockets):
             out.append(self.bge_label)
         elif self.dockets:
             out.extend(docket_variants(self.dockets[0]))
-        if self.core and self.core not in out and not (self.bge_label or self.dockets):
+        if not out:
             out.append(self.core)
+            if self.residual and self.residual not in out:
+                out.append(self.residual)
         return out
 
     def in_scope(self, candidate: dict) -> bool:
@@ -116,7 +141,8 @@ def normalise_pinpoint(value) -> str | None:
         return None
     if not isinstance(value, str):
         raise ValueError("A pinpoint must be a string such as 2.3 or 3b")
-    text = re.sub(r"^\s*" + _MARK + r"\s*", "", value.strip()).strip().rstrip(".)").strip()
+    text = re.sub(r"^\s*" + _MARK + r"\s*", "", value.strip()).strip()
+    text = re.sub(r"\s*(?:ff?|ss?)\.?\s*$", "", text).rstrip(".)").strip()
     if not text:
         return None
     text = re.sub(r"\s+", "", text)
@@ -173,52 +199,82 @@ def parse_reference(text: str) -> Reference:
             break
     bge = _BGE.search(core) or _BGE_BARE.match(core)
     bge_label = f"BGE {bge.group('vol')} {bge.group('part')} {bge.group('page')}" if bge else None
-    dockets: list[str] = []
-    scan = core if not bge else core.replace(bge.group(0), " ")
+    # Dockets in the order they are written; an overlapping later shape (the
+    # bare tail 747/2012 of 4A 747/2012) is dropped.
+    scan = core if not bge else core[:bge.start()] + " " * len(bge.group(0)) + core[bge.end():]
+    spans = []
     for shape in _DOCKET_SHAPES:
         for m in shape.finditer(scan):
-            found = m.group(0) if shape is _FEDERAL else m.group(1)
-            found = re.sub(r"\s*/\s*", "/", found.strip())
-            if found and found not in dockets and not any(found in d for d in dockets):
-                dockets.append(found)
+            found = (m.group(0) if shape is _FEDERAL else m.group(1)).strip()
+            spans.append((m.start(), -len(found), found))
+    dockets: list[str] = []
+    taken: list[tuple[int, int]] = []
+    blanked = scan
+    for start, neg_len, found in sorted(spans):
+        end = start + (-neg_len)
+        if any(start < t_end and end > t_start for t_start, t_end in taken):
+            continue
+        taken.append((start, end))
+        blanked = blanked[:start] + " " * (end - start) + blanked[end:]
+        found = re.sub(r"\s+", " ", found)
+        if found not in dockets:
+            dockets.append(found)
+    bge_first = bool(bge) and (not taken or bge.start() <= min(t[0] for t in taken))
+    # The court is named before the label; words after it belong to a date, a
+    # party or a cross-reference ("... (vgl. auch BGer 4A_747/2012)").
+    first_label = min([t[0] for t in taken] + ([bge.start()] if bge else []), default=len(blanked))
+    head = blanked[:first_label] if (taken or bge) else blanked
     courts = set()
     court_words = False
     if bge_label:
         courts.add("bge")
-    if _FEDERAL_COURT.search(scan if bge_label else core):
+    if _FEDERAL_COURT.search(head):
         courts.update({"bger", "bge"})
         court_words = True
-    if _BVGER_COURT.search(core):
+    if _BVGER_COURT.search(head):
         courts.add("bvger")
         court_words = True
-    if _BSTGER_COURT.search(core):
+    if _BSTGER_COURT.search(head):
         courts.add("bstger")
         court_words = True
+    if not court_words and (_FEDERAL_COURT.search(blanked) or _BVGER_COURT.search(blanked) or _BSTGER_COURT.search(blanked)):
+        court_words = True
+    # A canton: its name, or its code right after a court word, before the label.
+    # A code inside a docket (VD.2020.89) or a party name (A. AG) is not a canton.
     canton = None
-    code = _CANTON_CODE.search(core)
-    if code:
-        canton = code.group(1)
-    else:
-        lowered = core.casefold()
-        for name, value in _CANTON_NAMES.items():
-            if re.search(r"(?<![a-zà-ÿ])" + re.escape(name) + r"(?![a-zà-ÿ])", lowered):
-                canton = value
-                break
+    lowered = head.casefold()
+    for name, value in _CANTON_NAMES.items():
+        if re.search(r"(?<![a-zà-ÿ])" + re.escape(name) + r"(?![a-zà-ÿ])", lowered):
+            canton = value
+            break
+    if canton is None:
+        code = _COURT_CODE_CONTEXT.search(head)
+        if code:
+            canton = code.group(1)
+    residual = None
+    if not bge_label and not dockets:
+        stripped = _DATE_PHRASE.sub(" ", core)
+        stripped = _COURT_WORDS.sub("", stripped.strip()).strip(" ,;:.")
+        stripped = re.sub(r"\s+", " ", stripped)
+        if stripped and stripped != core and any(ch.isdigit() for ch in stripped):
+            residual = stripped
     return Reference(text=text or "", core=core, pinpoint=pinpoint, pages=pages, date=date,
-                     bge_label=bge_label, dockets=dockets, courts=courts, canton=canton, court_words=court_words)
+                     bge_label=bge_label, dockets=dockets, courts=courts, canton=canton, court_words=court_words,
+                     bge_first=bge_first, residual=residual)
 
 
 def docket_variants(docket: str) -> list[str]:
-    """Query forms of a federal docket: the underscore form (the service folds it to a
-    stored space itself), then the pre-2007 dot form, then a written space form."""
-    m = _FEDERAL.fullmatch(docket.strip())
-    if not m:
-        return [docket.strip()]
-    ch, n, y = m.group("ch"), m.group("n"), m.group("y")
-    out = [f"{ch}_{n}/{y}", f"{ch}.{n}/{y}"]
-    if docket.strip() not in out:
-        out.append(docket.strip())
-    return out
+    """Query forms of a docket. Federal: the underscore form (the service folds it to a
+    stored space itself), then the pre-2007 dot form, then the written form. Other
+    shapes: as written, then with the spacing around slashes removed."""
+    written = re.sub(r"\s+", " ", docket.strip())
+    m = _FEDERAL.fullmatch(written)
+    if m:
+        ch, n, y = m.group("ch"), m.group("n"), m.group("y")
+        out = [f"{ch}_{n}/{y}", f"{ch}.{n}/{y}"]
+        return out + ([written] if written not in out else [])
+    collapsed = re.sub(r"\s*/\s*", "/", written)
+    return [written] + ([collapsed] if collapsed != written else [])
 
 
 def fold_docket(text: str) -> str:
@@ -230,12 +286,18 @@ def fold_docket(text: str) -> str:
 
 
 def docket_in_reference(reference: str, docket) -> bool:
-    """Whether the decision's own docket label appears whole in the reference."""
+    """Whether the decision's own docket label is one the reference writes. When the
+    parser recognised dockets in the reference, the label must equal one of them; a
+    stored docket that is only the tail of a written one (747/2012 in 4A_747/2012)
+    does not count."""
     if not isinstance(docket, str) or not docket.strip():
         return False
-    haystack = fold_docket(reference)
     needle = fold_docket(docket)
-    return re.search(r"(?<![a-z0-9])" + re.escape(needle) + r"(?![a-z0-9])", haystack) is not None
+    parsed = parse_reference(reference)
+    if parsed.dockets:
+        return needle in {fold_docket(d) for d in parsed.dockets}
+    haystack = fold_docket(parsed.core)
+    return re.search(r"(?<![a-z0-9_./-])" + re.escape(needle) + r"(?![a-z0-9_./-])", haystack) is not None
 
 
 def label_key(value) -> str | None:

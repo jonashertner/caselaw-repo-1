@@ -23,13 +23,24 @@ from opencaselaw_cli.references import (docket_in_reference, docket_variants, la
     ("Urteil des Verwaltungsgerichts des Kantons Aargau WBE.2026.33", dict(dockets=["WBE.2026.33"], canton="AG")),
     ("Gericht GE C/11532/2013 vom 8. November 2016", dict(dockets=["C/11532/2013"], canton="GE")),
     ("arrêt de la Cour de justice de Genève ACJC/1234/2024 du 5 mars 2024", dict(dockets=["ACJC/1234/2024"], canton="GE")),
-    ("Tribunal VD HC / 2020 / 38 du 6 mai 2020", dict(dockets=["HC/2020/38"], canton="VD")),
+    ("Tribunal VD HC / 2020 / 38 du 6 mai 2020", dict(dockets=["HC / 2020 / 38"], canton="VD")),
+    ("Tribunal cantonal VD, arrêt HC / 2018 / 391 du 26 janvier 2018", dict(dockets=["HC / 2018 / 391"], canton="VD", date="2018-01-26")),
+    ("Gericht VD 1/2020 vom 14. Januar 2020", dict(dockets=["1/2020"], canton="VD")),
+    ("Gericht OW AbR 1992/93 Nr. 8 vom 26. November 2015", dict(dockets=["AbR 1992/93 Nr. 8"], canton="OW")),
+    ("Gericht SZ ZK1 2023 26 vom 2. April 2024", dict(dockets=["ZK1 2023 26"], canton="SZ")),
+    ("Obergericht ZH LA210005 vom 15. Juni 2021, E. 3 (vgl. auch BGer 4A_747/2012)", dict(dockets=["LA210005", "4A_747/2012"], canton="ZH", courts=set(), pinpoint="3")),
+    ("BGer 4A_9999/2012 und 4A_747/2012", dict(dockets=["4A_9999/2012", "4A_747/2012"], courts={"bger", "bge"})),
+    ("4A_747/2012 (BGE 134 III 354)", dict(dockets=["4A_747/2012"], bge_label="BGE 134 III 354", bge_first=False)),
+    ("VD.2020.89", dict(dockets=["VD.2020.89"], canton=None)),
+    ("Appellationsgericht Basel-Stadt, Urteil VD.2020.89 vom 19. Mai 2020", dict(dockets=["VD.2020.89"], canton="BS")),
+    ("Obergericht des Kantons Zürich, Urteil LA210005 vom 15. Juni 2021 i.S. A. AG", dict(dockets=["LA210005"], canton="ZH")),
+    ("Gericht XX Foo 12 Bar vom 1. Januar 2020", dict(dockets=[], residual="Foo 12 Bar")),
     ("BVGer A-4843/2020 vom 1. April 2021", dict(dockets=["A-4843/2020"], courts={"bvger"})),
     ("Gericht BL 810 16 9 vom 10. August 2016", dict(dockets=["810 16 9"], canton="BL")),
     ("Verwaltungsgericht SG K 2015/3, K 2017/3 vom 18. November 2020", dict(dockets=["K 2015/3", "K 2017/3"], canton="SG")),
     ("4C.230/2006", dict(dockets=["4C.230/2006"], long_form=False)),
     ("OGer ZH, LA210005, 15.6.2021", dict(dockets=["LA210005"], date="2021-06-15")),
-    ("1/2020", dict(dockets=[], core="1/2020", long_form=False)),
+    ("1/2020", dict(dockets=["1/2020"], core="1/2020", long_form=False)),
     ("WBE.2026.33", dict(dockets=["WBE.2026.33"], pinpoint=None, long_form=False)),
     ("Bundesgericht, Urteil vom 5. April 2013", dict(dockets=[], date="2013-04-05", long_form=True)),
     ("BGE 136 III 513", dict(long_form=False, courts={"bge"}, court_words=False)),
@@ -46,7 +57,10 @@ def test_queries_ask_for_the_label_not_the_prose():
     assert parse_reference("BGE 134 III 354 (4A_45/2008)").queries() == ["BGE 134 III 354"]
     assert parse_reference("Bundesgericht, Urteil vom 5. April 2013").queries() == ["Bundesgericht, Urteil vom 5. April 2013"]
     assert parse_reference("1/2020").queries() == ["1/2020"]
+    assert parse_reference("Obergericht ZH LA210005 vom 15. Juni 2021 (vgl. auch BGer 4A_747/2012)").queries() == ["LA210005"]
+    assert parse_reference("Gericht XX Foo 12 Bar vom 1. Januar 2020").queries() == ["Gericht XX Foo 12 Bar vom 1. Januar 2020", "Foo 12 Bar"]
     assert docket_variants("4C.230/2006") == ["4C_230/2006", "4C.230/2006"] and docket_variants("LA210005") == ["LA210005"]
+    assert docket_variants("HC / 2018 / 391") == ["HC / 2018 / 391", "HC/2018/391"]
 
 
 def test_label_key_folds_only_for_comparison():
@@ -65,11 +79,15 @@ def test_docket_must_appear_whole_in_the_reference():
     assert not docket_in_reference("100/2015", "D-1100/2015")
     assert not docket_in_reference("BGE 134 III 354", "4A_45/2008")
     assert not docket_in_reference("1/2020", "11/2020") and not docket_in_reference("x", None)
+    # a stored docket that is only the numeric tail of the written one is not "carried"
+    assert not docket_in_reference("4A_747/2012", "747/2012") and not docket_in_reference("ACJC/1234/2024", "1234/2024")
+    assert not docket_in_reference("A-4843/2020", "4843/2020")
 
 
 def test_pinpoints_accept_the_authors_spelling_and_fail_only_themselves():
     assert normalise_pinpoint("consid. 2.3") == "2.3" and normalise_pinpoint("E. 3b") == "3b"
     assert normalise_pinpoint("3c/aa") == "3c/aa" and normalise_pinpoint(" 4.2.1 ") == "4.2.1" and normalise_pinpoint("") is None
+    assert normalise_pinpoint("2.3 f.") == "2.3" and normalise_pinpoint("2.3 ff.") == "2.3" and normalise_pinpoint("consid. 2 s.") == "2"
     assert pinpoint_parent("3c/aa") == "3" and pinpoint_parent("2a") == "2" and pinpoint_parent("4.2.1") is None
     with pytest.raises(ValueError):
         normalise_pinpoint("foo")

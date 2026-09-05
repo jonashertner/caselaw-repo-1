@@ -599,7 +599,8 @@ def render_md(value, args, width: int) -> str:
     if command == "decisions" and action == "passage":
         header = value.get("citation_string_de") or f"{value.get('decision_id')} E. {value.get('e_number')}"
         quote = "\n".join("> " + l for l in _display_text(str(value.get("text") or "")).split("\n"))
-        return f"**{header}**" + (f" ({value['canonical_url']})" if value.get("canonical_url") else "") + "\n\n" + quote
+        note = f"\n\n*{value['note']}*" if value.get("note") else ""
+        return f"**{header}**" + (f" ({value['canonical_url']})" if value.get("canonical_url") else "") + note + "\n\n" + quote
     if command == "cite":
         lines = [f"**{value.get('citation_string') or value.get('citation_string_de') or ''}**"]
         for key in ("citation_string_fr", "citation_string_it"):
@@ -607,6 +608,10 @@ def render_md(value, args, width: int) -> str:
                 lines.append(str(value[key]))
         if value.get("canonical_url"):
             lines.append(f"<{value['canonical_url']}>")
+        if value.get("pinpoint_note"):
+            lines.append(f"*{value['pinpoint_note']}*")
+            if value.get("available_e_numbers"):
+                lines.append("available: " + ", ".join(map(str, value["available_e_numbers"][:12])))
         return "  \n".join(lines)
     if command == "laws":
         return render_law(value, Style(False), width)
