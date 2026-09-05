@@ -639,6 +639,21 @@ def run_with_persistence(
 
                     # Mark scraped AFTER durable write to avoid gaps on crash
                     scraper.state.mark_scraped(decision.decision_id)
+                    # Per-decision persistence hook for scrapers that keep
+                    # identity sidecars next to state (vd_gerichte's uuid
+                    # sidecar). This loop marks state itself instead of
+                    # calling BaseScraper.mark_run_complete, so a sidecar
+                    # written only there would never grow in production
+                    # (2026-09-05: seeded once, then flat for a whole run).
+                    hook = getattr(scraper, "on_decision_persisted", None)
+                    if hook is not None:
+                        try:
+                            hook(decision)
+                        except Exception as e:  # noqa: BLE001 — never fail the run for a sidecar
+                            logger.warning(
+                                f"[{scraper_key}] on_decision_persisted failed for "
+                                f"{decision.decision_id}: {e}"
+                            )
                     event_writer.log_fetch_attempt(
                         stub=stub,
                         status="success",

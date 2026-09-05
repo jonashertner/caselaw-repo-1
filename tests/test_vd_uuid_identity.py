@@ -239,3 +239,24 @@ def test_existing_sidecar_is_not_reseeded(tmp_path, monkeypatch):
     monkeypatch.setenv(vd.SHARD_ENV, str(shard))
     sc = scraper_with(tmp_path, set(), [f"{U3}\tvd_gerichte_only"])
     assert sc._known_uuids == {U3: "vd_gerichte_only"}
+
+
+# ── the sidecar must grow in production, not only under mark_run_complete ──
+# run_scraper.py marks state per decision (scraper.state.mark_scraped) and
+# never calls BaseScraper.mark_run_complete; on 2026-09-05 the sidecar was
+# seeded once and then stayed flat through a 5,589-decision run.
+
+def test_on_decision_persisted_appends_the_uuid(tmp_path):
+    sc = scraper_with(tmp_path, set(), [])
+    sc.on_decision_persisted(decision("vd_gerichte_ZD26.000001", U2))
+    sc.on_decision_persisted(decision("vd_gerichte_ZD26.000001", U2))     # idempotent
+    assert (tmp_path / "vd_gerichte.uuids.txt").read_text() == f"{U2}\tvd_gerichte_ZD26.000001\n"
+    assert not sc._is_new({"decision_id": "vd_gerichte_641", "uuid": U2})
+
+
+def test_run_scraper_calls_the_persistence_hook_after_marking_state():
+    src = (REPO / "run_scraper.py").read_text(encoding="utf-8")
+    i = src.index("scraper.state.mark_scraped(decision.decision_id)")
+    tail = src[i:i + 900]
+    assert 'getattr(scraper, "on_decision_persisted", None)' in tail
+    assert "hook(decision)" in tail

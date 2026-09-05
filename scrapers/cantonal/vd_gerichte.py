@@ -271,12 +271,19 @@ class VDGerichteScraper(BaseScraper):
         known = getattr(self, "_known_uuids", None) or {}
         return (stub.get("uuid") or "").strip().lower() not in known
 
+    def on_decision_persisted(self, decision) -> None:
+        """Per-decision hook run_scraper.py calls right after it marks state
+        (it never calls mark_run_complete): append the decision's uuid so the
+        sidecar keeps growing between seeds. Night 1 (2026-09-05) showed the
+        gap — seeded once at 01:37, then flat through 5,589 new decisions."""
+        self._mark_uuid(uuid_from_pdf_url(getattr(decision, "pdf_url", None)),
+                        decision.decision_id)
+
     def mark_run_complete(self, decisions: list) -> None:
-        """State first (durable), then the uuid sidecar."""
+        """State first (durable), then the uuid sidecar (BaseScraper.run callers)."""
         super().mark_run_complete(decisions)
         for d in decisions:
-            self._mark_uuid(uuid_from_pdf_url(getattr(d, "pdf_url", None)),
-                            d.decision_id)
+            self.on_decision_persisted(d)
 
     def discover_new(self, since_date=None) -> Iterator[dict]:
         if since_date and isinstance(since_date, str):
