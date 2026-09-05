@@ -150,7 +150,7 @@ keeps working after a rollback because it only uses pre-existing REST routes.
 
 The docs say the client installs from a checkout. `.github/workflows/release-cli.yml`
 publishes `clients/python` with trusted publishing when a `cli-v<version>` tag is pushed
-(the tag must equal the version in `clients/python/pyproject.toml`; the workflow builds,
+(the tag must equal `__version__` in `clients/python/src/opencaselaw_cli/_version.py`, currently 0.2.0; the workflow builds,
 `twine check`s, smoke-installs the wheel, runs the client tests, then uploads). Nothing is
 uploaded until PyPI trusts this repository. One-time setup, in Jonas's PyPI account:
 
@@ -159,7 +159,7 @@ uploaded until PyPI trusts this repository. One-time setup, in Jonas's PyPI acco
    environment name `pypi-cli`.
 2. GitHub → repository Settings → Environments → create `pypi-cli` (optionally with a
    required reviewer).
-3. Tag and push: `git tag cli-v0.1.0 <merged sha> && git push origin cli-v0.1.0`.
+3. Tag and push: `git tag cli-v0.2.0 <merged sha> && git push origin cli-v0.2.0`.
 4. After the first upload: switch the install instructions (guide, README, API page,
    `docs/cli/index.html`, package README, dataset card) to `pipx install opencaselaw-cli`
    and remove the "not on PyPI" sentences.

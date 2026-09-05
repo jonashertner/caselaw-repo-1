@@ -34,9 +34,10 @@ jobs:
       - name: Verify tag matches the client version
         run: |
           python - <<'PY'
-          import os, pathlib, tomllib
+          import os, pathlib, re
           tag = os.environ["GITHUB_REF_NAME"]
-          version = tomllib.loads(pathlib.Path("clients/python/pyproject.toml").read_text())["project"]["version"]
+          source = pathlib.Path("clients/python/src/opencaselaw_cli/_version.py").read_text()
+          version = re.search(r'__version__\s*=\s*"([^"]+)"', source).group(1)
           expected = f"cli-v{version}"
           if tag != expected:
               raise SystemExit(f"tag {tag} does not match clients/python version {version} (expected {expected})")
