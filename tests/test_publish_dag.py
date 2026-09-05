@@ -676,3 +676,19 @@ def test_run_targets_checkpoint_resume_skips_completed_branch() -> None:
     assert builders["root"].calls == []  # type: ignore[attr-defined]
     assert builders["x"].calls == []     # type: ignore[attr-defined]
     assert builders["y"].calls == ["called"]  # type: ignore[attr-defined]
+
+
+def test_shipped_registry_rss_feeds_failure_does_not_block_early_push() -> None:
+    """2026-09-03: Step 5b (rss_feeds) timed out with every other step OK and
+    the whole run went red. Feeds are a convenience artifact — the previous
+    XML stays in docs/ — so a feed miss must neither cascade into the early
+    push nor count as a fatal failure. Mirrors publish.py NON_FATAL_STEPS."""
+    assert REGISTRY["rss_feeds"].non_fatal is True
+    builders = {name: _builder_returning(True) for name in REGISTRY}
+    builders["rss_feeds"] = _builder_returning(False)
+    args = SimpleNamespace(dry_run=False, full_rebuild=False)
+    results = run_targets(REGISTRY, builders, args)
+    assert results["rss_feeds"] == FAILED
+    assert results["git_push_early"] == OK
+    assert results["git_push_final"] == OK
+    assert results["health_check"] == OK

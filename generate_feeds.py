@@ -22,24 +22,58 @@ Each <item> includes:
   - pubDate:      RFC 2822 (parsed from decision_date)
   - guid:         ECLI where derivable for federal courts, else decision_id
   - category:     court code + legal_area when present
+
+Query strategy (2026-09-04):
+  Every feed wants the LIMIT newest rows for one predicate (all courts, one
+  court, one language). decisions has single-column indexes only, so for the
+  filtered feeds the planner picks the predicate's index (idx_decisions_court
+  / idx_decisions_language) and then sorts EVERY row of that court or
+  language to find the top 50 — one random table-page read per row on a
+  ~70 GB table: ~1.4 M reads across the six filtered feeds, 200-240 s on a
+  quiet day and >300 s under weekday IO contention (Step 5b hit its cap on
+  2026-09-03). The 2026-07-07 substr() fix only shrank the sorter payload.
+
+  We now pin idx_decisions_date (INDEXED BY) and walk it newest-first with
+  the predicate evaluated per row, floored at RECENT_WINDOW_DAYS so the walk
+  is bounded; SQLite stops as soon as LIMIT rows are out. For the shipped
+  feeds that is a few hundred to ~25 k row reads instead of 90 k-500 k. A
+  feed with fewer than LIMIT matches inside the window (a court that has
+  gone quiet), or a DB without the index, falls back to the original
+  unpinned query — so the output is identical to before in every case.
+
+  Both shapes also cap decision_date at date('now'): build_fts5 tolerates
+  decision dates up to 365 days in the future (pending publications), and
+  a DESC sort would otherwise float those rows to the top of every feed.
 """
 from __future__ import annotations
 
 import argparse
+import os
 import sqlite3
+import time
 import urllib.parse
-
-import ecthr_docket
 import xml.etree.ElementTree as ET
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from email.utils import format_datetime
 from pathlib import Path
+
+import ecthr_docket
 
 REPO_DIR = Path(__file__).parent.resolve()
 
 ITEMS_PER_FEED = 50
 SITE_URL = "https://opencaselaw.ch"
 MCP_URL = "https://mcp.opencaselaw.ch"
+
+# Index the newest-first walk is pinned to (db_schema.SCHEMA_SQL). If a DB
+# lacks it we silently use the unpinned query instead of erroring out.
+DATE_INDEX = "idx_decisions_date"
+# Lower bound of the pinned walk. Bounds the worst case (a predicate with no
+# recent rows would otherwise walk the whole index) at "rows dated in the
+# last year" — ~40 k on the 2026-09 corpus. The six shipped feeds all have
+# >50 rows well inside that window; BGE is the laggard (published months
+# after the decision date) and still has ~250 a year.
+RECENT_WINDOW_DAYS = 365
 
 COURT_NAMES = {
     "bger": "Bundesgericht",
@@ -165,23 +199,107 @@ def make_feed(title: str, description: str, channel_link: str, items: list[dict]
     return '<?xml version="1.0" encoding="UTF-8"?>\n' + ET.tostring(rss, encoding="unicode")
 
 
-def query_decisions(conn, where: str, params: tuple, limit: int = ITEMS_PER_FEED) -> list[dict]:
-    sql = (
-        # full_text is a large blob in scattered overflow pages; make_item only
-        # ever uses its first 250 chars (regeste fallback). Reading the whole
-        # column pulled ~2.2 MB/feed of random IO that starved under the nightly
-        # aux-builder contention and blew the Step 5b 300s cap (2026-07-07).
-        # substr keeps the identical fallback for ~146x less IO.
-        "SELECT decision_id, court, docket_number, decision_date, language, "
-        "regeste, substr(full_text, 1, 300) AS full_text, legal_area "
-        "FROM decisions "
-        f"WHERE {where} AND decision_date IS NOT NULL AND decision_date != '' "
-        "ORDER BY decision_date DESC, decision_id "
-        "LIMIT ?"
+# full_text is a large blob in scattered overflow pages; make_item only ever
+# uses its first 250 chars (regeste fallback). substr keeps the sorter payload
+# small (2026-07-07: ~146x less spill IO); with the pinned walk the row's
+# overflow chain is only read for rows that reach the result at all.
+_SELECT_COLS = (
+    "SELECT decision_id, court, docket_number, decision_date, language, "
+    "regeste, substr(full_text, 1, 300) AS full_text, legal_area "
+)
+
+
+def feed_sql(where: str, *, pinned: bool = False, floored: bool = False) -> str:
+    """Build one feed query.
+
+    ``pinned`` forces the newest-first walk of DATE_INDEX (INDEXED BY);
+    ``floored`` appends ``decision_date >= ?`` — bind its value right after
+    the predicate's own parameters, before LIMIT. Without either flag this is
+    the original query (predicate index + full sort), kept as the fallback.
+
+    Both shapes carry the same future-date ceiling, so the pinned walk and
+    the fallback agree row for row.
+    """
+    hint = f" INDEXED BY {DATE_INDEX}" if pinned else ""
+    floor = " AND decision_date >= ?" if floored else ""
+    return (
+        _SELECT_COLS
+        + f"FROM decisions{hint} "
+        + f"WHERE {where} AND decision_date IS NOT NULL AND decision_date != '' "
+        # decision_date is stored as ISO YYYY-MM-DD (build_fts5._normalize_dates
+        # tolerates near-future typos up to 365 days out so legitimate pending
+        # publications survive the corpus). Feeds are ordered by decision_date
+        # DESC, so without this clause those future-dated rows sort to the top
+        # of every feed. date('now') is UTC and, since both sides are ISO
+        # YYYY-MM-DD, the lexical comparison matches a real date comparison.
+        # On the pinned walk this is the upper bound of the index range, so
+        # the future rows are never visited at all.
+        + f"AND decision_date <= date('now'){floor} "
+        + "ORDER BY decision_date DESC, decision_id "
+        + "LIMIT ?"
     )
-    cur = conn.execute(sql, params + (limit,))
+
+
+def has_index(conn: sqlite3.Connection, name: str = DATE_INDEX) -> bool:
+    row = conn.execute(
+        "SELECT 1 FROM sqlite_master WHERE type = 'index' AND name = ?", (name,)
+    ).fetchone()
+    return row is not None
+
+
+def recent_floor(today: date | None = None) -> str:
+    today = today or datetime.now(timezone.utc).date()
+    return (today - timedelta(days=RECENT_WINDOW_DAYS)).isoformat()
+
+
+def _rows(cur: sqlite3.Cursor) -> list[dict]:
     cols = [d[0] for d in cur.description]
     return [dict(zip(cols, row)) for row in cur.fetchall()]
+
+
+def query_decisions(
+    conn: sqlite3.Connection,
+    where: str,
+    params: tuple,
+    limit: int = ITEMS_PER_FEED,
+    *,
+    since: str | None = None,
+    use_date_index: bool | None = None,
+    stats: dict | None = None,
+) -> list[dict]:
+    """Newest ``limit`` decisions matching ``where``.
+
+    Tries the pinned, floored walk first (see module docstring); falls back
+    to the original query when DATE_INDEX is absent or the window holds
+    fewer than ``limit`` matches. ``stats``, when given, receives which path
+    produced the result so the publish log shows a feed that went slow.
+    """
+    if use_date_index is None:
+        use_date_index = has_index(conn)
+    if use_date_index:
+        floor = since or recent_floor()
+        rows = _rows(conn.execute(
+            feed_sql(where, pinned=True, floored=True), params + (floor, limit)))
+        if len(rows) >= limit:
+            if stats is not None:
+                stats.update({"path": "date-walk", "window_rows": len(rows)})
+            return rows
+        window_rows = len(rows)
+    else:
+        window_rows = None
+    rows = _rows(conn.execute(feed_sql(where), params + (limit,)))
+    if stats is not None:
+        stats.update({"path": "fallback", "window_rows": window_rows})
+    return rows
+
+
+def write_atomic(path: Path, text: str) -> None:
+    """Write via a sibling temp file + rename so a watchdog kill mid-write
+    (publish.py SIGTERMs the whole process group at the step cap) can never
+    leave a truncated feed for GitHub Pages to serve."""
+    tmp = path.with_name(path.name + ".tmp")
+    tmp.write_text(text)
+    os.replace(tmp, path)
 
 
 def main():
@@ -200,47 +318,59 @@ def main():
 
     conn = sqlite3.connect(f"file:{db_path}?immutable=1", uri=True)
     conn.execute("PRAGMA busy_timeout=30000")
+    use_date_index = has_index(conn)
+    if not use_date_index:
+        print(f"note: {DATE_INDEX} missing — using unpinned queries")
 
     written = []
 
-    items = query_decisions(conn, "1=1", ())
-    (out / "feed.xml").write_text(make_feed(
+    def emit(rel: str, path: Path, title: str, description: str, link: str,
+             where: str, params: tuple) -> None:
+        stats: dict = {}
+        t0 = time.monotonic()
+        items = query_decisions(conn, where, params,
+                                use_date_index=use_date_index, stats=stats)
+        write_atomic(path, make_feed(title, description, link, items))
+        written.append((rel, len(items), time.monotonic() - t0, stats))
+
+    emit(
+        "feed.xml", out / "feed.xml",
         "OpenCaseLaw — Latest Swiss Court Decisions",
         "Latest published decisions across all Swiss courts indexed by OpenCaseLaw.",
         f"{SITE_URL}/feed.xml",
-        items,
-    ))
-    written.append(("feed.xml", len(items)))
+        "1=1", (),
+    )
 
     for court, label in [
         ("bger", "Bundesgericht"),
         ("bvger", "Bundesverwaltungsgericht"),
         ("bge", "BGE (Leitentscheide)"),
     ]:
-        items = query_decisions(conn, "court = ?", (court,))
-        (feeds_dir / f"{court}.xml").write_text(make_feed(
+        emit(
+            f"feeds/{court}.xml", feeds_dir / f"{court}.xml",
             f"OpenCaseLaw — {label} (Latest)",
             f"Latest published {label} decisions.",
             f"{SITE_URL}/feeds/{court}.xml",
-            items,
-        ))
-        written.append((f"feeds/{court}.xml", len(items)))
+            "court = ?", (court,),
+        )
 
     for lang, label in LANG_NAMES.items():
-        items = query_decisions(conn, "language = ?", (lang,))
-        (feeds_dir / f"{lang}.xml").write_text(make_feed(
+        emit(
+            f"feeds/{lang}.xml", feeds_dir / f"{lang}.xml",
             f"OpenCaseLaw — {label} (Latest)",
             f"Latest published Swiss court decisions in {label}.",
             f"{SITE_URL}/feeds/{lang}.xml",
-            items,
-        ))
-        written.append((f"feeds/{lang}.xml", len(items)))
+            "language = ?", (lang,),
+        )
 
     conn.close()
 
     print(f"Generated {len(written)} feeds:")
-    for path, count in written:
-        print(f"  ✓ {path} ({count} items)")
+    for path, count, elapsed, stats in written:
+        note = ""
+        if stats.get("path") == "fallback":
+            note = f", fallback: {stats.get('window_rows')} rows in the last {RECENT_WINDOW_DAYS}d"
+        print(f"  ✓ {path} ({count} items, {elapsed:.1f}s{note})")
 
 
 if __name__ == "__main__":

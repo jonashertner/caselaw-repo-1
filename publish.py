@@ -1026,6 +1026,17 @@ def step_5b_generate_feeds(dry_run: bool = False) -> bool:
     Static RSS 2.0 XML files written to docs/feed.xml + docs/feeds/*.xml,
     based on the latest decisions in decisions.db. Reads decisions.db with
     immutable=1 (no lock contention with build_fts5 / 2d / 2e).
+
+    Non-fatal (NON_FATAL_STEPS): the feeds are a convenience artifact. On a
+    miss the previous run's XML stays in docs/ and is what 6a/6 push, so a
+    feed failure must not turn the unit red, disarm
+    state/last_publish_success.json or block the checkpoint clear.
+    2026-09-03: the step timed out at its 300 s cap on a weekday (sdb at
+    96-100 %util) with every other step OK, and the whole run reported
+    FAILED; the cause was the six filtered feeds sorting every row of their
+    court/language (~1.4 M random page reads on a 70 GB table). The query now
+    walks idx_decisions_date newest-first (generate_feeds.py), so the step
+    should take seconds; the 300 s cap is kept as the regression alarm.
     """
     logger.info("Step 5b: Generate RSS feeds")
     script = REPO_DIR / "generate_feeds.py"
@@ -1584,6 +1595,11 @@ STEP_TO_DAG_TARGET: dict[int | str, str] = {
 }
 
 
+# Steps whose outright failure is logged FAILED but must not exit 1 / turn the
+# systemd unit red. Rationale per step sits with NON_FATAL_STEPS in main().
+_NON_FATAL_STEPS = frozenset({"2e", "5d", "5e", "2g", "2c", "5b"})
+
+
 STEPS = [
     (1, "Ingest", step_1_ingest),
     (2, "Build FTS5", step_2_build_fts5),
@@ -1933,7 +1949,10 @@ def main():
     # materialien.db lock fix ships (stale get_materialien is a real degradation
     # worth alarming). TODO: add a separate reference_graph/decision_structure
     # staleness probe so a silently-stale sidecar is still detected.
-    NON_FATAL_STEPS = {"2e", "5d", "5e", "2g", "2c"}
+    # 5b (rss_feeds) added 2026-09-04: convenience artifact, stale feeds keep
+    # being served on a miss (see step_5b_generate_feeds). The DAG marks
+    # rss_feeds non_fatal too — keep in sync.
+    NON_FATAL_STEPS = _NON_FATAL_STEPS
     # Steps after the fast tier — skipped with --fast-only
     SLOW_STEPS = {"2d", "2e", "2b", "2c", "2f", "2g", 3, 4, 5, 6}
 

@@ -125,7 +125,11 @@ _register(Target(
     name="rss_feeds",
     deps=["build_fts5"],
     parallel_safe=True,  # writes only docs/feeds/, no shared state
-    description="Step 5b — generate decision RSS feeds",
+    # non_fatal: convenience artifact — the previous run's XML stays in docs/
+    # and git_push_early ships it. Mirrors publish.py NON_FATAL_STEPS ("5b",
+    # added after the 2026-09-03 timeout turned an otherwise-green run red).
+    non_fatal=True,
+    description="Step 5b — generate decision RSS feeds (best-effort)",
 ))
 
 _register(Target(
