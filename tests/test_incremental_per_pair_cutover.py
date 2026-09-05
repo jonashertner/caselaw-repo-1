@@ -26,9 +26,11 @@ REPO = Path(__file__).resolve().parent.parent
 
 
 def _dry_run(*flags: str) -> str:
+    # These assertions cover the planned command sequence, not the wall clock.
+    # Late-start behavior has dedicated tests using explicit times.
     r = subprocess.run(
         [sys.executable, "scripts/incremental_nightly.py", "--dry-run",
-         "--skip-quick-publish", *flags],
+         "--skip-quick-publish", "--now-utc", "20:00", *flags],
         cwd=REPO, text=True, capture_output=True, check=False,
     )
     return r.stdout + r.stderr

@@ -30,6 +30,7 @@ authoritative source, and emit clickable verification links to the user.
 
 - [Live MCP endpoint](https://mcp.opencaselaw.ch): single URL — paste into Claude / ChatGPT / Cursor / Gemini / Copilot Studio. 38 specialised tools cover full-text search, citation graph traversal, statute lookup, doctrinal timelines, leading-case discovery, scholarly commentary, legislative materials, open-access scholarship search, exam-question generation.
 - [REST API (OpenAPI 3.0.3)](https://mcp.opencaselaw.ch/api/docs): every MCP capability also exposed as REST. Useful for languages without an MCP client library.
+- [Research CLI `ocl`](https://github.com/jonashertner/opencaselaw/blob/main/docs/research-cli.md): dependency-free command-line client over the REST API for scripts and agents. Checks the citations in a draft (resolved / missing / ambiguous, pinpoints verified) and saves the evidence behind a memo into a folder with a hashed manifest. Typed research contract: `/api/research/openapi.json`.
 - [How to connect](https://opencaselaw.ch/#connect): copy-paste setup instructions per AI client.
 
 ## Per-decision access (canonical)

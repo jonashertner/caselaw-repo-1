@@ -95,7 +95,12 @@ from pathlib import Path
 
 from mcp.server import Server
 from mcp.server.stdio import stdio_server
-from mcp.types import TextContent, Tool, ToolAnnotations
+from mcp.types import CallToolResult, TextContent, Tool, ToolAnnotations
+from research_contracts import (
+    RESEARCH_MODELS, output_schema as _research_output_schema,
+    research_openapi as _research_openapi,
+    validate_payload as _validate_research_payload,
+)
 
 # All tools are read-only (search/lookup, no mutations)
 _READ_ONLY = ToolAnnotations(readOnlyHint=True, destructiveHint=False, openWorldHint=False)
@@ -22709,6 +22714,7 @@ def _list_tools() -> list[Tool]:
             annotations=_READ_ONLY,
             _meta=_DECISION_TOOL_META,
             name="search_decisions",
+            outputSchema=_research_output_schema("search_decisions"),
             description=(
                 "Use this tool to find COURT DECISIONS (Rechtsprechung): "
                 "1,050,000+ Swiss federal and cantonal decisions plus "
@@ -22849,6 +22855,7 @@ def _list_tools() -> list[Tool]:
         Tool(
             annotations=_READ_ONLY,
             name="get_decision",
+            outputSchema=_research_output_schema("get_decision"),
             description=(
                 "Fetch a single court decision with full text. "
                 "Look up by decision_id (e.g., bger_6B_1234_2025), "
@@ -22954,6 +22961,7 @@ def _list_tools() -> list[Tool]:
         Tool(
             annotations=_READ_ONLY,
             name="find_citations",
+            outputSchema=_research_output_schema("find_citations"),
             description=(
                 "Given a decision_id, show what it cites and what cites it. "
                 "Uses the reference graph database with 9.65M citation edges. "
@@ -23252,6 +23260,7 @@ def _list_tools() -> list[Tool]:
         Tool(
             annotations=_READ_ONLY,
             name="get_erwaegung",
+            outputSchema=_research_output_schema("get_erwaegung"),
             description=(
                 "Verbatim text of ONE numbered Erwägung — the citable unit in Swiss practice "
                 "(e.g. 'BGE 140 III 86 E. 2.3'). Use when the user already gave an e_number. "
@@ -23588,6 +23597,7 @@ def _list_tools() -> list[Tool]:
         Tool(
             annotations=_READ_ONLY,
             name="cite",
+            outputSchema=_research_output_schema("cite"),
             description=(
                 "Get the canonical Swiss citation string for a decision reference. "
                 "CALL THIS BEFORE writing any case citation in your response. Returns "
@@ -23692,6 +23702,7 @@ def _list_tools() -> list[Tool]:
         Tool(
             annotations=_READ_ONLY,
             name="get_law",
+            outputSchema=_research_output_schema("get_law"),
             description=(
                 "AUTHORITATIVE LOOKUP for the text of any Swiss law article — federal "
                 "OR cantonal — from two local mirrors. Federal (canton='CH', default): "
@@ -24743,8 +24754,11 @@ def _prepend_arg_warning(result, name: str, unknown: list):
             f"they did NOT affect this result. Valid parameters for "
             f"{name}: {', '.join(declared)}.\n\n")
     try:
-        if isinstance(result, list) and result and hasattr(result[0], "text"):
-            result[0].text = note + (result[0].text or "")
+        content = result[0] if isinstance(result, tuple) and name in RESEARCH_MODELS else result
+        if isinstance(content, list) and content and hasattr(content[0], "text"):
+            content[0].text = note + (content[0].text or "")
+        if isinstance(result, tuple) and name in RESEARCH_MODELS:
+            result[1]["ignored_arguments"] = list(unknown)
     except Exception:
         pass
     return result
@@ -24949,9 +24963,102 @@ if _UI_WIDGETS:
         return [_RRC(content="Resource not found", mime_type="text/plain")]
 
 
+_RESEARCH_FULL_FIELDS_MAX = 50
+_RESEARCH_COMPACT_PAGE_MAX = 800
+_RESEARCH_COMPACT_KEYS = (
+    "decision_id", "docket_number", "court", "language", "decision_date",
+    "citation_string_de", "canonical_url",
+)
+_DECISION_MCP_TEXT_CAP = 200_000
+
+
+def _enrich_with_citation(row: dict) -> dict:
+    """Add canonical citation_string_{de,fr,it}, canonical_url, and
+    rule_statement to a decision dict in place. Fail-safe: any exception
+    leaves the original fields untouched so existing callers never break.
+
+    Uses the same helpers as the MCP path (_build_citation_strings +
+    _rule_statement), keeping REST ↔ MCP at feature parity.
+    """
+    if not isinstance(row, dict) or not row.get("decision_id"):
+        return row
+    try:
+        c = _build_citation_strings(row)
+        row.setdefault("citation_string_de", c["citation_string_de"])
+        row.setdefault("citation_string_fr", c["citation_string_fr"])
+        row.setdefault("citation_string_it", c["citation_string_it"])
+        row.setdefault("canonical_url", c["canonical_url"])
+    except Exception:
+        pass
+    try:
+        if "rule_statement" not in row:
+            row["rule_statement"] = _rule_statement(row)
+    except Exception:
+        pass
+    # © ECHR-CEDH: a structured field rather than prose, so it survives
+    # client-side sanitisers and is machine-checkable by integrators.
+    try:
+        if _is_ecthr_court(row.get("court")):
+            row.setdefault("copyright", _ECHR_ATTRIBUTION)
+    except Exception:
+        pass
+    return row
+
+
+def _research_tool_result(text: str, payload: dict):
+    """Retain existing text (and commercial note) alongside source fields."""
+    return ([TextContent(type="text", text=_with_open_access_note(text))], payload)
+
+
 @server.call_tool()
 async def _handle_call_tool_wrapper(name: str, arguments: dict):
     result = await _dispatch_with_timeout(name, arguments)
+    if name in RESEARCH_MODELS:
+        # Core research tools retain their human-readable text and expose
+        # the same dictionaries described by REST. Explicit CallToolResult
+        # is needed: the SDK assigns isError=False to all tuple returns.
+        if isinstance(result, tuple):
+            content, payload = result
+        else:
+            content = result
+            text = _response_text(result)
+            # An unknown-argument NOTE is prepended to the text for readers;
+            # it is not part of the handler's JSON error payload.
+            if text.startswith("NOTE: ignored unrecognised parameter(s)"):
+                text = text.partition("\n\n")[2]
+            try:
+                payload = json.loads(text)
+            except (ValueError, TypeError):
+                payload = {"error": text or "Research operation returned no response."}
+            if not isinstance(payload, dict) or not payload.get("error"):
+                payload = {"error": text or "Research operation returned no response."}
+            if content and hasattr(content[-1], "text"):
+                content[-1] = TextContent(type="text", text=_with_open_access_note(content[-1].text))
+        try:
+            _validate_research_payload(name, payload)
+        except Exception as _contract_exc:
+            # Log field paths and error types only: pydantic messages embed
+            # input values, which could persist query text or document
+            # content in the journal.
+            try:
+                _contract_locs = [
+                    (list(e.get("loc", ())), e.get("type"))
+                    for e in _contract_exc.errors(include_input=False)][:5]
+            except Exception:
+                _contract_locs = [type(_contract_exc).__name__]
+            logger.error("Invalid research response contract for %s: %s",
+                         name, _contract_locs)
+            # Do not expose a schema-invalid success as reliable evidence.
+            # Keep the existing text so the answer remains inspectable.
+            payload = {"error": "response_contract_error", "tool": name}
+            content = [*content, TextContent(type="text", text=(
+                "Structured research response did not match the published "
+                "schema; the text above is the served answer. Use the REST "
+                "endpoint for the raw record."))]
+        return CallToolResult(
+            content=content, structuredContent=payload,
+            isError=bool(payload.get("error")),
+        )
     # Deep-research search/fetch return a (content, structuredContent) tuple —
     # pass through verbatim. The open-access note must NOT be appended (it
     # would corrupt the JSON payload deep research parses).
@@ -25160,6 +25267,27 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 sort=sort_arg,
                 meta=_search_meta,
             )
+            # Apply the REST response bounds before rendering either text or
+            # widget data. Copy rows: snippet and pinpoint rendering must not
+            # mutate a backend/cache-owned result reused by another request.
+            _page_note = ""
+            if fields_arg != "compact" and len(results) > _RESEARCH_FULL_FIELDS_MAX:
+                fields_arg = "compact"
+                _page_note = (
+                    "Returned compact citation entries to stay within response limits; "
+                    "fetch an individual decision for full text."
+                )
+            if fields_arg == "compact" and len(results) > _RESEARCH_COMPACT_PAGE_MAX:
+                results = results[:_RESEARCH_COMPACT_PAGE_MAX]
+                _page_note += (
+                    " Showing at most 800 entries per page; follow next_offset while "
+                    "has_more is true. Exhausting a ranked search does not prove corpus completeness."
+                )
+            results = copy.deepcopy(results)
+            # Pagination consumes backend rows, including duplicate display
+            # representations removed below. Advancing by displayed rows
+            # would repeat records on the next page.
+            _consumed = len(results)
             _total_lb = bool(_search_meta.get("total_is_lower_bound"))
             _condense_note = ""
             if _search_meta.get("query_condensed"):
@@ -25264,26 +25392,48 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                             )
                         text += "\n"
 
+            _max_limit = FILTER_MAX_LIMIT if not (arguments.get("query", "") or "").strip() else MAX_LIMIT
+            _limit = max(1, min(int(arguments.get("limit", DEFAULT_LIMIT)), _max_limit))
+            _offset = max(0, req_offset)
+            _page_cap = min(_limit, _RESEARCH_COMPACT_PAGE_MAX) if fields_arg == "compact" else _limit
+            _has_more = _consumed >= _page_cap and _offset + _consumed < total_count
+            _records = [_enrich_with_citation({
+                k: v for k, v in row.items() if k != "_snippet_marked"
+            }) for row in results]
+            if fields_arg == "compact":
+                _records = [{k: row[k] for k in _RESEARCH_COMPACT_KEYS if k in row}
+                            for row in _records]
+            _struct = {
+                "total": total_count, "total_is_lower_bound": _total_lb,
+                "results": _records,
+                "returned": len(results), "limit": _limit, "offset": _offset,
+                "has_more": _has_more,
+                "next_offset": _offset + _consumed if _has_more else None,
+            }
+            if _search_meta.get("result_set_id"):
+                _struct["result_set_id"] = _search_meta["result_set_id"]
+            if _search_meta.get("query_condensed"):
+                _struct["query_condensed"] = True
+                _struct["condensed_terms"] = _search_meta.get("condensed_terms", [])
+            if _condense_note or _page_note:
+                _struct["note"] = " ".join(p.strip() for p in (_condense_note, _page_note) if p)
+            if _page_note:
+                text += "\n" + _page_note.strip() + "\n"
             if _DECISION_TOOL_META is not None:
-                # Widget on: identical text, plus the machine-readable payload
-                # the decision widget renders from. Tuple returns bypass the
-                # wrapper's open-access note, so apply it here — same parity
-                # fix the law-search branch needed.
-                _struct = _decision_hits_structured(
+                # Preserve every legacy widget field while adding the shared
+                # research records and pagination independently of the flag.
+                _widget_data = _decision_hits_structured(
                     results, arguments.get("query", "") or "",
                     arguments.get("language") or "de",
                     total=total_count, total_is_lower_bound=_total_lb)
-                # Same result-set id the impression logged: an agent that
-                # passes it back on a later get_decision (from_result_set)
-                # gives a clean relevance join, no offline inference.
-                if _search_meta.get("result_set_id"):
-                    _struct["result_set_id"] = _search_meta["result_set_id"]
-                return (
-                    [TextContent(type="text",
-                                 text=_with_open_access_note(text + _echr_note))],
-                    _struct,
-                )
-            return [TextContent(type="text", text=text + _echr_note)]
+                if fields_arg == "compact":
+                    # Build citations from original metadata before dropping
+                    # display text; collection/ECtHR metadata can affect their
+                    # canonical form and is absent from the compact records.
+                    for _hit in _widget_data["decisions"]:
+                        _hit.update(title=None, snippet_html="", pinpoint=None)
+                _struct.update(_widget_data)
+            return _research_tool_result(text + _echr_note, _struct)
 
         elif name == "get_decisions":
             _ids = arguments.get("decision_ids") or []
@@ -25311,10 +25461,11 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                     result = _overlay_row
                     _fresh_publication = True
             if not result:
-                return [TextContent(
-                    type="text",
-                    text=f"Decision not found: {_did_arg}",
-                )]
+                return _research_tool_result(
+                    f"Decision not found: {_did_arg}",
+                    {"error": f"Decision not found: {_did_arg}"},
+                )
+            result = copy.deepcopy(result)
             include_full_text = arguments.get("full_text", True)
             # Build the canonical citation block FIRST — placed at the top of the
             # response so the LLM encounters the copy-ready strings before anything
@@ -25373,10 +25524,10 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 # Full-text can be very long; auto-linking is quadratic-ish
                 # in excluded-range checks if there are many existing
                 # markdown links, but safe here (decisions don't embed md).
-                if len(ft) > 200000:
+                if len(ft) > _DECISION_MCP_TEXT_CAP:
                     text += (
                         f"\n## Full Text (first 200,000 of {len(ft):,} chars)\n"
-                        f"{_auto_link_citations(ft[:200000])}\n\n"
+                        f"{_auto_link_citations(ft[:_DECISION_MCP_TEXT_CAP])}\n\n"
                         f"[Truncated: first 200,000 of {len(ft):,} characters. "
                         f"The remainder — which may include the operative part — is "
                         f"not shown. Full text: "
@@ -25442,7 +25593,31 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 text += _format_materials_section_md(_prep_mats)
             # Full-text reproduction: attribution is required here above all.
             text += _ecthr_attribution_note(result)
-            return [TextContent(type="text", text=text)]
+            structured = dict(result)
+            if not include_full_text:
+                structured.pop("full_text", None)
+            # Match REST: metadata-only requests cannot derive a rule from
+            # full_text that was explicitly omitted. Keep the human rendering
+            # above unchanged, and enrich before capping the stored text.
+            _enrich_with_citation(structured)
+            if include_full_text and len(structured.get("full_text") or "") > _DECISION_MCP_TEXT_CAP:
+                full_text = structured["full_text"]
+                _api_base = (os.environ.get("SWISS_CASELAW_API_BASE_URL", "").strip()
+                             or f"{_CITATION_BASE_URL}/api").rstrip("/")
+                structured.update(
+                    full_text=full_text[:_DECISION_MCP_TEXT_CAP],
+                    full_text_total_chars=len(full_text),
+                    full_text_returned_chars=_DECISION_MCP_TEXT_CAP,
+                    full_text_truncated=True,
+                    full_text_url=f"{_api_base}/decisions/{urllib.parse.quote(result['decision_id'], safe='')}?full_text=true",
+                )
+            if _fresh_publication:
+                structured["recency_note"] = (
+                    "Recently published, not yet in the indexed corpus. "
+                    f"Published {result.get('publication_date') or '?'}, ruled {result.get('decision_date') or '?'}. "
+                    "Citation-graph links, cross-references and structured Erwägungen are not yet available."
+                )
+            return _research_tool_result(text, structured)
 
         elif name == "cite":
             result = await asyncio.to_thread(
@@ -25451,7 +25626,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 pinpoint=arguments.get("pinpoint"),
                 language=arguments.get("language", "de"),
             )
-            return [TextContent(type="text", text=json.dumps(result, indent=2, ensure_ascii=False))]
+            return _research_tool_result(json.dumps(result, indent=2, ensure_ascii=False), result)
 
         elif name == "check_claim_support":
             result = await asyncio.to_thread(
@@ -25521,7 +25696,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 limit=int(arguments.get("limit", 50)),
                 offset=int(arguments.get("offset", 0)),
             )
-            return [TextContent(type="text", text=_format_citations_response(result))]
+            return _research_tool_result(_format_citations_response(result), result)
 
         elif name == "find_appeal_chain":
             result = await asyncio.to_thread(
@@ -25608,7 +25783,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 decision_id=arguments.get("decision_id", ""),
                 e_number=arguments.get("e_number", ""),
             )
-            return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False, indent=2))]
+            return _research_tool_result(json.dumps(result, ensure_ascii=False, indent=2), result)
 
         elif name == "find_relevant_erwaegung":
             result = await asyncio.to_thread(
@@ -25686,7 +25861,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 canton=arguments.get("canton", "CH"),
                 as_of=arguments.get("as_of"),
             )
-            return [TextContent(type="text", text=_format_get_law_response(result))]
+            return _research_tool_result(_format_get_law_response(result), result)
 
         elif name == "search_laws":
             # language: optional — when omitted, search all languages
@@ -27046,44 +27221,17 @@ setInterval(load, 30000);
 
     # ── Case Law endpoints ─────────────────────────────────────
 
-    def _enrich_with_citation(row: dict) -> dict:
-        """Add canonical citation_string_{de,fr,it}, canonical_url, and
-        rule_statement to a decision dict in place. Fail-safe: any exception
-        leaves the original fields untouched so existing callers never break.
-
-        Uses the same helpers as the MCP path (_build_citation_strings +
-        _rule_statement), keeping REST ↔ MCP at feature parity.
-        """
-        if not isinstance(row, dict) or not row.get("decision_id"):
-            return row
-        try:
-            c = _build_citation_strings(row)
-            row.setdefault("citation_string_de", c["citation_string_de"])
-            row.setdefault("citation_string_fr", c["citation_string_fr"])
-            row.setdefault("citation_string_it", c["citation_string_it"])
-            row.setdefault("canonical_url", c["canonical_url"])
-        except Exception:
-            pass
-        try:
-            if "rule_statement" not in row:
-                row["rule_statement"] = _rule_statement(row)
-        except Exception:
-            pass
-        # © ECHR-CEDH: a structured field rather than prose, so it survives
-        # client-side sanitisers and is machine-checkable by integrators.
-        try:
-            if _is_ecthr_court(row.get("court")):
-                row.setdefault("copyright", _ECHR_ATTRIBUTION)
-        except Exception:
-            pass
-        return row
-
     # Explicit OpenAPI 3.0.3 alias for Microsoft Copilot Studio. The
     # default /api/openapi.json now also emits 3.0.3, but keeping a
     # version-stamped path lets us advise integrators unambiguously.
     @rest_api.get("/openapi-v3.json", include_in_schema=False)
     async def api_openapi_v3():
         return rest_api.openapi()
+
+    @rest_api.get("/research/openapi.json", include_in_schema=False)
+    async def api_research_openapi():
+        """Versioned public research operations, excluding admin and billing."""
+        return _research_openapi(rest_api.openapi())
 
     # ── Microsoft Copilot Studio curated subset ───────────────────────
     # Lalive (2026-04-24 onwards) is consuming the API via Copilot
@@ -27803,7 +27951,9 @@ setInterval(load, 30000);
                               "decision(s) — no Haiku, no rerank, tens of ms. Returns lean "
                               "hits with citation + /entscheid/ link. Use /decisions for "
                               "topic search; `is_case_number=false` when the input is not a "
-                              "recognised docket.")
+                              "recognised docket. `total` counts returned hits, not all matches; "
+                              "at most 25 hits are returned. Inspect multiple hits for ambiguity; "
+                              "a full page cannot establish exhaustive uniqueness.")
     async def api_lookup(
         q: str = Query(None, description="A Swiss case number / docket (BGE/BGer/cantonal)"),
         query: str = Query(None, description="Alias for `q`."),
@@ -27817,9 +27967,11 @@ setInterval(load, 30000);
                               "Supports keywords, phrases (in quotes), Boolean operators (AND, OR, NOT), "
                               "and prefix matching (word*). Each result carries citation_string_{de,fr,it} "
                               "+ canonical_url + rule_statement for copy-ready use in LLM responses. "
-                              "Broad 'list all' queries return every matching case as compact citation "
-                              "entries; use `total`, `has_more` and `next_offset` to page with `offset` "
-                              "until has_more is false to retrieve the complete list.")
+                              "Large pages use compact citation entries. Page with `next_offset` "
+                              "while `has_more` is true. Relevance-ranked text searches use a bounded "
+                              "candidate pool: exhausting pages does not prove corpus completeness. "
+                              "When `total_is_lower_bound` is true, `total` is not an exact count. "
+                              "Filter-only searches can enumerate their matching records.")
     async def api_search_decisions(
         request: Request,
         response: Response,
@@ -27879,6 +28031,7 @@ setInterval(load, 30000);
             marked_for_publication=marked_for_publication,
             limit=limit, offset=offset, sort=sort, meta=_search_meta,
         )
+        results = copy.deepcopy(results)
         total_is_lower_bound = bool(_search_meta.get("total_is_lower_bound"))
         _tp = f"{total}+" if total_is_lower_bound else f"{total}"  # display total
         # Bound the response so an enumeration ("list ALL cases on X") returns
@@ -27889,8 +28042,8 @@ setInterval(load, 30000);
         # has_more/next_offset. Fixes the OASA OpenAIMaxTokenLengthExceeded +
         # 33.9s-timeout 500 on broad queries (2026-06-05); full at ~350 tok/result
         # blew the limit at 398 results, compact (~70 tok/result) does not.
-        FULL_FIELDS_MAX = 50      # full records above this overflow connector token limits
-        COMPACT_PAGE_MAX = 800    # ~56k tokens of compact entries — safe per response
+        FULL_FIELDS_MAX = _RESEARCH_FULL_FIELDS_MAX
+        COMPACT_PAGE_MAX = _RESEARCH_COMPACT_PAGE_MAX
         note = None
         if fields != "compact" and len(results) > FULL_FIELDS_MAX:
             fields = "compact"
@@ -27898,8 +28051,7 @@ setInterval(load, 30000);
                     f"within connector response limits; fetch a specific decision "
                     f"(GET /decisions/{{decision_id}}) for full text.")
         if fields == "compact":
-            compact_keys = ("decision_id", "docket_number", "court", "language", "decision_date",
-                            "citation_string_de", "canonical_url")
+            compact_keys = _RESEARCH_COMPACT_KEYS
             # Enrich first so compact can expose the citation fields too.
             results = [_enrich_with_citation(r) for r in results]
             results = [{k: r[k] for k in compact_keys if k in r} for r in results]
@@ -27998,6 +28150,7 @@ setInterval(load, 30000);
                 fresh_publication = True
         if not result:
             raise HTTPException(status_code=404, detail=f"Decision not found: {decision_id}")
+        result = copy.deepcopy(result)
         if not full_text:
             result.pop("full_text", None)
         _enrich_with_citation(result)

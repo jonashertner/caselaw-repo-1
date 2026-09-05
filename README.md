@@ -2,10 +2,11 @@
 
 Open Swiss case law and legislation for legal research and AI.
 
-**1M+ decisions · all 26 cantons · 1875–today · citation graph · MCP + REST + Parquet · CC0 data · MIT code**
+**1M+ decisions · all 26 cantons · 1875–today · citation graph · MCP + REST + CLI + Parquet · CC0 data · MIT code**
 
 [Try the search](https://opencaselaw.ch) ·
-[Connect an AI client](#connect-in-30-seconds) ·
+[Chat with your AI](#connect-in-30-seconds) ·
+[Automate research](docs/research-cli.md) ·
 [Download the dataset](#2-download-the-dataset) ·
 [API documentation](https://mcp.opencaselaw.ch/api/docs)
 
@@ -14,6 +15,7 @@ Open Swiss case law and legislation for legal research and AI.
 - Find Swiss decisions across federal and cantonal courts, in German, French and Italian.
 - Trace citations between cases and identify the leading decisions on a question.
 - Query case law and legislation from Claude, ChatGPT-compatible clients, or any MCP client.
+- Save repeatable research scripts, inspect citation resolution, and preserve selected evidence with the [research CLI](docs/research-cli.md).
 - Download the corpus for legal NLP, retrieval and graph research.
 
 ## Connect in 30 seconds
@@ -30,6 +32,31 @@ Open Swiss case law and legislation for legal research and AI.
 
 No sign-up, no API key, read-only. 42 tools; setup guides for individual
 clients are at [opencaselaw.ch/mcp](https://opencaselaw.ch/mcp/).
+
+## Automate research
+
+`ocl` is a small command-line client over the public research API, made for
+two jobs a chat window does badly: checking the citations in a draft, and
+keeping the evidence behind a memo in a folder you can share. Install from
+this checkout (the client is not on PyPI yet):
+
+```bash
+python3 -m pip install ./clients/python
+ocl citations resolve 'BGE 136 III 513' '4A_747/2012' 'BGE 999 III 1'
+ocl bundle create 'Rachekündigung Art. 336 OR' --max-results 10 --passage 2 --law OR:336 --out evidence
+```
+
+The first prints, per reference, whether the decision exists, which one it
+is, and whether a requested Erwägung exists. The second saves the selected
+decisions, passages and statute articles into a folder with a plain-language
+`INDEX.md` and a hashed `manifest.json`. Everything comes back from the
+service unchanged: citation strings, passage text, source links. Search is
+bounded, and a citation check establishes existence, not that an authority
+supports a proposition. See the [CLI guide](docs/research-cli.md).
+
+Use [MCP](#connect-in-30-seconds) for conversations, the CLI or
+[REST API](https://opencaselaw.ch/api/) for automation, and
+[Parquet](#2-download-the-dataset) for corpus-scale analysis.
 
 ## A real result
 
@@ -68,7 +95,7 @@ curl -sG https://mcp.opencaselaw.ch/api/decisions \
 | Legislation | 5,525 federal laws, 15,600 cantonal laws (all 26 cantons) |
 | Citation graph | ~10M resolved decision-to-decision edges, 12.4M statute references |
 | Interpretive layers | Federal Council dispatches, commentaries, open-access scholarship, federal administrative practice |
-| Access | Web, MCP, REST, daily CC0 Parquet |
+| Access | Web, MCP, REST, research CLI, daily CC0 Parquet |
 | Licensing | CC0 data, MIT code (ECtHR texts © ECHR-CEDH, see the data card) |
 
 Counts are generated from one source of truth,
@@ -130,19 +157,20 @@ OpenCaseLaw fixes this. **Every published Swiss court decision, every federal an
 - Federal + cantonal law article lookup, full-text search across both — with **colloquial→legal vocabulary expansion** (searching "Vaterschaftsurlaub" finds the statute even though it says "Urlaub des andern Elternteils") and **cross-language cantonal search** (German query finds French/Italian cantonal laws)
 - Doctrine overviews (statute + authority-ranked BGEs + timeline + Botschaft reference)
 - **Legislative history (Materialien)** — 83,958 Botschaft amendment references across 9,139 BBl publications and 33,465 distinct (statute, article) pairs; **Phase 2 verbatim Botschaft corpus** (5,900+ documents, ~410K FTS5-indexed paragraphs) accessible via `search_botschaft` (topical FTS5 across the verbatim corpus), `get_article_purpose` (verbatim Botschaft text for a specific article), and `get_article_history` (chronological timeline composing statute + Botschaft + leading cases + commentary); per-article digests (legislative intent, key arguments, design choices, rejected alternatives) for BV and BGFA; parliamentary debate transcripts for the BV. **Full verbatim ingest to ~25K Botschaften via Fedlex SPARQL discovery is scaling.**
-- **Decision-structure access** — `get_decision_structure` (Sachverhalt + Erwägungen + Dispositiv + Regeste split), `get_erwaegung` (verbatim Schweizer-citation Einheit, e.g. `get_erwaegung("BGE 140 III 86", "2.3")`), `get_regeste` (official BGer/BVGer/BStGer head-note)
+- **Decision-structure access** — `get_decision_structure` (Sachverhalt + Erwägungen + Dispositiv + Regeste split), `get_erwaegung` (verbatim Schweizer-citation Einheit, e.g. `get_erwaegung("BGE 136 III 513", "2.3")`), `get_regeste` (official BGer/BVGer/BStGer head-note)
 - Scholarly commentary lookup from OnlineKommentar.ch + OpenLegalCommentary.ch (1,131 commentaries)
 - **Fallbearbeitung exam questions** generated from real BGE fact patterns, with hidden analysis for practice
 - Draft mock decisions from fact patterns (research-only tool for grounding LLM outputs)
 - Structured case briefs (regeste, Sachverhalt, Erwägungen, Dispositiv, cited statutes, authority)
 
-**Multiple access paths** — same data, two distinct audiences:
+**Multiple access paths** — chat with your AI, automate research, or download the corpus:
 
-*For LLM users, researchers and developers — full 24-tool surface:*
+*For LLM users, researchers and developers:*
 - Remote MCP server at `mcp.opencaselaw.ch` (SSE + Streamable HTTP) — 30-second setup in any MCP client (Claude, ChatGPT, Cursor, Gemini, Windsurf)
 - [OpenAI-compatible tool definitions](docs/openai-tools.json) for Grok/xAI and any function-calling LLM API
 - Local MCP server — full offline capability, all 44 tools (the 2 local-only update tools are available offline), ~65 GB disk
-- 30-route REST API with [interactive documentation](https://mcp.opencaselaw.ch/api/docs) (Swagger UI + OpenAPI spec)
+- [Lightweight research CLI](docs/research-cli.md) — JSON/JSONL, batch input, saved evidence bundles and citation resolution; install from `clients/python/`
+- REST API with [interactive documentation](https://mcp.opencaselaw.ch/api/docs) (Swagger UI + OpenAPI spec)
 - Bulk Parquet download via the [HuggingFace dataset](https://huggingface.co/datasets/voilaj/swiss-caselaw) (~7 GB)
 - Live dashboard + browsing UI at [opencaselaw.ch](https://opencaselaw.ch)
 
@@ -177,7 +205,7 @@ There are eight ways to use it, depending on what you need:
 | [**Legislation Search**](#legislation-tools) | Legal professionals | LexFind-backed discovery search with `fetch_top_n_texts` for single-call natural-language workflows |
 | [**Education tools**](#education-tools) | Law students, instructors | Structured case briefs, doctrine timelines, real-BGE exam questions with hidden analysis |
 | [**Word Add-in**](https://word.opencaselaw.ch/install.html) | Legal practitioners writing briefs | Insert formatted Swiss citations into Word · click Erwägung / § to insert with correct sub-reference · free **Audit** (5-rail citation check) · **Pro** (CHF 5/mo, 25 AI calls/day): **Verify** (citation vs. full text) · **Strengthen** (paragraph x-ray + leading-case suggestions) · **Find Support** (decisions backing a statement) · **Reflect** (literary mirror) — curated ~8-tool subset |
-| [**REST API / Download**](#2-download-the-dataset) | Developers, data scientists, NLP researchers | 30-route REST API, bulk Parquet download via HuggingFace (~7 GB) |
+| [**REST API / Download**](#2-download-the-dataset) | Developers, data scientists, NLP researchers | Research REST API, bulk Parquet download via HuggingFace (~7 GB) |
 | [**Web UI**](https://opencaselaw.ch) | Everyone | Live dashboard with corpus stats, daily delta, top movers, multilingual browsing |
 
 > **Not sure where to start?** Connect to the [remote MCP server](#option-a-remote-server-recommended) — works with Claude, ChatGPT, and Gemini CLI. Instant access to all 1,050,000+ decisions, citation analysis, statute lookup, legislation search, and education tools, no download needed.

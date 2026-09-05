@@ -38,17 +38,19 @@ def rows() -> list[dict]:
     ]
 
 
-# ── the invariant: flag off changes nothing ───────────────────────────────
+# ── flag off preserves text without attaching a widget ───────────────────
 
-def test_flag_off_search_decisions_returns_a_plain_list(monkeypatch):
+def test_flag_off_search_decisions_keeps_text_and_research_data(monkeypatch):
     assert mcp_server.OCL_UI_WIDGETS is False
     assert mcp_server._DECISION_TOOL_META is None
     monkeypatch.setattr(mcp_server, "search_fts5", lambda **k: (rows()[:1], 1))
     monkeypatch.setattr(mcp_server, "_pinpoint_enrich_results", lambda *a, **k: None)
     out = asyncio.run(mcp_server._handle_call_tool_inner(
         "search_decisions", {"query": "Kündigung"}))
-    assert isinstance(out, list), "widget wiring changed the default return shape"
-    assert out[0].text.startswith("Found 1 decisions")
+    content, structured = out
+    assert content[0].text.startswith("Found 1 decisions")
+    assert structured["results"][0]["decision_id"] == rows()[0]["decision_id"]
+    assert "decisions" not in structured, "disabled widget payload must remain absent"
 
 
 def test_flag_off_tool_carries_no_widget_meta():
