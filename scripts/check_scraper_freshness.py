@@ -273,6 +273,17 @@ KNOWN_GAP_OFFSETS: dict[str, dict] = {
                     "listing signature as gr_gerichte, on a different scraper "
                     "implementation",
     },
+    "fr_gerichte": {
+        "gap": 11,
+        "verified": "2026-09-05",
+        "evidence": "OCL_SCRAPER_RESCAN_ALL=1 covered ALL 14685 portal rows "
+                    "in 735 pages, 30.8 min, 0 errors, +0 new against 14674 "
+                    "known ids; 2 NoneReturns are listing rows without a "
+                    "download link (102 2026 223, 601 2026 45), the other 9 "
+                    "are duplicate listings — the gr_gerichte signature on "
+                    "the same Tribuna implementation. The gap held at exactly "
+                    "11 across the 09-03, 09-04 and 09-05 nightly runs",
+    },
     # NOT added, deliberately: ju_gerichte (29), ne_gerichte (45) and
     # ne_jurisprudence_adm (37) also returned +0 new on 2026-08-25, but their
     # logs show urllib3 retries EXHAUSTING against the portals through the
