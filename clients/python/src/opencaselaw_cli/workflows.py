@@ -1037,7 +1037,8 @@ def load_coverage(client) -> tuple[list[dict], str | None]:
     pack = getattr(client, "pack_path", None)
     if pack and Path(pack).is_file():
         try:
-            con = sqlite3.connect(f"file:{Path(pack)}?mode=ro&immutable=1", uri=True)
+            from .local import _sqlite_uri  # URI-safe on Windows too (drive letters, spaces, %)
+            con = sqlite3.connect(_sqlite_uri(Path(pack)), uri=True)
             try:
                 rows = [{"court": r[0], "canton": r[1], "decisions": r[2], "first_year": r[3], "last_year": r[4]}
                         for r in con.execute("SELECT court, canton, decisions, first_year, last_year FROM courts")]
