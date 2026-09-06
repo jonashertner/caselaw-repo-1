@@ -108,6 +108,16 @@ versioned separately (`x-opencaselaw-contract-version` in `/api/research/openapi
   ("statutes not available offline"), never an error; cantonal acts and
   `as_of` editions stay online-only. `ocl --local laws get OR --article 41`
   works with the same file.
+- Windows installer for machines without Python (courts, managed desktops):
+  `OpenCaseLaw-CLI-<version>-setup.exe`, built by
+  `.github/workflows/installer-cli.yml` on every `cli-v*` tag from
+  `clients/python/installer/`. Ships the python.org embeddable runtime
+  (3.13.7, PSF-signed, digest pinned) and this package under
+  `Program Files\OpenCaseLaw` with `ocl.cmd`, a "Send to" entry
+  "Entwurf prüfen (offline)" (`ocl check DRAFT --local`, then opens the
+  report) and a Start-menu entry that runs `ocl pack pull`. SHA-256 file and
+  build provenance attestation on the release; not yet Authenticode-signed.
+  Install notes for court IT: `docs/court-it-install.md`.
 
 ## 0.7.0 (2026-09-06)
 

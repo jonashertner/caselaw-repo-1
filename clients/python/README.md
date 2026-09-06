@@ -9,6 +9,13 @@ Dependency-free Python 3.10+; JSON when piped, readable text at a terminal.
 pipx install opencaselaw-cli        # or: uv tool install opencaselaw-cli
 ```
 
+**Windows installer.** For machines without Python, each release ships
+`OpenCaseLaw-CLI-<version>-setup.exe`: the python.org runtime plus this
+package under `Program Files\OpenCaseLaw`, `ocl.cmd`, a "Send to" entry
+"Entwurf prüfen (offline)" and a Start-menu entry for `ocl pack pull`. Built
+by `.github/workflows/installer-cli.yml` from `installer/`; notes for court IT
+(allow-listing, mirrors, verification) in `docs/court-it-install.md`.
+
 ## Two jobs
 
 **Check a draft as it is**: `ocl check memo.docx` reads the Word file

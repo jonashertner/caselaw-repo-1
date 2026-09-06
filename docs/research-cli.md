@@ -27,6 +27,14 @@ virtual environment is refused by Homebrew and Debian Pythons (PEP 668).
 Upgrade with `pipx upgrade opencaselaw-cli` (or `uv tool upgrade
 opencaselaw-cli`). The source lives in `clients/python` of the repository.
 
+Windows without Python (a court's managed desktop): each `cli-v*` release on
+GitHub carries `OpenCaseLaw-CLI-<version>-setup.exe`, which installs the
+python.org runtime and this client under `Program Files\OpenCaseLaw` with
+`ocl.cmd`, a "Send to" entry "Entwurf prüfen (offline)" that runs
+`ocl check DRAFT --local` and opens the report, and a Start-menu entry for
+`ocl pack pull`. What it installs, how to allow-list and verify it, and how to
+mirror the pack: [court-it-install.md](court-it-install.md) (German).
+
 Every command is a read-only call to the public service at
 `mcp.opencaselaw.ch`. Nothing is downloaded, no account or key is needed.
 Queries are subject to the [privacy notice](https://opencaselaw.ch/datenschutz/);
