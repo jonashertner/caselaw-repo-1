@@ -11,7 +11,12 @@ pipx install opencaselaw-cli        # or: uv tool install opencaselaw-cli
 
 ## Two jobs
 
-**Check the citations in a draft**, written the way lawyers write them:
+**Check a draft as it is**: `ocl check memo.docx` reads the Word file
+(footnotes included), finds the citations and the quotations next to them,
+checks every one, and writes `memo.check.html` next to the draft with what
+held and what needs attention.
+
+**Check a list of citations**, written the way lawyers write them:
 
 ```sh
 ocl citations resolve 'BGE 136 III 513 E. 2.3' 'BGer 4A_747/2012 vom 5. April 2013' \

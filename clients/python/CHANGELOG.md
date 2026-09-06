@@ -4,6 +4,16 @@ The client follows semantic versioning. The research API contract it consumes is
 versioned separately (`x-opencaselaw-contract-version` in `/api/research/openapi.json`).
 
 
+## 0.7.0 (2026-09-06)
+
+- `ocl check memo.docx`: hand over the draft itself. The document is read
+  (Word including footnotes, Markdown, HTML, text), the citations and the
+  quotations next to them are found in the prose, every one is checked, and
+  a report is written next to the draft (`memo.check.html`; a `.md` name
+  gives Markdown): what held, what needs attention, and what to do. Exit 4
+  when anything needs attention. `--format json` returns the rows and the
+  found citations for scripts.
+
 ## 0.6.0 (2026-09-06)
 
 - Offline mode. `ocl pack pull` downloads the verification pack (one SQLite

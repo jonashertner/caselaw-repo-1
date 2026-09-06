@@ -32,7 +32,8 @@ Python 3.10+, no dependencies. Non-interactive; never prompts.
 
 | job | command |
 |---|---|
-| check citations in a draft | `ocl citations resolve --input refs.jsonl --format jsonl` |
+| check a whole draft (docx/md/html/txt) | `ocl check memo.docx --format json --no-report` (rows + found citations; `--report x.md` for a person) |
+| check citations in a list | `ocl citations resolve --input refs.jsonl --format jsonl` |
 | check quotations | `ocl quotes check --input quotes.jsonl --format jsonl` |
 | a citation string to copy | `ocl cite '<reference>' --pinpoint 2.3` |
 | find decisions | `ocl decisions search '<terms>' --max-results 20 --format jsonl` |
