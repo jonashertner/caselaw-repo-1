@@ -246,6 +246,16 @@ def build_parser(config: dict | None = None):
     _input(resolve, "references", "references such as 'BGE 136 III 513' or '4A_747/2012'")
     resolve.add_argument("--language", choices=["de", "fr", "it"], default=lang, help="language of the returned citation string (default: de; OCL_LANGUAGE)")
 
+    check = commands.add_parser("check", parents=[common], formatter_class=fmt, help="check every citation and quotation in a draft (Word, Markdown, text) and write a report",
+                                description=("Read a draft (.docx including footnotes, .md, .txt, .html), find the citations and the quotations next to them, "
+                                             "check each one against the corpus, and write a report you can open (HTML, or Markdown with a .md report name). "
+                                             "Exit 4 when anything needs attention. Citations are read as written; the report shows the service's citation strings and the served wording."),
+                                epilog="examples:\n  ocl check memo.docx\n  ocl check memo.docx --report memo-check.md\n  ocl check memo.docx --format json --no-report\n")
+    check.add_argument("draft", help="the draft: .docx, .md, .txt or .html")
+    check.add_argument("--report", metavar="FILE", help="where to write the report (default: <draft>.check.html next to the draft; a .md name gives Markdown)")
+    check.add_argument("--no-report", action="store_true", help="do not write a report file")
+    check.add_argument("--language", choices=["de", "fr", "it"], default=lang, help="language of the returned citation strings (default: de; OCL_LANGUAGE)")
+
     quotes = commands.add_parser("quotes", parents=[common], formatter_class=fmt, help="check quotations against the served text",
                                  description="Quotations: does what the draft puts in quotation marks stand in the decision it is attributed to?")
     quote_actions = quotes.add_subparsers(dest="action", required=True)
@@ -1016,7 +1026,7 @@ def pack_command(args):
 
 
 def run(args, client):
-    if args.command in ("bundle", "quotes") or (args.command == "citations" and args.action == "resolve"):
+    if args.command in ("bundle", "quotes", "check") or (args.command == "citations" and args.action == "resolve"):
         from . import workflows
         return workflows.run(args, client)
     if args.command == "completion":

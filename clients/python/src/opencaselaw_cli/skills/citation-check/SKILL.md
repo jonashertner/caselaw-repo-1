@@ -11,13 +11,16 @@ Erwägung. Existence is checked against the corpus; legal support is not.
 
 ## Steps
 
-1. Extract every citation from the text into `references.jsonl`, one JSON line
+1. If the draft is a file (.docx, .md, .html, .txt), run
+   `ocl check <draft> --format json --no-report > check.json`: the citations
+   and the quotations next to them are found in the prose and checked in one
+   go (install: `pipx install opencaselaw-cli` or `uv tool install opencaselaw-cli`).
+   Otherwise extract every citation into `references.jsonl`, one JSON line
    each, exactly as the author wrote it, long form included:
-   `{"reference": "BGer 4A_747/2012 vom 5. April 2013, E. 3.2"}`. A pinpoint
-   written in the reference is read from it; use the separate `pinpoint` field
-   only when the number is not part of the reference.
+   `{"reference": "BGer 4A_747/2012 vom 5. April 2013, E. 3.2"}`, with a
+   `quote` field for quoted passages.
 2. Run `ocl citations resolve --input references.jsonl --format jsonl > resolution.jsonl`
-   (install: `pipx install opencaselaw-cli` or `uv tool install opencaselaw-cli`).
+   for a list; the rows have the same shape as `check`'s `results`.
 3. Read every row. `resolved` means the decision exists and carries a label the
    author wrote (and the pinpoint, if any, exists: `pinpoint_status: retrieved`).
    `pinpoint_unavailable` means the decision exists but the numbered passage is

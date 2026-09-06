@@ -875,17 +875,12 @@ def _resolve_one(client, item, language):
     return row
 
 
-def resolve_citations(args, client):
-    # Use the same strict JSONL/plain-line input grammar as core get commands.
-    from .cli import read_inputs
-    inputs = read_inputs(args, field="reference")
-    if not inputs:
-        raise ValueError("Provide references, --input FILE or --stdin")
+def resolve_rows(client, inputs: list[dict], language: str = "de", jobs: int = DEFAULT_JOBS) -> dict:
+    """Resolve prepared rows ({"reference", "pinpoint"?, "quote"?, ...}); the report shape of `citations resolve`."""
     if len(inputs) > 1000:
         raise ValueError("Resolve at most 1000 references per invocation")
     results = []
-    language = args.language or "de"
-    jobs = _jobs(args)
+    jobs = max(1, min(int(jobs), 8))
     consecutive_transport_failures = 0
     with ThreadPoolExecutor(max_workers=jobs) as pool:
         for start in range(0, len(inputs), jobs):
@@ -912,7 +907,41 @@ def resolve_citations(args, client):
             "client_version": __version__, "base_url": client.base_url, "generated_at": _now(),
             "status": "complete" if complete else "partial", "results": results, "counts": counts,
             "requests": getattr(client, "requests", None),
-            "scope": "Decision existence and requested pinpoint retrieval in the OpenCaseLaw corpus; no assessment of legal support or original-source accuracy"}, 0 if complete else 4
+            "scope": "Decision existence and requested pinpoint retrieval in the OpenCaseLaw corpus; no assessment of legal support or original-source accuracy"}
+
+
+def resolve_citations(args, client):
+    # Use the same strict JSONL/plain-line input grammar as core get commands.
+    from .cli import read_inputs
+    inputs = read_inputs(args, field="reference")
+    if not inputs:
+        raise ValueError("Provide references, --input FILE or --stdin")
+    report = resolve_rows(client, inputs, args.language or "de", _jobs(args))
+    return report, 0 if report["status"] == "complete" else 4
+
+
+def check_document(args, client):
+    """`ocl check DRAFT`: read the draft, find its citations and quotations, check them, write a report."""
+    from .documents import find_citations, read_document
+    from .report import render_html, render_markdown, summarize
+    source = Path(args.draft).expanduser()
+    if not source.is_file():
+        raise ValueError(f"draft not found: {source}")
+    paragraphs = read_document(source)
+    found = find_citations(paragraphs)
+    rows = [{"reference": f["reference"], **({"quote": f["quote"]} if f.get("quote") else {}), "paragraph": f["paragraph"]} for f in found]
+    report = resolve_rows(client, rows, args.language or "de", _jobs(args)) if rows else {
+        "schema_version": SCHEMA_VERSION, "kind": "opencaselaw-citation-resolution", "client_version": __version__,
+        "base_url": client.base_url, "generated_at": _now(), "status": "complete", "results": [], "counts": {}, "requests": getattr(client, "requests", None)}
+    summary = summarize(report, source.name)
+    report_path = None
+    if not getattr(args, "no_report", False):
+        target = Path(args.report).expanduser() if getattr(args, "report", None) else source.with_name(source.stem + ".check.html")
+        text = render_markdown(report, source.name, found) if target.suffix.lower() in (".md", ".markdown") else render_html(report, source.name, found)
+        target.write_text(text, encoding="utf-8")
+        report_path = str(target)
+    report.update(kind="opencaselaw-draft-check", source=str(source), paragraphs=len(paragraphs), found=found, summary=summary, report_path=report_path)
+    return report, 0 if summary["attention"] == 0 else 4
 
 
 def _load_manifest(directory):
@@ -1031,6 +1060,8 @@ def run(args, client):
         return resolve_citations(args, client)
     if args.command == "quotes" and args.action == "check":
         return check_quotes(args, client)
+    if args.command == "check":
+        return check_document(args, client)
     raise ValueError("Unknown research workflow")
 
 

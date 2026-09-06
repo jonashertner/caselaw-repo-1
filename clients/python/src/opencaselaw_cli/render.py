@@ -457,6 +457,26 @@ def render_skills(value: dict, s: Style, width: int) -> str:
     return "\n".join(lines or [s.dim("nothing to do")])
 
 
+def render_check(value: dict, s: Style, width: int) -> str:
+    from .report import _detail, _label
+    summary = value.get("summary") or {}
+    lines = [s.bold(f"{summary.get('source')}") + s.dim(f"  {value.get('paragraphs', 0)} paragraphs read, {summary.get('checked', 0)} citations found")]
+    rows = value.get("results") or []
+    attention = [r for r in rows if _label(r)[0] != "verified"]
+    for r in attention:
+        label, advice = _label(r)
+        colour = s.red if label in ("not found", "detail wrong", "quotation not found", "not verifiable") else s.yellow
+        lines.append(f"  {colour(label)}{' ' * max(1, 20 - len(label))}{r.get('reference')}")
+        detail = _detail(r)
+        lines += [s.dim(l) for l in _wrap(advice + (" " + detail if detail else ""), width, "      ")]
+    verified = len(rows) - len(attention)
+    lines += ["", (s.green(f"{verified} verified") + s.dim(f", {len(attention)} need attention") if rows else s.dim("no citations found in the document"))]
+    if value.get("report_path"):
+        lines.append(s.dim(f"report: {value['report_path']}"))
+    lines.append(s.dim("Existence, identity and wording only; no assessment of legal support."))
+    return "\n".join(lines)
+
+
 def render_bundle_verification(value: dict, s: Style, width: int) -> str:
     counts = value.get("counts") or {}
     lines = [_status(s, str(value.get("status", ""))) + "  " + s.bold(str(value.get("bundle", ""))),
@@ -543,6 +563,8 @@ def render(value, args, s: Style, width: int) -> str:
         return render_resolution(value, s, width)
     if command == "quotes":
         return render_quotes(value, s, width)
+    if command == "check":
+        return render_check(value, s, width)
     if command == "tool":
         return render_tool(value, s, width)
     if command == "doctor":

@@ -56,7 +56,22 @@ results.
 
 ## Two jobs it does well
 
-### Check the citations in a draft
+### Check a draft as it is
+
+Hand over the document and read the report:
+
+```bash
+ocl check memo.docx
+```
+
+The draft is read (Word with its footnotes, Markdown, HTML or text), the
+citations and the quotations next to them are found in the prose, each is
+checked, and `memo.check.html` is written next to the draft: what held, what
+needs attention, and what to do about it. `--report notes.md` writes Markdown
+instead. The command exits 4 when anything needs attention, so a script or an
+agent can branch on it; `--format json` returns the rows.
+
+### Check the citations in a list
 
 Before a brief goes out, you want to know that every cited decision exists,
 that every pinpointed Erwägung is really there, and that what the draft says
