@@ -4,6 +4,33 @@ The client follows semantic versioning. The research API contract it consumes is
 versioned separately (`x-opencaselaw-contract-version` in `/api/research/openapi.json`).
 
 
+## 0.8.0 (unreleased)
+
+- `ocl check` checks the statutes a draft cites as well as the decisions.
+  References in German, French and Italian are found in the prose
+  (`Art. 8 Abs. 1 ZGB`, `art. 335 al. 1 CO`, `art. 8 cpv. 1 CC`, chains such
+  as `Art. 8, 9 und 10 ZGB`, `Art. 41 ff. OR`, `SR 210`, and cantonal acts
+  with the paragraph sign: `§ 12 Abs. 2 StG/ZH`, `§ 18 VRG (ZH)`); the
+  grammar is the server's statute audit grammar. Each is looked up
+  (`/api/laws/{abbreviation}?article=`) and reported as `statute_found`,
+  `article_missing`, `article_empty` (repealed or empty in the current
+  edition), `law_unknown`, `unverifiable` (a `§` reference without a canton,
+  or statutes not available offline) or `error`; a quotation next to the
+  reference is compared with the served article text (`exact`, `near`,
+  `not_found`). The report gets a "Statutes" table (as written, finding,
+  what to do, an excerpt of the served text), the terminal a short block,
+  the JSON a `statutes` list and `statutes_*` summary counts.
+  `article_missing`, `article_empty`, `law_unknown` and a differing
+  quotation exit 4; `unverifiable` does not. `OCL_CANTON=ZH` routes bare
+  `§` references to that canton.
+- Offline, `--local` answers `/api/laws` from a statutes database placed next
+  to the verification pack (`statutes.sqlite`, or the file `OCL_STATUTES`
+  names; the schema of `search_stack/build_statutes_db.py`), opened
+  read-only and immutable. Without it, statute rows are `unverifiable`
+  ("statutes not available offline"), never an error; cantonal acts and
+  `as_of` editions stay online-only. `ocl --local laws get OR --article 41`
+  works with the same file.
+
 ## 0.7.0 (2026-09-06)
 
 - `ocl check memo.docx`: hand over the draft itself. The document is read

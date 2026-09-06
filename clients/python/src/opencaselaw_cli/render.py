@@ -471,6 +471,8 @@ def render_check(value: dict, s: Style, width: int) -> str:
         lines += [s.dim(l) for l in _wrap(advice + (" " + detail if detail else ""), width, "      ")]
     verified = len(rows) - len(attention)
     lines += ["", (s.green(f"{verified} verified") + s.dim(f", {len(attention)} need attention") if rows else s.dim("no citations found in the document"))]
+    from .statutes import statutes_terminal
+    lines += statutes_terminal(value, s, width, _wrap)  # statute rows, when the draft cites any
     if value.get("report_path"):
         lines.append(s.dim(f"report: {value['report_path']}"))
     lines.append(s.dim("Existence, identity and wording only; no assessment of legal support."))

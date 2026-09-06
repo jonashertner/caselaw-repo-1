@@ -69,7 +69,10 @@ _FEDERAL = re.compile(r"(?<![A-Za-z0-9/])" + _COURT_PREFIX + r"(?:\d[A-Z]{1,2}[ 
 _CANTONAL_COURT = r"(?:Ober|Kantons|Verwaltungs|Handels|Bezirks|Appellations|Sozialversicherungs|Steuerrekurs)gericht(?:s)?|Tribunal\s+cantonal|Cour\s+de\s+justice|Tribunale\s+(?:d'appello|cantonale)|OGer|KGer|VGer|Gericht|Tribunal|Kantonsgerichts"
 _CANTONAL = re.compile(r"(?<![A-Za-z0-9])(?:(?:Urteil|Entscheid|Beschluss|arrêt|décision|sentenza)\s+(?:des|der|du|de\s+la|del|della)?\s*)?(?:" + _CANTONAL_COURT +
                        r")[^\n.;()«»]{0,40}?((?:[A-Z]{1,6}\.\d{4}\.\d{1,6}|[A-Z]{2}\d{6}(?:-[A-Z](?:_U\d+)?)?|[A-Za-zÀ-ÿ]{1,8} ?/ ?\d{1,6} ?/ ?\d{1,6}|[A-Z]{1,3} \d{4}/\d{1,4}|\d{3} \d{2} \d{1,4}|[A-Z]{2,4}\d? (?:19|20)\d{2} \d{1,4}|[A-Za-z]{2,6} \d{4}(?:/\d{2,4})? Nr\. \d{1,5}))" + _DATE + _PIN)
-_QUOTE = re.compile(r"[«„“\"‘']([^»“”\"’']{25,600})[»“”\"’']")
+# Paired marks first («…», „…“, “…”, "…"; an apostrophe inside is part of the
+# quotation), then single marks only where they cannot be an apostrophe
+# ("l'art. 335" opened a quotation before).
+_QUOTE = re.compile(r"[«„“\"]([^«»„“”\"]{25,600})[»“”\"]|(?<![A-Za-zÀ-ÿ0-9])[‘']([^‘’']{25,600})[’'](?![A-Za-zÀ-ÿ0-9])")
 
 
 def find_citations(paragraphs: list[str]) -> list[dict]:
@@ -88,7 +91,7 @@ def find_citations(paragraphs: list[str]) -> list[dict]:
             if start < last_end:
                 continue
             kept.append((start, end, text)); last_end = end
-        quotes = [(m.start(), m.end(), m.group(1).strip()) for m in _QUOTE.finditer(paragraph)]
+        quotes = [(m.start(), m.end(), (m.group(1) or m.group(2) or "").strip()) for m in _QUOTE.finditer(paragraph)]
         for start, end, text in kept:
             parsed = parse_reference(text)
             if not (parsed.bge_label or parsed.dockets):
@@ -107,3 +110,11 @@ def find_citations(paragraphs: list[str]) -> list[dict]:
             found.append({"reference": text, "paragraph": index + 1, "context": paragraph[max(0, start - 60):end + 60].strip(),
                           **({"quote": quote} if quote else {})})
     return found
+
+
+# ── finding statute references in prose ───────────────────────────────────
+def find_statutes(paragraphs: list[str]) -> list[dict]:
+    """Statute references ("Art. 8 Abs. 1 ZGB", "art. 335 al. 1 CO", "§ 18 VRG (ZH)", "SR 210")
+    with the quotation next to them; the grammar and the rows live in `statutes.py`."""
+    from .statutes import find_statute_references
+    return find_statute_references(paragraphs, quote_pattern=_QUOTE)

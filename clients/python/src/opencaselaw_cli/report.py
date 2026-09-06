@@ -7,6 +7,7 @@ import html
 from datetime import datetime, timezone
 
 from ._version import __version__
+from .statutes import statutes_html, statutes_markdown, summarize_statutes  # statute rows: their own table, see statutes.py
 
 _LABELS = {
     "resolved": ("verified", "The decision exists and carries this label; the cited passage was retrieved."),
@@ -68,7 +69,8 @@ def summarize(result: dict, source: str) -> dict:
     verified = [r for r in rows if _label(r)[0] == "verified"]
     return {"source": source, "checked": len(rows), "verified": len(verified), "attention": len(attention),
             "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"), "client_version": __version__,
-            "base_url": result.get("base_url"), "requests": result.get("requests")}
+            "base_url": result.get("base_url"), "requests": result.get("requests"),
+            **summarize_statutes(result.get("statutes") or [])}
 
 
 def render_markdown(result: dict, source: str, found: list[dict]) -> str:
@@ -91,8 +93,10 @@ def render_markdown(result: dict, source: str, found: list[dict]) -> str:
             pin = f", E. {r['pinpoint']}" if r.get("pinpoint") else ""
             lines.append(f"- {r.get('reference')} → {_citation(r)}{pin}" + (" (quotation verbatim)" if (r.get('quote_check') or {}).get('quote_status') == 'exact' else ""))
         lines.append("")
+    lines += statutes_markdown(result.get("statutes") or [])
     lines += ["## Scope", "", "Existence, identity and wording only: whether each cited decision exists and carries the label as written, "
               "whether the cited Erwägung exists, whether dates and dockets match the record, and whether quotations stand in the served text. "
+              "For statutes: whether the act exists and has the article, and whether a quotation stands in the served article text. "
               "Not whether a decision supports the argument or is still good law.", ""]
     return "\n".join(lines)
 
@@ -127,6 +131,8 @@ def render_html(result: dict, source: str, found: list[dict]) -> str:
             quote = (r.get("quote_check") or {}).get("quote_status")
             parts.append(f"<tr><td><code>{e(str(r.get('reference')))}</code></td><td>{e(_citation(r))}</td><td class=\"ok\">{e(pin)}{' · quotation verbatim' if quote == 'exact' else ''}</td></tr>")
         parts.append("</table>")
+    parts += statutes_html(result.get("statutes") or [], e)
     parts.append("<h2>Scope</h2><p class=\"muted\">Existence, identity and wording only: whether each cited decision exists and carries the label as written, whether the cited Erwägung exists, "
-                 "whether dates and dockets match the record, and whether quotations stand in the served text. Not whether a decision supports the argument or is still good law.</p></body></html>")
+                 "whether dates and dockets match the record, and whether quotations stand in the served text. For statutes: whether the act exists and has the article, "
+                 "and whether a quotation stands in the served article text. Not whether a decision supports the argument or is still good law.</p></body></html>")
     return "\n".join(parts)

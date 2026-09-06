@@ -920,9 +920,52 @@ def resolve_citations(args, client):
     return report, 0 if report["status"] == "complete" else 4
 
 
+def check_statute_rows(client, rows: list[dict], language: str = "de", jobs: int = DEFAULT_JOBS,
+                       default_canton: str | None = None) -> list[dict]:
+    """The statute references a draft cites (rows from `documents.find_statutes`): does the act
+    exist, does it have the article, does the quotation next to it stand in the served text.
+    One request per distinct (canton, act, article); every field reported is the answer's own.
+    Offline, a missing statutes database makes rows `unverifiable`, never `error`."""
+    from .statutes import classify_law_error, classify_law_response, law_request
+    specs = [law_request(row, language, default_canton) for row in rows]
+    keyed = {key: (path, params) for path, params, key in specs if path}
+
+    def fetch(key):
+        path, params = keyed[key]
+        try:
+            return _get(client, path, params), None
+        except APIError as error:
+            return None, error
+
+    answers = {}
+    if keyed:
+        with ThreadPoolExecutor(max_workers=max(1, min(int(jobs), 8))) as pool:
+            answers = dict(zip(list(keyed), pool.map(fetch, list(keyed))))
+    results = []
+    for row, (path, reason, key) in zip(rows, specs):
+        out = {"reference": row["reference"], "law": row.get("law"), "article": row.get("article")}
+        out.update({k: row[k] for k in ("paragraph", "letter", "canton", "sr_number", "paragraph_index", "context") if row.get(k) is not None})
+        out.update(checked_at=_now(), legal_support_assessed=False)
+        if path is None:
+            out.update(status="unverifiable", reason=reason)
+        else:
+            result, error = answers[key]
+            out.update(classify_law_error(error) if error is not None else classify_law_response(result, row.get("article")))
+        if isinstance(row.get("quote"), str) and row["quote"].strip():
+            out["quote"] = row["quote"]
+            if out.get("article_text"):
+                found = match_quote(row["quote"], out["article_text"])
+                found["found_in"] = "article"
+                out["quote_check"] = found
+            else:
+                out["quote_check"] = {"quote_status": "unverifiable", "ratio": 0.0, "reason": "no article text served"}
+        results.append(out)
+    return results
+
+
 def check_document(args, client):
     """`ocl check DRAFT`: read the draft, find its citations and quotations, check them, write a report."""
-    from .documents import find_citations, read_document
+    from .documents import find_citations, find_statutes, read_document
     from .report import render_html, render_markdown, summarize
     source = Path(args.draft).expanduser()
     if not source.is_file():
@@ -933,6 +976,12 @@ def check_document(args, client):
     report = resolve_rows(client, rows, args.language or "de", _jobs(args)) if rows else {
         "schema_version": SCHEMA_VERSION, "kind": "opencaselaw-citation-resolution", "client_version": __version__,
         "base_url": client.base_url, "generated_at": _now(), "status": "complete", "results": [], "counts": {}, "requests": getattr(client, "requests", None)}
+    # statutes: their own rows, checked after the decisions so the request counter covers both
+    from os import environ
+    statutes_found = find_statutes(paragraphs)
+    report["statutes"] = check_statute_rows(client, statutes_found, args.language or "de", _jobs(args),
+                                            getattr(args, "canton", None) or environ.get("OCL_CANTON") or None) if statutes_found else []
+    report["requests"] = getattr(client, "requests", None)
     summary = summarize(report, source.name)
     report_path = None
     if not getattr(args, "no_report", False):
@@ -940,8 +989,9 @@ def check_document(args, client):
         text = render_markdown(report, source.name, found) if target.suffix.lower() in (".md", ".markdown") else render_html(report, source.name, found)
         target.write_text(text, encoding="utf-8")
         report_path = str(target)
-    report.update(kind="opencaselaw-draft-check", source=str(source), paragraphs=len(paragraphs), found=found, summary=summary, report_path=report_path)
-    return report, 0 if summary["attention"] == 0 else 4
+    report.update(kind="opencaselaw-draft-check", source=str(source), paragraphs=len(paragraphs), found=found, statutes_found=statutes_found,
+                  summary=summary, report_path=report_path)
+    return report, 0 if summary["attention"] == 0 and not summary.get("statutes_attention") else 4
 
 
 def _load_manifest(directory):

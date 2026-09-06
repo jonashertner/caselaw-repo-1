@@ -57,6 +57,12 @@ passes a whole object; `--stdin` runs one call per JSONL row.
 `ambiguous` (several carriers; name the court) · `unrecognized` (the service's
 proposal carries no label you wrote; see `service_candidate`, never cite it).
 Quotes: `exact` · `near` (differences listed) · `not_found`.
+Statutes (`ocl check`, the `statutes` list): `statute_found` · `law_found`
+(SR number only) · `article_missing` · `article_empty` (repealed or empty in
+the current edition) · `law_unknown` · `unverifiable` (a `§` reference
+without a canton, or statutes not available offline; never exit 4) ·
+`error`. A quotation next to the reference gets a `quote_check` against the
+served article text. `OCL_CANTON=ZH` routes bare `§` references.
 
 ## Rules that are not optional
 
@@ -74,7 +80,9 @@ Quotes: `exact` · `near` (differences listed) · `not_found`.
 With `--local` nothing about the draft leaves the machine: identity, pinpoints
 and quotations are checked against the pack (no full texts, no search, no
 tools). `ocl pack info` shows the snapshot's generation; results carry
-`offline: true`.
+`offline: true`. Federal statutes are checked offline when `statutes.sqlite`
+sits next to the pack (or `OCL_STATUTES` names the file); otherwise statute
+rows are `unverifiable`, not errors.
 
 ## Skills
 
