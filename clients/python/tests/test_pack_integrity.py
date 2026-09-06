@@ -403,7 +403,7 @@ def test_schema_gate_on_open(tmp_path, capsys):
     assert "schema 3" in message and f"opencaselaw-cli {__version__}" in message and "schema 1 to 2" in message and "Upgrade" in message
     with pytest.raises(APIError, match="schema 3"):
         local.pack_report(too_new)
-    with pytest.raises(APIError, match="not a verification pack"):
+    with pytest.raises(ValueError, match="not a verification pack"):   # invalid input: exit 2 through the CLI
         LocalClient(_tiny_pack(tmp_path / "np.sqlite", with_meta=False, filler_rows=0))
     with pytest.raises(APIError, match="not a verification pack"):
         LocalClient(Path(__file__))
