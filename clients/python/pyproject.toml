@@ -11,6 +11,31 @@ requires-python = ">=3.10"
 license = "MIT"
 license-files = ["LICENSE"]
 dependencies = []
+keywords = ["swiss law", "case law", "citations", "legal research", "cli", "opencaselaw", "bundesgericht", "bge"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Legal Industry",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Text Processing",
+    "Topic :: Utilities",
+]
+
+[project.urls]
+Homepage = "https://opencaselaw.ch/cli/"
+Documentation = "https://opencaselaw.ch/research-cli.md"
+Source = "https://github.com/jonashertner/opencaselaw/tree/main/clients/python"
+Changelog = "https://github.com/jonashertner/opencaselaw/blob/main/clients/python/CHANGELOG.md"
+Issues = "https://github.com/jonashertner/opencaselaw/issues"
+"Agent skill" = "https://github.com/jonashertner/opencaselaw/blob/main/clients/python/skills/citation-check/SKILL.md"
 
 [project.scripts]
 ocl = "opencaselaw_cli.cli:main"

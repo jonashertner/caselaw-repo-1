@@ -3,6 +3,11 @@
 The client follows semantic versioning. The research API contract it consumes is
 versioned separately (`x-opencaselaw-contract-version` in `/api/research/openapi.json`).
 
+## 0.3.1 (2026-09-06)
+
+Packaging only: project links, classifiers and keywords on PyPI; a README
+that says what the tool does. No code changes.
+
 ## 0.3.0 (2026-09-05)
 
 A field test by five agents (179 round trips over French, Italian, German,
