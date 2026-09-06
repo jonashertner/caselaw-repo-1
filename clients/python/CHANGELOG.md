@@ -4,6 +4,42 @@ The client follows semantic versioning. The research API contract it consumes is
 versioned separately (`x-opencaselaw-contract-version` in `/api/research/openapi.json`).
 
 
+## 0.8.0 (unreleased)
+
+- The `ocl check` report says what was established and no more. A cited
+  decision "exists" and, where a pinpoint was cited, its "passage retrieved"
+  (never "verified"); the passage number stands next to the finding, not
+  appended to the service's citation string. The scope statement (existence,
+  identity and wording only; not whether a decision supports the argument or
+  is still good law) stands above the results in HTML, Markdown and at the
+  terminal. `summary` carries `exists`, `passages_retrieved` and `unparsed`
+  (`verified` is gone).
+- New quotation status `unverifiable` (`reason: "no served text"`): nothing
+  was compared, because no indexed passage answered the pinpoint and the
+  decision text is not served in this mode (offline, the pack has no full
+  texts). The report labels it "quotation not checked" with the advice to
+  check against the decision. `not_found` is now only ever the result of a
+  real comparison and always carries the served text it was compared with.
+  `quotes check` rows read `quote_status: unverifiable`, status
+  `quote_unverifiable`; exit codes are unchanged (4).
+- "Not in the corpus" is qualified by coverage. A missing reference carries
+  `coverage`: the court read from the reference (label, court word, canton)
+  and, when obtainable, the corpus's decision count and year span for that
+  court (online from the `list_courts` tool, offline from the pack's new
+  `courts` table); the advice reads "Check the citation. If the decision is
+  unpublished or is the decision under appeal, it cannot be in any corpus."
+  The verification pack is schema 2 (a `courts` table grouped from its own
+  decisions); the client tolerates schema-1 packs.
+- Silent recall made visible: after the citations are found, docket-like
+  strings and collection references (ZR, Pra, GVP, BVR, RBOG, SJZ, AJP, JdT,
+  SJ, RDAF) that did not become a checked reference are listed under
+  "Possibly citations, not checked" (JSON: `unparsed`). They are not
+  attention items and do not affect the exit code; their number is in the
+  summary line.
+- `--language de|fr|it` drives the report's labels, advice, headings and
+  scope statement; English for anything else. The CLI's default language is
+  `de`, so a report without `--language` reads German.
+
 ## 0.7.0 (2026-09-06)
 
 - `ocl check memo.docx`: hand over the draft itself. The document is read

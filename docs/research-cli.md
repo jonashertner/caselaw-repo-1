@@ -66,10 +66,30 @@ ocl check memo.docx
 
 The draft is read (Word with its footnotes, Markdown, HTML or text), the
 citations and the quotations next to them are found in the prose, each is
-checked, and `memo.check.html` is written next to the draft: what held, what
-needs attention, and what to do about it. `--report notes.md` writes Markdown
-instead. The command exits 4 when anything needs attention, so a script or an
-agent can branch on it; `--format json` returns the rows.
+checked, and `memo.check.html` is written next to the draft: what exists,
+what needs attention, and what to do about it. `--report notes.md` writes
+Markdown instead. The command exits 4 when anything needs attention, so a
+script or an agent can branch on it; `--format json` returns the rows.
+
+The report says only what was established. Its scope statement stands above
+the results: existence, identity and wording only; not whether a decision
+supports the argument or is still good law. A cited decision "exists" and,
+where a pinpoint was cited, its "passage retrieved"; it is never "verified".
+A quotation is "verbatim", "differs" or "not found" only after a served text
+was compared; when no text could be compared (offline, the pack carries no
+full texts, so a quotation next to a citation without an indexed pinpoint has
+nothing to stand against) it is "not checked", with the advice to check
+against the decision. A reference that is "not in the corpus" is qualified
+by what the corpus holds for the court the reference names, read from the
+reference itself (label, court word, canton), with the corpus's decision
+count and year span for that court when the service or the pack can supply
+it: an unpublished decision or the decision under appeal cannot be in any
+corpus, a wrong citation can be. Strings that look like dockets or
+collection references (ZR, Pra, GVP, SJZ, JdT, ...) but were not read as a
+citation are listed under "possibly citations, not checked", so a miss is
+never silent; they are not attention items. `--language de|fr|it` sets the
+language of the report's labels and advice (the CLI's default is `de`);
+anything else reads English.
 
 ### Check the citations in a list
 
@@ -134,7 +154,10 @@ ocl quotes check --input quotes.jsonl --format jsonl     # rows: {"reference": .
 `quote_status` is `exact` (verbatim once typography, OCR line hyphenation,
 whitespace and the service's link markup are folded), `near` (the best match
 scores 90% or better; the differing spans and the served wording are listed)
-or `not_found` (the closest served text and its score are still shown).
+or `not_found` (the closest served text and its score are still shown). When
+no served text could be compared at all (offline without an indexed
+pinpoint, since the pack carries no full texts) the status is `unverifiable`
+with `reason: "no served text"`: not a verdict, check against the decision.
 `found_in` says whether the match lies in the cited Erwägung or elsewhere in
 the decision. The served wording is authoritative and is never rewritten;
 exit code 4 unless every quotation is exact. A `quote` field on a
@@ -237,7 +260,9 @@ decisions, because the corpus is rebuilt nightly.
   means the quotation stands verbatim in the served text after folding
   typography and line breaks; `near` means it differs (the spans are
   listed: quote wording against served wording); `not_found` means no
-  window of the text comes close. Never repair a quotation from the
+  window of the compared text comes close (the closest window is in
+  `served`); `unverifiable` means nothing was compared because no text was
+  served (`reason: "no served text"`). Never repair a quotation from the
   differences by hand: copy the served wording.
 - Passage `text` is the served string; the service marks cross-references
   inside it as Markdown links. `text_plain` is the same text with those links

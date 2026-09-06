@@ -5,10 +5,13 @@ needs to check citations, pinpoints and quotations offline.
     python scripts/build_verification_pack.py --decisions-db output/decisions.db \\
         --structure-db output/decision_structure.db --output output/dataset/verification_pack.sqlite
 
-Contents (schema_version 1): decision metadata with the service's own citation
+Contents (schema_version 2): decision metadata with the service's own citation
 strings (built by mcp_server._build_citation_strings, so R1 holds offline),
-docket aliases, canonical representations, and every indexed Erwägung
-paragraph with its text zlib-compressed per row. No full texts: the pack is
+docket aliases, canonical representations, every indexed Erwägung paragraph
+with its text zlib-compressed per row, and a `courts` table (court, canton,
+decisions, first_year, last_year; schema 2) grouped from the pack's own
+decisions so the offline report can qualify "not in the corpus" by the court's
+coverage. Clients tolerate packs without it. No full texts: the pack is
 for verification, not for reading. Read-only on its inputs; writes a .tmp and
 renames it. The pipeline runs it weekly (publish.py step 3b) and uploads the
 gzip to the HuggingFace mirror; `ocl pack pull` fetches it.
@@ -27,9 +30,10 @@ import zlib
 from datetime import datetime, timezone
 from pathlib import Path
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 SCHEMA = """
 CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT);
+CREATE TABLE courts (court TEXT, canton TEXT, decisions INTEGER, first_year TEXT, last_year TEXT, PRIMARY KEY (court, canton));
 CREATE TABLE decisions (
     decision_id TEXT PRIMARY KEY, court TEXT, canton TEXT, language TEXT, decision_date TEXT,
     docket_number TEXT, docket_number_2 TEXT, citation_string_de TEXT, citation_string_fr TEXT,
@@ -117,6 +121,13 @@ def build(decisions_db: Path, structure_db: Path, output: Path, *, repo_dir: Pat
         rows_out += len(batch)
     pack.commit()
     _log(f"decisions {rows_out:,} in {time.time() - started:.0f}s")
+    # Per-court coverage, from the pack's own decisions table, so the offline report
+    # can say what "not in the corpus" means for the court a reference names.
+    pack.execute("INSERT OR REPLACE INTO courts SELECT court, canton, COUNT(*), "
+                 "substr(MIN(decision_date), 1, 4), substr(MAX(decision_date), 1, 4) FROM decisions "
+                 "WHERE court IS NOT NULL GROUP BY court, canton")
+    pack.commit()
+    _log(f"courts {pack.execute('SELECT COUNT(*) FROM courts').fetchone()[0]:,}")
     try:
         aliases = dec.execute("SELECT alias_docket_norm, canonical_decision_id FROM decision_docket_aliases").fetchall()
         pack.executemany("INSERT INTO aliases VALUES (?, ?)", [(r[0], r[1]) for r in aliases])

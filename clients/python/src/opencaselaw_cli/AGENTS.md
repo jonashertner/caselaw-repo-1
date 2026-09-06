@@ -56,7 +56,20 @@ passes a whole object; `--stdin` runs one call per JSONL row.
 (date or docket written next to the label contradicts the record) · `missing` ·
 `ambiguous` (several carriers; name the court) · `unrecognized` (the service's
 proposal carries no label you wrote; see `service_candidate`, never cite it).
-Quotes: `exact` · `near` (differences listed) · `not_found`.
+A `missing` row of `ocl check` carries `coverage`: the court read from the
+reference (`inferred.label`, `court_word`, `canton`) and, when obtainable,
+the corpus's `decisions`, `first_year`, `last_year` for it (`source`:
+`list_courts` online, `pack` offline, null when neither answered). An
+unpublished ruling or the decision under appeal is expected to be absent.
+Quotes: `exact` · `near` (differences listed) · `not_found` (a served text
+was compared; it is in `served`) · `unverifiable` (`reason: "no served
+text"`: nothing was compared, typically offline without an indexed pinpoint;
+check against the decision, never treat as "not found").
+`ocl check` also returns `unparsed`: docket-like strings and collection
+references (ZR, Pra, GVP, ...) that were not read as a citation and were not
+checked; `summary` counts `checked`, `exists`, `passages_retrieved`,
+`attention`, `unparsed`. The report's labels follow `--language` (de, fr,
+it; English otherwise).
 
 ## Rules that are not optional
 
