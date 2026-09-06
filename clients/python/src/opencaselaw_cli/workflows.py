@@ -949,6 +949,8 @@ def check_statute_rows(client, rows: list[dict], language: str = "de", jobs: int
         if path is None:
             out.update(status="unverifiable", reason=reason)
         else:
+            if key[0] != "CH":
+                out["canton"] = key[0]  # the canton the act was asked in (written, or the default for bare § references)
             result, error = answers[key]
             out.update(classify_law_error(error) if error is not None else classify_law_response(result, row.get("article")))
         if isinstance(row.get("quote"), str) and row["quote"].strip():

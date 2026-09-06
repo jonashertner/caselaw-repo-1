@@ -150,9 +150,10 @@ def test_online_rows_are_classified_from_the_service_answer(monkeypatch):
     # the canton reaches the service as a parameter, never as part of the abbreviation
     assert ("/api/laws/StG", {"article": "12", "language": "de", "canton": "ZH"}) in client.calls
     # a default canton (OCL_CANTON or --canton) routes bare § references
-    with_canton = workflows.check_statute_rows(law_service(), [r for r in rows if r["law"] == "GOG"], default_canton="zh")
-    assert with_canton[0]["status"] == "law_unknown" or with_canton[0]["status"] == "error"  # GOG is not in the fake; it was asked with canton=ZH
-    assert law_service().calls == []
+    routed = law_service()
+    with_canton = workflows.check_statute_rows(routed, [r for r in rows if r["law"] == "GOG"], default_canton="zh")
+    assert routed.calls == [("/api/laws/GOG", {"article": "7", "language": "de", "canton": "ZH"})]
+    assert with_canton[0]["status"] == "article_missing" and with_canton[0]["canton"] == "ZH"  # the fake's default answer holds Art. 41 only
     labels = {r["reference"]: statute_label(r)[0] for r in checked}
     assert labels["Art. 999 ZGB"] == "article not in the act" and labels["Art. 1 XYZ"] == "act not found" and labels["§ 7 GOG"] == "not checked"
     states = {r["reference"]: statute_state(r) for r in checked}
