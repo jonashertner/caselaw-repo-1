@@ -3,8 +3,7 @@
 The client follows semantic versioning. The research API contract it consumes is
 versioned separately (`x-opencaselaw-contract-version` in `/api/research/openapi.json`).
 
-
-## 0.8.0 (unreleased)
+## 0.8.0 (2026-09-06)
 
 - Offline mode is safe on the thread pool. `LocalClient` shared one SQLite
   connection across the `--jobs` workers; a draft with many references
@@ -170,8 +169,6 @@ with a contract an agent can rely on.
   `evidence-bundle`; `ocl skills list|show|install --claude|--dir`.
 - `ocl agent-guide` prints the agent guide (contract, commands, statuses,
   rules); `opencaselaw_cli.api` is the same functionality as a library.
-
-
 
 - `ocl quotes check`: quotations verified against the cited Erwägung and the
   decision text, with `exact` / `near` (differing spans, served wording) /

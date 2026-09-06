@@ -95,7 +95,7 @@ und `*.hf.co`, sind möglich) und entpackt sie nach
 `%LOCALAPPDATA%\ocl\verification_pack.sqlite`. Das Paket ist eine SQLite-Datei
 mit Metadaten aller Entscheide, den Zitierstrings des Dienstes, den
 Aktenzeichen-Aliassen und allen indexierten Erwägungen (CC0). Geschätzte
-Grösse: 8 bis 9 GB komprimiert, entsprechend mehr entpackt; genaue Zahlen
+Grösse: Schätzung 8 bis 9 GB komprimiert (die gemessene Zahl steht nach dem ersten wöchentlichen Paket in `ocl pack info`), entsprechend mehr entpackt; genaue Zahlen
 zeigt `ocl pack info` nach dem Laden.
 
 Die Prüfung eines Entwurfs (`check-draft.cmd`, `ocl check ... --local`) öffnet

@@ -45,6 +45,8 @@ def build(embed_zip: Path, wheel: Path, out: Path, *, launcher_dir: Path = HERE)
         raise SystemExit(f"not an opencaselaw_cli wheel: {wheel.name}")
     version = match.group("version")
     if out.exists():
+        if any(out.iterdir()) and not (out / "TREE.json").is_file():
+            raise SystemExit(f"{out} is not empty and holds no TREE.json from an earlier build; refusing to delete it")
         shutil.rmtree(out)
     out.mkdir(parents=True)
 
@@ -72,7 +74,7 @@ def build(embed_zip: Path, wheel: Path, out: Path, *, launcher_dir: Path = HERE)
         for info in zf.infolist():
             name = info.filename
             top = name.split("/", 1)[0]
-            if name.startswith("..") or "\\" in name or Path(name).is_absolute():
+            if ".." in Path(name).parts or "\\" in name or Path(name).is_absolute():
                 raise SystemExit(f"refusing wheel entry {name!r}")
             if top.endswith(".data"):
                 continue  # scripts/ entry points: the launcher replaces them

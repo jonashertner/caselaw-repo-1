@@ -57,6 +57,7 @@ _EN = {
     "d_inferred": "read as {name}, label {label}",
     "d_coverage": "{name}: {n} decisions {first}–{last} in the corpus; unpublished decisions and the decision under appeal are expected to be absent",
     "d_coverage_none": "{name}: no coverage figure available in this mode",
+    "d_coverage_nomatch": "{name}: the corpus has no separate collection for this court; a wrong citation is possible, an unpublished decision is expected to be absent",
     "verbatim": "quotation verbatim",
     "canton": "canton {canton}",
     "footer": "{exists} exist ({passages} with the cited passage retrieved), {attention} need attention, {unparsed} possibly citations, not checked",
@@ -104,6 +105,7 @@ _DE = {
     "d_inferred": "gelesen als {name}, Bezeichnung {label}",
     "d_coverage": "{name}: {n} Entscheide {first}–{last} im Korpus; unpublizierte Entscheide und der angefochtene Entscheid fehlen erwartungsgemäss",
     "d_coverage_none": "{name}: in diesem Modus keine Abdeckungsangabe verfügbar",
+    "d_coverage_nomatch": "{name}: der Korpus führt keine eigene Sammlung dieses Gerichts; ein Zitierfehler ist möglich, ein unpublizierter Entscheid fehlt erwartungsgemäss",
     "verbatim": "Zitat wörtlich",
     "canton": "Kanton {canton}",
     "footer": "{exists} vorhanden ({passages} mit abgerufener Erwägung), {attention} zu prüfen, {unparsed} möglicherweise Zitate, nicht geprüft",
@@ -151,6 +153,7 @@ _FR = {
     "d_inferred": "lu comme {name}, référence {label}",
     "d_coverage": "{name}: {n} décisions {first}–{last} dans le corpus; les décisions non publiées et la décision attaquée en sont normalement absentes",
     "d_coverage_none": "{name}: aucune donnée de couverture disponible dans ce mode",
+    "d_coverage_nomatch": "{name}: le corpus ne tient pas de collection propre pour ce tribunal; une erreur de citation est possible, une décision non publiée en est normalement absente",
     "verbatim": "citation textuelle",
     "canton": "canton {canton}",
     "footer": "{exists} existent ({passages} avec le considérant cité récupéré), {attention} à examiner, {unparsed} citations possibles, non vérifiées",
@@ -198,6 +201,7 @@ _IT = {
     "d_inferred": "letto come {name}, riferimento {label}",
     "d_coverage": "{name}: {n} decisioni {first}–{last} nel corpus; le decisioni non pubblicate e la decisione impugnata ne sono di regola assenti",
     "d_coverage_none": "{name}: nessun dato di copertura disponibile in questa modalità",
+    "d_coverage_nomatch": "{name}: il corpus non tiene una raccolta propria per questo tribunale; un errore di citazione è possibile, una decisione non pubblicata ne è di regola assente",
     "verbatim": "citazione testuale",
     "canton": "canton {canton}",
     "footer": "{exists} esistono ({passages} con il considerando citato recuperato), {attention} da esaminare, {unparsed} possibili citazioni, non verificate",
@@ -303,6 +307,8 @@ def coverage_line(coverage: dict | None, language: str = "en") -> str:
     if coverage.get("decisions") is not None:
         return t(language, "d_coverage", name=name, n=fmt_int(language, coverage["decisions"]),
                  first=coverage.get("first_year") or "?", last=coverage.get("last_year") or "?")
+    if coverage.get("source"):
+        return t(language, "d_coverage_nomatch", name=name)
     return t(language, "d_coverage_none", name=name)
 
 

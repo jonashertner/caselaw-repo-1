@@ -157,8 +157,8 @@ def unparsed_candidates(paragraphs: list[str], found: list[dict]) -> list[dict]:
 
 
 # ── finding statute references in prose ───────────────────────────────────
-def find_statutes(paragraphs: list[str]) -> list[dict]:
+def find_statutes(paragraphs: list[str], claimed_quotes=None) -> list[dict]:
     """Statute references ("Art. 8 Abs. 1 ZGB", "art. 335 al. 1 CO", "§ 18 VRG (ZH)", "SR 210")
     with the quotation next to them; the grammar and the rows live in `statutes.py`."""
     from .statutes import find_statute_references
-    return find_statute_references(paragraphs, quote_pattern=_QUOTE)
+    return find_statute_references(paragraphs, quote_pattern=_QUOTE, claimed_quotes=claimed_quotes)

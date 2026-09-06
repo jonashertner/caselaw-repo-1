@@ -94,6 +94,8 @@ def _check_schema(meta: dict, path: Path) -> None:
     """Refuse a pack whose schema major version is above SUPPORTED_SCHEMA_MAJOR,
     naming both versions; tables a newer minor version adds are simply unused."""
     version = meta.get("schema_version")
+    if version is None and "decisions" in meta:
+        version = "1"  # the first packs carried the key; a pack without it is read as schema 1
     try:
         major = int(str(version).strip().split(".")[0])
     except (TypeError, ValueError):
@@ -395,6 +397,8 @@ def _published_digest(url: str, *, opener, timeout: float) -> tuple[str | None, 
         raise APIError(exc.code, f"checksum fetch failed: HTTP {exc.code} for {where}") from None
     except URLError as exc:
         raise APIError(None, f"checksum fetch failed: {exc.reason} ({where})") from None
+    except (OSError, http.client.HTTPException) as exc:  # a stalled or reset connection before any headers
+        raise APIError(None, f"checksum fetch failed: {type(exc).__name__}: {exc} ({where})") from None
     return _parse_digest(text, where), where
 
 
@@ -446,6 +450,8 @@ def _open_download(url: str, offset: int, validator: str | None, *, opener, time
         raise APIError(exc.code, f"download failed: HTTP {exc.code} for {url}") from None
     except URLError as exc:
         raise APIError(None, f"download failed: {exc.reason} ({url})") from None
+    except (OSError, http.client.HTTPException) as exc:  # a stalled or reset connection before any headers
+        raise APIError(None, f"download failed: {type(exc).__name__}: {exc} ({url}); run `ocl pack pull` again to resume") from None
 
 
 def _content_range_start(value) -> int | None:
@@ -632,6 +638,9 @@ def pull(destination: Path | None = None, *, url: str = PACK_URL, opener=None, l
         tmp_db.unlink(missing_ok=True)
         raise OSError(f"cannot replace {destination} ({exc}); close other ocl processes that use the pack and run `ocl pack pull` again: "
                       f"the verified download is kept in {part}") from None
+    except OSError as exc:
+        tmp_db.unlink(missing_ok=True)
+        raise OSError(f"cannot install the pack at {destination} ({exc}); the verified download is kept in {part}") from None
     size_db = destination.stat().st_size
     record = {"pack": destination.name, "bytes": size_db, "pack_sha256": pack_digest, "gzip_sha256": actual, "gzip_bytes": size,
               "verified": expected is not None, "checksum_url": where if expected is not None else None, "source_url": url,

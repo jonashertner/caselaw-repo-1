@@ -20,7 +20,10 @@ Erwägung. Existence is checked against the corpus; legal support is not.
    `{"reference": "BGer 4A_747/2012 vom 5. April 2013, E. 3.2"}`, with a
    `quote` field for quoted passages.
 2. Run `ocl citations resolve --input references.jsonl --format jsonl > resolution.jsonl`
-   for a list; the rows have the same shape as `check`'s `results`.
+   for a list; the rows have the same shape as `check`'s `results`. `check` also
+   returns `statutes` (Art./§ references: `statute_found`, `article_missing`,
+   `article_empty`, `law_unknown`, `unverifiable`, `error`) and `unparsed`
+   (citation-like strings that were not checked); report both.
 3. Read every row. `resolved` means the decision exists and carries a label the
    author wrote (and the pinpoint, if any, exists: `pinpoint_status: retrieved`).
    `pinpoint_unavailable` means the decision exists but the numbered passage is

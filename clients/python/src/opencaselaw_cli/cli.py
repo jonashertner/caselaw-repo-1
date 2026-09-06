@@ -99,7 +99,7 @@ def _common():
     parser.add_argument("--cache", metavar="DIR", help="cache responses in DIR, keyed by the server's database generation (OCL_CACHE)")
     parser.add_argument("--local", action="store_true",
                         help="offline: answer from the verification pack on this machine (OCL_LOCAL=1). Covers check, citations resolve, "
-                             "cite, decisions passage/get, quotes check, bundles and doctor; no search, laws or tools")
+                             "cite, decisions passage/get, quotes check, bundles and doctor; federal statutes when statutes.sqlite sits next to the pack; no search or tools")
     parser.add_argument("--pack", metavar="PATH",
                         help="the pack file for --local (default: the one `ocl pack pull` stored in the user data directory; OCL_PACK)")
     return parser
@@ -273,7 +273,10 @@ def build_parser(config: dict | None = None):
     check.add_argument("draft", help="the draft: .docx, .md, .txt or .html")
     check.add_argument("--report", metavar="FILE", help="where to write the report (default: <draft>.check.html next to the draft; a .md name gives Markdown)")
     check.add_argument("--no-report", action="store_true", help="do not write a report file")
-    check.add_argument("--language", choices=["de", "fr", "it"], default=lang, help="language of the returned citation strings (default: de; OCL_LANGUAGE)")
+    check.add_argument("--language", choices=["de", "fr", "it", "en"], default=lang,
+                       help="language of the report and of the returned citation strings (default: de; OCL_LANGUAGE; en: English report, German citation strings)")
+    check.add_argument("--statutes", metavar="FILE", help="offline: statutes database for the statute checks (default: statutes.sqlite next to the pack; OCL_STATUTES)")
+    check.add_argument("--canton", metavar="XX", help="canton for bare § references such as \"§ 18 VRG\" (OCL_CANTON)")
 
     quotes = commands.add_parser("quotes", parents=[common], formatter_class=fmt, help="check quotations against the served text",
                                  description="Quotations: does what the draft puts in quotation marks stand in the decision it is attributed to?")
@@ -708,7 +711,11 @@ def create_client(args):
     log = (lambda line: print("ocl: " + line, file=sys.stderr)) if getattr(args, "verbose", False) else None
     if getattr(args, "local", False):
         from .local import LocalClient
-        return LocalClient(pack_path(args), log=log)  # a missing or unreadable pack is a ValueError: exit 2, no traceback
+        if getattr(args, "statutes", None):
+            os.environ["OCL_STATUTES"] = str(Path(args.statutes).expanduser())  # read by statutes.local_law
+        return LocalClient(pack_path(args), log=log)
+    if getattr(args, "pack", None):
+        print("ocl: --pack given without --local; checking online (add --local to stay on this machine)", file=sys.stderr)  # a missing or unreadable pack is a ValueError: exit 2, no traceback
     return Client(base_url=args.base_url, timeout=args.timeout, retries=args.retries, log=log,
                   cache_dir=getattr(args, "cache", None) or None)
 
@@ -1223,7 +1230,8 @@ def main(argv=None):
         if argv is None:
             argv = sys.argv[1:]
         args = parser.parse_args(_reorder_tool_call(list(argv)))
-        value, code = run(args, create_client(args))
+        needs_client = args.command not in ("completion", "skills", "agent-guide", "pack", "__complete")
+        value, code = run(args, create_client(args) if needs_client else None)
         emit(value, args)
         if code:
             _diagnostic("some requested items failed or did not resolve; see the output for details", args)

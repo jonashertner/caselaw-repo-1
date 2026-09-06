@@ -62,6 +62,8 @@ INVALID_LAWS = frozenset({
     "OG", "OGER", "BG", "BGE", "BGER", "BGB", "EG", "IG", "VG", "RR",
     "EN", "DE", "FR", "IT",
     "UND", "ODER", "BZW", "USW", "ET", "OU", "EE", "OD",
+    # generic nouns that fill the law slot in prose ("Art. 5 Verordnung", "Art. 9 Abs. 1 SR 210")
+    "VERORDNUNG", "BUNDESGESETZ", "GESETZ", "REGLEMENT", "ORDONNANCE", "LOI", "LEGGE", "ORDINANZA", "REGOLAMENTO", "SR", "RS",
 })
 
 
@@ -108,9 +110,12 @@ def _rows_from_match(kind: str, m: re.Match, text: str) -> list[dict]:
     return rows
 
 
-def find_statute_references(paragraphs: list[str], quote_pattern=None) -> list[dict]:
+def find_statute_references(paragraphs: list[str], quote_pattern=None, claimed_quotes=None) -> list[dict]:
     """Statute references in document order, one row per article named, deduplicated by
-    written form; the quotation within 300 characters is attached as `quote`."""
+    written form; the quotation within 300 characters is attached as `quote`. A quotation
+    in `claimed_quotes` (already attached to a decision citation) belongs to that decision
+    and is never attached to an article."""
+    claimed = {" ".join(str(q).split()) for q in (claimed_quotes or ())}
     found: list[dict] = []
     seen: dict = {}
     for index, paragraph in enumerate(paragraphs):
@@ -121,6 +126,7 @@ def find_statute_references(paragraphs: list[str], quote_pattern=None) -> list[d
         spans.sort(key=lambda s: (s[0], s[1]))
         quotes = [(q.start(), q.end(), (q.group(1) or (q.group(2) if q.re.groups > 1 else "") or "").strip())
                   for q in quote_pattern.finditer(paragraph)] if quote_pattern else []
+        quotes = [q for q in quotes if " ".join(q[2].split()) not in claimed]
         last_end = -1
         for start, neg_end, kind, m in spans:
             end = -neg_end
@@ -383,7 +389,8 @@ class LocalStatutes:
     def _connection(self):
         con = getattr(self._local, "con", None)
         if con is None:
-            con = sqlite3.connect(f"file:{self.path}?mode=ro&immutable=1", uri=True)
+            from .local import _sqlite_uri  # the pack's URI builder: spaces, %, # and ? in paths survive
+            con = sqlite3.connect(_sqlite_uri(self.path), uri=True)
             con.row_factory = sqlite3.Row
             self._local.con = con
         return con
@@ -480,6 +487,10 @@ def local_law(pack_path, abbreviation: str, params: dict | None = None) -> dict:
     if path is None or not path.is_file():
         return {"error": "statutes not available offline: no statutes.sqlite next to the verification pack and OCL_STATUTES is not set",
                 "unavailable": True, "offline": True}
-    reader = _reader(path)
-    return reader.law(abbreviation=None if abbreviation in ("_", "") else abbreviation, sr_number=params.get("sr_number"),
-                      article=params.get("article"), language=str(params.get("language") or "de"))
+    try:
+        reader = _reader(path)
+        return reader.law(abbreviation=None if abbreviation in ("_", "") else abbreviation, sr_number=params.get("sr_number"),
+                          article=params.get("article"), language=str(params.get("language") or "de"))
+    except (sqlite3.Error, ValueError, OSError) as exc:  # not a statutes database, unreadable, wrong schema: not checked, never a crash
+        return {"error": f"statutes database {path} is not usable ({type(exc).__name__}: {exc}); statute references were not checked",
+                "unavailable": True, "offline": True}

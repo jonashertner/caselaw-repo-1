@@ -964,7 +964,7 @@ def infer_court(reference: str) -> dict:
     head = parsed.core
     word = None
     for m in _COURT_WORD.finditer(head):
-        word = re.sub(r"(gericht)(?:s|es)$", r"\1", m.group(1))   # "des Obergerichts" names the Obergericht
+        word = re.sub(r"(?i)(gericht)(?:s|es)$", r"\1", m.group(1))   # "des Obergerichts" names the Obergericht
         break
     stem = None
     if word:
@@ -1019,13 +1019,20 @@ def _coverage_rows(value) -> list[dict]:
 def load_coverage(client) -> tuple[list[dict], str | None]:
     """Per-court coverage of the corpus: online from the list_courts tool, offline from the
     pack's courts table (schema 2). ([], None) when neither is available; never raises."""
+    if not getattr(client, "offline", False):
+        try:  # the REST court list first (live today), then the list_courts tool
+            rows = _coverage_rows(client.get("/api/courts"))
+            if rows:
+                return rows, "api_courts"
+        except Exception:  # noqa: BLE001 - coverage is a qualification, never a reason to fail the check
+            pass
     tool_json = getattr(client, "tool_json", None)
-    if callable(tool_json):
+    if callable(tool_json) and not getattr(client, "offline", False):
         try:
             rows = _coverage_rows(tool_json("list_courts", {}))
             if rows:
                 return rows, "list_courts"
-        except Exception:  # noqa: BLE001 - coverage is a qualification, never a reason to fail the check
+        except Exception:  # noqa: BLE001
             pass
     pack = getattr(client, "pack_path", None)
     if pack and Path(pack).is_file():
@@ -1128,11 +1135,12 @@ def check_document(args, client):
     if not source.is_file():
         raise ValueError(f"draft not found: {source}")
     language = args.language or "de"
+    cite_language = language if language in ("de", "fr", "it") else "de"  # the service builds citation strings in de/fr/it; en is a report language
     paragraphs = read_document(source)
     found = find_citations(paragraphs)
     unparsed = unparsed_candidates(paragraphs, found)
     rows = [{"reference": f["reference"], **({"quote": f["quote"]} if f.get("quote") else {}), "paragraph": f["paragraph"]} for f in found]
-    report = resolve_rows(client, rows, language, _jobs(args)) if rows else {
+    report = resolve_rows(client, rows, cite_language, _jobs(args)) if rows else {
         "schema_version": SCHEMA_VERSION, "kind": "opencaselaw-citation-resolution", "client_version": __version__,
         "base_url": client.base_url, "generated_at": _now(), "status": "complete", "results": [], "counts": {}, "requests": getattr(client, "requests", None)}
     missing = [r for r in report["results"] if r.get("status") == "missing"]
@@ -1147,8 +1155,8 @@ def check_document(args, client):
     report["unparsed"] = unparsed
     # statutes: their own rows, checked after the decisions so the request counter covers both
     from os import environ
-    statutes_found = find_statutes(paragraphs)
-    report["statutes"] = check_statute_rows(client, statutes_found, args.language or "de", _jobs(args),
+    statutes_found = find_statutes(paragraphs, claimed_quotes=[f["quote"] for f in found if f.get("quote")])  # a decision's quotation never lands on an article
+    report["statutes"] = check_statute_rows(client, statutes_found, cite_language, _jobs(args),
                                             getattr(args, "canton", None) or environ.get("OCL_CANTON") or None) if statutes_found else []
     report["requests"] = getattr(client, "requests", None)
     summary = summarize(report, source.name, language)
