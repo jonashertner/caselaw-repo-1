@@ -22,6 +22,15 @@ class FakeMcp:
     def mcp_tools(self):
         return TOOLS
 
+    def tool_json(self, name, arguments=None):
+        result = self.mcp_call(name, arguments)
+        structured = result.get("structuredContent")
+        value = dict(structured) if isinstance(structured, dict) else {"text": "\n".join(c.get("text", "") for c in result.get("content", []))}
+        value["_tool"] = name
+        if result.get("isError"):
+            value["_is_error"] = True; value.setdefault("error", value.get("text"))
+        return value
+
     def mcp_call(self, name, arguments=None):
         self.calls.append((name, dict(arguments or {})))
         if name == "cite":
@@ -153,3 +162,25 @@ def test_library_facade_uses_the_same_rows():
     with pytest.raises(APIError):
         api.tool("cite", client=client, reference="BGE 999 III 1")
     assert [t["name"] for t in api.tools(client=client)] == ["cite", "find_leading_cases"]
+
+
+def test_tool_json_prefers_the_rest_endpoint_and_falls_back_to_mcp():
+    seen = []
+    def opener(request, timeout):
+        seen.append((request.get_method(), request.full_url))
+        if request.full_url.endswith("/api/tool/find_leading_cases"):
+            body = json.dumps({"cases": [{"decision_id": "a"}], "_tool": "find_leading_cases"})
+        elif request.full_url.endswith("/api/tool/old_tool"):
+            from urllib.error import HTTPError
+            raise HTTPError(request.full_url, 404, "Not Found", {}, io.BytesIO(b'{"detail": "no route"}'))
+        elif request.data:
+            body = 'data: {"jsonrpc":"2.0","id":1,"result":{"content":[{"type":"text","text":"markdown"}],"isError":false}}\n\n'
+        else:
+            body = "{}"
+        class R(io.BytesIO):
+            headers = {"Content-Type": "text/event-stream" if request.data and "tool/" not in request.full_url else "application/json"}
+        return R(body.encode())
+    client = Client(opener=opener, sleep=lambda s: None)
+    assert client.tool_json("find_leading_cases", {"query": "x"})["cases"] == [{"decision_id": "a"}]
+    fallback = client.tool_json("old_tool", {})
+    assert fallback == {"text": "markdown", "_tool": "old_tool"} and seen[-1][1].endswith("/")

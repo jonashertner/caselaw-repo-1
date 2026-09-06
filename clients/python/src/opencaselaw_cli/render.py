@@ -549,6 +549,12 @@ def render(value, args, s: Style, width: int) -> str:
         return render_doctor(value, s, width)
     if command == "skills":
         return render_skills(value, s, width)
+    if command == "pack":
+        if not value.get("installed", True):
+            return s.yellow("no pack installed") + f"  {value.get('pack')}  " + s.dim(str(value.get("hint")))
+        size = value.get("bytes")
+        return (s.green("pack") + f"  {value.get('pack')}  " + s.dim(f"{(size or 0) / 1e9:.2f} GB · generation {value.get('db_generation')} · "
+                f"{int(value.get('decisions') or 0):,} decisions · {int(value.get('paragraphs') or 0):,} Erwägungen · built {str(value.get('built_at', ''))[:19]}"))
     if command == "cite":
         return render_batch(value, s, width, render_cite) if "requested" in value else render_cite(value, s, width)
     if command == "bundle":

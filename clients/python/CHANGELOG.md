@@ -4,6 +4,20 @@ The client follows semantic versioning. The research API contract it consumes is
 versioned separately (`x-opencaselaw-contract-version` in `/api/research/openapi.json`).
 
 
+## 0.6.0 (2026-09-06)
+
+- Offline mode. `ocl pack pull` downloads the verification pack (one SQLite
+  file, published weekly on the HuggingFace mirror: decision metadata with
+  the service's own citation strings, docket aliases, canonical
+  representations, every indexed Erwägung); `ocl --local ...` then answers
+  `citations resolve`, `cite`, `decisions passage`, `decisions get`
+  (metadata), `quotes check` and bundles on this machine only. Search, laws
+  and tools say "not available offline". `ocl pack info` shows the pack's
+  generation. Full texts are not in the pack.
+- `ocl tool call` and `opencaselaw_cli.api.tool` fetch the tool's own dict
+  from the new `POST /api/tool/{name}` endpoint (fields for every tool, not
+  Markdown), falling back to the MCP call on older servers.
+
 ## 0.5.1 (2026-09-06)
 
 - `ocl tool call NAME key=value --option` accepts the pairs in any position on

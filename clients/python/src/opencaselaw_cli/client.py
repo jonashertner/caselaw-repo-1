@@ -100,10 +100,10 @@ class Client:
         return self._cached(url, None, lambda: self._request(request, url, "GET"), cacheable=path != "/health")
 
     def post_json(self, path: str, payload: dict) -> dict:
-        """POST a JSON body to the service (the MCP endpoint at the origin root)."""
-        if path not in ("/", ""):
-            raise ValueError("POST is only used for the MCP endpoint at /")
-        url = self.base_url + "/"
+        """POST a JSON body: the MCP endpoint at the origin root, or an /api/ route."""
+        if path not in ("/", "") and not path.startswith("/api/"):
+            raise ValueError("POST goes to / (MCP) or an /api/ route")
+        url = self.base_url + (path if path.startswith("/api/") else "/")
         body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
         request = Request(url, data=body, method="POST",
                           headers={"Accept": "application/json, text/event-stream", "Content-Type": "application/json",
@@ -119,6 +119,29 @@ class Client:
         if not isinstance(tools, list):
             raise APIError(None, "tools/list returned no tool list")
         return tools
+
+    def tool_json(self, name: str, arguments: dict | None = None) -> dict:
+        """The tool's own dict from POST /api/tool/{name} (servers from 2026-09-06); on an
+        older server (404 for the route) the MCP call's structured content or text."""
+        if not name or not isinstance(name, str):
+            raise ValueError("tool name required")
+        try:
+            return self.post_json("/api/tool/" + name, dict(arguments or {}))
+        except APIError as error:
+            if error.status != 404 or "Unknown tool" in (error.message or ""):
+                raise
+        result = self.mcp_call(name, arguments)
+        structured = result.get("structuredContent")
+        if isinstance(structured, dict):
+            value = dict(structured)
+        else:
+            texts = [c.get("text") for c in result.get("content", []) if isinstance(c, dict) and c.get("type") == "text"]
+            value = {"text": "\n".join(t for t in texts if isinstance(t, str))}
+        value["_tool"] = name
+        if result.get("isError"):
+            value["_is_error"] = True
+            value.setdefault("error", value.get("text") or f"{name} reported an error")
+        return value
 
     def mcp_call(self, name: str, arguments: dict | None = None) -> dict:
         """One tools/call. Returns the JSON-RPC result: content, structuredContent, isError.

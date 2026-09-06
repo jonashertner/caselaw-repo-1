@@ -205,6 +205,14 @@ _register(Target(
 ))
 
 _register(Target(
+    name="verification_pack",
+    deps=["decision_structure", "export_parquet"],
+    parallel_safe=True,
+    non_fatal=True,
+    description="Step 3b — weekly offline verification pack (Sunday): metadata, citation strings, aliases, Erwägungen; uploaded to HuggingFace",
+))
+
+_register(Target(
     name="upload_hf",
     deps=["export_parquet", "qc_gate"],
     # non_fatal: a failed HF upload does NOT mean the publish failed —

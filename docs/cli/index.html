@@ -170,6 +170,16 @@ ocl cite 'BGE 136 III 513' --pinpoint 2.3 --language fr</pre>
       <pre class="code">ocl citations list bge_BGE_140_III_86 --direction incoming --limit 50</pre>
       <p data-t="rc_agents"></p>
 
+      <h2 id="agents" data-t="agents_h">For agents</h2>
+      <p data-t="agents_p"></p>
+      <pre class="code">ocl agent-guide                  # the contract on one page: JSON, exit codes, statuses, rules
+ocl skills install --claude      # citation-check, research, evidence-bundle into ~/.claude/skills
+ocl tool list                    # every research tool of the service
+ocl tool call find_leading_cases query='Rachekündigung Art. 336 OR' limit=5
+ocl quotes check --input quotes.jsonl --format jsonl
+ocl citations resolve --input refs.jsonl --format jsonl --cache ~/.cache/ocl</pre>
+      <p data-t="agents_note"></p>
+
       <h2 id="fits" data-t="fits_h">Where it fits</h2>
       <ul>
         <li data-t="fit_chat"></li>
@@ -198,8 +208,8 @@ OCL.init({
     "cta_guide": "Vollständige Anleitung auf GitHub",
     "cta_source": "Quellcode: clients/python",
     "install_h": "Installation",
-    "install_p": "Python 3.10 oder neuer. Als Werkzeug mit <code>pipx</code> oder <code>uv</code> installieren; beide erstellen die isolierte Umgebung, die aktuelle Python-Installationen verlangen. Der Client ist auf PyPI als <code>opencaselaw-cli</code> veröffentlicht.",
-    "install_note": "Ohne pipx oder uv eine virtuelle Umgebung verwenden: <code>python3 -m venv .venv &amp;&amp; .venv/bin/pip install opencaselaw-cli</code>, dann <code>.venv/bin/ocl</code> ausführen. Ein blosses <code>pip install</code> ausserhalb einer virtuellen Umgebung lehnen Homebrew- und Debian-Python ab. Aktualisieren mit <code>pipx upgrade opencaselaw-cli</code>.",
+    "install_p": "Python 3.10 oder neuer. Von PyPI als Werkzeug mit <code>pipx</code> oder <code>uv</code> installieren; beide erstellen die isolierte Umgebung, die aktuelle Python-Installationen verlangen. <code>ocl doctor</code> prüft Verbindung, Server und Client.",
+    "install_note": "Ohne pipx oder uv eine virtuelle Umgebung verwenden: <code>python3 -m venv .venv &amp;&amp; .venv/bin/pip install opencaselaw-cli</code>, dann <code>.venv/bin/ocl</code> ausführen. Aktualisieren mit <code>pipx upgrade opencaselaw-cli</code> (oder <code>uv tool upgrade opencaselaw-cli</code>).",
     "job1_h": "1. Die Zitate eines Entwurfs prüfen",
     "job1_p": "Die Referenzen aus dem Entwurf in eine Datei schreiben, eine pro Zeile, oder als JSON-Zeilen, wenn eine Referenz eine Erwägung nennt. Jede kommt als resolved, missing oder ambiguous zurück, mit dem gefundenen Entscheid; eine genannte Erwägung gilt nur als resolved, wenn sie im Index existiert.",
     "output_label": "Am Terminal erscheint:",
@@ -224,6 +234,9 @@ OCL.init({
     "rc4": "Ein Gesetz, wie es an einem Datum galt:",
     "rc5": "Wer einen Leitentscheid zitiert:",
     "rc_agents": "Coding-Agenten wie Claude Code oder Codex führen dieselben Befehle in einer Shell aus und lesen das JSON; die Belege bleiben in Dateien, die Sie prüfen können, statt im Gedächtnis des Modells.",
+    "agents_h": "Für Agenten",
+    "agents_p": "Ein Agent braucht vier Dinge: eine Installation ohne Rückfragen, Ausgaben, die er parsen kann, Verdikte, auf die er verzweigen kann, und Regeln, die er sich nicht wegreden kann. <code>ocl</code> liefert alle vier: JSON, sobald die Ausgabe in eine Pipe geht; Exit-Codes, die das Ergebnis tragen (0 alles aufgelöst, 2 ungültige Eingabe, 3 Dienst oder Netz, 4 etwas hat sich nicht aufgelöst); <code>--cache</code>, damit Wiederholungen innerhalb einer Datenbank-Generation nichts kosten; und drei mitgelieferte Skills (Zitatprüfung, Recherche, Beleg-Ordner). <code>ocl tool call</code> erreicht jedes Recherche-Werkzeug des Dienstes.",
+    "agents_note": "Die Regeln sind nicht verhandelbar: Zitatstrings und Zitate kommen unverändert vom Dienst; ein <code>close_match</code> oder <code>service_candidate</code> ist Information für die Autorin, nie ein Ersatz; das Werkzeug stellt Existenz und Wortlaut fest, nicht die rechtliche Tragweite. <code>opencaselaw_cli.api</code> bietet dasselbe als Bibliothek.",
     "fits_h": "Wo es hingehört",
     "fit_chat": "Gespräch: Claude, ChatGPT oder einen anderen MCP-Client mit <code>mcp.opencaselaw.ch</code> verbinden (<a href=\"/mcp/\">Einrichtung pro Client</a>).",
     "fit_scripts": "Skripte, Notebooks und Agenten: <code>ocl</code> oder direkt die <a href=\"/api/\">REST-API</a>. Gleiche Datensätze, gleiche Grenzen.",
@@ -239,8 +252,8 @@ OCL.init({
     "cta_guide": "Guide complet sur GitHub",
     "cta_source": "Code source : clients/python",
     "install_h": "Installation",
-    "install_p": "Python 3.10 ou plus récent. Installez-le comme outil avec <code>pipx</code> ou <code>uv</code> ; les deux créent l’environnement isolé qu’exigent les installations Python actuelles. Le client est publié sur PyPI sous le nom <code>opencaselaw-cli</code>.",
-    "install_note": "Sans pipx ni uv, utilisez un environnement virtuel : <code>python3 -m venv .venv &amp;&amp; .venv/bin/pip install opencaselaw-cli</code>, puis lancez <code>.venv/bin/ocl</code>. Un simple <code>pip install</code> hors environnement virtuel est refusé par les Python de Homebrew et de Debian. Mise à jour : <code>pipx upgrade opencaselaw-cli</code>.",
+    "install_p": "Python 3.10 ou plus récent. Installez-le depuis PyPI comme outil avec <code>pipx</code> ou <code>uv</code> ; les deux créent l’environnement isolé qu’exigent les installations Python actuelles. <code>ocl doctor</code> vérifie la connexion, le serveur et le client.",
+    "install_note": "Sans pipx ni uv, utilisez un environnement virtuel : <code>python3 -m venv .venv &amp;&amp; .venv/bin/pip install opencaselaw-cli</code>, puis lancez <code>.venv/bin/ocl</code>. Mise à jour avec <code>pipx upgrade opencaselaw-cli</code> (ou <code>uv tool upgrade opencaselaw-cli</code>).",
     "job1_h": "1. Vérifier les citations d’un projet",
     "job1_p": "Placez les références de votre projet dans un fichier, une par ligne, ou en lignes JSON lorsqu’une référence vise un considérant. Chacune revient comme resolved, missing ou ambiguous avec la décision trouvée ; un considérant n’est resolved que s’il existe dans l’index.",
     "output_label": "Au terminal, cela affiche :",
@@ -265,6 +278,9 @@ OCL.init({
     "rc4": "Une loi telle qu’elle était en vigueur à une date :",
     "rc5": "Qui cite un arrêt de principe :",
     "rc_agents": "Les agents de code comme Claude Code ou Codex lancent les mêmes commandes depuis un shell et lisent le JSON ; les preuves restent dans des fichiers que vous pouvez contrôler, pas dans la mémoire du modèle.",
+    "agents_h": "Pour les agents",
+    "agents_p": "Un agent a besoin de quatre choses : une installation sans question, une sortie qu’il peut analyser, des verdicts sur lesquels brancher, et des règles qu’il ne peut pas contourner. <code>ocl</code> fournit les quatre : du JSON dès que la sortie est redirigée ; des codes de sortie qui portent le verdict (0 tout résolu, 2 entrée invalide, 3 service ou réseau, 4 quelque chose n’a pas été résolu) ; <code>--cache</code> pour que les répétitions au sein d’une génération de la base ne coûtent rien ; et trois skills livrés avec l’outil (contrôle des citations, recherche, dossier de preuves). <code>ocl tool call</code> atteint chaque outil de recherche du service.",
+    "agents_note": "Les règles ne se négocient pas : les libellés de citation et les citations viennent du service tels quels ; un <code>close_match</code> ou un <code>service_candidate</code> renseigne l’auteur, il ne remplace jamais rien ; l’outil établit l’existence et le libellé, pas la portée juridique. <code>opencaselaw_cli.api</code> offre la même chose sous forme de bibliothèque.",
     "fits_h": "Sa place",
     "fit_chat": "Conversation : connectez Claude, ChatGPT ou un autre client MCP à <code>mcp.opencaselaw.ch</code> (<a href=\"/mcp/\">configuration par client</a>).",
     "fit_scripts": "Scripts, notebooks et agents : <code>ocl</code>, ou directement l’<a href=\"/api/\">API REST</a>. Mêmes enregistrements, mêmes limites.",
@@ -280,8 +296,8 @@ OCL.init({
     "cta_guide": "Guida completa su GitHub",
     "cta_source": "Codice sorgente: clients/python",
     "install_h": "Installazione",
-    "install_p": "Python 3.10 o più recente. Installatelo come strumento con <code>pipx</code> o <code>uv</code>; entrambi creano l’ambiente isolato richiesto dalle installazioni Python attuali. Il client è pubblicato su PyPI come <code>opencaselaw-cli</code>.",
-    "install_note": "Senza pipx o uv, usate un ambiente virtuale: <code>python3 -m venv .venv &amp;&amp; .venv/bin/pip install opencaselaw-cli</code>, poi eseguite <code>.venv/bin/ocl</code>. Un semplice <code>pip install</code> fuori da un ambiente virtuale viene rifiutato dai Python di Homebrew e Debian. Aggiornamento: <code>pipx upgrade opencaselaw-cli</code>.",
+    "install_p": "Python 3.10 o più recente. Installatelo da PyPI come strumento con <code>pipx</code> o <code>uv</code>; entrambi creano l’ambiente isolato richiesto dalle installazioni Python attuali. <code>ocl doctor</code> verifica connessione, server e client.",
+    "install_note": "Senza pipx o uv, usate un ambiente virtuale: <code>python3 -m venv .venv &amp;&amp; .venv/bin/pip install opencaselaw-cli</code>, poi eseguite <code>.venv/bin/ocl</code>. Aggiornamento con <code>pipx upgrade opencaselaw-cli</code> (o <code>uv tool upgrade opencaselaw-cli</code>).",
     "job1_h": "1. Verificare le citazioni di una bozza",
     "job1_p": "Mettete i riferimenti della bozza in un file, uno per riga, oppure come righe JSON quando un riferimento indica un considerando. Ognuno torna come resolved, missing o ambiguous con la decisione trovata; un considerando conta come resolved solo se esiste nell’indice.",
     "output_label": "Al terminale compare:",
@@ -306,6 +322,9 @@ OCL.init({
     "rc4": "Una legge com’era in vigore a una data:",
     "rc5": "Chi cita una decisione di principio:",
     "rc_agents": "Gli agenti di codice come Claude Code o Codex eseguono gli stessi comandi da una shell e leggono il JSON; le prove restano in file che potete controllare, non nella memoria del modello.",
+    "agents_h": "Per gli agenti",
+    "agents_p": "Un agente ha bisogno di quattro cose: un’installazione senza domande, un output che possa analizzare, verdetti su cui diramarsi e regole che non possa aggirare. <code>ocl</code> fornisce tutte e quattro: JSON appena l’output va in una pipe; codici di uscita che portano il verdetto (0 tutto risolto, 2 input non valido, 3 servizio o rete, 4 qualcosa non si è risolto); <code>--cache</code> perché le ripetizioni entro una generazione della banca dati non costino nulla; e tre skill inclusi (controllo delle citazioni, ricerca, cartella delle prove). <code>ocl tool call</code> raggiunge ogni strumento di ricerca del servizio.",
+    "agents_note": "Le regole non si negoziano: le stringhe di citazione e le citazioni arrivano dal servizio così come sono; un <code>close_match</code> o un <code>service_candidate</code> è un’informazione per l’autore, mai un sostituto; lo strumento accerta esistenza e testo, non la portata giuridica. <code>opencaselaw_cli.api</code> offre lo stesso come libreria.",
     "fits_h": "Dove si colloca",
     "fit_chat": "Conversazione: collegate Claude, ChatGPT o un altro client MCP a <code>mcp.opencaselaw.ch</code> (<a href=\"/mcp/\">configurazione per client</a>).",
     "fit_scripts": "Script, notebook e agenti: <code>ocl</code>, oppure direttamente l’<a href=\"/api/\">API REST</a>. Stessi record, stessi limiti.",
@@ -321,8 +340,8 @@ OCL.init({
     "cta_guide": "Guida cumpletta sin GitHub",
     "cta_source": "Code da funtauna: clients/python",
     "install_h": "Installaziun",
-    "install_p": "Python 3.10 u pli nov. Installai il client sco utensil cun <code>pipx</code> u <code>uv</code>; omadus creeschan l’ambient isolà che las installaziuns actualas da Python pretendan. Il client è publitgà sin PyPI sco <code>opencaselaw-cli</code>.",
-    "install_note": "Senza pipx u uv duvrai in ambient virtual: <code>python3 -m venv .venv &amp;&amp; .venv/bin/pip install opencaselaw-cli</code>, lura <code>.venv/bin/ocl</code>. In simpel <code>pip install</code> ordaifer in ambient virtual vegn refusà da Python da Homebrew e da Debian. Actualisar cun <code>pipx upgrade opencaselaw-cli</code>.",
+    "install_p": "Python 3.10 u pli nov. Installai il client da PyPI sco utensil cun <code>pipx</code> u <code>uv</code>; omadus creeschan l’ambient isolà che las installaziuns actualas da Python pretendan. <code>ocl doctor</code> controlla la connexiun, il server ed il client.",
+    "install_note": "Senza pipx u uv duvrai in ambient virtual: <code>python3 -m venv .venv &amp;&amp; .venv/bin/pip install opencaselaw-cli</code>, lura <code>.venv/bin/ocl</code>. Actualisar cun <code>pipx upgrade opencaselaw-cli</code> (u <code>uv tool upgrade opencaselaw-cli</code>).",
     "job1_h": "1. Controllar las citaziuns d’in sboz",
     "job1_p": "Mettai las referenzas da voss sboz en ina datoteca, ina per lingia, u sco lingias JSON sch’ina referenza numna ina consideraziun. Mintga referenza returna sco resolved, missing u ambiguous cun la decisiun chattada; ina consideraziun vala sco resolved mo sch’ella exista en l’index.",
     "output_label": "Al terminal cumpara:",
@@ -347,6 +366,9 @@ OCL.init({
     "rc4": "Ina lescha sco ch’ella valeva ad ina data:",
     "rc5": "Tgi che citescha ina decisiun da princip:",
     "rc_agents": "Agents da code sco Claude Code u Codex fan ils medems cumonds en ina shell e legian il JSON; las funtaunas restan en datotecas che vus pudais controllar, betg en la memoria dal model.",
+    "agents_h": "Per agents",
+    "agents_p": "In agent dovra quatter chaussas: ina installaziun senza dumondas, in output ch’el po analisar, verdicts sin ils quals el po sa basar, e reglas ch’el na po betg evitar. <code>ocl</code> furnescha tuttas quatter: JSON uschespert che l’output va en ina pipe; codes da sortida che portan il verdict (0 tut schlià, 2 endataziun nunvalaivla, 3 servetsch u rait, 4 insatge n’è betg schlià); <code>--cache</code>, per che repetiziuns entaifer ina generaziun da la banca da datas na custian nagut; e trais skills furnids (controlla da citats, retschertga, ordinatur da cumprovas). <code>ocl tool call</code> cuntanscha mintga utensil da retschertga dal servetsch.",
+    "agents_note": "Las reglas n’èn betg negoziablas: ils texts da citaziun ed ils citats vegnan dal servetsch senza midada; in <code>close_match</code> u <code>service_candidate</code> è ina infurmaziun per l’autura, mai in remplazzament; l’utensil constatescha existenza e formulaziun, betg la purtada giuridica. <code>opencaselaw_cli.api</code> porscha il medem sco biblioteca.",
     "fits_h": "Nua ch’el tutga",
     "fit_chat": "Conversaziun: connectai Claude, ChatGPT u in auter client MCP cun <code>mcp.opencaselaw.ch</code> (<a href=\"/mcp/\">configuraziun per client</a>).",
     "fit_scripts": "Scripts, notebooks ed agents: <code>ocl</code>, u directamain l’<a href=\"/api/\">API REST</a>. Ils medems records, las medemas limitas.",
@@ -362,8 +384,8 @@ OCL.init({
     "cta_guide": "Full guide on GitHub",
     "cta_source": "Source: clients/python",
     "install_h": "Install",
-    "install_p": "Python 3.10 or newer. Install it as a tool with <code>pipx</code> or <code>uv</code>; both create the isolated environment that current Python installations require. The client is published on PyPI as <code>opencaselaw-cli</code>.",
-    "install_note": "Without pipx or uv, use a virtual environment: <code>python3 -m venv .venv &amp;&amp; .venv/bin/pip install opencaselaw-cli</code>, then run <code>.venv/bin/ocl</code>. A plain <code>pip install</code> outside a virtual environment is refused by Homebrew and Debian Pythons. Upgrade with <code>pipx upgrade opencaselaw-cli</code>.",
+    "install_p": "Python 3.10 or newer. Install it from PyPI as a tool with <code>pipx</code> or <code>uv</code>; both create the isolated environment that current Python installations require. <code>ocl doctor</code> checks the connection, the server and the client.",
+    "install_note": "Without pipx or uv, use a virtual environment: <code>python3 -m venv .venv &amp;&amp; .venv/bin/pip install opencaselaw-cli</code>, then run <code>.venv/bin/ocl</code>. Upgrade with <code>pipx upgrade opencaselaw-cli</code> (or <code>uv tool upgrade opencaselaw-cli</code>).",
     "job1_h": "1. Check the citations in a draft",
     "job1_p": "Put the references from your draft in a file, one per line, or as JSON lines when a reference carries a pinpoint. Each comes back as resolved, missing or ambiguous with the decision it found; a pinpoint counts as resolved only if that Erwägung exists in the index.",
     "output_label": "At a terminal this prints:",
@@ -388,6 +410,9 @@ OCL.init({
     "rc4": "A statute as it stood on a date:",
     "rc5": "Who cites a leading case:",
     "rc_agents": "Coding agents such as Claude Code or Codex run the same commands from a shell and read the JSON, which keeps the evidence in files you can check rather than in the model's memory.",
+    "agents_h": "For agents",
+    "agents_p": "An agent needs four things: an install without prompts, output it can parse, verdicts it can branch on, and rules it cannot talk itself out of. <code>ocl</code> provides all four: JSON as soon as output is piped; exit codes that carry the verdict (0 all resolved, 2 invalid input, 3 service or network, 4 something did not resolve); <code>--cache</code> so repeats within a database generation cost nothing; and three bundled skills (citation check, research, evidence bundle). <code>ocl tool call</code> reaches every research tool of the service.",
+    "agents_note": "The rules are not negotiable: citation strings and quotations come from the service unchanged; a <code>close_match</code> or <code>service_candidate</code> is information for the author, never a substitute; the tool establishes existence and wording, not legal weight. <code>opencaselaw_cli.api</code> offers the same as a library.",
     "fits_h": "Where it fits",
     "fit_chat": "Conversation: connect Claude, ChatGPT or another MCP client to <code>mcp.opencaselaw.ch</code> (<a href=\"/mcp/\">setup per client</a>).",
     "fit_scripts": "Scripts, notebooks and agents: <code>ocl</code>, or the <a href=\"/api/\">REST API</a> directly. Same records, same limits.",

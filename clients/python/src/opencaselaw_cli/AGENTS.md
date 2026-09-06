@@ -64,6 +64,17 @@ Quotes: `exact` · `near` (differences listed) · `not_found`.
 3. A close match or service candidate is information for the author, never a substitute.
 4. Existence and wording are what the tool establishes; legal support is not.
 
+## Offline
+
+    ocl pack pull                                   # several GB, weekly snapshot (CC0)
+    ocl --local citations resolve --input refs.jsonl --format jsonl
+    ocl --local quotes check --input quotes.jsonl --format jsonl
+
+With `--local` nothing about the draft leaves the machine: identity, pinpoints
+and quotations are checked against the pack (no full texts, no search, no
+tools). `ocl pack info` shows the snapshot's generation; results carry
+`offline: true`.
+
 ## Skills
 
 `ocl skills list` · `ocl skills show citation-check` · `ocl skills install --claude`

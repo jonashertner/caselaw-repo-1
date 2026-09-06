@@ -836,6 +836,67 @@ def step_3_export_parquet(dry_run: bool = False) -> bool:
     return run_cmd(cmd, "Export Parquet", dry_run)
 
 
+def step_3b_build_verification_pack(dry_run: bool = False) -> bool:
+    """Step 3b: Build the offline verification pack and publish it (weekly).
+
+    scripts/build_verification_pack.py writes one SQLite file — decision
+    metadata with the service's own citation strings, docket aliases,
+    canonical representations, every indexed Erwägung (zlib per row) — for
+    `ocl --local`: citation, pinpoint and quotation checks on a machine
+    that never sends a draft anywhere. Reads decisions.db and the fresh
+    decision_structure.db sidecar (a full scan of the paragraph table, so
+    Sundays only; OCL_PACK=1 forces it). The gzip goes to the HuggingFace
+    mirror as artifacts/verification_pack/<date>.sqlite.gz plus
+    latest.sqlite.gz. Non-fatal.
+    """
+    if datetime.now(timezone.utc).weekday() != 6 and os.environ.get("OCL_PACK") != "1":
+        logger.info("Step 3b: verification pack is weekly (Sunday); skipping")
+        return True
+    logger.info("Step 3b: Build verification pack")
+    script = REPO_DIR / "scripts" / "build_verification_pack.py"
+    decisions_db = OUTPUT_DIR / "decisions.db"
+    structure_db = OUTPUT_DIR / "decision_structure.db"
+    manifest_db = OUTPUT_DIR / "representation_manifest.db"
+    pack_dir = DATASET_DIR / "artifacts" / "verification_pack"
+    if not script.exists() or not decisions_db.exists() or not structure_db.exists():
+        logger.warning("  builder or inputs missing; skipping")
+        return True
+    pack_dir.mkdir(parents=True, exist_ok=True)
+    stamp = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    output = pack_dir / f"{stamp}.sqlite"
+    cmd = [sys.executable, str(script), "--decisions-db", str(decisions_db), "--structure-db", str(structure_db),
+           "--output", str(output), "--repo-dir", str(REPO_DIR), "--gzip"]
+    if manifest_db.exists():
+        cmd += ["--manifest-db", str(manifest_db)]
+    ok = run_cmd(cmd, "Build verification pack", dry_run, timeout=7200, stall_timeout=3600)
+    if dry_run:
+        return True
+    gz = output.with_name(output.name + ".gz")
+    if not ok or not gz.exists():
+        logger.error("  verification pack not built")
+        return False
+    try:
+        output.unlink()  # keep the gzip only; the pack is rebuilt weekly
+    except OSError:
+        pass
+    for stale in sorted(pack_dir.glob("*.sqlite.gz"))[:-2]:
+        try:
+            stale.unlink()
+        except OSError:
+            pass
+    try:
+        from huggingface_hub import HfApi
+        api = HfApi()
+        for name in (gz.name, "latest.sqlite.gz"):
+            api.upload_file(path_or_fileobj=str(gz), path_in_repo=f"artifacts/verification_pack/{name}",
+                            repo_id=HF_REPO_ID, repo_type="dataset")
+        logger.info(f"  uploaded {gz.name} ({gz.stat().st_size / 1e9:.2f} GB) and latest.sqlite.gz to {HF_REPO_ID}")
+    except Exception as exc:  # noqa: BLE001 — the pack file stays on disk for a manual upload
+        logger.error(f"  verification pack upload failed: {exc}")
+        return False
+    return True
+
+
 def step_4_upload_hf(dry_run: bool = False) -> bool:
     """Step 4: Upload Parquet + dataset card to HuggingFace."""
     logger.info("Step 4: Upload to HuggingFace")
@@ -1668,6 +1729,7 @@ STEP_TO_DAG_TARGET: dict[int | str, str] = {
     "2f": "materialien_build",
     "2g": "decision_structure",
     3: "export_parquet",
+    "3b": "verification_pack",
     4: "upload_hf",
     "5a": "stats_early",
     "5b": "rss_feeds",
@@ -1683,7 +1745,7 @@ STEP_TO_DAG_TARGET: dict[int | str, str] = {
 
 # Steps whose outright failure is logged FAILED but must not exit 1 / turn the
 # systemd unit red. Rationale per step sits with NON_FATAL_STEPS in main().
-_NON_FATAL_STEPS = frozenset({"2e", "5d", "5e", "2g", "2c", "5b"})
+_NON_FATAL_STEPS = frozenset({"2e", "5d", "5e", "2g", "2c", "5b", "3b"})
 
 
 STEPS = [
@@ -1708,6 +1770,7 @@ STEPS = [
     ("2g", "Decision Structure", step_2g_build_decision_structure),
     ("2h", "Legal Scholarship", step_2h_build_legal_scholarship),
     (3, "Export Parquet", step_3_export_parquet),
+    ("3b", "Verification pack", step_3b_build_verification_pack),
     (4, "Upload HuggingFace", step_4_upload_hf),
     # ── Integrity Merkle root (Bestimmung 06 — Provenienz).
     #    Runs at the end of the slow tier so content_hash is stable
@@ -1760,6 +1823,7 @@ def _build_dag_builder_map() -> dict:
         "decision_structure": _wrap(step_2g_build_decision_structure,    accepts_rebuild=True),
         "legal_scholarship":  _wrap(step_2h_build_legal_scholarship,     accepts_rebuild=True),
         "export_parquet":     _wrap(step_3_export_parquet,               accepts_rebuild=False),
+        "verification_pack":  _wrap(step_3b_build_verification_pack,     accepts_rebuild=False),
         "upload_hf":          _wrap(step_4_upload_hf,                    accepts_rebuild=False),
         "publish_delta":      _wrap(step_7_publish_delta,                accepts_rebuild=False),
         "stats_early":        _wrap(step_5_generate_stats,               accepts_rebuild=False),

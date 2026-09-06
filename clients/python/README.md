@@ -57,7 +57,10 @@ service). `ocl tool list|schema|call` reaches every research tool of the
 service with its structured output. Three skills ship in the package
 (`citation-check`, `research`, `evidence-bundle`): `ocl skills install
 --claude` copies them into Claude Code's skills directory, `--dir` anywhere
-else. `opencaselaw_cli.api` offers the same as a library.
+else. `opencaselaw_cli.api` offers the same as a library. For confidential
+drafts, `ocl pack pull` fetches the weekly verification pack and
+`ocl --local ...` runs the citation, pinpoint and quotation checks on this
+machine only.
 
 ## Scope
 
