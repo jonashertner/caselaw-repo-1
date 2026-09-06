@@ -4,7 +4,7 @@ The client follows semantic versioning. The research API contract it consumes is
 versioned separately (`x-opencaselaw-contract-version` in `/api/research/openapi.json`).
 
 
-## 0.4.0 (unreleased)
+## 0.4.0 (2026-09-06)
 
 - `ocl quotes check`: quotations verified against the cited Erwägung and the
   decision text, with `exact` / `near` (differing spans, served wording) /
