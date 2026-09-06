@@ -61,6 +61,7 @@ def test_queries_ask_for_the_label_not_the_prose():
     assert parse_reference("Gericht XX Foo 12 Bar vom 1. Januar 2020").queries() == ["Gericht XX Foo 12 Bar vom 1. Januar 2020", "Foo 12 Bar"]
     assert docket_variants("4C.230/2006") == ["4C_230/2006", "4C.230/2006"] and docket_variants("LA210005") == ["LA210005"]
     assert docket_variants("HC / 2018 / 391") == ["HC / 2018 / 391", "HC/2018/391"]
+    assert docket_variants("HC/2018/391") == ["HC/2018/391", "HC / 2018 / 391"]
 
 
 def test_label_key_folds_only_for_comparison():

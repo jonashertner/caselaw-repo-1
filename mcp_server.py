@@ -231,6 +231,7 @@ class ReflectRequest(BaseModel):
 sys.path.insert(0, str(Path(__file__).parent))
 from db_schema import SCHEMA_SQL, INSERT_OR_IGNORE_SQL, INSERT_COLUMNS  # noqa: E402
 import docket_aliases  # noqa: E402  (joined-docket resolution, issue #41)
+import reference_parser
 import ecthr_docket  # noqa: E402  (shared ECtHR docket display form)
 
 # Set to True when running with --remote (SSE transport).
@@ -6266,6 +6267,14 @@ def _resolve_decision_id(decision_id: str) -> str:
             ).fetchone()
             if row:
                 return row[0]
+        # The reference as a lawyer writes it (shared parser with the research
+        # CLI): the label written first, tried in every stored separator; a
+        # BGE label with a page or a trailing pinpoint; a cantonal docket inside
+        # the service's own long-form string. A docket mentioned later in the
+        # reference is a cross-reference and is never resolved to.
+        parsed_hit = _resolve_parsed_reference(conn, decision_id)
+        if parsed_hit:
+            return parsed_hit
         # Bare ECtHR application number -> the judgment carrying it. Indexed,
         # and unique-only for the same reason as the alias step below.
         _appno_ids = _lookup_ecthr_appno(conn, decision_id)
@@ -6295,6 +6304,45 @@ def _resolve_decision_id(decision_id: str) -> str:
     finally:
         conn.close()
     return decision_id
+
+
+def _resolve_parsed_reference(conn, reference: str) -> str | None:
+    """Exact-label resolution of a written reference via reference_parser.
+
+    Returns a decision_id only when a stored decision carries the label the
+    reference writes first (BGE tuple, or a docket in one of its stored
+    separators); several carriers are disambiguated by the court or canton the
+    reference names, and stay unresolved when the reference names none."""
+    try:
+        parsed = reference_parser.parse_reference(reference)
+    except Exception:  # noqa: BLE001 — a parser fault must not break resolution
+        return None
+    if parsed.bge_label and parsed.bge_label != reference.strip():
+        for cid in _bge_ref_candidates(parsed.bge_label):
+            row = conn.execute("SELECT decision_id FROM decisions WHERE decision_id = ?", (cid,)).fetchone()
+            if row:
+                return row[0]
+    primary = parsed.primary_docket
+    if not primary or (parsed.bge_label and parsed.bge_first):
+        return None
+    for variant in reference_parser.docket_variants(primary):
+        rows = conn.execute(
+            "SELECT decision_id, court, canton FROM decisions WHERE docket_number = ? "
+            "ORDER BY decision_date DESC LIMIT 8", (variant,),
+        ).fetchall()
+        if not rows:
+            continue
+        records = [dict(zip(("decision_id", "court", "canton"), tuple(r))) for r in rows]
+        scoped = [r for r in records if parsed.in_scope(r)]
+        if parsed.courts or parsed.canton:
+            if len({r["decision_id"] for r in scoped}) >= 1:
+                return scoped[0]["decision_id"]
+            continue
+        return records[0]["decision_id"]
+    alias_ids = _lookup_docket_alias(conn, primary)
+    if len(alias_ids) == 1:
+        return alias_ids[0]
+    return None
 
 
 def _decision_id_variants(decision_id: str) -> list[str]:
@@ -12397,6 +12445,7 @@ def _handle_get_erwaegung(*, decision_id: str, e_number: str) -> dict:
     decision_for_citation = {
         "decision_id": canonical_id,
         "court": row.get("court") if row else None,
+        "canton": (row.get("canton") if row else None) or (main or {}).get("canton"),
         "decision_date": row.get("decision_date") if row else None,
         "docket_number": (main or {}).get("docket_number"),
         "collection": (main or {}).get("collection"),
@@ -13380,6 +13429,7 @@ def _handle_find_relevant_erwaegung(
         decision_for_citation = {
             "decision_id": canonical_id,
             "court": (row or {}).get("court"),
+            "canton": (row or {}).get("canton") or (main or {}).get("canton"),
             "decision_date": (row or {}).get("decision_date"),
             "docket_number": (main or {}).get("docket_number"),
             "collection": (main or {}).get("collection"),
@@ -14095,6 +14145,7 @@ def _handle_get_regeste(*, decision_id: str) -> dict:
     decision_for_citation = {
         "decision_id": canonical_id,
         "court": row["court"],
+        "canton": (row["canton"] if "canton" in row.keys() else None) or main_decision.get("canton"),
         "decision_date": row["decision_date"],
         "docket_number": main_decision.get("docket_number"),
         "collection": main_decision.get("collection"),
