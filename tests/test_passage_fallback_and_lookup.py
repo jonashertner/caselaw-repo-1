@@ -151,3 +151,28 @@ def test_exact_lookup_returns_only_decisions_carrying_the_label(monkeypatch):
     assert [h["decision_id"] for h in bge["results"]] == ["bge_BGE_136_III_513"]
     validate_payload("lookup", exact)
     jsonschema.validate(exact, output_schema("lookup"))
+
+
+WRAPPED = """Erwägungen
+
+1. Die Beschwerde ist zulässig (vgl. BGE 120 Ib 1
+E. 2a mit Hinweisen).
+
+2. Beschwerdegegenstand bildet die Verfügung.
+a) Das Rekursgericht hat festgestellt, dass die Frist gewahrt war.
+b) Dagegen wendet der Beschwerdeführer ein, dass die Zustellung nichtig sei.
+
+3. Die Beschwerde ist abzuweisen.
+"""
+
+
+def test_a_line_wrapped_citation_is_not_a_heading_and_lettered_units_come_from_the_block():
+    assert m._erwaegung_from_text(WRAPPED, "2a")["text"].startswith("Das Rekursgericht hat festgestellt")
+    assert m._erwaegung_from_text(WRAPPED, "2b")["text"].startswith("Dagegen wendet")
+    assert m._erwaegung_from_text(WRAPPED, "2a")["parent"] == "2" and m._erwaegung_from_text(WRAPPED, "2c") is None
+    assert m._erwaegung_from_text(WRAPPED, "2")["text"].startswith("2. Beschwerdegegenstand")
+    # a numeric pinpoint whose only line-start occurrence is a wrapped citation is not found
+    wrapped_numeric = "1. Zulässig (vgl. BGE 131 III 115\nE. 3.1 S. 119).\n\n2. In der Sache ...\n"
+    assert m._erwaegung_from_text(wrapped_numeric, "3.1") is None
+    # a real prefixed heading followed by a capitalised sentence still counts
+    assert m._erwaegung_from_text("E. 2.3 Selon la jurisprudence constante, le juge ...", "2.3")["text"].startswith("E. 2.3")

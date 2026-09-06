@@ -36,15 +36,18 @@ def load_set(path: Path) -> list[dict]:
 
 def compare(expected: list[dict], rows: list[dict]) -> dict:
     """Pure comparison; rows are the resolve output rows (with `input`)."""
-    by_key = {}
+    by_id, by_key = {}, {}
     for row in rows:
         inp = row.get("input") or {}
+        if inp.get("bench_id"):
+            by_id[inp["bench_id"]] = row
         by_key[(row.get("reference"), row.get("pinpoint") or None)] = row
     mismatches, regressions = [], []
     counts = {"checked": 0, "match": 0}
     for exp in expected:
-        key = (exp["reference"], exp.get("pinpoint") or None)
-        row = by_key.get(key)
+        # rows echo the set's extra keys under `input`; an inline pinpoint the
+        # resolver read from the reference must not break the match
+        row = by_id.get(exp.get("bench_id")) or by_key.get((exp["reference"], exp.get("pinpoint") or None))
         counts["checked"] += 1
         if row is None:
             mismatches.append({**exp, "got_status": None, "problem": "no result row"}); regressions.append(exp["reference"]); continue
@@ -112,8 +115,9 @@ def main() -> int:
         print(f"  {item['problem']:28} {item['reference'][:60]:60} expected {item['expected_status']} got {item.get('got_status')}")
     if args.update_expected:
         by_key = {(r.get("reference"), r.get("pinpoint") or None): r for r in rows}
+        by_id = {(r.get("input") or {}).get("bench_id"): r for r in rows if (r.get("input") or {}).get("bench_id")}
         for exp in expected:
-            row = by_key.get((exp["reference"], exp.get("pinpoint") or None))
+            row = by_id.get(exp.get("bench_id")) or by_key.get((exp["reference"], exp.get("pinpoint") or None))
             if row:
                 exp["expected_status"] = row.get("status")
                 if row.get("decision_id"):
