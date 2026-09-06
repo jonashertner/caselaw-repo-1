@@ -171,6 +171,7 @@ def build_parser(config: dict | None = None):
     search_parser.add_argument("--sort", choices=["relevance", "date_desc", "date_asc"], default="relevance", help="ordering (default: relevance)")
     search_parser.add_argument("--detail", choices=["full", "compact"], default="compact", help="record detail requested from the service (default: compact, which carries citation_string_de only; full adds regeste, snippet, pinpoint and the French/Italian citation strings)")
     search_parser.add_argument("--no-pinpoint", action="store_true", help="skip the per-result pinpoint lookup for full detail (faster)")
+    search_parser.add_argument("--no-collapse", action="store_true", help="keep every row of a ruling the service stores under several ids (by default one row per canonical_decision_id is kept, the canonical record, and the others are counted in _client.duplicates_collapsed)")
     search_parser.add_argument("--max-results", type=positive_int, default=50, help="bound for the selection (default: 50; a text query allows at most 800)")
     search_parser.add_argument("--page-size", type=positive_int, default=50, help="results per request for filter-only enumeration, at most 800 (default: 50)")
     search_parser.add_argument("--offset", type=nonnegative_int, default=0, help="skip this many results first (default: 0)")
@@ -227,7 +228,8 @@ def build_parser(config: dict | None = None):
                      "date, page references and an inline pinpoint (E. 2.3, consid. 3b). The decision the service "
                      "proposes must carry the label written first in the reference (identity_check.method: "
                      "exact_canonical_id; exact_server_citation, the service's own string; exact_server_docket, the "
-                     "decision's own docket; exact_candidate_label, a docket the lookup index knows in another form); "
+                     "decision's own docket; exact_server_joined_docket, a joined docket of a consolidated proceeding "
+                     "the record lists; exact_candidate_label, a docket the lookup index knows in another form); "
                      "a docket the reference only mentions later is a cross-reference, not the citation. A docket carried by several "
                      "decisions at courts the reference does not rule out is ambiguous. An inline or input pinpoint is "
                      "retrieved and verified (pinpoint_status retrieved, parent_retrieved for a lettered sub-number "
@@ -237,6 +239,24 @@ def build_parser(config: dict | None = None):
         epilog="examples:\n  ocl citations resolve 'BGE 136 III 513' '4A_747/2012'\n  ocl citations resolve --input references.jsonl --format jsonl > resolution.jsonl\n\nreferences.jsonl lines look like {\"reference\": \"BGE 136 III 513\", \"pinpoint\": \"2.3\"}\n")
     _input(resolve, "references", "references such as 'BGE 136 III 513' or '4A_747/2012'")
     resolve.add_argument("--language", choices=["de", "fr", "it"], default=lang, help="language of the returned citation string (default: de; OCL_LANGUAGE)")
+
+    quotes = commands.add_parser("quotes", parents=[common], formatter_class=fmt, help="check quotations against the served text",
+                                 description="Quotations: does what the draft puts in quotation marks stand in the decision it is attributed to?")
+    quote_actions = quotes.add_subparsers(dest="action", required=True)
+    qcheck = quote_actions.add_parser(
+        "check", parents=[common], formatter_class=fmt,
+        help="verify quotations word for word against the passage or the decision text",
+        description=("Identify each reference the way `citations resolve` does, then look for the quotation in the "
+                     "cited Erwägung and, failing that, in the whole decision text. Typography, OCR line hyphenation, "
+                     "whitespace and the service's link markup are folded for the comparison only. quote_status is "
+                     "exact (verbatim), near (best match at 90% or better, with the differing spans and the served "
+                     "wording) or not_found (best window and ratio reported). The served wording is never rewritten; "
+                     "exit 4 unless every quotation is exact."),
+        epilog="examples:\n  ocl quotes check 'BGE 136 III 513 E. 2.3' --quote 'le contrat de travail conclu pour une durée indéterminée'\n  ocl quotes check --input quotes.jsonl --format jsonl\n\nquotes.jsonl lines look like {\"reference\": \"BGE 136 III 513\", \"pinpoint\": \"2.3\", \"quote\": \"...\"}\n")
+    _input(qcheck, "references", "one reference (with --quote) or none with --input/--stdin rows carrying a quote field")
+    qcheck.add_argument("--quote", help="the quotation to check against the single reference given")
+    qcheck.add_argument("--pinpoint", help="Erwägung number for the single reference, e.g. 2.3 (an inline 'E. 2.3' in the reference also works)")
+    qcheck.add_argument("--language", choices=["de", "fr", "it"], default=lang, help="language of the returned citation string (default: de; OCL_LANGUAGE)")
 
     cite = commands.add_parser("cite", parents=[common], formatter_class=fmt,
                                help="get the canonical citation string for a reference",
@@ -376,7 +396,7 @@ def read_inputs(args, field="decision_id") -> list[dict]:
     return inputs
 
 
-def search(client, params: dict, max_results: int, page_size: int = 50) -> tuple[dict, int]:
+def search(client, params: dict, max_results: int, page_size: int = 50, collapse: bool = True) -> tuple[dict, int]:
     """Bounded retrieval that keeps every server page's metadata and partial results.
 
     A text query is ranked over one bounded candidate pool whose size depends
@@ -384,6 +404,12 @@ def search(client, params: dict, max_results: int, page_size: int = 50) -> tuple
     is fetched as ONE request of ``max_results`` (server cap 800). Filter-only
     searches enumerate an exact, stably ordered set and are paged. Exhausting
     retrievable pages never proves corpus-wide exhaustiveness.
+
+    With ``collapse`` (the default), rows the service links to one
+    ``canonical_decision_id`` (the same ruling stored under several ids) are
+    reduced to one row per ruling: the canonical record when the page holds
+    it, at the group's first-seen rank. Nothing is rewritten; the dropped ids
+    are listed under ``_client.collapsed_representations``.
     """
     if max_results <= 0 or not 1 <= page_size <= 800:
         raise ValueError("max-results must be positive; page-size must be between 1 and 800")
@@ -396,6 +422,7 @@ def search(client, params: dict, max_results: int, page_size: int = 50) -> tuple
     offset = start
     results, pages, errors = [], [], []
     seen: set = set()
+    groups: dict = {}  # canonical_decision_id -> {"index", "kept", "dropped"}
     duplicates = 0
     last = {}
     while len(results) < max_results:
@@ -418,6 +445,20 @@ def search(client, params: dict, max_results: int, page_size: int = 50) -> tuple
                         duplicates += 1
                         continue
                     seen.add(decision_id)
+                canonical = row.get("canonical_decision_id") if collapse and isinstance(decision_id, str) else None
+                if isinstance(canonical, str) and canonical:
+                    group = groups.get(canonical)
+                    if group is not None:
+                        # The same ruling under another id: one row per ruling, the
+                        # canonical record preferred, at the group's first-seen rank.
+                        if decision_id == canonical and group["kept"] != canonical:
+                            group["dropped"].append(group["kept"])
+                            results[group["index"]] = row
+                            group["kept"] = canonical
+                        else:
+                            group["dropped"].append(decision_id)
+                        continue
+                    groups[canonical] = {"index": len(results), "kept": decision_id, "dropped": []}
                 results.append(row)
             last = metadata
             if ranked or not page["has_more"]:
@@ -431,11 +472,14 @@ def search(client, params: dict, max_results: int, page_size: int = 50) -> tuple
                 raise
             errors.append({"offset": offset, **exc.to_dict()})
             break
+    collapsed = [{"kept": g["kept"], "dropped": g["dropped"]} for g in groups.values() if g["dropped"]]
     envelope = {**last, "results": results, "returned": len(results), "offset": start,
                 "limit": max_results, "total_is_lower_bound": any(p["total_is_lower_bound"] for p in pages),
                 "_client": {"pages": pages, "errors": errors, "requests": getattr(client, "requests", None),
                             "ranked_single_request": ranked,
                             "duplicates_dropped": duplicates,
+                            "duplicates_collapsed": sum(len(g["dropped"]) for g in collapsed),
+                            "collapsed_representations": collapsed,
                             "max_results_reached": len(results) >= max_results,
                             "retrieval_complete": not errors and last.get("has_more") is False}}
     return envelope, 4 if errors else 0
@@ -452,7 +496,7 @@ def _project(row, fields):
         # A resolution row: a real projection. What must survive is the
         # verdict and anything that qualifies it, never the evidence blocks.
         for key in ("reference", "status", "error", "reason", "note", "notes", "discrepancies",
-                    "pinpoint_status", "pinpoint_note", "available_e_numbers", "input"):
+                    "pinpoint_status", "pinpoint_note", "available_e_numbers", "input", "canonical_decision_id"):
             if key in row:
                 selected[key] = row[key]
         return selected
@@ -616,7 +660,7 @@ def _one(args, client, kind, field, index, row):
                 result["reference_as_written"] = reference
                 result["resolved_decision_id"] = decision_id
                 result["identity_check"] = resolved.get("identity_check")
-                for key in ("query", "other_dockets"):
+                for key in ("query", "other_dockets", "canonical_decision_id"):
                     if resolved.get(key):
                         result[key] = resolved[key]
             if pinpoint and result.get("exists") is True and isinstance(result.get("decision_id"), str):
@@ -694,7 +738,7 @@ def _response(value):
 
 
 def run(args, client):
-    if args.command == "bundle" or (args.command == "citations" and args.action == "resolve"):
+    if args.command in ("bundle", "quotes") or (args.command == "citations" and args.action == "resolve"):
         from . import workflows
         return workflows.run(args, client)
     if args.command == "completion":
@@ -705,7 +749,7 @@ def run(args, client):
         if args.action == "search":
             params = {name: getattr(args, name) for name in ("query", "court", "canton", "language", "date_from", "date_to", "chamber", "marked_for_publication", "sort", "offset")}
             params.update(fields=args.detail, include_pinpoint=not args.no_pinpoint)
-            return search(client, params, args.max_results, args.page_size)
+            return search(client, params, args.max_results, args.page_size, collapse=not args.no_collapse)
         if args.action == "get":
             return _batch(args, client, "get")
         decision_id = _decision_id(client, args.decision_id)
@@ -730,7 +774,9 @@ def run(args, client):
     if args.command == "laws":
         params = {name: getattr(args, name) for name in ("article", "sr_number", "as_of", "canton", "language")}
         result, code = _response(client.get("/api/laws/" + quote(args.abbreviation, safe=""), params))
-        if not code and args.article and result.get("articles") == []:
+        if not code and args.article and (result.get("articles") == [] or result.get("text_status") in ("heading_only", "empty")):
+            # No article text was recovered (an older edition whose PDF window
+            # holds only the heading): unresolved, not success.
             code = 4
         return result, code
     if args.command == "citations":

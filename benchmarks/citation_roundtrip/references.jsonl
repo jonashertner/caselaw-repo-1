@@ -1,0 +1,195 @@
+{"reference": "BGE 125 III 70", "pinpoint": "2", "expected_status": "resolved", "expected_decision_id": "bge_BGE_125_III_70", "kind": "real", "scenario": "research-workflow"}
+{"reference": "BGE 136 III 513", "pinpoint": "2.4", "expected_status": "resolved", "expected_decision_id": "bge_BGE_136_III_513", "kind": "real", "scenario": "research-workflow"}
+{"reference": "BGE 136 III 513", "pinpoint": "2.6", "expected_status": "resolved", "expected_decision_id": "bge_BGE_136_III_513", "kind": "real", "scenario": "research-workflow"}
+{"reference": "BGE 132 III 115", "pinpoint": "2.2", "expected_status": "resolved", "expected_decision_id": "bge_BGE_132_III_115", "kind": "real", "scenario": "research-workflow"}
+{"reference": "BGer 4A_18/2018 vom 21. November 2018", "pinpoint": "4.1", "expected_status": "resolved", "expected_decision_id": "bger_4A_18_2018", "kind": "real", "scenario": "research-workflow"}
+{"reference": "BGer 4A_310/2019 vom 10. Juni 2020", "pinpoint": "5.2", "expected_status": "resolved", "expected_decision_id": "bger_4A_310_2019", "kind": "real", "scenario": "research-workflow"}
+{"reference": "BGer 4A_714/2014 vom 22. Mai 2015", "pinpoint": "3.2", "expected_status": "resolved", "expected_decision_id": "bger_4A_714_2014", "kind": "real", "scenario": "research-workflow"}
+{"reference": "BGer 4A_714/2014 vom 22. Mai 2015", "pinpoint": "3.3", "expected_status": "resolved", "expected_decision_id": "bger_4A_714_2014", "kind": "real", "scenario": "research-workflow"}
+{"reference": "ATF 125 III 70, consid. 2", "pinpoint": "2", "expected_status": "resolved", "expected_decision_id": "bge_BGE_125_III_70", "kind": "real", "scenario": "research-workflow"}
+{"reference": "TF 4A_18/2018 du 21 novembre 2018, consid. 4.1", "pinpoint": "4.1", "expected_status": "resolved", "expected_decision_id": "bger_4A_18_2018", "kind": "real", "scenario": "research-workflow"}
+{"reference": "4A_485/2015", "expected_status": "resolved", "expected_decision_id": "bger_4A_485_2015", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "4A 485/2015", "expected_status": "resolved", "expected_decision_id": "bger_4A_485_2015", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "4A_437/2015", "expected_status": "resolved", "expected_decision_id": "bger_4A_437_2015", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "BGer 4A_485/2015 vom 15. Februar 2016", "expected_status": "resolved", "expected_decision_id": "bger_4A_485_2015", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "TF 4A_485/2015 du 15 février 2016", "expected_status": "resolved", "expected_decision_id": "bger_4A_485_2015", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "TF 4A_89/2021 du 30 avril 2021", "expected_status": "resolved", "expected_decision_id": "bger_4A_89_2021", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "arrêt du Tribunal fédéral 4A_89/2021 du 30 avril 2022", "expected_status": "discrepancy", "expected_decision_id": "bger_4A_89_2021", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "BGE 136 III 513, E. 2.3", "pinpoint": "2.3", "expected_status": "resolved", "expected_decision_id": "bge_BGE_136_III_513", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "BGE 136 III 513, E. 99", "pinpoint": "99", "expected_status": "pinpoint_unavailable", "expected_decision_id": "bge_BGE_136_III_513", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "BGE 136 III 513 E. 99", "pinpoint": "99", "expected_status": "pinpoint_unavailable", "expected_decision_id": "bge_BGE_136_III_513", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "ATF 136 III 513, consid. 99", "pinpoint": "99", "expected_status": "pinpoint_unavailable", "expected_decision_id": "bge_BGE_136_III_513", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "ATF 136 III 513, consid. 2.3", "pinpoint": "2.3", "expected_status": "resolved", "expected_decision_id": "bge_BGE_136_III_513", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "ATF 136 III 513 consid. 2.3 p. 514", "pinpoint": "2.3", "expected_status": "resolved", "expected_decision_id": "bge_BGE_136_III_513", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "Arrêt / 2023 / 560", "expected_status": "resolved", "expected_decision_id": "vd_findinfo_Arr_t___2023___560", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "Arrêt/2023/560", "expected_status": "resolved", "expected_decision_id": "vd_findinfo_Arr_t___2023___560", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "C/4431/2013", "expected_status": "resolved", "expected_decision_id": "ge_gerichte_C_4431_2013", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "ACJC/1234/2015", "expected_status": "resolved", "expected_decision_id": "ge_gerichte_ACJC_1234_2015", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "arrêt du TF 4A_217/2016 du 19 janvier 2017", "expected_status": "resolved", "expected_decision_id": "bger_4A_217_2016", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "arrêt du TF 4A_485/2016 du 28 avril 2017", "expected_status": "resolved", "expected_decision_id": "bger_4A_485_2016", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "arrêt du TF 4A 485/2015 du 15 février 2016", "expected_status": "resolved", "expected_decision_id": "bger_4A_485_2015", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "arrêt du TF 4A_485/2015 du 15 février 2016", "expected_status": "resolved", "expected_decision_id": "bger_4A_485_2015", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "HC/2020/38", "expected_status": "missing", "kind": "deliberately_wrong", "scenario": "fr-atf-tf"}
+{"reference": "HC / 2020 / 38", "expected_status": "resolved", "expected_decision_id": "vd_findinfo_HC___2020___38", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "Gericht VD HC / 2020 / 38 vom 6. Mai 2020", "expected_status": "resolved", "expected_decision_id": "vd_findinfo_HC___2020___38", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "Tribunal VD HC / 2020 / 38 du 6 mai 2020", "expected_status": "resolved", "expected_decision_id": "vd_findinfo_HC___2020___38", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "vd_findinfo_HC___2020___38", "expected_status": "resolved", "expected_decision_id": "vd_findinfo_HC___2020___38", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "C/11532/2013", "expected_status": "resolved", "expected_decision_id": "ge_gerichte_C_11532_2013", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "Gericht GE C/11532/2013 vom 8. November 2016", "expected_status": "resolved", "expected_decision_id": "ge_gerichte_C_11532_2013", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "Tribunal GE C/11532/2013 du 8 novembre 2016", "expected_status": "resolved", "expected_decision_id": "ge_gerichte_C_11532_2013", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "ge_gerichte_C_11532_2013", "expected_status": "resolved", "expected_decision_id": "ge_gerichte_C_11532_2013", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "ATF 136 III 513 consid. 2.3", "pinpoint": "2.3", "expected_status": "resolved", "expected_decision_id": "bge_BGE_136_III_513", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "ATF 136 III 513", "pinpoint": "2.3", "expected_status": "resolved", "expected_decision_id": "bge_BGE_136_III_513", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "ATF 150 III 78, consid. 3.1.1", "pinpoint": "3.1.1", "expected_status": "resolved", "expected_decision_id": "bge_BGE_150_III_78", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "DTF 139 III 7", "expected_status": "resolved", "expected_decision_id": "bge_BGE_139_III_7", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "ATF 137 III 303 consid. 2 p. 305", "pinpoint": "2", "expected_status": "resolved", "expected_decision_id": "bge_BGE_137_III_303", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "ATF 148 III 215", "pinpoint": "3", "expected_status": "resolved", "expected_decision_id": "bge_BGE_148_III_215", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "ATF 139 I 57", "expected_status": "resolved", "expected_decision_id": "bge_BGE_139_I_57", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "arrêt du TF 4A_485/2015 du 15 février 2016 consid. 3", "pinpoint": "3", "expected_status": "resolved", "expected_decision_id": "bger_4A_485_2015", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "arrêt du TF 4A_485/2015 du 15 février 2016", "pinpoint": "3", "expected_status": "resolved", "expected_decision_id": "bger_4A_485_2015", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "arrêt 4A 437/2015 du 4 décembre 2015", "expected_status": "resolved", "expected_decision_id": "bger_4A_437_2015", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "arrêt du Tribunal fédéral 4A_89/2021 du 30 avril 2021, consid. 4", "pinpoint": "4", "expected_status": "resolved", "expected_decision_id": "bger_4A_89_2021", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "TF, 4A_617/2023, 8 octobre 2024, c. 3.1", "pinpoint": "3.1", "expected_status": "resolved", "expected_decision_id": "bger_4A_617_2023", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "4A_617/2023", "pinpoint": "3.1", "expected_status": "resolved", "expected_decision_id": "bger_4A_617_2023", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "arrêt du Tribunal cantonal vaudois HC/2020/38 du 6 mai 2020", "expected_status": "missing", "kind": "deliberately_wrong", "scenario": "fr-atf-tf"}
+{"reference": "Tribunal cantonal VD, Arrêt / 2023 / 560 du 3 août 2023", "expected_status": "resolved", "expected_decision_id": "vd_findinfo_Arr_t___2023___560", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "arrêt de la Cour de justice de Genève C/11532/2013 du 8 novembre 2016", "pinpoint": "2", "expected_status": "pinpoint_unavailable", "expected_decision_id": "ge_gerichte_C_11532_2013", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "ACJC C/4431/2013 du 2 février 2015", "expected_status": "resolved", "expected_decision_id": "ge_gerichte_C_4431_2013", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "ATF 999 III 1", "expected_status": "missing", "kind": "deliberately_wrong", "scenario": "fr-atf-tf"}
+{"reference": "ATF 136 III 514", "expected_status": "missing", "kind": "deliberately_wrong", "scenario": "fr-atf-tf"}
+{"reference": "ATF 136 IV 513", "expected_status": "missing", "kind": "deliberately_wrong", "scenario": "fr-atf-tf"}
+{"reference": "4A_9485/2015", "expected_status": "missing", "kind": "deliberately_wrong", "scenario": "fr-atf-tf"}
+{"reference": "4A_486/2015", "expected_status": "resolved", "expected_decision_id": "bger_4A_486_2015", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "arrêt du TF 4A_485/2015 du 15 février 2017", "expected_status": "discrepancy", "expected_decision_id": "bger_4A_485_2015", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "ATF 136 III 513", "pinpoint": "99", "expected_status": "pinpoint_unavailable", "expected_decision_id": "bge_BGE_136_III_513", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "ATF 136 III 513 consid. 99", "pinpoint": "99", "expected_status": "pinpoint_unavailable", "expected_decision_id": "bge_BGE_136_III_513", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "arrêt de la Cour de justice de Genève C/11532/2013 du 8 novembre 2016", "expected_status": "resolved", "expected_decision_id": "ge_gerichte_C_11532_2013", "kind": "real", "scenario": "fr-atf-tf"}
+{"reference": "BGE 136 III 510", "expected_status": "resolved", "expected_decision_id": "bge_BGE_136_III_510", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "ATF 136 III 510", "expected_status": "resolved", "expected_decision_id": "bge_BGE_136_III_510", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "DTF 136 III 510", "expected_status": "resolved", "expected_decision_id": "bge_BGE_136_III_510", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "BGE 136 III 510 E. 2", "pinpoint": "2", "expected_status": "pinpoint_unavailable", "expected_decision_id": "bge_BGE_136_III_510", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "BGE 136 III 510, E. 2.1", "pinpoint": "2.1", "expected_status": "pinpoint_unavailable", "expected_decision_id": "bge_BGE_136_III_510", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "BGE 136 III 510", "pinpoint": "2", "expected_status": "pinpoint_unavailable", "expected_decision_id": "bge_BGE_136_III_510", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "BGE 136 III 510.", "expected_status": "resolved", "expected_decision_id": "bge_BGE_136_III_510", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "(BGE 136 III 510)", "expected_status": "resolved", "expected_decision_id": "bge_BGE_136_III_510", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "BGE 136 III 510 S. 512", "expected_status": "resolved", "expected_decision_id": "bge_BGE_136_III_510", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "bge_BGE_136_III_510", "expected_status": "resolved", "expected_decision_id": "bge_BGE_136_III_510", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "4A_255/2012", "expected_status": "resolved", "expected_decision_id": "bger_4A_255_2012", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "4A 255/2012", "expected_status": "resolved", "expected_decision_id": "bger_4A_255_2012", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "4A.255/2012", "expected_status": "resolved", "expected_decision_id": "bger_4A_255_2012", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "BGer 4A_255/2012 vom 20. Juli 2012", "expected_status": "resolved", "expected_decision_id": "bger_4A_255_2012", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "TF 4A_255/2012 du 20 juillet 2012", "expected_status": "resolved", "expected_decision_id": "bger_4A_255_2012", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "arrêt du Tribunal fédéral 4A_255/2012 du 20 juillet 2012 consid. 3", "pinpoint": "3", "expected_status": "resolved", "expected_decision_id": "bger_4A_255_2012", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "Urteil des Bundesgerichts 4A_255/2012 vom 20. Juli 2012, E. 3", "pinpoint": "3", "expected_status": "resolved", "expected_decision_id": "bger_4A_255_2012", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "BGer 4A_255/2012", "pinpoint": "3", "expected_status": "resolved", "expected_decision_id": "bger_4A_255_2012", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "8C_358/2012", "expected_status": "resolved", "expected_decision_id": "bger_8C_358_2012", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "BGE 142 III 9", "expected_status": "resolved", "expected_decision_id": "bge_BGE_142_III_9", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "ATF 142 III 9 consid. 2", "pinpoint": "2", "expected_status": "pinpoint_unavailable", "expected_decision_id": "bge_BGE_142_III_9", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "ATF 142 III 9, consid. 2", "pinpoint": "2", "expected_status": "pinpoint_unavailable", "expected_decision_id": "bge_BGE_142_III_9", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "4C.230/2005", "expected_status": "resolved", "expected_decision_id": "bger_4C.230_2005", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "4C_230/2005", "expected_status": "resolved", "expected_decision_id": "bger_4C.230_2005", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "BGer 4C.230/2005 vom 1. September 2005", "expected_status": "resolved", "expected_decision_id": "bger_4C.230_2005", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "NG190020", "expected_status": "resolved", "expected_decision_id": "zh_obergericht_NG190020", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "Obergericht ZH NG190020 vom 30. November 2020", "expected_status": "resolved", "expected_decision_id": "zh_obergericht_NG190020", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "OGer ZH NG190020", "expected_status": "resolved", "expected_decision_id": "zh_obergericht_NG190020", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "NG 190020", "expected_status": "missing", "kind": "deliberately_wrong", "scenario": "adversarial-hygiene"}
+{"reference": "BGE 138 III 416", "expected_status": "resolved", "expected_decision_id": "bge_BGE_138_III_416", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "DTF 138 III 416", "expected_status": "resolved", "expected_decision_id": "bge_BGE_138_III_416", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "bge_138 III 416", "expected_status": "resolved", "expected_decision_id": "bge_138 III 416", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "BGE 136 III 511", "expected_status": "missing", "kind": "deliberately_wrong", "scenario": "adversarial-hygiene"}
+{"reference": "BGE 136 III 509", "expected_status": "missing", "kind": "deliberately_wrong", "scenario": "adversarial-hygiene"}
+{"reference": "BGE 136 IV 510", "expected_status": "missing", "kind": "deliberately_wrong", "scenario": "adversarial-hygiene"}
+{"reference": "BGE 163 III 510", "expected_status": "missing", "kind": "deliberately_wrong", "scenario": "adversarial-hygiene"}
+{"reference": "BGE 136 III 510 E. 99", "pinpoint": "99", "expected_status": "pinpoint_unavailable", "expected_decision_id": "bge_BGE_136_III_510", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "BGE 136 III 510", "pinpoint": "99", "expected_status": "pinpoint_unavailable", "expected_decision_id": "bge_BGE_136_III_510", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "4A_256/2012", "expected_status": "resolved", "expected_decision_id": "bger_4A_256_2012", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "4A_255/2013", "expected_status": "resolved", "expected_decision_id": "bger_4A_255_2013", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "4C_255/2012", "expected_status": "missing", "kind": "deliberately_wrong", "scenario": "adversarial-hygiene"}
+{"reference": "4C.255/2012", "expected_status": "missing", "kind": "deliberately_wrong", "scenario": "adversarial-hygiene"}
+{"reference": "4A_230/2005", "expected_status": "missing", "kind": "deliberately_wrong", "scenario": "adversarial-hygiene"}
+{"reference": "4C.230/2006", "expected_status": "unrecognized", "kind": "review_case", "scenario": "review-2026-09-05"}
+{"reference": "8C_385/2012", "expected_status": "resolved", "expected_decision_id": "bger_8C_385_2012", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "BGE 142 III 9", "pinpoint": "99", "expected_status": "pinpoint_unavailable", "expected_decision_id": "bge_BGE_142_III_9", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "ATF 142 III 10", "expected_status": "missing", "kind": "deliberately_wrong", "scenario": "adversarial-hygiene"}
+{"reference": "NG190021", "expected_status": "resolved", "expected_decision_id": "zh_obergericht_NG190021", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "NG180020", "expected_status": "missing", "kind": "deliberately_wrong", "scenario": "adversarial-hygiene"}
+{"reference": "BGE 999 III 1", "expected_status": "missing", "kind": "deliberately_wrong", "scenario": "adversarial-hygiene"}
+{"reference": "BGE 138 III 417", "expected_status": "missing", "kind": "deliberately_wrong", "scenario": "adversarial-hygiene"}
+{"reference": "BGE 143 III 624", "expected_status": "resolved", "expected_decision_id": "bge_BGE_143_III_624", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "bge_BGE_143_III_624", "expected_status": "resolved", "expected_decision_id": "bge_BGE_143_III_624", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "1/2020", "expected_status": "ambiguous", "kind": "real", "scenario": "adversarial-hygiene"}
+{"reference": "9C_313/2016", "pinpoint": "3", "expected_status": "resolved", "expected_decision_id": "bger_9C_313_2016", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "TF 4A_533/2015 del 20 dicembre 2016", "pinpoint": "2", "expected_status": "resolved", "expected_decision_id": "bger_4A_533_2015", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "DTF 126 III 1", "pinpoint": "3", "expected_status": "resolved", "expected_decision_id": "bge_BGE_126_III_1", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "BGE 125 II 633", "pinpoint": "2", "expected_status": "resolved", "expected_decision_id": "bge_BGE_125_II_633", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "DTF 126 II 71", "pinpoint": "5", "expected_status": "resolved", "expected_decision_id": "bge_BGE_126_II_71", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "BGE 121 V 240", "pinpoint": "3", "expected_status": "resolved", "expected_decision_id": "bge_BGE_121_V_240", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "BGE 126 III 540", "pinpoint": "2", "expected_status": "resolved", "expected_decision_id": "bge_BGE_126_III_540", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "DTF 142 V 395", "pinpoint": "4.2.1", "expected_status": "pinpoint_unavailable", "expected_decision_id": "bge_BGE_142_V_395", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "ATF 143 III 38", "pinpoint": "2", "expected_status": "pinpoint_unavailable", "expected_decision_id": "bge_BGE_143_III_38", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "Urteil des Bundesgerichts 4A_87/2019 vom 2. September 2019", "pinpoint": "4.1.3.2", "expected_status": "resolved", "expected_decision_id": "bger_4A_87_2019", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "DTF 143 III 38 consid. 2.1", "pinpoint": "2.1", "expected_status": "pinpoint_unavailable", "expected_decision_id": "bge_BGE_143_III_38", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "DTF 143 III 38", "pinpoint": "2.1", "expected_status": "pinpoint_unavailable", "expected_decision_id": "bge_BGE_143_III_38", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "DTF 143 III 38 consid. 2.1 pag. 40", "pinpoint": "2.1", "expected_status": "pinpoint_unavailable", "expected_decision_id": "bge_BGE_143_III_38", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "DTF 142 V 395 consid. 4.2.1", "pinpoint": "4.2.1", "expected_status": "pinpoint_unavailable", "expected_decision_id": "bge_BGE_142_V_395", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "DTF 126 III 1 consid. 3b", "pinpoint": "3b", "expected_status": "pinpoint_unavailable", "expected_decision_id": "bge_BGE_126_III_1", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "DTF 126 II 71 consid. 5a", "pinpoint": "5a", "expected_status": "pinpoint_unavailable", "expected_decision_id": "bge_BGE_126_II_71", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "sentenza del TF 4A_533/2015 del 20 dicembre 2016", "expected_status": "resolved", "expected_decision_id": "bger_4A_533_2015", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "sentenza del Tribunale federale 4A_533/2015 del 20 dicembre 2016 consid. 2", "pinpoint": "2", "expected_status": "resolved", "expected_decision_id": "bger_4A_533_2015", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "TF 4A_533/2015 del 20 dicembre 2016", "expected_status": "resolved", "expected_decision_id": "bger_4A_533_2015", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "sentenza 2C_1099/2016 del 27 dicembre 2016", "expected_status": "resolved", "expected_decision_id": "bger_2C_1099_2016", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "9C 313/2016", "expected_status": "resolved", "expected_decision_id": "bger_9C_313_2016", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "sentenza del TF 9C_313/2016 del 22 dicembre 2016, consid. 3", "pinpoint": "3", "expected_status": "resolved", "expected_decision_id": "bger_9C_313_2016", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "BGE 126 III 540 E. 2a", "pinpoint": "2a", "expected_status": "pinpoint_unavailable", "expected_decision_id": "bge_BGE_126_III_540", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "BGE 126 III 540", "expected_status": "resolved", "expected_decision_id": "bge_BGE_126_III_540", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "BGE 125 II 633 E. 2a", "pinpoint": "2a", "expected_status": "pinpoint_unavailable", "expected_decision_id": "bge_BGE_125_II_633", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "BGE 125 II 633 E. 2 S. 636", "pinpoint": "2", "expected_status": "resolved", "expected_decision_id": "bge_BGE_125_II_633", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "ATF 125 II 633 consid. 2a", "pinpoint": "2a", "expected_status": "pinpoint_unavailable", "expected_decision_id": "bge_BGE_125_II_633", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "BGE 121 V 240 E. 3c/aa", "pinpoint": "3c/aa", "expected_status": "pinpoint_unavailable", "expected_decision_id": "bge_BGE_121_V_240", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "BGE 121 V 240 E. 3c aa", "pinpoint": "3c", "expected_status": "pinpoint_unavailable", "expected_decision_id": "bge_BGE_121_V_240", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "BGE 121 V 240 E. 3c/aa S. 242", "pinpoint": "3c/aa", "expected_status": "pinpoint_unavailable", "expected_decision_id": "bge_BGE_121_V_240", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "Urteil des Bundesgerichts 4A_87/2019 vom 2. September 2019, E. 4.2.1", "pinpoint": "4.2.1", "expected_status": "resolved", "expected_decision_id": "bger_4A_87_2019", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "Urteil des Bundesgerichts 4A_87/2019 vom 2. September 2019", "pinpoint": "4.2.1", "expected_status": "resolved", "expected_decision_id": "bger_4A_87_2019", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "BGer 4A_87/2019", "pinpoint": "4.1.3.1", "expected_status": "resolved", "expected_decision_id": "bger_4A_87_2019", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "Urteil 4A 87/2019 vom 2. September 2019 E. 4.2.1", "pinpoint": "4.2.1", "expected_status": "resolved", "expected_decision_id": "bger_4A_87_2019", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "Urteil des Bundesgerichts 4A_579/2017 vom 7. Mai 2018, E. 3", "pinpoint": "3", "expected_status": "resolved", "expected_decision_id": "bger_4A_579_2017", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "BGer 2C_71/2018 vom 11. März 2019 E. 2.3", "pinpoint": "2.3", "expected_status": "resolved", "expected_decision_id": "bger_2C_71_2018", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "Urteil 2C_71/2018 vom 11. März 2019", "expected_status": "resolved", "expected_decision_id": "bger_2C_71_2018", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "DTF 143 III 39", "expected_status": "missing", "kind": "deliberately_wrong", "scenario": "it-de-mixed"}
+{"reference": "DTF 999 III 1", "expected_status": "missing", "kind": "deliberately_wrong", "scenario": "it-de-mixed"}
+{"reference": "BGE 125 II 634", "expected_status": "missing", "kind": "deliberately_wrong", "scenario": "it-de-mixed"}
+{"reference": "sentenza del TF 4A_5330/2015 del 20 dicembre 2016", "expected_status": "missing", "kind": "deliberately_wrong", "scenario": "it-de-mixed"}
+{"reference": "Urteil des Bundesgerichts 4A_87/2109 vom 2. September 2019", "expected_status": "missing", "kind": "deliberately_wrong", "scenario": "it-de-mixed"}
+{"reference": "Urteil des Bundesgerichts 4A_87/2019 vom 2. September 2018, E. 4.2.1", "pinpoint": "4.2.1", "expected_status": "discrepancy", "expected_decision_id": "bger_4A_87_2019", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "BGE 121 V 240 E. 9", "pinpoint": "9", "expected_status": "pinpoint_unavailable", "expected_decision_id": "bge_BGE_121_V_240", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "DTF 143 III 38 consid. 7.7", "pinpoint": "7.7", "expected_status": "pinpoint_unavailable", "expected_decision_id": "bge_BGE_143_III_38", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "BGer 4A_579/2017 vom 7. Mai 2018", "expected_status": "resolved", "expected_decision_id": "bger_4A_579_2017", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "TF 9C_313/2016 del 22 dicembre 2016", "expected_status": "resolved", "expected_decision_id": "bger_9C_313_2016", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "BGer 9C_313/2016 vom 22. Dezember 2016", "expected_status": "resolved", "expected_decision_id": "bger_9C_313_2016", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "TF 4A_579/2017 del 7 maggio 2018", "expected_status": "resolved", "expected_decision_id": "bger_4A_579_2017", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "Urteil 4A 87/2019 vom 2. September 2019", "expected_status": "resolved", "expected_decision_id": "bger_4A_87_2019", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "4A 87/2019", "expected_status": "resolved", "expected_decision_id": "bger_4A_87_2019", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "BGer 4A 87/2019 vom 2. September 2019", "expected_status": "resolved", "expected_decision_id": "bger_4A_87_2019", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "Urteil des Bundesgerichts 4A_579/2017 vom 7. Mai 2018", "expected_status": "resolved", "expected_decision_id": "bger_4A_579_2017", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "BGer 4A_579/2017", "expected_status": "resolved", "expected_decision_id": "bger_4A_579_2017", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "4A_579/2017", "expected_status": "resolved", "expected_decision_id": "bger_4A_579_2017", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "sentenza del TF 9C_313/2016 del 22 dicembre 2016", "expected_status": "resolved", "expected_decision_id": "bger_9C_313_2016", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "TF 9C_313/2016", "expected_status": "resolved", "expected_decision_id": "bger_9C_313_2016", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "9C_313/2016", "expected_status": "resolved", "expected_decision_id": "bger_9C_313_2016", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "sentenza del TF 2C_1099/2016 del 27 dicembre 2016", "expected_status": "resolved", "expected_decision_id": "bger_2C_1099_2016", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "2C_1099/2016", "expected_status": "resolved", "expected_decision_id": "bger_2C_1099_2016", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "sentenza 2C_1099/2016", "expected_status": "resolved", "expected_decision_id": "bger_2C_1099_2016", "kind": "real", "scenario": "it-de-mixed"}
+{"reference": "BGer 4A_9999/2012 und 4A_747/2012", "expected_status": "missing", "kind": "review_case", "scenario": "review-2026-09-05"}
+{"reference": "BGE 134 III 354 (4A_427/2007)", "expected_status": "resolved", "expected_decision_id": "bge_BGE_134_III_354", "kind": "review_case", "scenario": "review-2026-09-05"}
+{"reference": "VD.2020.89", "expected_status": "resolved", "kind": "review_case", "scenario": "review-2026-09-05"}
+{"reference": "HC / 2018 / 391", "expected_status": "resolved", "kind": "review_case", "scenario": "review-2026-09-05"}
+{"reference": "Gericht VD 1/2020 vom 14. Januar 2020", "expected_status": "resolved", "expected_decision_id": "vd_gerichte_1_2020", "kind": "review_case", "scenario": "review-2026-09-05"}
+{"reference": "Gericht OW AbR 1992/93 Nr. 8 vom 26. November 2015", "expected_status": "resolved", "kind": "review_case", "scenario": "review-2026-09-05"}
+{"reference": "Gericht SZ ZK1 2023 26 vom 2. April 2024", "expected_status": "resolved", "expected_decision_id": "sz_gerichte_ZK1_2023_26", "kind": "review_case", "scenario": "review-2026-09-05"}
+{"reference": "bge_BGE_136_III_513 E. 2.3", "expected_status": "resolved", "expected_decision_id": "bge_BGE_136_III_513", "kind": "review_case", "scenario": "review-2026-09-05"}
+{"reference": "Obergericht ZH LA210005 vom 15. Juni 2021, E. 3 (vgl. auch BGer 4A_747/2012)", "expected_status": "resolved", "expected_decision_id": "zh_obergericht_LA210005", "kind": "review_case", "scenario": "review-2026-09-05"}
+{"reference": "247/2020", "expected_status": "unrecognized", "kind": "review_case", "scenario": "review-2026-09-05"}
+{"reference": "BGer 4A_714/2014 vom 22. Mai 2016", "expected_status": "discrepancy", "expected_decision_id": "bger_4A_714_2014", "kind": "review_case", "scenario": "review-2026-09-05"}
+{"reference": "BGE 136 III 510 E. 99", "expected_status": "pinpoint_unavailable", "expected_decision_id": "bge_BGE_136_III_510", "kind": "review_case", "scenario": "review-2026-09-05"}
+{"reference": "4A_191/2019", "expected_status": "ambiguous", "kind": "review_case", "scenario": "review-2026-09-05"}
+{"reference": "BGer 4A_191/2019 vom 5. November 2019", "expected_status": "resolved", "expected_decision_id": "bger_4A_191_2019", "kind": "review_case", "scenario": "review-2026-09-05"}

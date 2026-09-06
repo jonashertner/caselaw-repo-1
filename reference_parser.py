@@ -1,4 +1,8 @@
-"""How lawyers write references, parsed for identity checks.
+"""How lawyers write references, parsed for identity checks (server copy).
+
+This file is byte-identical to clients/python/src/opencaselaw_cli/references.py
+below this docstring; tests/test_reference_parser_shared.py enforces it. Edit the
+client module and copy it here.
 
 The parser never produces a citation string for display: printed citations
 come from the service (R1). It only tells the resolver which label to query

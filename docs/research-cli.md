@@ -104,6 +104,27 @@ evidence, and the passage text when a pinpoint was found.
 What the check does not do: it never says that a decision supports your
 proposition, is still good law, or fits your facts. That reading is yours.
 
+### Check the quotations
+
+What the draft puts in quotation marks must stand in the decision it is
+attributed to. Give the reference (with its Erwägung when known) and the
+quotation; the tool looks in the cited Erwägung first, then in the whole
+decision text:
+
+```bash
+ocl quotes check 'BGE 136 III 513 E. 2.3' --quote "le contrat de travail conclu pour une durée indéterminée"
+ocl quotes check --input quotes.jsonl --format jsonl     # rows: {"reference": ..., "pinpoint": ..., "quote": ...}
+```
+
+`quote_status` is `exact` (verbatim once typography, OCR line hyphenation,
+whitespace and the service's link markup are folded), `near` (the best match
+scores 90% or better; the differing spans and the served wording are listed)
+or `not_found` (the closest served text and its score are still shown).
+`found_in` says whether the match lies in the cited Erwägung or elsewhere in
+the decision. The served wording is authoritative and is never rewritten;
+exit code 4 unless every quotation is exact. A `quote` field on a
+`citations resolve` row is checked the same way (`quote_check`).
+
 ### Keep the evidence behind a memo
 
 When a memo relies on a search, you want a record of what was retrieved and
@@ -180,14 +201,29 @@ decisions, because the corpus is rebuilt nightly.
 - `identity_check.method` says why a match is trusted: `exact_canonical_id`
   (the reference is the id), `exact_server_citation` (the service's own
   string), `exact_server_docket` (the decision's own docket is the label the
-  reference writes first) or `exact_candidate_label` (a docket the lookup
-  index knows in another form, whose only in-scope carrier is the proposed
-  decision). `uniqueness` says whether other carriers of that docket were
-  checked. A candidate at a court the reference rules out is listed under
+  reference writes first), `exact_server_joined_docket` (the label is one of
+  the joined dockets of a consolidated proceeding, which the record lists
+  under `joined_dockets`; the check names the `lead_docket` it is filed
+  under) or `exact_candidate_label` (a docket the lookup index knows in
+  another form, whose only in-scope carrier is the proposed decision).
+  `uniqueness` says whether other carriers of that docket were checked. A
+  candidate at a court the reference rules out is listed under
   `out_of_scope_candidates` and does not make the reference ambiguous. The
   label written first is the citation; a docket mentioned later (`vgl. auch
   BGer 4A_747/2012`, a joined file) is listed under `other_dockets` and never
   taken for it.
+- `canonical_decision_id` on a resolved row means the service stores the same
+  ruling under another id as well and names that record as the canonical one
+  (`bge_143 III 38` next to `bge_BGE_143_III_38`, for example). `decision_id`
+  stays the record the reference resolved to; nothing is substituted. The
+  field is absent when the record is the canonical one or the server has no
+  representation manifest loaded.
+- `quote_status` (`quotes check`, or `quote_check` on a resolve row): `exact`
+  means the quotation stands verbatim in the served text after folding
+  typography and line breaks; `near` means it differs (the spans are
+  listed: quote wording against served wording); `not_found` means no
+  window of the text comes close. Never repair a quotation from the
+  differences by hand: copy the served wording.
 - Passage `text` is the served string; the service marks cross-references
   inside it as Markdown links. `text_plain` is the same text with those links
   reduced to their labels, for comparisons with the decision text.
@@ -305,7 +341,12 @@ depends on the requested window, so its pages are not composable: `ocl` sends
 it as a single request of `--max-results` (at most 800). Without query text
 the filters enumerate an exact, stably ordered set in pages of `--page-size`
 (default 50); rows repeated across pages are dropped and counted in
-`_client.duplicates_dropped`.
+`_client.duplicates_dropped`. Rows the service links to one
+`canonical_decision_id` (the same ruling stored under several ids) are
+reduced to one row per ruling, the canonical record when the selection holds
+it, at the group's first-seen rank; the others are counted in
+`_client.duplicates_collapsed` and listed under
+`_client.collapsed_representations`. `--no-collapse` keeps every row.
 
 A reference containing a slash (a docket such as `4A_747/2012`) is resolved
 through the service first; `ocl` then requires the resolved decision to carry
@@ -381,7 +422,9 @@ bounded candidate pool whose size depends on the requested window, so its pages
 are not composable: `ocl` sends it as a single request of `--max-results`
 (at most 800). A filter-only search (no query text) enumerates an exact, stably
 ordered set and is fetched in pages of `--page-size` (default 50); rows repeated
-across pages are dropped and counted in `_client.duplicates_dropped`. Inspect
+across pages are dropped and counted in `_client.duplicates_dropped`, and
+duplicate representations of one ruling are collapsed unless `--no-collapse`
+is given (`_client.duplicates_collapsed`). Inspect
 `total_is_lower_bound`, `has_more`, `next_offset` and `_client` metadata.
 A relevance query can exhaust the server's bounded candidate pool before all
 matches are returned. `has_more: false` does not prove exhaustive coverage of a
@@ -435,3 +478,11 @@ cross-references; `text_plain`, added by the client, reduces them to their
 labels for comparisons with the decision text. `/api/lookup?exact=true` returns only decisions whose own docket or
 BGE label is the reference, which is what `citations resolve` uses to detect a
 docket reused by another court.
+
+Two identity fields follow the same rule. `joined_dockets` on a decision, a
+lookup hit or a `cite` answer lists the secondary dockets of a consolidated
+proceeding filed under that decision's lead docket, so a reference by any of
+them names the record. `canonical_decision_id` (with `is_canonical`) on
+decisions, lookup hits, `cite` answers and search rows names the canonical
+record when the service stores the same ruling under several ids; the
+requested record is always the one served.

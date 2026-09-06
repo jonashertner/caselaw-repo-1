@@ -127,6 +127,8 @@ def render_search(value: dict, s: Style, width: int) -> str:
         footer += ". Ranked search over a bounded pool; not an exhaustive list"
     if client.get("duplicates_dropped"):
         footer += f"; {client['duplicates_dropped']} duplicate row(s) dropped"
+    if client.get("duplicates_collapsed"):
+        footer += f"; {client['duplicates_collapsed']} further representation(s) of a listed ruling collapsed"
     if client.get("errors"):
         footer += f"; {len(client['errors'])} page request(s) failed"
     if value.get("note"):
@@ -375,6 +377,32 @@ def render_bundle(value: dict, s: Style, width: int) -> str:
     return "\n".join(lines)
 
 
+def render_quotes(value: dict, s: Style, width: int) -> str:
+    lines = []
+    for row in value.get("results") or []:
+        qs = str(row.get("quote_status") or "not_checked")
+        colour = s.green if qs == "exact" else s.yellow if qs == "near" else s.red
+        head = f"{colour(qs)}{' ' * max(1, 12 - len(qs))}{row.get('reference', '')}"
+        if row.get("decision_id"):
+            head += "  " + s.cyan(str(row["decision_id"]))
+        if row.get("found_in"):
+            head += s.dim(f"  in {row['found_in']}")
+        if row.get("ratio") is not None and qs != "exact":
+            head += s.dim(f"  ratio {row['ratio']}")
+        lines.append(head)
+        if qs == "not_checked" and (row.get("reason") or row.get("error")):
+            lines += _wrap(str(row.get("reason") or (row.get("error") or {}).get("message")), width, "    ")
+        for diff in row.get("differences") or []:
+            lines.append("    " + s.dim(f"{diff.get('kind')}: ") + s.red(repr(diff.get("quote", ""))) + s.dim(" → ") + s.green(repr(diff.get("served", ""))))
+        if qs == "not_found" and row.get("served"):
+            lines += [s.dim(l) for l in _wrap("closest served text: " + str(row["served"])[:300], width, "    ")]
+    counts = value.get("counts") or {}
+    summary = ", ".join(f"{n} {k}" for k, n in counts.items())
+    lines += ["", _status(s, str(value.get("status", ""))) + s.dim(f": {summary}." if summary else "."),
+              s.dim("The served wording is authoritative; quotations are never rewritten.")]
+    return "\n".join(lines)
+
+
 def render_bundle_verification(value: dict, s: Style, width: int) -> str:
     counts = value.get("counts") or {}
     lines = [_status(s, str(value.get("status", ""))) + "  " + s.bold(str(value.get("bundle", ""))),
@@ -459,6 +487,8 @@ def render(value, args, s: Style, width: int) -> str:
         return render_citations(value, s, width)
     if command == "citations" and action == "resolve":
         return render_resolution(value, s, width)
+    if command == "quotes":
+        return render_quotes(value, s, width)
     if command == "cite":
         return render_batch(value, s, width, render_cite) if "requested" in value else render_cite(value, s, width)
     if command == "bundle":
@@ -505,9 +535,17 @@ def tabular(value, args):
                 detail.append(f"E. {(r.get('passage') or {}).get('e_number')} retrieved instead")
             if r.get("status") == "error" and r.get("error"):
                 detail.append(str(r["error"].get("message")))
+            if r.get("canonical_decision_id"):
+                detail.append(f"canonical record {r['canonical_decision_id']}")
             rows.append([cell(r.get("reference")), cell(r.get("status")), cell(r.get("decision_id")), cell(r.get("pinpoint")),
                          cell(r.get("pinpoint_status")), cell(provenance.get("citation_string_de") or provenance.get("citation_string")),
                          cell((r.get("identity_check") or {}).get("method")), "; ".join(detail)])
+        return cols, rows
+    if command == "quotes":
+        cols = ["reference", "quote_status", "decision_id", "found_in", "ratio", "differences"]
+        rows = [[cell(r.get("reference")), cell(r.get("quote_status")), cell(r.get("decision_id")), cell(r.get("found_in")),
+                 cell(r.get("ratio")), "; ".join(f"{d.get('quote')!r} → {d.get('served')!r}" for d in (r.get("differences") or [])[:4])]
+                for r in value.get("results") or []]
         return cols, rows
     if command == "citations" and action == "list":
         cols = ["direction", "label", "decision_id", "court", "decision_date", "confidence"]

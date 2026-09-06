@@ -169,6 +169,9 @@ docker-build:
 	@echo "  Run: docker run --rm opencaselaw-reviewer:$(RELEASE_DATE) make verify-offline"
 
 .PHONY: smoke-cli
+bench-citations:  ## citation round-trip benchmark against production (by hand; ~500 requests, ~2 min)
+	@$(PYTHON) benchmarks/citation_roundtrip.py
+
 smoke-cli:  ## live contract check of the research CLI + description examples against production (~15 requests)
 	@$(PYTHON) scripts/cli_live_check.py
 	@$(PYTHON) scripts/check_description_examples.py

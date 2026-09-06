@@ -231,6 +231,7 @@ class ReflectRequest(BaseModel):
 sys.path.insert(0, str(Path(__file__).parent))
 from db_schema import SCHEMA_SQL, INSERT_OR_IGNORE_SQL, INSERT_COLUMNS  # noqa: E402
 import docket_aliases  # noqa: E402  (joined-docket resolution, issue #41)
+import reference_parser
 import ecthr_docket  # noqa: E402  (shared ECtHR docket display form)
 
 # Set to True when running with --remote (SSE transport).
@@ -4770,6 +4771,60 @@ def _representation_info(decision_id: str | None) -> dict | None:
         conn.close()
 
 
+def _canonical_links_for(decision_ids) -> dict[str, str] | None:
+    """member decision_id -> canonical decision_id for every id the manifest
+    links, in one indexed IN-lookup (idx_repr_member). None when the manifest
+    is not loaded, so callers can tell "no manifest" from "no link"; ids the
+    manifest does not know are simply absent from the mapping. Never raises."""
+    ids = [d for d in dict.fromkeys(decision_ids) if isinstance(d, str) and d]
+    conn = _get_manifest_conn()
+    if conn is None:
+        return None
+    links: dict[str, str] = {}
+    try:
+        for i in range(0, len(ids), 500):
+            chunk = ids[i:i + 500]
+            for r in conn.execute(
+                "SELECT member_decision_id, canonical_decision_id "
+                f"FROM decision_representations "
+                f"WHERE member_decision_id IN ({','.join('?' * len(chunk))})",
+                chunk,
+            ):
+                if r[1]:
+                    links[r[0]] = r[1]
+        return links
+    except sqlite3.Error:
+        return None
+    finally:
+        conn.close()
+
+
+def _attach_canonical_ids(rows) -> None:
+    """Add canonical_decision_id + is_canonical to decision dicts in place.
+
+    Duplicate representations (the same ruling stored under two ids) are
+    linked by the representation manifest; a client that sees the canonical
+    id on every row can collapse them without a second request. One batched
+    lookup per call, so a search page costs one indexed query. No-op without
+    the manifest (the fields are then absent, not false); additive: no row is
+    dropped, reordered or renamed, and decision_id is never changed.
+    """
+    try:
+        links = _canonical_links_for(
+            [r.get("decision_id") for r in rows if isinstance(r, dict)])
+    except Exception:
+        return
+    if links is None:
+        return
+    for r in rows:
+        did = r.get("decision_id") if isinstance(r, dict) else None
+        if not did:
+            continue
+        canonical = links.get(did) or did
+        r["canonical_decision_id"] = canonical
+        r["is_canonical"] = canonical == did
+
+
 _anwaltsrecht_warned = False
 
 def _get_anwaltsrecht_conn() -> sqlite3.Connection | None:
@@ -6189,6 +6244,25 @@ def _lookup_docket_alias(conn: sqlite3.Connection, reference: str | None) -> lis
     return [r[0] for r in rows]
 
 
+def _joined_dockets_for(conn: sqlite3.Connection, decision_id: str | None) -> list[str]:
+    """Every secondary (joined) docket stored for a consolidated decision (#41),
+    in the alias table's normalised form ('1B_243/2022'), sorted; [] when there
+    are none or the alias table is absent (never raises). The inverse of
+    _lookup_docket_alias: it lets a record announce ALL its dockets, so a
+    client holding only a joined docket can recognise the lead decision."""
+    if not decision_id:
+        return []
+    try:
+        rows = conn.execute(
+            "SELECT DISTINCT alias_docket FROM decision_docket_aliases "
+            "WHERE canonical_decision_id = ? ORDER BY alias_docket",
+            (decision_id,),
+        ).fetchall()
+    except sqlite3.OperationalError:
+        return []  # alias table not present yet
+    return [r[0] for r in rows if r[0]]
+
+
 def _lookup_ecthr_appno(conn: sqlite3.Connection, reference: str | None) -> list[str]:
     """Resolve a bare ECtHR application number to its judgment(s).
 
@@ -6266,6 +6340,14 @@ def _resolve_decision_id(decision_id: str) -> str:
             ).fetchone()
             if row:
                 return row[0]
+        # The reference as a lawyer writes it (shared parser with the research
+        # CLI): the label written first, tried in every stored separator; a
+        # BGE label with a page or a trailing pinpoint; a cantonal docket inside
+        # the service's own long-form string. A docket mentioned later in the
+        # reference is a cross-reference and is never resolved to.
+        parsed_hit = _resolve_parsed_reference(conn, decision_id)
+        if parsed_hit:
+            return parsed_hit
         # Bare ECtHR application number -> the judgment carrying it. Indexed,
         # and unique-only for the same reason as the alias step below.
         _appno_ids = _lookup_ecthr_appno(conn, decision_id)
@@ -6295,6 +6377,45 @@ def _resolve_decision_id(decision_id: str) -> str:
     finally:
         conn.close()
     return decision_id
+
+
+def _resolve_parsed_reference(conn, reference: str) -> str | None:
+    """Exact-label resolution of a written reference via reference_parser.
+
+    Returns a decision_id only when a stored decision carries the label the
+    reference writes first (BGE tuple, or a docket in one of its stored
+    separators); several carriers are disambiguated by the court or canton the
+    reference names, and stay unresolved when the reference names none."""
+    try:
+        parsed = reference_parser.parse_reference(reference)
+    except Exception:  # noqa: BLE001 — a parser fault must not break resolution
+        return None
+    if parsed.bge_label and parsed.bge_label != reference.strip():
+        for cid in _bge_ref_candidates(parsed.bge_label):
+            row = conn.execute("SELECT decision_id FROM decisions WHERE decision_id = ?", (cid,)).fetchone()
+            if row:
+                return row[0]
+    primary = parsed.primary_docket
+    if not primary or (parsed.bge_label and parsed.bge_first):
+        return None
+    for variant in reference_parser.docket_variants(primary):
+        rows = conn.execute(
+            "SELECT decision_id, court, canton FROM decisions WHERE docket_number = ? "
+            "ORDER BY decision_date DESC LIMIT 8", (variant,),
+        ).fetchall()
+        if not rows:
+            continue
+        records = [dict(zip(("decision_id", "court", "canton"), tuple(r))) for r in rows]
+        scoped = [r for r in records if parsed.in_scope(r)]
+        if parsed.courts or parsed.canton:
+            if len({r["decision_id"] for r in scoped}) >= 1:
+                return scoped[0]["decision_id"]
+            continue
+        return records[0]["decision_id"]
+    alias_ids = _lookup_docket_alias(conn, primary)
+    if len(alias_ids) == 1:
+        return alias_ids[0]
+    return None
 
 
 def _decision_id_variants(decision_id: str) -> list[str]:
@@ -8589,6 +8710,7 @@ def get_decision_by_id(decision_id: str) -> dict | None:
                 row = cand
                 break
 
+    _joined = _joined_dockets_for(conn, row["decision_id"]) if row else []
     conn.close()
 
     if not row:
@@ -8597,6 +8719,16 @@ def get_decision_by_id(decision_id: str) -> dict | None:
     result = dict(row)
     # Remove json_data blob from response (redundant)
     result.pop("json_data", None)
+
+    # Joined dockets (#41): every secondary docket of a consolidated proceeding
+    # filed under this lead decision, so a caller holding one of them can
+    # recognise the record instead of reading the lead docket as a mismatch.
+    if _joined:
+        result["joined_dockets"] = _joined
+    # Duplicate representations: canonical_decision_id + is_canonical from the
+    # representation manifest (absent when it is not loaded; never changes
+    # decision_id — the requested row is served either way).
+    _attach_canonical_ids([result])
 
     # Joined-docket resolution (#41): the caller looked up a secondary docket of
     # a consolidated proceeding; surface that the returned decision is the lead,
@@ -10912,9 +11044,12 @@ server = Server(
         "decision. If a `get_law` result carries `verbatim_quotation: "
         "not_guaranteed` (a PDF-only historical edition, rendered with a "
         "'Text source: Fedlex PDF edition' line), NEVER quote from it: name "
-        "the edition date and the Fedlex link and paraphrase. If it carries "
-        "`verbatim_quotation: best_effort` (a Word edition), quote only with "
-        "the edition date stated in the same sentence.\n\n"
+        "the edition date and the Fedlex link and paraphrase; if such a "
+        "result also carries `text_status: heading_only` or `empty`, no "
+        "article text was recovered at all — say the article could not be "
+        "retrieved for that date and do not paraphrase the excerpt. If it "
+        "carries `verbatim_quotation: best_effort` (a Word edition), quote "
+        "only with the edition date stated in the same sentence.\n\n"
 
         "R3. NEVER state what a Swiss statute says from memory. Always "
         "call `get_law` (federal) or `get_legislation` (cantonal/federal "
@@ -12397,6 +12532,7 @@ def _handle_get_erwaegung(*, decision_id: str, e_number: str) -> dict:
     decision_for_citation = {
         "decision_id": canonical_id,
         "court": row.get("court") if row else None,
+        "canton": (row.get("canton") if row else None) or (main or {}).get("canton"),
         "decision_date": row.get("decision_date") if row else None,
         "docket_number": (main or {}).get("docket_number"),
         "collection": (main or {}).get("collection"),
@@ -13380,6 +13516,7 @@ def _handle_find_relevant_erwaegung(
         decision_for_citation = {
             "decision_id": canonical_id,
             "court": (row or {}).get("court"),
+            "canton": (row or {}).get("canton") or (main or {}).get("canton"),
             "decision_date": (row or {}).get("decision_date"),
             "docket_number": (main or {}).get("docket_number"),
             "collection": (main or {}).get("collection"),
@@ -14095,6 +14232,7 @@ def _handle_get_regeste(*, decision_id: str) -> dict:
     decision_for_citation = {
         "decision_id": canonical_id,
         "court": row["court"],
+        "canton": (row["canton"] if "canton" in row.keys() else None) or main_decision.get("canton"),
         "decision_date": row["decision_date"],
         "docket_number": main_decision.get("docket_number"),
         "collection": main_decision.get("collection"),
@@ -14232,6 +14370,54 @@ def _bge_containing_decision(ref: str) -> dict | None:
     return starts[best_page]
 
 
+def _cite_identity(reference: str, decision: dict) -> dict | None:
+    """Why a resolved decision may be cited for a written reference, or None.
+
+    The same rule the research CLI applies: the decision must carry the label
+    the reference writes first — its canonical id, one of the service's own
+    citation strings, its BGE tuple, its docket (or a joined docket) in any
+    stored separator. A docket mentioned later in the reference is a
+    cross-reference; a docket fragment the resolver matched by substring is
+    nothing. Returns {"method": ..., "label": ...}."""
+    try:
+        parsed = reference_parser.parse_reference(reference)
+    except Exception:  # noqa: BLE001
+        return {"method": "unparsed", "label": reference}
+    decision_id = decision.get("decision_id") or ""
+    core = parsed.core
+    if core == decision_id or decision_id in _decision_id_variants(core):
+        return {"method": "exact_canonical_id", "label": core}
+    core_key = reference_parser.label_key(core)
+    try:
+        strings = _build_citation_strings(decision)
+    except Exception:  # noqa: BLE001
+        strings = {}
+    for name in ("citation_string_de", "citation_string_fr", "citation_string_it"):
+        if strings.get(name) and reference_parser.label_key(strings[name]) == core_key:
+            return {"method": "exact_server_citation", "label": strings[name]}
+    if parsed.bge_label and parsed.bge_first:
+        if decision_id in _bge_ref_candidates(parsed.bge_label) or (
+            decision.get("court") in ("bge", "bge_egmr") and isinstance(decision.get("docket_number"), str)
+            and reference_parser.label_key("BGE " + decision["docket_number"]) == reference_parser.label_key(parsed.bge_label)
+        ):
+            return {"method": "exact_bge_label", "label": parsed.bge_label}
+        return None
+    carried = [decision.get(name) for name in ("docket_number", "docket_number_2") if isinstance(decision.get(name), str)]
+    carried += [d for d in (decision.get("joined_dockets") or []) if isinstance(d, str)]
+    primary = parsed.primary_docket
+    if primary is not None:
+        key = reference_parser.fold_docket(primary)
+        for docket in carried:
+            if reference_parser.fold_docket(docket) == key:
+                method = "exact_docket" if docket == decision.get("docket_number") else "exact_joined_docket"
+                return {"method": method, "label": docket}
+        return None
+    for docket in carried:
+        if reference_parser.docket_in_reference(core, docket):
+            return {"method": "exact_docket", "label": docket}
+    return None
+
+
 def _handle_cite(
     *,
     reference: str,
@@ -14260,6 +14446,15 @@ def _handle_cite(
 
     resolved_id = _resolve_decision_id(ref)
     decision = get_decision_by_id(resolved_id)
+    identity = _cite_identity(ref, decision) if decision else None
+    proposal = None
+    if decision and identity is None:
+        # The resolver proposed a decision that carries no label the reference
+        # writes (a docket fragment matched by substring, a cross-referenced
+        # docket, a label of another court). Never cite it: report it as a
+        # close match for the caller to inspect.
+        proposal = decision
+        decision = None
 
     if not decision:
         # Reference doesn't resolve — suggest close matches so the LLM can retry
@@ -14270,8 +14465,22 @@ def _handle_cite(
         # FTS only for non-docket references.
         close_matches: list[dict] = []
         bge_parsed = _parse_bge_ref_text(ref)
+        if proposal is not None:
+            _pc = _build_citation_strings(proposal)
+            close_matches.append({
+                "decision_id": proposal.get("decision_id"),
+                "docket_number": proposal.get("docket_number"),
+                "court": proposal.get("court"),
+                "decision_date": proposal.get("decision_date"),
+                "citation_string_de": _pc["citation_string_de"],
+                "canonical_url": _pc["canonical_url"],
+                "markdown_link": _md_link(_pc["citation_string_de"], _pc["canonical_url"]),
+                "match_reason": "label_not_carried",
+            })
         try:
-            if bge_parsed is not None:
+            if proposal is not None:
+                cand_rows = []
+            elif bge_parsed is not None:
                 # BGE page ref: the only useful suggestion is the decision whose
                 # page range contains the queried (pinpoint) page. Never fall back
                 # to an FTS token match on the page number (the #48 noise).
@@ -14359,6 +14568,15 @@ def _handle_cite(
     }
     if _date_warning:
         result["decision_date_warning"] = _date_warning
+    if identity:
+        result["identity"] = identity
+    # Identity exposure: the decision's joined (secondary) dockets and its
+    # canonical representation, so a client can tell a consolidated or
+    # duplicated ruling from an unrecognised one. Additive: decision_id and
+    # the citation strings are exactly what the pipeline built above.
+    for _key in ("joined_dockets", "canonical_decision_id", "is_canonical"):
+        if decision.get(_key) is not None:
+            result[_key] = decision[_key]
     if rule is None and (decision.get("full_text") or decision.get("regeste")):
         # #84: the field is absent rather than wrong. Say why, so a caller
         # does not read the omission as "this decision has no holding".
@@ -19046,37 +19264,142 @@ def _fetch_fedlex_edition_text(sr_number: str, snapshot_date: str, language: str
     return edition
 
 
+_PDF_ARTICLE_NUM = r"\d+[a-z]?(?:bis|ter|quater|quinquies|sexies|septies|octies|novies|decies)?"
+# An amended article's body header carries its footnote superscript glued to
+# the number in the extracted text — "Art. 336c147" for Art. 336c, footnote
+# 147 — while the table of contents lists the same article clean ("Art.
+# 336c"). The glued form counts only at the end of the line: a footnote
+# never sits inside a heading line, and the anchor keeps "Art. 33" from
+# matching "Art. 336 …". Measured on the 2010 OR: 234 of ~1,600 body headers
+# are glued; every one of them used to fall through to the TOC line.
+_PDF_GLUED_FOOTNOTE = r"(\d{1,3})[ \t]*$"
 _PDF_ANY_ARTICLE_MARKER = re.compile(
-    r"^[ \t]*Art\.\s*\d+[a-z]?(?:bis|ter|quater|quinquies|sexies|septies|octies|novies|decies)?(?![0-9a-z])",
+    rf"^[ \t]*Art\.\s*{_PDF_ARTICLE_NUM}(?:{_PDF_GLUED_FOOTNOTE}|(?![0-9a-z]))",
     re.MULTILINE,
 )
+# Footnote-free headers ("Art. 336c", not "Art. 336c147").
+_PDF_CLEAN_ARTICLE_MARKER = re.compile(
+    rf"^[ \t]*Art\.\s*({_PDF_ARTICLE_NUM})(?![0-9a-z])", re.MULTILINE)
+_PDF_ORDINAL_SUFFIXES = ("bis", "ter", "quater", "quinquies", "sexies",
+                         "septies", "octies", "novies", "decies")
+
+
+def _pdf_article_sort_key(article: str) -> tuple[int, str]:
+    """(number, suffix) in statute order: 325 < 325bis < 326, 336 < 336a."""
+    m = re.match(r"(\d+)(.*)", article)
+    if not m:
+        return (0, article)
+    suffix = m.group(2)
+    if suffix in _PDF_ORDINAL_SUFFIXES:
+        suffix = chr(ord("a") + _PDF_ORDINAL_SUFFIXES.index(suffix))
+    return (int(m.group(1)), suffix)
+
+
+def _pdf_article_spine(full_text: str) -> list[tuple[int, tuple[int, str]]]:
+    """Ordered [(position, sort_key)] of the footnote-free headers that are
+    certainly article numbers: those with a letter or ordinal suffix, and
+    plain numbers seen at least twice (table of contents plus body). A
+    plain number seen once is as likely a footnote read as digits ("Art.
+    332125" is Art. 332, footnote 125) and would sit in the spine with an
+    inflated value, so it is left out."""
+    seen = [(c.start(), c.group(1)) for c in _PDF_CLEAN_ARTICLE_MARKER.finditer(full_text)]
+    counts = collections.Counter(num for _, num in seen)
+    return [(pos, _pdf_article_sort_key(num)) for pos, num in seen
+            if not num.isdigit() or counts[num] > 1]
+
+
+def _pdf_glued_header_fits(spine: list[tuple[int, tuple[int, str]]], article: str, pos: int) -> bool:
+    """Whether the line "Art. <article><digits>" at pos reads as `article`
+    with a glued footnote rather than as a longer article number ("Art.
+    4817" is Art. 48 + footnote 17, but also looks like Art. 481 + 7).
+
+    A line that is itself in the spine is a verified article number ("Art.
+    333" listed in the table of contents and heading a body) and never
+    reads as a shorter one. Otherwise article headers run in order, in the
+    body and in the table of contents, so the reading is right when
+    `article` sorts between the nearest spine headers before and after the
+    line. Where the numbering restarts between them (final provisions, the
+    table of contents) the article must fit one of the two runs.
+    """
+    import bisect
+    key = _pdf_article_sort_key(article)
+    i = bisect.bisect_left(spine, (pos, (0, "")))
+    if i < len(spine) and spine[i][0] == pos:
+        return False
+    prev = spine[i - 1][1] if i > 0 else None
+    nxt = spine[i][1] if i < len(spine) else None
+    if prev is None or nxt is None:
+        return (prev is None or key >= prev) and (nxt is None or key <= nxt)
+    if prev <= nxt:
+        return prev <= key <= nxt
+    return key >= prev or key <= nxt
+
+
+# Below this many characters of body the window holds a heading or a
+# marginal note, not an article (the shortest real bodies, "Aufgehoben"
+# aside, are one sentence of ~45 characters).
+_PDF_EXCERPT_MIN_BODY_CHARS = 40
+
+
+def _pdf_excerpt_status(excerpt: str) -> str:
+    """'ok', 'heading_only' or 'empty' for a windowed PDF excerpt.
+
+    The body is everything after the "Art. N" header line. A table-of-
+    contents candidate carries the next article's marginal note ("b. durch
+    den Arbeitnehmer"), a repealed article nothing at all; neither is
+    statute text, and a client must be able to tell without reading it.
+    Article text always closes a sentence, so a body whose lines all end
+    without .;:!? (optionally a glued footnote number) is heading-only too.
+    """
+    body = excerpt.split("\n", 1)[1].strip() if "\n" in excerpt else ""
+    if not body:
+        return "empty"
+    if len(body) < _PDF_EXCERPT_MIN_BODY_CHARS:
+        return "heading_only"
+    if not re.search(r"[.;:!?]\d{0,3}[ \t]*$", body, re.MULTILINE):
+        return "heading_only"
+    return "ok"
 
 
 def _pdf_article_excerpt(full_text: str, article: str, max_chars: int = 8000) -> tuple[str | None, int]:
     """Best-effort window around one article in unstructured edition text.
 
     Every line-start "Art. N" is a candidate (Fedlex PDFs also list the
-    articles in a table of contents); the block from each candidate to the
-    next line-start "Art." marker is measured and the longest wins. Returns
-    (excerpt, candidate_count). Measured on the 2017 OR, this kind of split
-    is exact for ~63 % of articles and silently wrong for ~24 % (two-column
-    layout, marginal notes bleeding in), which is why callers flag the
-    result verbatim_quotation="not_guaranteed" and the server prompt forbids
-    quoting it.
+    articles in a table of contents), a glued footnote superscript allowed
+    at the end of the line where it reads as this article and not a longer
+    one (see _pdf_glued_header_fits). The block from each candidate to the
+    next line-start "Art." marker is measured; the longest block that holds
+    article text (_pdf_excerpt_status "ok") wins, else the longest block.
+    Returns (excerpt, candidate_count). Measured on the 2017 OR, this kind
+    of split is exact for ~63 % of articles and silently wrong for ~24 %
+    (two-column layout, marginal notes bleeding in), which is why callers
+    flag the result verbatim_quotation="not_guaranteed" and the server
+    prompt forbids quoting it.
     """
-    num = re.escape((article or "").strip())
+    article = (article or "").strip()
+    num = re.escape(article)
     if not num:
         return None, 0
-    marker = re.compile(rf"^[ \t]*Art\.\s*{num}(?![0-9a-z])", re.MULTILINE)
-    starts = [m.start() for m in marker.finditer(full_text)]
+    marker = re.compile(rf"^[ \t]*Art\.\s*{num}(?:{_PDF_GLUED_FOOTNOTE}|(?![0-9a-z]))",
+                        re.MULTILINE)
+    spine = None
+    starts = []
+    for m in marker.finditer(full_text):
+        if m.group(1):
+            if spine is None:
+                spine = _pdf_article_spine(full_text)
+            if not _pdf_glued_header_fits(spine, article, m.start()):
+                continue
+        starts.append(m.start())
     if not starts:
         return None, 0
-    best = ""
+    best, best_rank = "", (False, -1)
     for s in starts:
         nxt = _PDF_ANY_ARTICLE_MARKER.search(full_text, s + 1)
         block = full_text[s:nxt.start() if nxt else len(full_text)].strip()
-        if len(block) > len(best):
-            best = block
+        rank = (_pdf_excerpt_status(block) == "ok", len(block))
+        if rank > best_rank:
+            best, best_rank = block, rank
     return best[:max_chars], len(starts)
 
 
@@ -19485,9 +19808,25 @@ def _fetch_historical_law_version(
             if article:
                 excerpt, candidates = _pdf_article_excerpt(edition["full_text"], article)
                 if excerpt:
+                    # Honesty guard: a window that holds only the header and
+                    # a marginal note (the TOC line, a repealed article) is
+                    # returned with text_status heading_only / empty, never
+                    # as an answer. HTTP stays 200; the payload says so.
+                    status = _pdf_excerpt_status(excerpt)
                     result["articles"] = [{"article_num": article, "heading": None,
-                                           "text": excerpt, "excerpt": True}]
+                                           "text": excerpt, "excerpt": True,
+                                           "text_status": status}]
                     result["excerpt_candidates"] = candidates
+                    result["text_status"] = status
+                    if status != "ok":
+                        what = ("nothing" if status == "empty"
+                                else "only a heading or marginal note")
+                        result["note"] = (
+                            f"UNRESOLVED: the PDF excerpt around 'Art. {article}' holds {what} "
+                            f"after the header — no article text was recovered (the article "
+                            f"may be repealed or left empty in this edition, or its body "
+                            f"header was not recognised). Treat Art. {article} as not "
+                            f"retrieved and open the edition on Fedlex: {source_url}")
                 else:
                     result["articles"] = []
                     result["note"] = (f"No 'Art. {article}' marker found in the PDF text of this "
@@ -21160,6 +21499,12 @@ def _format_get_law_response(result: dict) -> str:
                 where = f", 1 of {cands} candidate positions" if cands > 1 else ""
                 text += (f"### Excerpt around \"Art. {art['article_num']}\" "
                          f"(unstructured PDF text{where})\n\n")
+                if art.get("text_status") in ("heading_only", "empty"):
+                    text += (f"_UNRESOLVED (text_status: {art['text_status']}): the window "
+                             f"holds no article text, only the header"
+                             f"{' and a heading or marginal note' if art['text_status'] == 'heading_only' else ''}. "
+                             f"Do not treat what follows as Art. {art['article_num']}; "
+                             f"open the edition on Fedlex (Quelle above)._\n\n")
             else:
                 text += f"### {marker} {art['article_num']}{heading}\n\n"
             if art.get("empty_body"):
@@ -23865,7 +24210,9 @@ def _list_tools() -> list[Tool]:
                 "this BEFORE relying on training-data recall — statute text changes "
                 "often and LLMs hallucinate article content. With as_of: the dated "
                 "Fedlex edition in force on that date (snapshot_date, title, in-force "
-                "window, link); always tell the user the edition date. Examples: "
+                "window, link); always tell the user the edition date. PDF-only "
+                "editions carry `text_status`: 'heading_only' / 'empty' = no article "
+                "text recovered; say so and give the Fedlex link. Examples: "
                 "get_law(abbreviation='BV', article='8'); get_law(sr_number='220', "
                 "article='41'); get_law(canton='ZH', sr_number='554.5', article='1')."
             ),
@@ -24750,12 +25097,19 @@ def _lookup_exact(qn: str, limit: int = 25) -> dict:
             continue
         seen.add(did)
         cit = _build_citation_strings(r)  # R1: citations from the pipeline, never built here
-        out.append({"decision_id": did, "docket_number": r.get("docket_number"), "court": r.get("court"),
-                    "canton": r.get("canton"), "decision_date": r.get("decision_date"), "title": r.get("title"),
-                    "citation": cit.get("citation_string_de"),
-                    "url": cit.get("canonical_url") or _canonical_decision_url(did)})
+        hit = {"decision_id": did, "docket_number": r.get("docket_number"), "court": r.get("court"),
+               "canton": r.get("canton"), "decision_date": r.get("decision_date"), "title": r.get("title"),
+               "citation": cit.get("citation_string_de"),
+               "url": cit.get("canonical_url") or _canonical_decision_url(did)}
+        # A hit reached through a joined docket carries the lead docket; list
+        # its secondary dockets so the caller can see the label it asked for.
+        joined = _joined_dockets_for(conn, did)
+        if joined:
+            hit["joined_dockets"] = joined
+        out.append(hit)
         if len(out) >= limit:
             break
+    _attach_canonical_ids(out)
     return {"query": qn, "is_case_number": True, "exact": True, "total": len(out), "results": out,
             **({} if out else {"hint": "No stored decision carries this exact docket or BGE label."})}
 
@@ -24788,21 +25142,34 @@ def _lookup_case_number(q: str, limit: int = 8, exact: bool = False) -> dict:
                 "hint": "Not a recognised Swiss case number — use full-text search for topics."}
     rows, _total = search_fts5(query=qn, limit=max(1, min(int(limit), 25)))
     out = []
-    for r in rows:
-        did = r.get("decision_id", "")
-        if not did:
-            continue
-        cit = _build_citation_strings(r)  # R1: citations from the pipeline, never built here
-        out.append({
-            "decision_id": did,
-            "docket_number": r.get("docket_number"),
-            "court": r.get("court"),
-            "canton": r.get("canton"),
-            "decision_date": r.get("decision_date"),
-            "title": r.get("title"),
-            "citation": cit.get("citation_string_de"),
-            "url": cit.get("canonical_url") or _canonical_decision_url(did),
-        })
+    try:
+        conn = get_db()  # for the joined-docket lookups; the hits come from search_fts5
+    except Exception:
+        conn = None
+    try:
+        for r in rows:
+            did = r.get("decision_id", "")
+            if not did:
+                continue
+            cit = _build_citation_strings(r)  # R1: citations from the pipeline, never built here
+            hit = {
+                "decision_id": did,
+                "docket_number": r.get("docket_number"),
+                "court": r.get("court"),
+                "canton": r.get("canton"),
+                "decision_date": r.get("decision_date"),
+                "title": r.get("title"),
+                "citation": cit.get("citation_string_de"),
+                "url": cit.get("canonical_url") or _canonical_decision_url(did),
+            }
+            joined = _joined_dockets_for(conn, did) if conn is not None else []  # indexed; at most 25 hits
+            if joined:
+                hit["joined_dockets"] = joined
+            out.append(hit)
+    finally:
+        if conn is not None:
+            conn.close()
+    _attach_canonical_ids(out)
     return {"query": qn, "is_case_number": True, "total": len(out), "results": out}
 
 
@@ -25183,6 +25550,10 @@ _RESEARCH_COMPACT_KEYS = (
     "decision_id", "docket_number", "court", "language", "decision_date",
     "citation_string_de", "canonical_url",
 )
+# Identity keys a compact row keeps WHEN PRESENT: set by _attach_canonical_ids
+# only while the representation manifest is loaded, so a client can collapse
+# duplicate representations without a second request.
+_RESEARCH_COMPACT_OPTIONAL_KEYS = ("canonical_decision_id", "is_canonical")
 _DECISION_MCP_TEXT_CAP = 200_000
 
 
@@ -25611,11 +25982,13 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
             _offset = max(0, req_offset)
             _page_cap = min(_limit, _RESEARCH_COMPACT_PAGE_MAX) if fields_arg == "compact" else _limit
             _has_more = _consumed >= _page_cap and _offset + _consumed < total_count
+            _attach_canonical_ids(results)  # one indexed lookup per page; no-op without the manifest
             _records = [_enrich_with_citation({
                 k: v for k, v in row.items() if k != "_snippet_marked"
             }) for row in results]
             if fields_arg == "compact":
-                _records = [{k: row[k] for k in _RESEARCH_COMPACT_KEYS if k in row}
+                _records = [{k: row[k] for k in (*_RESEARCH_COMPACT_KEYS, *_RESEARCH_COMPACT_OPTIONAL_KEYS)
+                             if k in row}
                             for row in _records]
             _struct = {
                 "total": total_count, "total_is_lower_bound": _total_lb,
@@ -27682,6 +28055,11 @@ setInterval(load, 30000);
                 "text_source":             {"type": "string", "nullable": True},
                 "structure":               {"type": "string", "nullable": True},
                 "verbatim_quotation":      {"type": "string", "nullable": True},
+                "text_status":             {"type": "string", "nullable": True, "description":
+                                            "PDF-only editions with ?article=: 'ok', or "
+                                            "'heading_only' / 'empty' when the window around "
+                                            "the article holds no article text — treat the "
+                                            "article as not retrieved (HTTP stays 200)."},
                 "formats_available":       {"type": "array", "nullable": True, "items": {"type": "string"}},
                 "pending_changes": {
                     "type": "array", "nullable": True,
@@ -27701,6 +28079,9 @@ setInterval(load, 30000);
                             "empty_body":  {"type": "boolean", "description":
                                             "True when the article has no text in this edition "
                                             "(repealed or left empty); `footnote` says why."},
+                            "text_status": {"type": "string", "nullable": True, "description":
+                                            "PDF-edition excerpts only: 'ok', 'heading_only' "
+                                            "or 'empty' (see the top-level field)."},
                             "section":     {"type": "string", "nullable": True},
                         },
                     },
@@ -28256,6 +28637,11 @@ setInterval(load, 30000);
             limit=limit, offset=offset, sort=sort, meta=_search_meta,
         )
         results = copy.deepcopy(results)
+        # Duplicate representations: canonical_decision_id + is_canonical on every
+        # row (compact ones included) from one indexed manifest lookup per page,
+        # so a client can collapse the same ruling stored under two ids. Absent
+        # when the manifest is not loaded.
+        _attach_canonical_ids(results)
         total_is_lower_bound = bool(_search_meta.get("total_is_lower_bound"))
         _tp = f"{total}+" if total_is_lower_bound else f"{total}"  # display total
         # Bound the response so an enumeration ("list ALL cases on X") returns
@@ -28275,7 +28661,7 @@ setInterval(load, 30000);
                     f"within connector response limits; fetch a specific decision "
                     f"(GET /decisions/{{decision_id}}) for full text.")
         if fields == "compact":
-            compact_keys = _RESEARCH_COMPACT_KEYS
+            compact_keys = (*_RESEARCH_COMPACT_KEYS, *_RESEARCH_COMPACT_OPTIONAL_KEYS)
             # Enrich first so compact can expose the citation fields too.
             results = [_enrich_with_citation(r) for r in results]
             results = [{k: r[k] for k in compact_keys if k in r} for r in results]
@@ -28704,6 +29090,13 @@ setInterval(load, 30000);
             return Response(content=frag, media_type="application/xml")
         # A law found but no matching article is a miss, not an answer:
         # ?article=999 returns the law's metadata with articles: [].
+        # A PDF-edition window that located the article but recovered no
+        # text (text_status heading_only / empty) is a miss too — for the
+        # metrics only: the client gets HTTP 200 and the flagged payload.
+        if (article and isinstance(result, dict)
+                and result.get("text_status") in ("heading_only", "empty")):
+            _mark_outcome(response, "empty", "article_text_unresolved")
+            return result
         return _declare_outcome(
             response, result,
             "article_not_found" if article else "id_not_found")

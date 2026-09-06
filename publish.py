@@ -660,8 +660,94 @@ def step_2e_build_anwaltsrecht_tags(dry_run: bool = False, full_rebuild: bool = 
     )
 
 
+# Coverage gate for the structure sidecar swap: the new sidecar must index at
+# least this share of the current decisions the old one indexed. A broken
+# extractor then keeps yesterday's sidecar instead of shipping an empty index.
+STRUCTURE_COVERAGE_FLOOR = 0.98
+
+
+def _structure_coverage(sidecar: Path, decisions_db: Path) -> int | None:
+    """Current decisions with at least one indexed Erwägung. Reads only the two
+    covering indexes (decision ids), never the 50 GB of paragraph text."""
+    import sqlite3
+    try:
+        dec = sqlite3.connect(f"file:{decisions_db}?mode=ro&immutable=1", uri=True)
+        try:
+            ids = {row[0] for row in dec.execute("SELECT decision_id FROM decisions")}
+        finally:
+            dec.close()
+        side = sqlite3.connect(f"file:{sidecar}?mode=ro&immutable=1", uri=True)
+        try:
+            structured = {row[0] for row in side.execute("SELECT DISTINCT decision_id FROM erwaegungen_paragraph")}
+        finally:
+            side.close()
+    except Exception as exc:  # noqa: BLE001 — the gate must never crash the pipeline
+        logger.warning(f"  structure coverage of {sidecar.name} could not be measured: {exc}")
+        return None
+    return len(ids & structured)
+
+
 def step_2g_build_decision_structure(dry_run: bool = False, full_rebuild: bool = False) -> bool:
-    """Step 2g: Rebuild decision_structure.db sidecar (Sachverhalt / Erwägungen-Paragraphs / Dispositiv / Regeste).
+    """Step 2g: Rebuild decision_structure.db sidecar from the SERVED text.
+
+    Since 2026-09-06 the sidecar is extracted from decisions.db full_text — the
+    text get_decision serves and a reader can check a pinpoint against — by
+    search_stack/extract_decision_structure_incremental.py (state-diffed, so a
+    normal night re-extracts only new or changed decisions; a bumped
+    EXTRACTOR_VERSION re-extracts everything once). The old shard-based build
+    read raw JSONL text and, for the historical BGE volumes, indexed nothing;
+    the shadow runs of the incremental extractor showed 89% of BGE and 76% of
+    the corpus with an indexed Erwägung against 66% / 72.5%.
+
+    The new sidecar is written to decision_structure.db.tmp, passes a coverage
+    gate (STRUCTURE_COVERAGE_FLOOR of the old sidecar's indexed current
+    decisions) and is then swapped in atomically. If the extractor fails, the
+    shard-based build runs as before, so a bad night never leaves the sidecar
+    missing.
+    """
+    logger.info("Step 2g: Build decision_structure sidecar (from served text)")
+    script = REPO_DIR / "search_stack" / "extract_decision_structure_incremental.py"
+    decisions_db = OUTPUT_DIR / "decisions.db"
+    live = OUTPUT_DIR / "decision_structure.db"
+    tmp = OUTPUT_DIR / "decision_structure.db.tmp"
+    if not script.exists() or not decisions_db.exists():
+        logger.warning("  incremental extractor or decisions.db not found; building from shards")
+        return _step_2g_from_shards(dry_run)
+    for stale in (tmp, Path(str(tmp) + "-journal")):
+        if stale.exists():
+            stale.unlink()
+    cmd = [sys.executable, str(script), "--decisions-db", str(decisions_db),
+           "--structure-db", str(live), "--output", str(tmp)]
+    if full_rebuild:
+        cmd.append("--force-full")
+    ok = run_cmd(cmd, "Build decision_structure sidecar (served text, incremental)", dry_run,
+                 timeout=14400, stall_timeout=9000)
+    if dry_run:
+        return True
+    if not ok or not tmp.exists():
+        logger.error("  served-text sidecar build failed; falling back to the shard-based build")
+        if tmp.exists():
+            tmp.unlink()
+        return _step_2g_from_shards(dry_run)
+    old = _structure_coverage(live, decisions_db) if live.exists() else None
+    new = _structure_coverage(tmp, decisions_db)
+    if new is None:
+        logger.error("  new sidecar unreadable; keeping the current one")
+        tmp.unlink()
+        return False
+    if old and new < old * STRUCTURE_COVERAGE_FLOOR:
+        logger.error(f"  coverage gate: new sidecar indexes {new:,} current decisions, "
+                     f"old one {old:,} (floor {STRUCTURE_COVERAGE_FLOOR:.0%}); keeping the current sidecar")
+        tmp.unlink()
+        return False
+    logger.info(f"  structure coverage: {old if old is not None else '?'} -> {new:,} current decisions; swapping")
+    os.replace(tmp, live)
+    return True
+
+
+def _step_2g_from_shards(dry_run: bool = False) -> bool:
+    """The pre-2026-09-06 build, kept as the fallback: extract from the raw JSONL shards
+    (Sachverhalt / Erwägungen-Paragraphs / Dispositiv / Regeste).
 
     Federal + cantonal + regulatory courts. Reads every JSONL shard
     in OUTPUT_DIR/decisions/ that has the canonical

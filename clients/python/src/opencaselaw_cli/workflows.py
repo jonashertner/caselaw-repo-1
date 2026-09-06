@@ -556,7 +556,18 @@ def _labels(*records) -> set:
 
 def _candidate_summary(candidate: dict) -> dict:
     return {name: candidate.get(name) for name in ("decision_id", "docket_number", "court", "canton", "decision_date",
-                                                   "citation", "citation_string_de") if candidate.get(name) is not None}
+                                                   "citation", "citation_string_de", "joined_dockets", "canonical_decision_id")
+            if candidate.get(name) is not None}
+
+
+def _carried_labels(candidate: dict) -> set:
+    """The labels a lookup hit carries: its id, its own docket, its citation and, for a
+    consolidated proceeding, every joined docket the service lists for it."""
+    keys = {label_key(candidate.get(name)) for name in ("decision_id", "docket_number", "citation")}
+    if isinstance(candidate.get("joined_dockets"), list):
+        keys.update(label_key(d) for d in candidate["joined_dockets"] if isinstance(d, str))
+    keys.discard(None)
+    return keys
 
 
 def _carries_written_label(parsed, record) -> bool:
@@ -634,12 +645,19 @@ def _identify(client, reference, language, row, parsed=None):
     labels = _labels(decision, citation)
     dockets = [decision.get(name) for name in ("docket_number", "docket_number_2")
                if isinstance(decision.get(name), str) and decision.get(name).strip()]
+    # A consolidated proceeding is filed under its lead docket; the record lists
+    # the joined ones (joined_dockets), any of which the author may have cited.
+    joined = [d for d in decision.get("joined_dockets") if isinstance(d, str) and d.strip()] \
+        if isinstance(decision.get("joined_dockets"), list) else []
     core_key = label_key(parsed.core)
     primary = parsed.primary_docket
     if primary is not None:
         docket_hit = next((d for d in dockets if fold_docket(d) == fold_docket(primary)), None)
+        joined_hit = next((d for d in joined if fold_docket(d) == fold_docket(primary)), None)
     else:
         docket_hit = next((d for d in dockets if docket_in_reference(parsed.core, d)), None)
+        joined_hit = next((d for d in joined if docket_in_reference(parsed.core, d)), None)
+    hit = docket_hit if docket_hit is not None else joined_hit
     if len(parsed.dockets) > 1:
         row["other_dockets"] = parsed.dockets[1:]
     proposed = {"decision_id": decision_id, "docket_number": decision.get("docket_number"), "court": decision.get("court"),
@@ -650,6 +668,8 @@ def _identify(client, reference, language, row, parsed=None):
         method = "exact_server_citation"
     elif docket_hit is not None:
         method = "exact_server_docket"
+    elif joined_hit is not None:
+        method = "exact_server_joined_docket"
     elif primary is not None and any(fold_docket(d) in {fold_docket(o) for o in parsed.dockets[1:]} for d in dockets):
         row.update(status="unrecognized", service_candidate=proposed, identity_check={"method": "secondary_label"},
                    reason=f"The decision the service proposed carries a docket the reference only mentions after its main label {primary}; "
@@ -664,13 +684,15 @@ def _identify(client, reference, language, row, parsed=None):
                    reason=f"The reference names another court than {decision_id} ({decision.get('court')})")
         return parsed, None
     check = {"method": method}
-    if method in ("exact_server_docket", "exact_candidate_label"):
+    if method == "exact_server_joined_docket":
+        check.update(joined_docket=joined_hit, lead_docket=decision.get("docket_number"))
+    if method in ("exact_server_docket", "exact_server_joined_docket", "exact_candidate_label"):
         # A docket can be reused by another court, and the service also matches
         # fragments. exact=true returns only decisions carrying the label (older
         # servers pad the window with related cases; the label comparison filters
         # them out either way). Candidates at a court the reference does not name
         # are listed but do not make the reference ambiguous.
-        label = docket_hit if docket_hit is not None else parsed.core
+        label = hit if hit is not None else parsed.core
         lookup = _get(client, "/api/lookup", {"q": label, "limit": LOOKUP_WINDOW, "exact": True})
         candidates = lookup.get("results", [])
         if not isinstance(candidates, list) or any(
@@ -678,12 +700,12 @@ def _identify(client, reference, language, row, parsed=None):
         ):
             raise APIError(None, "Lookup returned invalid candidate identifiers")
         label_k = label_key(label)
-        carrying = [c for c in candidates if label_k in {label_key(c.get(n)) for n in ("decision_id", "docket_number", "citation")}]
+        carrying = [c for c in candidates if label_k in _carried_labels(c)]
         matching = [c for c in carrying if parsed.in_scope(c)]
         excluded = [c for c in carrying if not parsed.in_scope(c)]
-        if not carrying and docket_hit is not None and _BARE_NUMERIC_DOCKET.match(docket_hit.strip()):
-            matching = _carriers_by_search(client, parsed, docket_hit)
-        ids = {c["decision_id"] for c in matching} | ({decision_id} if docket_hit is not None else set())
+        if not carrying and hit is not None and _BARE_NUMERIC_DOCKET.match(hit.strip()):
+            matching = _carriers_by_search(client, parsed, hit)
+        ids = {c["decision_id"] for c in matching} | ({decision_id} if hit is not None else set())
         row["lookup"] = lookup
         check.update(docket=label, matching_candidates=[_candidate_summary(c) for c in matching],
                      lookup_exact=bool(lookup.get("exact")), candidate_window_may_be_capped=len(candidates) >= LOOKUP_WINDOW,
@@ -692,7 +714,7 @@ def _identify(client, reference, language, row, parsed=None):
             check["out_of_scope_candidates"] = [_candidate_summary(c) for c in excluded]
         if len(ids) > 1 or (ids and decision_id not in ids):
             listed = list(check["matching_candidates"])
-            if docket_hit is not None and decision_id not in {c.get("decision_id") for c in listed}:
+            if hit is not None and decision_id not in {c.get("decision_id") for c in listed}:
                 listed.insert(0, _candidate_summary({**decision, "citation": citation.get("citation_string")}))
             row.update(identity_check=check, status="ambiguous", candidates=listed,
                        reason="Several decisions carry this label; name the court or use an explicit decision_id")
@@ -701,10 +723,16 @@ def _identify(client, reference, language, row, parsed=None):
             row.update(identity_check=check, status="resolution_incomplete",
                        reason="The candidate window is full of exact matches; use a canonical citation or explicit decision_id")
             return parsed, None
-        if docket_hit is None and (not ids or not lookup.get("is_case_number")):
+        if hit is None and (not ids or not lookup.get("is_case_number")):
             row.update(status="unrecognized", service_candidate=proposed, identity_check={"method": "no_label_match", **{k: v for k, v in check.items() if k != "method"}},
                        reason="The decision the service proposed carries no label written in this reference; nothing is guessed. Write the docket or the canonical citation")
             return parsed, None
+    canonical = decision.get("canonical_decision_id")
+    if isinstance(canonical, str) and canonical and canonical != decision_id:
+        # The same ruling is stored under another id as well, and the service
+        # names that record as the canonical one. Reported, never substituted:
+        # decision_id stays the record the reference resolved to.
+        row["canonical_decision_id"] = canonical
     row.update(decision_id=decision_id, provenance=_provenance(decision), official_source_available=bool(decision.get("source_url")),
                identity_check=check, status="resolved")
     return parsed, decision
@@ -807,6 +835,19 @@ def _resolve_one(client, item, language):
             row.update(status="discrepancy", discrepancies=discrepancies,
                        reason="The decision was identified, but what the reference says about it does not match the record: "
                               + ", ".join(d["kind"] for d in discrepancies))
+        if isinstance(item.get("quote"), str) and item["quote"].strip():
+            row["quote"] = item["quote"]
+            checked = None
+            for label, text, status in _quote_sources(client, decision["decision_id"], pinpoint):
+                if not text:
+                    continue
+                found = match_quote(item["quote"], text)
+                found["found_in"] = label
+                if checked is None or found["quote_status"] == "exact" or (found["ratio"] > checked["ratio"] and checked["quote_status"] != "exact"):
+                    checked = found
+                if found["quote_status"] == "exact":
+                    break
+            row["quote_check"] = checked or {"quote_status": "not_found", "ratio": 0.0, "reason": "no served text"}
         if pinpoint:
             passage, pinpoint_status, error = fetch_passage(client, decision["decision_id"], pinpoint)
             row["pinpoint_status"] = pinpoint_status
@@ -866,7 +907,7 @@ def resolve_citations(args, client):
     counts = {}
     for row in results:
         counts[row["status"]] = counts.get(row["status"], 0) + 1
-    complete = all(row["status"] == "resolved" for row in results)
+    complete = all(row["status"] == "resolved" and (row.get("quote_check") or {}).get("quote_status", "exact") == "exact" for row in results)
     return {"schema_version": SCHEMA_VERSION, "kind": "opencaselaw-citation-resolution",
             "client_version": __version__, "base_url": client.base_url, "generated_at": _now(),
             "status": "complete" if complete else "partial", "results": results, "counts": counts,
@@ -988,4 +1029,181 @@ def run(args, client):
         return add_to_bundle(args, client)
     if args.command == "citations" and args.action == "resolve":
         return resolve_citations(args, client)
+    if args.command == "quotes" and args.action == "check":
+        return check_quotes(args, client)
     raise ValueError("Unknown research workflow")
+
+
+# ── quotations ─────────────────────────────────────────────────────────────
+
+import difflib as _difflib
+import unicodedata as _unicodedata
+
+_QUOTE_TRANSLATE = str.maketrans({
+    " ": " ", " ": " ", " ": " ", "­": "", "‘": "'", "’": "'", "‚": "'", "“": '"',
+    "”": '"', "„": '"', "«": '"', "»": '"', "‹": "'", "›": "'", "–": "-", "—": "-",
+    "…": "...", "ﬁ": "fi", "ﬂ": "fl",
+})
+_HYPHEN_BREAK = re.compile(r"(\w)-\s*\n\s*(?=[a-zäöüàéèêôûç])")
+QUOTE_NEAR_RATIO = 0.9
+
+
+def normalise_quote(text: str) -> str:
+    """Comparison form of a quotation or of served text: typography, OCR line
+    hyphenation, whitespace and the service's link markup folded. Never used to
+    print anything; the served wording is what is reported."""
+    text = plain_text(text) or ""
+    text = _unicodedata.normalize("NFC", text)
+    text = re.sub(r"[«‹]\s*", '"', text)   # French guillemets carry an inner space
+    text = re.sub(r"\s*[»›]", '"', text)
+    text = text.translate(_QUOTE_TRANSLATE)
+    text = _HYPHEN_BREAK.sub(r"\1", text)
+    text = re.sub(r"\s+", " ", text).strip()
+    return text
+
+
+def match_quote(quote: str, text: str) -> dict:
+    """Where a quotation stands in a served text.
+
+    exact: the normalised quote is a substring of the normalised text.
+    near: the best window of the text matches with a difflib ratio >= 0.9; the
+    differing spans are listed (quote wording vs served wording).
+    not_found: below that; the best window and its ratio are still reported."""
+    q = normalise_quote(quote)
+    t = normalise_quote(text)
+    if not q:
+        return {"quote_status": "not_found", "ratio": 0.0, "reason": "empty quotation"}
+    idx = t.find(q)
+    if idx >= 0:
+        return {"quote_status": "exact", "ratio": 1.0, "offset": idx}
+    lowered_idx = t.casefold().find(q.casefold())
+    if lowered_idx >= 0:
+        served = t[lowered_idx:lowered_idx + len(q)]
+        return {"quote_status": "near", "ratio": 0.99, "offset": lowered_idx, "served": served,
+                "differences": [{"quote": quote.strip(), "served": served, "kind": "case"}]}
+    if not t:
+        return {"quote_status": "not_found", "ratio": 0.0, "reason": "no served text"}
+    width = len(q)
+    step = max(1, width // 8)
+    best_ratio, best_start = 0.0, 0
+    matcher = _difflib.SequenceMatcher(autojunk=False)
+    matcher.set_seq2(q)
+    for start in range(0, max(1, len(t) - width // 2), step):
+        window = t[start:start + width + width // 5]
+        matcher.set_seq1(window)
+        if matcher.real_quick_ratio() < best_ratio or matcher.quick_ratio() < best_ratio:
+            continue
+        ratio = matcher.ratio()
+        if ratio > best_ratio:
+            best_ratio, best_start = ratio, start
+    # tighten the window to the matched span
+    window = t[best_start:best_start + width + width // 5]
+    matcher.set_seq1(window)
+    blocks = [b for b in matcher.get_matching_blocks() if b.size]
+    if blocks:
+        lo = blocks[0].a
+        hi = blocks[-1].a + blocks[-1].size
+        served = window[lo:hi]
+    else:
+        served = window
+    matcher.set_seq1(served)
+    ratio = round(matcher.ratio(), 3)
+    differences = []
+    for op, i1, i2, j1, j2 in matcher.get_opcodes():
+        if op == "equal":
+            continue
+        differences.append({"kind": op, "served": served[i1:i2], "quote": q[j1:j2]})
+    result = {"quote_status": "near" if ratio >= QUOTE_NEAR_RATIO else "not_found", "ratio": ratio,
+              "offset": best_start + (blocks[0].a if blocks else 0), "served": served, "differences": differences[:12]}
+    return result
+
+
+def _quote_sources(client, decision_id: str, pinpoint: str | None):
+    """(label, text) pairs to search, most specific first: the passage, then the decision text."""
+    sources = []
+    if pinpoint:
+        passage, status, _ = fetch_passage(client, decision_id, pinpoint)
+        if passage is not None and isinstance(passage.get("text"), str):
+            sources.append((f"E. {passage.get('e_number')}", passage["text"], status))
+    try:
+        record = _get(client, "/api/decisions/" + quote(decision_id, safe=""), {"full_text": True})
+        if isinstance(record.get("full_text"), str):
+            sources.append(("full_text", record["full_text"], "retrieved"))
+    except APIError as error:
+        sources.append(("full_text", "", error.to_dict()))
+    return sources
+
+
+def check_one_quote(client, item, language):
+    """Identify the reference, then look for the quotation in the passage, else in the decision text."""
+    reference = item["reference"].strip()
+    quotation = item.get("quote")
+    row = {"reference": reference, "quote": quotation, "checked_at": _now(), "legal_support_assessed": False}
+    if not isinstance(quotation, str) or not quotation.strip():
+        row.update(status="error", quote_status="not_checked", error={"status": 400, "kind": "input", "message": "Each row needs a non-empty quote"})
+        return row
+    try:
+        parsed = parse_reference(reference)
+        try:
+            explicit = normalise_pinpoint(item.get("pinpoint"))
+        except ValueError as error:
+            row.update(status="error", quote_status="not_checked", error={"status": 400, "kind": "input", "message": str(error)})
+            return row
+        pinpoint = explicit or parsed.pinpoint
+        row["pinpoint"] = pinpoint
+        parsed, decision = _identify(client, reference, language, row, parsed)
+        if decision is None:
+            row["quote_status"] = "not_checked"
+            return row
+        best = None
+        for label, text, status in _quote_sources(client, decision["decision_id"], pinpoint):
+            if not text:
+                continue
+            found = match_quote(quotation, text)
+            found["found_in"] = label
+            if label != "full_text":
+                found["pinpoint_status"] = status
+            if best is None or found["quote_status"] == "exact" or (found["ratio"] > best["ratio"] and best["quote_status"] != "exact"):
+                best = found
+            if found["quote_status"] == "exact":
+                break
+        if best is None:
+            row.update(quote_status="not_found", ratio=0.0, reason="no served text to compare with")
+        else:
+            row.update(best)
+        if row.get("status") == "resolved" and row["quote_status"] != "exact":
+            row["status"] = "quote_" + row["quote_status"]
+    except APIError as error:
+        row.update(status="error", quote_status="not_checked", error=error.to_dict())
+    return row
+
+
+def check_quotes(args, client):
+    from .cli import read_inputs
+    inputs = read_inputs(args, field="reference")
+    single = getattr(args, "quote", None)
+    if single:
+        if len(inputs) != 1:
+            raise ValueError("--quote checks one reference; use --input/--stdin rows with a quote field for several")
+        inputs[0]["quote"] = single
+        if getattr(args, "pinpoint", None):
+            inputs[0]["pinpoint"] = args.pinpoint
+    if len(inputs) > 500:
+        raise ValueError("Check at most 500 quotations per invocation")
+    language = args.language or "de"
+    jobs = _jobs(args)
+    results = []
+    with ThreadPoolExecutor(max_workers=jobs) as pool:
+        for start in range(0, len(inputs), jobs):
+            chunk = inputs[start:start + jobs]
+            _progress(f"checking {start + 1}-{start + len(chunk)}/{len(inputs)}")
+            results.extend(pool.map(lambda item: check_one_quote(client, item, language), chunk))
+    _progress(None)
+    counts = {}
+    for row in results:
+        counts[row.get("quote_status", "not_checked")] = counts.get(row.get("quote_status", "not_checked"), 0) + 1
+    complete = all(row.get("quote_status") == "exact" for row in results)
+    return {"schema_version": SCHEMA_VERSION, "kind": "opencaselaw-quotation-check", "client_version": __version__,
+            "base_url": client.base_url, "generated_at": _now(), "status": "complete" if complete else "partial",
+            "results": results, "counts": counts, "requests": getattr(client, "requests", None),
+            "scope": "Whether each quotation stands, verbatim or nearly, in the served text of the decision it is attributed to; the served wording is authoritative and is never rewritten"}, 0 if complete else 4
