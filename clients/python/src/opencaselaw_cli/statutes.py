@@ -383,26 +383,34 @@ class LocalStatutes:
         self.path = Path(path).expanduser()
         if not self.path.is_file():
             raise ValueError(f"statutes database not found: {self.path}")
-        self._local = threading.local()
         self._columns = None
 
     def _connection(self):
-        con = getattr(self._local, "con", None)
-        if con is None:
-            from .local import _sqlite_uri  # the pack's URI builder: spaces, %, # and ? in paths survive
-            con = sqlite3.connect(_sqlite_uri(self.path), uri=True)
-            con.row_factory = sqlite3.Row
-            self._local.con = con
+        """A fresh read-only connection; closed by the caller. No handle is kept open between
+        calls, so the file can be replaced or removed (Windows locks open database files)."""
+        from .local import _sqlite_uri  # the pack's URI builder: spaces, %, # and ? in paths survive
+        con = sqlite3.connect(_sqlite_uri(self.path), uri=True)
+        con.row_factory = sqlite3.Row
         return con
 
     def columns(self) -> set:
         if self._columns is None:
-            self._columns = {r[1] for r in self._connection().execute("PRAGMA table_info(articles)")}
+            con = self._connection()
+            try:
+                self._columns = {r[1] for r in con.execute("PRAGMA table_info(articles)")}
+            finally:
+                con.close()
         return self._columns
 
-    def law(self, *, abbreviation: str | None = None, sr_number: str | None = None, article: str | None = None,
-            language: str = "de") -> dict:
+    def law(self, **kw) -> dict:
         con = self._connection()
+        try:
+            return self._law(con, **kw)
+        finally:
+            con.close()
+
+    def _law(self, con, *, abbreviation: str | None = None, sr_number: str | None = None, article: str | None = None,
+             language: str = "de") -> dict:
         language = language if language in ("de", "fr", "it") else "de"
         if not sr_number and abbreviation:
             up = abbreviation.strip().upper()
