@@ -40,10 +40,12 @@ def test_pdf_pages_and_paragraphs(tmp_path):
     assert documents.read_document(pdf) == [p for p, _ in pairs]
 
 
-def test_scan_without_text_layer_is_refused(tmp_path):
+def test_scan_without_text_layer_is_refused_but_a_short_filing_is_read(tmp_path):
     scan = write_pdf(tmp_path / "scan.pdf", ["x"])
     with pytest.raises(ValueError, match="no text layer"):
         documents.read_paragraphs(scan)
+    short = write_pdf(tmp_path / "kurz.pdf", ["Replik. Vgl. BGE 140 III 86 E. 2.3."])   # a one-line filing is not a scan
+    assert "BGE 140 III 86" in documents.read_paragraphs(short)[0][0]
 
 
 def test_pdf_paragraphs_join_hyphenated_breaks():
