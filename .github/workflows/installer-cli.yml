@@ -153,7 +153,7 @@ jobs:
           python clients\python\installer\smoke\make_fixture.py $fx
           if ($LASTEXITCODE -ne 0) { throw "fixture build failed" }
 
-          $check = & $ocl check "$fx\draft.docx" --local "$fx\pack.sqlite" --jobs 1 --color never --format json 2>&1 | Out-String
+          $check = & $ocl check "$fx\draft.docx" --local --pack "$fx\pack.sqlite" --jobs 1 --color never --format json 2>&1 | Out-String
           $rc = $LASTEXITCODE
           if ($check -match "Traceback") { throw "traceback during ocl check`n$check" }
           # 4: the fixture draft cites two decisions that are not in the pack. 0 would mean they went unflagged.
