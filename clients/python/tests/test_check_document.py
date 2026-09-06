@@ -102,7 +102,7 @@ def test_offline_quotation_without_pinpoint_is_not_checked_rather_than_not_found
         "Le TF: «le contrat de travail conclu pour une durée indéterminée peut être résilié» (ATF 136 III 513 consid. 2.3).",
     ])
     monkeypatch.setenv("OCL_CONFIG", "/nonexistent/ocl-config"); monkeypatch.setenv("OCL_JOBS", "1")
-    code = cli.main(["--local", str(pack), "check", str(path), "--format", "json", "--language", "de"])
+    code = cli.main(["--local", "--pack", str(pack), "check", str(path), "--format", "json", "--language", "de"])
     out = json.loads(capsys.readouterr().out)
     checks = {r["reference"]: r["quote_check"]["quote_status"] for r in out["results"]}
     assert code == 4 and checks == {"Obergericht ZH LA210005 vom 15. Juni 2021": "unverifiable", "ATF 136 III 513 consid. 2.3": "exact"}

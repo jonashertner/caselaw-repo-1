@@ -12,6 +12,7 @@ import html
 from datetime import datetime, timezone
 
 from ._version import __version__
+from .statutes import statutes_html, statutes_markdown, summarize_statutes  # statute rows: their own table, see statutes.py
 
 # Status keys of a row as the report sees them: the resolve status, refined by the
 # quotation check and by whether a cited passage was retrieved.
@@ -361,7 +362,8 @@ def summarize(result: dict, source: str, language: str = "en") -> dict:
             "attention": len(rows) - len(ok), "unparsed": len(result.get("unparsed") or []),
             "language": language_of(language),
             "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"), "client_version": __version__,
-            "base_url": result.get("base_url"), "requests": result.get("requests")}
+            "base_url": result.get("base_url"), "requests": result.get("requests"),
+            **summarize_statutes(result.get("statutes") or [])}
 
 
 def headline(summary: dict, language: str = "en") -> str:
@@ -408,6 +410,7 @@ def render_markdown(result: dict, source: str, found: list[dict], language: str 
         for u in unparsed:
             lines.append(f"- {u.get('text')} (§{u.get('paragraph')}): {u.get('context')}")
         lines.append("")
+    lines += statutes_markdown(result.get("statutes") or [])
     return "\n".join(lines)
 
 
@@ -448,5 +451,6 @@ def render_html(result: dict, source: str, found: list[dict], language: str = "e
         for u in unparsed:
             parts.append(f"<tr><td><code>{e(str(u.get('text')))}</code></td><td class=\"muted\">§{e(str(u.get('paragraph')))}</td><td class=\"muted\">{e(str(u.get('context') or ''))}</td></tr>")
         parts.append("</table>")
+    parts += statutes_html(result.get("statutes") or [], e)
     parts.append("</body></html>")
     return "\n".join(parts)

@@ -70,6 +70,12 @@ references (ZR, Pra, GVP, ...) that were not read as a citation and were not
 checked; `summary` counts `checked`, `exists`, `passages_retrieved`,
 `attention`, `unparsed`. The report's labels follow `--language` (de, fr,
 it; English otherwise).
+Statutes (`ocl check`, the `statutes` list): `statute_found` · `law_found`
+(SR number only) · `article_missing` · `article_empty` (repealed or empty in
+the current edition) · `law_unknown` · `unverifiable` (a `§` reference
+without a canton, or statutes not available offline; never exit 4) ·
+`error`. A quotation next to the reference gets a `quote_check` against the
+served article text. `OCL_CANTON=ZH` routes bare `§` references.
 
 ## Rules that are not optional
 
@@ -105,7 +111,9 @@ tools). A pull resumes after an interruption, stops without a published
 checksum (exit 2; `--insecure` overrides and records the pack as unverified)
 and never replaces the installed pack with one that failed verification or
 that this client cannot read (schema 1 and 2). `ocl pack info` shows the
-snapshot's generation and verification; results carry `offline: true`.
+snapshot's generation and verification; results carry `offline: true`. Federal statutes are checked offline when `statutes.sqlite`
+sits next to the pack (or `OCL_STATUTES` names the file); otherwise statute
+rows are `unverifiable`, not errors.
 
 ## Skills
 

@@ -408,7 +408,7 @@ def test_schema_gate_on_open(tmp_path, capsys):
     with pytest.raises(ValueError, match="not a verification pack"):
         LocalClient(Path(__file__))
     # through the CLI, a too-new pack is a clear failure, not a traceback
-    assert cli.main(["--local", str(too_new), "cite", "4A_747/2012", "--format", "json"]) == 4
+    assert cli.main(["--local", "--pack", str(too_new), "cite", "4A_747/2012", "--format", "json"]) == 4
     assert "schema 3" in capsys.readouterr().err
     # a pack copied by hand (no pull record) opens; verify says so and exits 4, info exits 0
     copied = _tiny_pack(tmp_path / "copied.sqlite", filler_rows=0)

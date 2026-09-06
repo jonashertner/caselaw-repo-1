@@ -90,7 +90,7 @@ OFFLINE_DRAFT = [
 def test_offline_quotation_without_served_text_is_unverifiable_not_not_found(tmp_path, monkeypatch, capsys):
     pack, _, _ = _build_pack(tmp_path)
     draft = make_docx(tmp_path / "memo.docx", OFFLINE_DRAFT)
-    code, out = run_cli(monkeypatch, capsys, None, ["--local", str(pack), "check", str(draft), "--format", "json", "--no-report"])
+    code, out = run_cli(monkeypatch, capsys, None, ["--local", "--pack", str(pack), "check", str(draft), "--format", "json", "--no-report"])
     result = json.loads(out)
     rows = {r["reference"]: r for r in result["results"]}
     assert code == 4
@@ -112,7 +112,7 @@ def test_offline_quotation_without_served_text_is_unverifiable_not_not_found(tmp
 
 def test_quotes_check_offline_without_pinpoint_is_unverifiable(tmp_path, monkeypatch, capsys):
     pack, _, _ = _build_pack(tmp_path)
-    code, out = run_cli(monkeypatch, capsys, None, ["--local", str(pack), "quotes", "check", "Obergericht ZH LA210005 vom 15. Juni 2021",
+    code, out = run_cli(monkeypatch, capsys, None, ["--local", "--pack", str(pack), "quotes", "check", "Obergericht ZH LA210005 vom 15. Juni 2021",
                                                     "--quote", "Die Kündigung ist missbräuchlich, wenn sie wegen einer Eigenschaft ausgesprochen wird", "--format", "json"])
     result = json.loads(out)
     row = result["results"][0]

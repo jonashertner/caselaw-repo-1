@@ -95,7 +95,7 @@ def test_check_runs_offline_with_eight_jobs_over_a_long_draft(tmp_path, quiet, c
     code = cli.main(["--local", "--pack", str(pack), "check", str(draft), "--jobs", "8", "--format", "json"])
     out = json.loads(capsys.readouterr().out)
     assert code == 0
-    assert out["summary"] == {**out["summary"], "checked": len(refs), "verified": len(refs), "attention": 0}
+    assert out["summary"] == {**out["summary"], "checked": len(refs), "exists": len(refs), "attention": 0}
     assert out["counts"] == {"resolved": len(refs)} and out["base_url"].startswith("file://")
     by_reference = {r["reference"]: r for r in out["results"]}
     assert set(by_reference) == set(refs)
@@ -174,7 +174,7 @@ def test_local_doctor_reports_the_pack_and_exits_0(tmp_path, quiet, capsys):
     report = json.loads(captured.out)
     assert code == 0 and report["ok"] is True and report["mode"] == "offline" and "warnings" not in report
     assert report["pack"] == str(pack.resolve()) and report["pack_bytes"] == pack.stat().st_size
-    assert report["schema_version"] == "1" and report["built_at"] and report["db_generation"]
+    assert report["schema_version"] == "2" and report["built_at"] and report["db_generation"]
     assert report["decisions"] == 4 and report["paragraphs"] == 3 and report["pack_age_days"] == 0
     assert report["sqlite_version"] == sqlite3.sqlite_version and report["cite_ok"] is True and report["cite_ms"] >= 0
     assert "tools" not in report and "health" not in report

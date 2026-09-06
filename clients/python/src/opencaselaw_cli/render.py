@@ -502,6 +502,8 @@ def render_check(value: dict, s: Style, width: int) -> str:
         lines += ["", (s.green if not attention else s.yellow)(footer)]
     else:
         lines += ["", s.dim(t(lang, "none_found")) + (s.dim("  " + t(lang, "unparsed_line", n=len(unparsed))[:-1]) if unparsed else "")]
+    from .statutes import statutes_terminal
+    lines += statutes_terminal(value, s, width, _wrap)  # statute rows, when the draft cites any
     if value.get("report_path"):
         lines.append(s.dim(t(lang, "report_line", path=value["report_path"])))
     return "\n".join(lines)

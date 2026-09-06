@@ -40,6 +40,7 @@ from urllib.request import Request, urlopen
 from ._version import __version__
 from .client import APIError
 from .references import docket_variants, fold_docket, label_key, parse_reference
+from .statutes import local_law
 
 PACK_URL = "https://huggingface.co/datasets/voilaj/swiss-caselaw/resolve/main/artifacts/verification_pack/latest.sqlite.gz"
 SUPPORTED_SCHEMA_MAJOR = 2      # packs of schema 1 and 2 open; a newer major version is refused with an upgrade hint
@@ -191,6 +192,8 @@ class LocalClient:
             rest = path[len("/api/erwaegung/"):]
             decision_id, _, number = rest.rpartition("/")
             return self._passage(unquote(decision_id), unquote(number))
+        if path.startswith("/api/laws/"):
+            return local_law(self.pack_path, unquote(path[len("/api/laws/"):]), params)  # statutes.sqlite next to the pack, see statutes.py
         raise APIError(200, f"{path} is not available offline; the verification pack holds decision metadata, "
                             "citation strings and indexed Erwägungen only. Run without --local for search, laws and tools.")
 

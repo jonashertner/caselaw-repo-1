@@ -93,6 +93,19 @@ never silent; they are not attention items. `--language de|fr|it` sets the
 language of the report's labels and advice (the CLI's default is `de`);
 anything else reads English.
 
+Statutes are checked too. `Art. 8 Abs. 1 ZGB`, `art. 335 al. 1 CO`, `art. 8
+cpv. 1 CC`, `Art. 8, 9 und 10 ZGB`, `Art. 41 ff. OR`, `SR 210` and cantonal
+acts written with the paragraph sign (`§ 12 Abs. 2 StG/ZH`, `§ 18 VRG (ZH)`)
+are found in the prose and looked up: does the act exist, does it have the
+article, and does a quotation next to the reference stand in the served
+article text. The report has its own "Statutes" table with an excerpt of the
+served text; the findings are `article retrieved`, `article not in the act`,
+`article has no text` (repealed or empty in the current edition), `act not
+found`, `quotation differs` / `quotation not found`, and `not checked` for
+what could not be asked (a `§` reference without a canton, unless
+`OCL_CANTON=ZH` names the canton the draft belongs to). "Not checked" never
+fails the run; the others exit 4.
+
 ### Check the citations in a list
 
 Before a brief goes out, you want to know that every cited decision exists,
@@ -320,10 +333,16 @@ statutes and tools stay online-only, and the pack carries no full texts;
 age (a warning past 14 days, the snapshots being weekly) without sending
 anything, and `ocl pack info` shows the same metadata.
 and `ocl --local ...` answers `citations resolve`, `cite`, `decisions
-passage`, `quotes check` and bundles from it. Search, statutes and tools stay
+passage`, `quotes check`, `check` and bundles from it. Search and tools stay
 online-only, and the pack carries no full texts; `ocl pack info` shows which
 corpus generation it holds and how the download was verified (the section
 below covers the checksum, resumable pulls and mirroring on a share).
+Federal statutes are answered offline when a
+statutes database sits next to the pack (`statutes.sqlite`, or the file
+`OCL_STATUTES` points to: the `statutes.db` the server serves, built by
+`search_stack/build_statutes_db.py`); without it, `ocl check` reports statute
+references as "not checked" rather than wrong, and cantonal acts stay
+online-only.
 
 Three skills ship in the package: `citation-check` (verify a draft's
 citations and quotations), `research` (search, read, follow citations, cite,
