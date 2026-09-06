@@ -21,7 +21,7 @@ from .workflows import (BREAKER_THRESHOLD, DEFAULT_JOBS, RANKED_MAX_RESULTS, Res
 
 DEFAULT_BASE_URL = "https://mcp.opencaselaw.ch"
 FORMATS = ("text", "json", "jsonl", "table", "csv", "md")
-CONFIG_KEYS = ("base_url", "timeout", "retries", "format", "color", "language", "jobs")
+CONFIG_KEYS = ("base_url", "timeout", "retries", "format", "color", "language", "jobs", "cache")
 
 
 def config_path() -> str:
@@ -96,6 +96,7 @@ def _common():
     parser.add_argument("--color", choices=["auto", "always", "never"], help="colour in text output (default: auto; NO_COLOR and OCL_COLOR respected)")
     parser.add_argument("--jobs", type=positive_int, help=f"concurrent requests for batch commands, 1-8 (default: {DEFAULT_JOBS}; OCL_JOBS)")
     parser.add_argument("--verbose", action="store_true", help="log every request (URL, status, time) to stderr")
+    parser.add_argument("--cache", metavar="DIR", help="cache responses in DIR, keyed by the server's database generation (OCL_CACHE)")
     return parser
 
 
@@ -131,6 +132,7 @@ they are JSON on stdout; table, csv and md are for pasting into documents. Messa
 to stderr. Defaults can live in ~/.config/ocl/config (key = value) or OCL_* variables;
 `ocl completion zsh|bash|fish` prints a shell completion script.
 Exit codes: 0 complete, 2 invalid input, 3 API or network failure, 4 partial or unresolved.
+Agents: `ocl agent-guide` (contract, commands, rules), `ocl skills install --claude`, `ocl tool list`.
 Guide: https://github.com/jonashertner/opencaselaw/blob/main/docs/research-cli.md
 """
 
@@ -147,7 +149,7 @@ def build_parser(config: dict | None = None):
                      "passage text come back from the service unchanged."),
         epilog=_EXAMPLES)
     parser.set_defaults(base_url=cfg.get("base_url", DEFAULT_BASE_URL), timeout=cfg.get("timeout", 30),
-                        retries=cfg.get("retries", 2), format=cfg.get("format"), fields=None,
+                        retries=cfg.get("retries", 2), format=cfg.get("format"), fields=None, cache=cfg.get("cache"),
                         color=cfg.get("color", "auto"), jobs=cfg.get("jobs", DEFAULT_JOBS), verbose=False)
     parser.add_argument("--version", action="version", version=f"ocl {__version__}")
     commands = parser.add_subparsers(dest="command", required=True, metavar="COMMAND")
@@ -305,6 +307,49 @@ def build_parser(config: dict | None = None):
     add.add_argument("bundle", help="existing bundle folder")
     _input(add, "ids", "decision IDs to add")
     add.add_argument("--passage", action="append", default=[], metavar="NUMBER", help="also save this Erwägung of each added decision; repeatable")
+
+    tool = commands.add_parser("tool", parents=[common], formatter_class=fmt, help="call any of the service's research tools",
+                               description=("Every tool the service offers to agents (leading cases, relevant considerations, scholarship, "
+                                            "commentaries, practice, materials, legislation changes, case briefs, claim support ...), called "
+                                            "directly. Results come back as the tool's structured output; a tool-reported error is exit 4."),
+                               epilog="examples:\n  ocl tool list\n  ocl tool schema find_leading_cases\n  ocl tool call find_leading_cases query='Rachekündigung' limit=5\n  ocl tool call get_regeste decision_id=bge_BGE_136_III_513 --format json\n")
+    tool_actions = tool.add_subparsers(dest="action", required=True)
+    tlist = tool_actions.add_parser("list", parents=[common], formatter_class=fmt, help="list the tools with a one-line description",
+                                    description="Every tool the service advertises, with its required arguments and whether it returns structured output.")
+    tlist.add_argument("--long", action="store_true", help="show full descriptions and required arguments")
+    tschema = tool_actions.add_parser("schema", parents=[common], formatter_class=fmt, help="show one tool's input and output schema",
+                                      description="The tool's description, input schema (arguments, types, required) and output schema when it has one.")
+    tschema.add_argument("name", help="tool name, as in `ocl tool list`")
+    tcall = tool_actions.add_parser("call", parents=[common], formatter_class=fmt, help="call one tool with key=value arguments",
+                                    description=("Call a tool. Arguments are key=value pairs; a value that parses as JSON is typed "
+                                                 "(limit=5, flag=true, ids='[\"a\"]'), anything else is a string. --args passes one JSON "
+                                                 "object; --stdin/--input run one call per JSONL row (an object of arguments)."))
+    tcall.add_argument("name", help="tool name")
+    tcall.add_argument("pairs", nargs="*", metavar="key=value", help="tool arguments")
+    tcall.add_argument("--args", dest="args_json", metavar="JSON", help="arguments as one JSON object")
+    tcall.add_argument("--stdin", action="store_true", help="read one JSON object of arguments per line from stdin")
+    tcall.add_argument("--input", metavar="FILE", help="read one JSON object of arguments per line from FILE")
+
+    doctor = commands.add_parser("doctor", parents=[common], formatter_class=fmt, help="check the connection, the server and this client",
+                                 description="Reachability, server database generation and size, tool count, one timed citation lookup, cache state. Exit 3 when the service does not answer.")
+
+    skills = commands.add_parser("skills", parents=[common], formatter_class=fmt, help="agent skills bundled with the client",
+                                 description="The procedures an agent follows with ocl (citation check, research, evidence bundle), shipped in the package.",
+                                 epilog="examples:\n  ocl skills list\n  ocl skills show citation-check\n  ocl skills install --claude\n")
+    skill_actions = skills.add_subparsers(dest="action", required=True)
+    skill_actions.add_parser("list", parents=[common], formatter_class=fmt, help="list the bundled skills",
+                             description="The skill files shipped in this package, with their one-line descriptions and paths.")
+    sshow = skill_actions.add_parser("show", parents=[common], formatter_class=fmt, help="print one skill file",
+                                     description="Print a bundled SKILL.md verbatim, to read or to pipe into another harness.")
+    sshow.add_argument("name", help="skill name, as in `ocl skills list`")
+    sinstall = skill_actions.add_parser("install", parents=[common], formatter_class=fmt, help="copy the skills into an agent's skills directory",
+                                        description="Copy every bundled skill to <dir>/<name>/SKILL.md; existing files are kept unless --force.")
+    sinstall.add_argument("--claude", action="store_true", help="install into ~/.claude/skills/<name>/SKILL.md (Claude Code)")
+    sinstall.add_argument("--dir", metavar="DIR", help="install into DIR/<name>/SKILL.md")
+    sinstall.add_argument("--force", action="store_true", help="overwrite existing files")
+
+    commands.add_parser("agent-guide", parents=[common], formatter_class=fmt, help="print the agent guide (contract, commands, rules)",
+                        description="The compact guide agents read first: install, JSON contract, exit codes, commands, statuses and the rules.")
 
     completion = commands.add_parser("completion", parents=[common], formatter_class=fmt,
                                      help="print a shell completion script",
@@ -590,7 +635,8 @@ def _diagnostic(message: str, args=None) -> None:
 
 def create_client(args):
     log = (lambda line: print("ocl: " + line, file=sys.stderr)) if getattr(args, "verbose", False) else None
-    return Client(base_url=args.base_url, timeout=args.timeout, retries=args.retries, log=log)
+    return Client(base_url=args.base_url, timeout=args.timeout, retries=args.retries, log=log,
+                  cache_dir=getattr(args, "cache", None) or None)
 
 
 # A canonical id: lowercase court slug, underscore, label (bge_BGE_136_III_513, zh_obergericht_LA210005).
@@ -737,12 +783,212 @@ def _response(value):
     return value, 4 if value.get("error") else 0
 
 
+def _package_text(relative: str) -> str:
+    path = Path(__file__).parent / relative
+    return path.read_text(encoding="utf-8")
+
+
+def _typed(value: str):
+    """A key=value argument: JSON when it parses (numbers, booleans, lists, objects), else the string."""
+    try:
+        return json.loads(value)
+    except ValueError:
+        return value
+
+
+def _coerce(value: str, declared: dict | None):
+    """A key=value argument typed by the tool's input schema: a declared string
+    stays a string ("pinpoint=1", "article=336"); other declared types and
+    undeclared keys take the JSON reading when the value parses."""
+    kind = (declared or {}).get("type")
+    if isinstance(kind, list):
+        kind = next((k for k in kind if k != "null"), None)
+    if kind == "string":
+        return value
+    typed = _typed(value)
+    if kind in ("integer", "number", "boolean", "array", "object") and isinstance(typed, str):
+        raise ValueError(f"{value!r} is not a valid {kind}")
+    return typed
+
+
+def _tool_argument_sets(args, properties: dict | None = None) -> list[dict]:
+    sets = []
+    if getattr(args, "args_json", None):
+        parsed = json.loads(args.args_json)
+        if not isinstance(parsed, dict):
+            raise ValueError("--args must be a JSON object")
+        sets.append(parsed)
+    pairs = {}
+    for pair in getattr(args, "pairs", None) or []:
+        key, separator, value = pair.partition("=")
+        if not separator or not key.strip():
+            raise ValueError(f"argument {pair!r} is not key=value")
+        pairs[key.strip()] = _coerce(value, (properties or {}).get(key.strip()))
+    if pairs:
+        if sets:
+            sets[0] = {**sets[0], **pairs}
+        else:
+            sets.append(pairs)
+    sources = []
+    if getattr(args, "stdin", False):
+        sources.append(("stdin", sys.stdin.read()))
+    if getattr(args, "input", None):
+        sources.append((args.input, Path(args.input).read_text(encoding="utf-8-sig")))
+    for name, content in sources:
+        for number, line in enumerate(content.splitlines(), 1):
+            if not line.strip():
+                continue
+            try:
+                row = json.loads(line)
+            except ValueError as exc:
+                raise ValueError(f"{name}:{number}: invalid JSON") from exc
+            if not isinstance(row, dict):
+                raise ValueError(f"{name}:{number}: expected a JSON object of arguments")
+            sets.append(row.get("arguments") if isinstance(row.get("arguments"), dict) else row)
+    if not sets:
+        sets.append({})
+    return sets
+
+
+def _tool_result(name: str, result: dict) -> dict:
+    """The tool's structured output when present, else its text content; always says which tool answered."""
+    structured = result.get("structuredContent")
+    if isinstance(structured, dict):
+        value = dict(structured)
+    else:
+        value = {"content": [c for c in result.get("content", []) if isinstance(c, dict)]}
+        texts = [c.get("text") for c in value["content"] if c.get("type") == "text" and isinstance(c.get("text"), str)]
+        if texts:
+            value["text"] = "\n".join(texts)
+    value["_tool"] = name
+    if result.get("isError"):
+        value["_is_error"] = True
+        if "error" not in value:
+            value["error"] = value.get("text") or f"{name} reported an error"
+    return value
+
+
+def tool_command(args, client):
+    if args.action == "list":
+        tools = client.mcp_tools()
+        rows = []
+        for tool in tools:
+            schema = tool.get("inputSchema") or {}
+            rows.append({"name": tool.get("name"), "description": (tool.get("description") or "").strip(),
+                         "required": list(schema.get("required") or []), "arguments": sorted((schema.get("properties") or {}).keys()),
+                         "structured_output": bool(tool.get("outputSchema"))})
+        return {"tools": rows, "count": len(rows)}, 0
+    if args.action == "schema":
+        for tool in client.mcp_tools():
+            if tool.get("name") == args.name:
+                return {"name": tool.get("name"), "description": tool.get("description"), "inputSchema": tool.get("inputSchema"),
+                        "outputSchema": tool.get("outputSchema")}, 0
+        raise ValueError(f"unknown tool {args.name!r}; see `ocl tool list`")
+    properties = None
+    if getattr(args, "pairs", None):
+        # type the key=value pairs by the tool's own schema (one tools/list, cached when a cache is on)
+        try:
+            for tool in client.mcp_tools():
+                if tool.get("name") == args.name:
+                    properties = (tool.get("inputSchema") or {}).get("properties") or {}
+                    break
+        except APIError:
+            properties = None
+    sets = _tool_argument_sets(args, properties)
+    results, errors = [], []
+    for index, arguments in enumerate(sets):
+        try:
+            results.append(_tool_result(args.name, client.mcp_call(args.name, arguments)))
+        except APIError as exc:
+            errors.append({"index": index, "arguments": arguments, **exc.to_dict()})
+    if len(sets) == 1 and not errors:
+        return results[0], 4 if results[0].get("_is_error") else 0
+    if len(sets) == 1:
+        return {"results": [], "errors": errors, "requested": 1, "returned": 0}, 3 if _transport(errors[0]) else 4
+    failed = any(r.get("_is_error") for r in results)
+    code = (3 if any(_transport(e) for e in errors) else 4) if errors else (4 if failed else 0)
+    return {"results": results, "errors": errors, "requested": len(sets), "returned": len(results),
+            "requests": getattr(client, "requests", None)}, code
+
+
+def doctor(args, client):
+    import platform
+    import time as _time
+    report = {"client_version": __version__, "python": platform.python_version(), "platform": platform.platform(terse=True),
+              "base_url": getattr(client, "base_url", args.base_url),
+              "cache_dir": str(client.cache_dir) if getattr(client, "cache_dir", None) else None, "ok": True}
+    try:
+        started = _time.monotonic()
+        health = client.get("/health")
+        report["health"] = {k: health.get(k) for k in ("status", "decisions", "db_generation") if k in health}
+        report["health_ms"] = round(1000 * (_time.monotonic() - started))
+        started = _time.monotonic()
+        tools = client.mcp_tools()
+        report["tools"] = {"count": len(tools), "structured_output": sum(1 for t in tools if t.get("outputSchema"))}
+        report["tools_ms"] = round(1000 * (_time.monotonic() - started))
+        started = _time.monotonic()
+        cite = client.get("/api/cite", {"reference": "BGE 136 III 513", "language": "de"})
+        report["cite_ms"] = round(1000 * (_time.monotonic() - started))
+        report["cite_ok"] = cite.get("exists") is True and cite.get("decision_id") == "bge_BGE_136_III_513"
+        if not report["cite_ok"]:
+            report["ok"] = False
+            report["note"] = "the reference check did not return the expected decision"
+    except APIError as exc:
+        report.update(ok=False, error=exc.to_dict())
+        return report, 3
+    return report, 0 if report["ok"] else 3
+
+
+def _skills_dir() -> Path:
+    return Path(__file__).parent / "skills"
+
+
+def skills_command(args):
+    available = sorted(p.parent.name for p in _skills_dir().glob("*/SKILL.md"))
+    if args.action == "list":
+        rows = []
+        for name in available:
+            text = (_skills_dir() / name / "SKILL.md").read_text(encoding="utf-8")
+            description = ""
+            for line in text.splitlines():
+                if line.startswith("description:"):
+                    description = line.partition(":")[2].strip()
+                    break
+            rows.append({"name": name, "description": description, "path": str(_skills_dir() / name / "SKILL.md")})
+        return {"skills": rows}, 0
+    if args.action == "show":
+        if args.name not in available:
+            raise ValueError(f"unknown skill {args.name!r}; available: {', '.join(available)}")
+        return {"_raw": (_skills_dir() / args.name / "SKILL.md").read_text(encoding="utf-8")}, 0
+    target = Path(args.dir).expanduser() if getattr(args, "dir", None) else (Path.home() / ".claude" / "skills" if getattr(args, "claude", False) else None)
+    if target is None:
+        raise ValueError("say where: --claude (~/.claude/skills) or --dir DIR")
+    installed, skipped = [], []
+    for name in available:
+        destination = target / name / "SKILL.md"
+        if destination.exists() and not getattr(args, "force", False):
+            skipped.append(str(destination))
+            continue
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_text((_skills_dir() / name / "SKILL.md").read_text(encoding="utf-8"), encoding="utf-8")
+        installed.append(str(destination))
+    return {"installed": installed, "skipped_existing": skipped, "directory": str(target)}, 0
+
+
 def run(args, client):
     if args.command in ("bundle", "quotes") or (args.command == "citations" and args.action == "resolve"):
         from . import workflows
         return workflows.run(args, client)
     if args.command == "completion":
         return {"_raw": _COMPLETION_SCRIPTS[args.shell]}, 0
+    if args.command == "tool":
+        return tool_command(args, client)
+    if args.command == "doctor":
+        return doctor(args, client)
+    if args.command == "skills":
+        return skills_command(args)
+    if args.command == "agent-guide":
+        return {"_raw": _package_text("AGENTS.md")}, 0
     if args.command == "__complete":
         return {"_raw": "\n".join(complete(build_parser(config={}), list(args.words)))}, 0
     if args.command == "decisions":

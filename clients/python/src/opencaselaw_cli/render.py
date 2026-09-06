@@ -403,6 +403,60 @@ def render_quotes(value: dict, s: Style, width: int) -> str:
     return "\n".join(lines)
 
 
+def render_tool(value: dict, s: Style, width: int) -> str:
+    if "tools" in value and isinstance(value["tools"], list):
+        lines = []
+        for tool in value["tools"]:
+            first = str(tool.get("description") or "").split(". ")[0].strip()
+            lines.append(f"{s.bold(str(tool.get('name')))}  " + s.dim(first[:110]))
+            if tool.get("required"):
+                lines.append("    " + s.dim("required: " + ", ".join(map(str, tool["required"]))))
+        lines += ["", s.dim(f"{value.get('count', len(value['tools']))} tools. `ocl tool schema <name>` shows the arguments; `ocl tool call <name> key=value` runs one.")]
+        return "\n".join(lines)
+    if "inputSchema" in value:
+        return json.dumps(value, ensure_ascii=False, indent=2)
+    if "results" in value and "requested" in value:
+        return render_batch(value, s, width, render_tool)
+    lines = []
+    if value.get("_is_error"):
+        lines.append(s.red("tool error: ") + str(value.get("error")))
+    elif value.get("_tool"):
+        lines.append(s.dim(str(value["_tool"])))
+    if value.get("text"):
+        lines += _wrap(_display_text(str(value["text"])), width)
+    else:
+        payload = {k: v for k, v in value.items() if not k.startswith("_")}
+        lines.append(json.dumps(payload, ensure_ascii=False, indent=2))
+    return "\n".join(lines)
+
+
+def render_doctor(value: dict, s: Style, width: int) -> str:
+    ok = value.get("ok")
+    lines = [(s.green("ok") if ok else s.red("not ok")) + f"  {value.get('base_url')}  " + s.dim(f"client {value.get('client_version')} · python {value.get('python')}")]
+    health = value.get("health") or {}
+    if health:
+        lines.append(f"  health: {health.get('status')}  generation {health.get('db_generation')}  decisions {health.get('decisions'):,}  " + s.dim(f"{value.get('health_ms')} ms"))
+    if value.get("tools"):
+        lines.append(f"  tools: {value['tools'].get('count')} ({value['tools'].get('structured_output')} with structured output)  " + s.dim(f"{value.get('tools_ms')} ms"))
+    if "cite_ok" in value:
+        lines.append(f"  citation lookup: {'ok' if value['cite_ok'] else 'unexpected answer'}  " + s.dim(f"{value.get('cite_ms')} ms"))
+    lines.append("  cache: " + (str(value["cache_dir"]) if value.get("cache_dir") else s.dim("off (--cache DIR or OCL_CACHE)")))
+    if value.get("error"):
+        lines.append("  " + s.red(str(value["error"].get("message"))))
+    if value.get("note"):
+        lines.append("  " + s.yellow(str(value["note"])))
+    return "\n".join(lines)
+
+
+def render_skills(value: dict, s: Style, width: int) -> str:
+    if "skills" in value:
+        lines = [f"{s.bold(str(k.get('name')))}  " + s.dim(str(k.get('description'))[:120]) for k in value["skills"]]
+        return "\n".join(lines + ["", s.dim("`ocl skills show <name>` prints one; `ocl skills install --claude` copies them into ~/.claude/skills.")])
+    lines = [f"{s.green('installed')}  {p}" for p in value.get("installed", [])]
+    lines += [f"{s.yellow('kept')}       {p}" for p in value.get("skipped_existing", [])]
+    return "\n".join(lines or [s.dim("nothing to do")])
+
+
 def render_bundle_verification(value: dict, s: Style, width: int) -> str:
     counts = value.get("counts") or {}
     lines = [_status(s, str(value.get("status", ""))) + "  " + s.bold(str(value.get("bundle", ""))),
@@ -489,6 +543,12 @@ def render(value, args, s: Style, width: int) -> str:
         return render_resolution(value, s, width)
     if command == "quotes":
         return render_quotes(value, s, width)
+    if command == "tool":
+        return render_tool(value, s, width)
+    if command == "doctor":
+        return render_doctor(value, s, width)
+    if command == "skills":
+        return render_skills(value, s, width)
     if command == "cite":
         return render_batch(value, s, width, render_cite) if "requested" in value else render_cite(value, s, width)
     if command == "bundle":
