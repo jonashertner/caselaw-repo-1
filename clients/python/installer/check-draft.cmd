@@ -27,31 +27,16 @@ if exist "%INDEX%" del /q "%INDEX%" 2>nul
 call "%OCL_DIR%ocl.cmd" check %* %LOCALFLAG% --color never
 set "RC=%ERRORLEVEL%"
 rem 0 = all found, 4 = something needs attention, 2 = a file could not be read (a scan without a
-rem text layer): all three wrote the index, which names every file with its result.
-
-:multi_done
-rem Exit 2 with several files: a client that takes one file per call rejects the
-rem extra arguments ("unrecognized arguments"). Check the files one after another.
-echo.
-echo Dieser Client prueft eine Datei pro Aufruf; die Dateien werden nacheinander geprueft.
-set "RC=0"
-:next
-if "%~1"=="" goto :multi_done
-call :one "%~1"
-if %ERRORLEVEL% GTR %RC% set "RC=%ERRORLEVEL%"
-shift
-goto :next
-
-:multi_done
+rem text layer): all three wrote the index, which names every file with its result. 1 and 3 did not.
 if exist "%INDEX%" if not %RC%==1 if not %RC%==3 (
   start "" "%INDEX%"
 ) else (
   echo.
-  echo Die Berichte liegen neben den geprueften Dateien ^(NAME.check.html^).
-  if %RC% GEQ 1 if %RC% LEQ 3 echo Fehlt das Verifikationspaket: Startmenue, OpenCaseLaw, "Verifikationspaket laden".
+  echo Keine Uebersicht geschrieben ^(Code %RC%^).
+  echo Fehlt das Verifikationspaket: Startmenue, OpenCaseLaw, "Verifikationspaket laden".
   pause
 )
-rem 0 = alles gefunden, 4 = etwas braucht Aufmerksamkeit (steht im Bericht),
+rem 0 = alles gefunden, 4 = etwas braucht Aufmerksamkeit (steht in der Uebersicht),
 rem 2 = eine Datei nicht lesbar (steht in der Uebersicht), 3 = Paket oder Dienst nicht erreichbar.
 exit /b %RC%
 

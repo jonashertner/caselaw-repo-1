@@ -69,7 +69,7 @@ def test_tree_layout_pth_and_launchers(tmp_path):
     assert b'"%OCL_HOME%python.exe" -m opencaselaw_cli %*' in (out / "ocl.cmd").read_bytes()
     send_to = (out / "check-draft.cmd").read_bytes()
     assert b'set "LOCALFLAG=--local"' in send_to and b'check "%DRAFT%" %LOCALFLAG%' in send_to
-    assert b"check %* %LOCALFLAG%" in send_to and b'if not "%RC%"=="2" goto :multi_done' in send_to  # batch, then one per file
+    assert b"check %* %LOCALFLAG%" in send_to and b'if exist "%INDEX%"' in send_to and b":one" not in send_to  # one run, one index
     assert b"pack pull" in (out / "pull-pack.cmd").read_bytes()
 
 
