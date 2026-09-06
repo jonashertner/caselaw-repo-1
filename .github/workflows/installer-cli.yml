@@ -163,7 +163,7 @@ jobs:
           Write-Host "check exit $rc, report written, summary present: $($summary -gt 0)"
 
           # doctor offline: 0 when the pack answers, 3 with a clean 'not available offline' error; never a traceback.
-          $doctor = & $ocl doctor --local "$fx\pack.sqlite" --format json 2>&1 | Out-String
+          $doctor = & $ocl doctor --local --pack "$fx\pack.sqlite" --format json 2>&1 | Out-String
           $rc = $LASTEXITCODE
           Write-Host $doctor
           if ($doctor -match "Traceback") { throw "traceback during ocl doctor --local" }
