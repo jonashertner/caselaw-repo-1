@@ -1,0 +1,150 @@
+{
+ "counts": {
+  "checked": 195,
+  "match": 184,
+  "mismatch": 11,
+  "regressions": 0
+ },
+ "mismatches": [
+  {
+   "reference": "ATF 142 III 9 consid. 2",
+   "pinpoint": "2",
+   "expected_status": "pinpoint_unavailable",
+   "expected_decision_id": "bge_BGE_142_III_9",
+   "kind": "real",
+   "scenario": "adversarial-hygiene",
+   "bench_id": "b086",
+   "got_status": "resolved",
+   "got_decision_id": "bge_BGE_142_III_9",
+   "problem": "status changed"
+  },
+  {
+   "reference": "ATF 142 III 9, consid. 2",
+   "pinpoint": "2",
+   "expected_status": "pinpoint_unavailable",
+   "expected_decision_id": "bge_BGE_142_III_9",
+   "kind": "real",
+   "scenario": "adversarial-hygiene",
+   "bench_id": "b087",
+   "got_status": "resolved",
+   "got_decision_id": "bge_BGE_142_III_9",
+   "problem": "status changed"
+  },
+  {
+   "reference": "DTF 142 V 395",
+   "pinpoint": "4.2.1",
+   "expected_status": "pinpoint_unavailable",
+   "expected_decision_id": "bge_BGE_142_V_395",
+   "kind": "real",
+   "scenario": "it-de-mixed",
+   "bench_id": "b127",
+   "got_status": "resolved",
+   "got_decision_id": "bge_BGE_142_V_395",
+   "problem": "status changed"
+  },
+  {
+   "reference": "ATF 143 III 38",
+   "pinpoint": "2",
+   "expected_status": "pinpoint_unavailable",
+   "expected_decision_id": "bge_BGE_143_III_38",
+   "kind": "real",
+   "scenario": "it-de-mixed",
+   "bench_id": "b128",
+   "got_status": "resolved",
+   "got_decision_id": "bge_BGE_143_III_38",
+   "problem": "status changed"
+  },
+  {
+   "reference": "DTF 143 III 38 consid. 2.1",
+   "pinpoint": "2.1",
+   "expected_status": "pinpoint_unavailable",
+   "expected_decision_id": "bge_BGE_143_III_38",
+   "kind": "real",
+   "scenario": "it-de-mixed",
+   "bench_id": "b130",
+   "got_status": "resolved",
+   "got_decision_id": "bge_BGE_143_III_38",
+   "problem": "status changed"
+  },
+  {
+   "reference": "DTF 143 III 38",
+   "pinpoint": "2.1",
+   "expected_status": "pinpoint_unavailable",
+   "expected_decision_id": "bge_BGE_143_III_38",
+   "kind": "real",
+   "scenario": "it-de-mixed",
+   "bench_id": "b131",
+   "got_status": "resolved",
+   "got_decision_id": "bge_BGE_143_III_38",
+   "problem": "status changed"
+  },
+  {
+   "reference": "DTF 143 III 38 consid. 2.1 pag. 40",
+   "pinpoint": "2.1",
+   "expected_status": "pinpoint_unavailable",
+   "expected_decision_id": "bge_BGE_143_III_38",
+   "kind": "real",
+   "scenario": "it-de-mixed",
+   "bench_id": "b132",
+   "got_status": "resolved",
+   "got_decision_id": "bge_BGE_143_III_38",
+   "problem": "status changed"
+  },
+  {
+   "reference": "DTF 142 V 395 consid. 4.2.1",
+   "pinpoint": "4.2.1",
+   "expected_status": "pinpoint_unavailable",
+   "expected_decision_id": "bge_BGE_142_V_395",
+   "kind": "real",
+   "scenario": "it-de-mixed",
+   "bench_id": "b133",
+   "got_status": "resolved",
+   "got_decision_id": "bge_BGE_142_V_395",
+   "problem": "status changed"
+  },
+  {
+   "reference": "DTF 126 II 71 consid. 5a",
+   "pinpoint": "5a",
+   "expected_status": "pinpoint_unavailable",
+   "expected_decision_id": "bge_BGE_126_II_71",
+   "kind": "real",
+   "scenario": "it-de-mixed",
+   "bench_id": "b135",
+   "got_status": "resolved",
+   "got_decision_id": "bge_BGE_126_II_71",
+   "problem": "status changed"
+  },
+  {
+   "reference": "BGE 125 II 633 E. 2a",
+   "pinpoint": "2a",
+   "expected_status": "pinpoint_unavailable",
+   "expected_decision_id": "bge_BGE_125_II_633",
+   "kind": "real",
+   "scenario": "it-de-mixed",
+   "bench_id": "b144",
+   "got_status": "resolved",
+   "got_decision_id": "bge_BGE_125_II_633",
+   "problem": "status changed"
+  },
+  {
+   "reference": "ATF 125 II 633 consid. 2a",
+   "pinpoint": "2a",
+   "expected_status": "pinpoint_unavailable",
+   "expected_decision_id": "bge_BGE_125_II_633",
+   "kind": "real",
+   "scenario": "it-de-mixed",
+   "bench_id": "b146",
+   "got_status": "resolved",
+   "got_decision_id": "bge_BGE_125_II_633",
+   "problem": "status changed"
+  }
+ ],
+ "regressions": [],
+ "generated_at": "2026-09-06T11:17:53.701629+00:00",
+ "base_url": "https://mcp.opencaselaw.ch",
+ "references": 195,
+ "requests": 532,
+ "wall_seconds": 168.1,
+ "client_version": "0.4.0",
+ "resolve_exit_code": 4
+}

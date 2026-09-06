@@ -12392,6 +12392,50 @@ _DISPOSITIVE_RE = re.compile(
     re.IGNORECASE | re.MULTILINE)
 
 
+_SENTENCE_END = re.compile(r"[.:;!?»\"”)\]]\s*$")
+
+
+def _heading_is_a_wrapped_citation(text: str, match: "re.Match[str]") -> bool:
+    """A heading candidate at a line start that is really the tail of a citation
+    wrapped over two lines ("... (vgl. BGE 120 Ib 1\nE. 2a mit Hinweisen)."): the
+    previous line ends mid-sentence, or the prefixed number is followed by
+    lowercase prose."""
+    before = text[:match.start()].rstrip(" \t")
+    if before and not before.endswith("\n"):
+        previous = before.rsplit("\n", 1)[-1].strip()
+        if previous and not _SENTENCE_END.search(previous):
+            return True
+    line = text[match.start():text.find("\n", match.start()) if text.find("\n", match.start()) != -1 else len(text)]
+    prefixed = re.match(r"^[ \t]*(?:E|Erw|Erwägung|consid|cons|c)\.?[ \t]*\S+[ \t]+([a-zà-ÿ])", line)
+    return bool(prefixed)
+
+
+def _lettered_from_block(parent_block: dict, e_number: str, letter: str, sub: str | None) -> dict | None:
+    """The "a)" (or "c) aa)") unit inside a numbered block, from its marker to
+    the next marker of the same level or the block end."""
+    body = parent_block["text"]
+    single = re.compile(r"(?m)(?:^[ \t]*|(?<=\) ))([a-z])\)[ \t]+(?=\S)")
+    marks = [(m.start(), m.end(), m.group(1)) for m in single.finditer(body)]
+    starts = [i for i, (_, _, l) in enumerate(marks) if l == letter]
+    if not starts:
+        return None
+    i = starts[0]
+    unit_start, unit_end = marks[i][1], (marks[i + 1][0] if i + 1 < len(marks) else len(body))
+    unit = body[unit_start:unit_end].strip()
+    if sub:
+        double = re.compile(r"(?m)(?:^[ \t]*|(?<=\) ))([a-z]{2})\)[ \t]+(?=\S)")
+        dmarks = [(m.start(), m.end(), m.group(1)) for m in double.finditer(unit)]
+        dstarts = [j for j, (_, _, l) in enumerate(dmarks) if l == sub]
+        if not dstarts:
+            return None
+        j = dstarts[0]
+        unit = unit[dmarks[j][1]:(dmarks[j + 1][0] if j + 1 < len(dmarks) else len(unit))].strip()
+    if len(unit) < 20:
+        return None
+    parent_num = e_number.rsplit("/", 1)[0] if sub else re.sub(r"[a-z]+$", "", e_number)
+    return {"e_number": e_number, "depth": parent_block["depth"] + (2 if sub else 1), "parent": parent_num, "text": unit[:60000]}
+
+
 def _erwaegung_from_text(full_text: str | None, e_number: str) -> dict | None:
     """Locate a numbered Erwägung in the decision's full text when the structure
     index has no row for it (many cantonal decisions and some BGE are stored as
@@ -12404,13 +12448,29 @@ def _erwaegung_from_text(full_text: str | None, e_number: str) -> dict | None:
     if not full_text or not e_number:
         return None
     text = full_text.replace("\r\n", "\n")
+    e_number = e_number.strip()
+    lettered = re.fullmatch(r"(\d+(?:\.\d+)*)([a-z]{1,2})(?:/([a-z]{1,2}))?", e_number)
+    if lettered:
+        # "2a" / "3c/aa": the lettered marker "a)" inside the numbered block.
+        # Such a number is never written as a heading of its own, and a
+        # line-wrapped citation ("... vgl. BGE 120 Ib 1\nE. 2a mit Hinweisen")
+        # would otherwise pass for one.
+        parent_block = _erwaegung_from_text(text, lettered.group(1))
+        if not parent_block:
+            return None
+        return _lettered_from_block(parent_block, e_number, lettered.group(2), lettered.group(3))
     number = re.escape(e_number)
     depth = e_number.count(".")
     # "2.3", "2.3.", "E. 2.3", "Erw. 2.3", "consid. 2.3", "2.3 -", "2.3:" at a line start
     heading = re.compile(
         r"^[ \t]*(?:(?:E|Erw|Erwägung|consid|cons|c)\.?[ \t]*)?" + number + r"\.?(?=[ \t]*(?:[-–—:]|[A-Za-zÀ-ÿ(«\"']|$))",
         re.MULTILINE)
-    start = heading.search(text)
+    start = None
+    for candidate in heading.finditer(text):
+        if _heading_is_a_wrapped_citation(text, candidate):
+            continue
+        start = candidate
+        break
     if not start:
         return None
     # next heading: a line-leading number with depth <= requested that is not a descendant
