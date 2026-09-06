@@ -75,14 +75,10 @@ def tools(*, client: Client | None = None) -> list[dict]:
 
 
 def tool(name: str, *, client: Client | None = None, **arguments) -> dict:
-    """Call any server tool; returns structuredContent when present, else {"content": [...]}; isError raises APIError(200)."""
-    result = _client(client).mcp_call(name, arguments)
-    if result.get("isError"):
-        structured = result.get("structuredContent")
-        text = "; ".join(c.get("text", "") for c in result.get("content", []) if isinstance(c, dict))
-        error = APIError(200, (structured or {}).get("error") or text or f"{name} reported an error")
-        error.response = structured or {"content": result.get("content")}
+    """Call any server tool and return its own dict (fields, not Markdown); a tool-reported error raises APIError(200)."""
+    value = _client(client).tool_json(name, arguments)
+    if value.get("_is_error"):
+        error = APIError(200, str(value.get("error") or f"{name} reported an error"))
+        error.response = value
         raise error
-    if isinstance(result.get("structuredContent"), dict):
-        return result["structuredContent"]
-    return {"content": result.get("content", [])}
+    return value

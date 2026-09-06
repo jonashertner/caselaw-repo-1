@@ -21,7 +21,7 @@ from .workflows import (BREAKER_THRESHOLD, DEFAULT_JOBS, RANKED_MAX_RESULTS, Res
 
 DEFAULT_BASE_URL = "https://mcp.opencaselaw.ch"
 FORMATS = ("text", "json", "jsonl", "table", "csv", "md")
-CONFIG_KEYS = ("base_url", "timeout", "retries", "format", "color", "language", "jobs", "cache")
+CONFIG_KEYS = ("base_url", "timeout", "retries", "format", "color", "language", "jobs", "cache", "local")
 
 
 def config_path() -> str:
@@ -97,6 +97,9 @@ def _common():
     parser.add_argument("--jobs", type=positive_int, help=f"concurrent requests for batch commands, 1-8 (default: {DEFAULT_JOBS}; OCL_JOBS)")
     parser.add_argument("--verbose", action="store_true", help="log every request (URL, status, time) to stderr")
     parser.add_argument("--cache", metavar="DIR", help="cache responses in DIR, keyed by the server's database generation (OCL_CACHE)")
+    parser.add_argument("--local", metavar="PACK", nargs="?", const="default",
+                        help="offline: answer from the verification pack (a file, or the one `ocl pack pull` stored; OCL_LOCAL). "
+                             "Covers citations resolve, cite, decisions passage/get, quotes check and bundles; no search, laws or tools")
     return parser
 
 
@@ -150,6 +153,7 @@ def build_parser(config: dict | None = None):
         epilog=_EXAMPLES)
     parser.set_defaults(base_url=cfg.get("base_url", DEFAULT_BASE_URL), timeout=cfg.get("timeout", 30),
                         retries=cfg.get("retries", 2), format=cfg.get("format"), fields=None, cache=cfg.get("cache"),
+                        local=cfg.get("local") or None,
                         color=cfg.get("color", "auto"), jobs=cfg.get("jobs", DEFAULT_JOBS), verbose=False)
     parser.add_argument("--version", action="version", version=f"ocl {__version__}")
     commands = parser.add_subparsers(dest="command", required=True, metavar="COMMAND")
@@ -347,6 +351,20 @@ def build_parser(config: dict | None = None):
     sinstall.add_argument("--claude", action="store_true", help="install into ~/.claude/skills/<name>/SKILL.md (Claude Code)")
     sinstall.add_argument("--dir", metavar="DIR", help="install into DIR/<name>/SKILL.md")
     sinstall.add_argument("--force", action="store_true", help="overwrite existing files")
+
+    pack = commands.add_parser("pack", parents=[common], formatter_class=fmt, help="the offline verification pack",
+                               description=("A single SQLite file with decision metadata, the service's citation strings, docket aliases and every "
+                                            "indexed Erwägung, so citation, pinpoint and quotation checks run on this machine only: nothing about a "
+                                            "draft leaves it. Weekly snapshot published on the HuggingFace mirror (CC0). No full texts, no search."),
+                               epilog="examples:\n  ocl pack pull\n  ocl pack info\n  ocl --local citations resolve --input refs.jsonl --format jsonl\n")
+    pack_actions = pack.add_subparsers(dest="action", required=True)
+    ppull = pack_actions.add_parser("pull", parents=[common], formatter_class=fmt, help="download the latest pack (several GB)",
+                                    description="Download the latest verification pack from the mirror and unpack it (default location: the user data directory; --to for another file).")
+    ppull.add_argument("--to", metavar="FILE", help="where to store the pack (default: ~/.local/share/ocl/verification_pack.sqlite)")
+    ppull.add_argument("--url", help="alternative download URL (a .sqlite.gz)")
+    pinfo = pack_actions.add_parser("info", parents=[common], formatter_class=fmt, help="show the installed pack's generation and size",
+                                    description="The pack's build date, database generation, decision and paragraph counts, and file size.")
+    pinfo.add_argument("--path", metavar="FILE", help="a pack file other than the default one")
 
     commands.add_parser("agent-guide", parents=[common], formatter_class=fmt, help="print the agent guide (contract, commands, rules)",
                         description="The compact guide agents read first: install, JSON contract, exit codes, commands, statuses and the rules.")
@@ -635,6 +653,11 @@ def _diagnostic(message: str, args=None) -> None:
 
 def create_client(args):
     log = (lambda line: print("ocl: " + line, file=sys.stderr)) if getattr(args, "verbose", False) else None
+    local = getattr(args, "local", None)
+    if local:
+        from .local import DEFAULT_PACK_DIR, LocalClient
+        pack = DEFAULT_PACK_DIR / "verification_pack.sqlite" if local == "default" else local
+        return LocalClient(pack, log=log)
     return Client(base_url=args.base_url, timeout=args.timeout, retries=args.retries, log=log,
                   cache_dir=getattr(args, "cache", None) or None)
 
@@ -898,7 +921,11 @@ def tool_command(args, client):
     results, errors = [], []
     for index, arguments in enumerate(sets):
         try:
-            results.append(_tool_result(args.name, client.mcp_call(args.name, arguments)))
+            value = client.tool_json(args.name, arguments)
+            value.setdefault("_tool", args.name)
+            if value.get("_is_error") and "error" not in value:
+                value["error"] = value.get("text") or f"{args.name} reported an error"
+            results.append(value)
         except APIError as exc:
             errors.append({"index": index, "arguments": arguments, **exc.to_dict()})
     if len(sets) == 1 and not errors:
@@ -975,6 +1002,19 @@ def skills_command(args):
     return {"installed": installed, "skipped_existing": skipped, "directory": str(target)}, 0
 
 
+def pack_command(args):
+    from .local import DEFAULT_PACK_DIR, PACK_URL, LocalClient, pull
+    default = DEFAULT_PACK_DIR / "verification_pack.sqlite"
+    if args.action == "pull":
+        log = (lambda line: print("ocl: " + line, file=sys.stderr))
+        return pull(Path(args.to).expanduser() if getattr(args, "to", None) else default, url=getattr(args, "url", None) or PACK_URL, log=log), 0
+    path = Path(args.path).expanduser() if getattr(args, "path", None) else default
+    if not path.is_file():
+        return {"pack": str(path), "installed": False, "hint": "run `ocl pack pull`"}, 4
+    client = LocalClient(path)
+    return {"pack": str(path), "installed": True, "bytes": path.stat().st_size, **client.meta}, 0
+
+
 def run(args, client):
     if args.command in ("bundle", "quotes") or (args.command == "citations" and args.action == "resolve"):
         from . import workflows
@@ -989,6 +1029,8 @@ def run(args, client):
         return skills_command(args)
     if args.command == "agent-guide":
         return {"_raw": _package_text("AGENTS.md")}, 0
+    if args.command == "pack":
+        return pack_command(args)
     if args.command == "__complete":
         return {"_raw": "\n".join(complete(build_parser(config={}), list(args.words)))}, 0
     if args.command == "decisions":

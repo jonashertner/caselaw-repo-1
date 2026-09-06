@@ -72,6 +72,7 @@ from __future__ import annotations
 import asyncio
 import collections
 import contextvars
+import jsonschema
 import copy
 import hashlib
 import secrets
@@ -25650,6 +25651,59 @@ def _enrich_with_citation(row: dict) -> dict:
     return row
 
 
+# ── tool payloads for the JSON tool endpoint ────────────────────────────────
+# The dispatcher formats every tool's dict payload into Markdown text for the
+# model. The REST tool endpoint (/api/tool/{name}) wants the dict: the
+# dispatcher parks it on this contextvar right before returning the text, and
+# the endpoint reads it back. The MCP wire is unchanged (text only for the
+# tools without a research contract, so a model's context does not carry the
+# same answer twice).
+_ctx_tool_payload: contextvars.ContextVar = contextvars.ContextVar("ocl_tool_payload", default=None)
+
+
+def _text_and_payload(payload, text: str) -> list[TextContent]:
+    try:
+        _ctx_tool_payload.set(payload if isinstance(payload, (dict, list)) else None)
+    except Exception:  # noqa: BLE001 — never break serving over a payload capture
+        pass
+    return [TextContent(type="text", text=text)]
+
+
+def _tool_input_schema(name: str) -> dict | None:
+    for tool in _list_tools():
+        if tool.name == name:
+            return tool.inputSchema
+    return None
+
+
+async def _call_tool_json(name: str, arguments: dict) -> dict:
+    """The dict a tool's handler produced, for the JSON tool endpoint: the parked
+    payload when the dispatcher had one, else {"text": <the formatted text>}."""
+    token = _ctx_tool_payload.set(None)
+    try:
+        content = await _handle_call_tool_inner(name, arguments)
+        payload = _ctx_tool_payload.get()
+    finally:
+        _ctx_tool_payload.reset(token)
+    text = "\n".join(getattr(c, "text", "") for c in content if getattr(c, "type", "") == "text")
+    if isinstance(payload, dict):
+        result = dict(payload)
+    elif isinstance(payload, list):
+        result = {"results": payload}
+    else:
+        result = {"text": text}
+        try:
+            parsed = json.loads(text)
+            if isinstance(parsed, dict):
+                result = parsed
+        except (ValueError, TypeError):
+            pass
+    result["_tool"] = name
+    if isinstance(result.get("error"), str) or (isinstance(result.get("error"), dict) and result["error"]):
+        result["_is_error"] = True
+    return result
+
+
 def _research_tool_result(text: str, payload: dict):
     """Retain existing text (and commercial note) alongside source fields."""
     return ([TextContent(type="text", text=_with_open_access_note(text))], payload)
@@ -26287,7 +26341,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 decision_id=arguments["decision_id"],
                 pinpoint=arguments.get("pinpoint"),
             )
-            return [TextContent(type="text", text=json.dumps(result, indent=2, ensure_ascii=False))]
+            return _text_and_payload(result, json.dumps(result, indent=2, ensure_ascii=False))
 
         elif name == "attest_response":
             result = await asyncio.to_thread(
@@ -26296,7 +26350,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 audit_grounding=bool(arguments.get("audit_grounding", False)),
                 audit_quotes=bool(arguments.get("audit_quotes", True)),
             )
-            return [TextContent(type="text", text=json.dumps(result, indent=2, ensure_ascii=False))]
+            return _text_and_payload(result, json.dumps(result, indent=2, ensure_ascii=False))
 
         elif name == "list_courts":
             courts = await asyncio.to_thread(list_courts)
@@ -26356,7 +26410,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 decision_id=arguments["decision_id"],
                 min_confidence=float(arguments.get("min_confidence", 0.3)),
             )
-            return [TextContent(type="text", text=_format_appeal_chain_response(result))]
+            return _text_and_payload(result, _format_appeal_chain_response(result))
 
         elif name == "find_leading_cases":
             _qerr = _query_length_error(arguments.get("query"))
@@ -26384,7 +26438,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                         await asyncio.to_thread(
                             _pinpoint_enrich_results, items, claim, top_n=3
                         )
-            return [TextContent(type="text", text=_format_leading_cases_response(result))]
+            return _text_and_payload(result, _format_leading_cases_response(result))
 
         elif name == "analyze_legal_trend":
             result = await asyncio.to_thread(
@@ -26396,7 +26450,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 date_from=arguments.get("date_from"),
                 date_to=arguments.get("date_to"),
             )
-            return [TextContent(type="text", text=_format_trend_response(result))]
+            return _text_and_payload(result, _format_trend_response(result))
 
         elif name == "draft_mock_decision":
             report = await asyncio.to_thread(
@@ -26420,14 +26474,14 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 _handle_get_case_brief,
                 case=arguments.get("case", ""),
             )
-            return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False, indent=2))]
+            return _text_and_payload(result, json.dumps(result, ensure_ascii=False, indent=2))
 
         elif name == "get_decision_structure":
             result = await asyncio.to_thread(
                 _handle_get_decision_structure,
                 decision_id=arguments.get("decision_id", ""),
             )
-            return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False, indent=2))]
+            return _text_and_payload(result, json.dumps(result, ensure_ascii=False, indent=2))
 
         elif name == "get_erwaegung":
             result = await asyncio.to_thread(
@@ -26444,7 +26498,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 claim=arguments.get("claim", ""),
                 top_k=int(arguments.get("top_k", 3) or 3),
             )
-            return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False, indent=2))]
+            return _text_and_payload(result, json.dumps(result, ensure_ascii=False, indent=2))
 
         elif name == "get_article_purpose":
             result = await asyncio.to_thread(
@@ -26454,7 +26508,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 language=arguments.get("language", "de"),
                 max_paragraphs=int(arguments.get("max_paragraphs", 8) or 8),
             )
-            return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False, indent=2))]
+            return _text_and_payload(result, json.dumps(result, ensure_ascii=False, indent=2))
 
         elif name == "search_botschaft":
             # language: pass through only when the caller set it; default
@@ -26467,7 +26521,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 year_max=arguments.get("year_max"),
                 limit=int(arguments.get("limit", 20) or 20),
             )
-            return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False, indent=2))]
+            return _text_and_payload(result, json.dumps(result, ensure_ascii=False, indent=2))
 
         elif name == "get_article_history":
             result = await asyncio.to_thread(
@@ -26477,21 +26531,21 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 language=arguments.get("language", "de"),
                 leading_cases_limit=int(arguments.get("leading_cases_limit", 5) or 5),
             )
-            return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False, indent=2))]
+            return _text_and_payload(result, json.dumps(result, ensure_ascii=False, indent=2))
 
         elif name == "get_regeste":
             result = await asyncio.to_thread(
                 _handle_get_regeste,
                 decision_id=arguments.get("decision_id", ""),
             )
-            return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False, indent=2))]
+            return _text_and_payload(result, json.dumps(result, ensure_ascii=False, indent=2))
 
         elif name == "get_doctrine":
             result = await asyncio.to_thread(
                 _handle_get_doctrine,
                 query=arguments.get("query", ""),
             )
-            return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False, indent=2))]
+            return _text_and_payload(result, json.dumps(result, ensure_ascii=False, indent=2))
 
         elif name == "generate_exam_question":
             result = await asyncio.to_thread(
@@ -26499,7 +26553,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 topic=arguments.get("topic", ""),
                 exclude_ids=arguments.get("exclude_ids", []),
             )
-            return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False, indent=2))]
+            return _text_and_payload(result, json.dumps(result, ensure_ascii=False, indent=2))
 
         elif name == "get_law":
             result = await asyncio.to_thread(
@@ -26539,7 +26593,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 article=arguments.get("article"),
                 language=arguments.get("language", "de"),
             )
-            return [TextContent(type="text", text=_format_get_commentary_response(result))]
+            return _text_and_payload(result, _format_get_commentary_response(result))
 
         elif name == "search_commentaries":
             result = await asyncio.to_thread(
@@ -26549,7 +26603,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 language=arguments.get("language"),
                 limit=int(arguments.get("limit", 10)),
             )
-            return [TextContent(type="text", text=_format_search_commentaries_response(result))]
+            return _text_and_payload(result, _format_search_commentaries_response(result))
 
         elif name == "search_scholarship":
             result = await asyncio.to_thread(
@@ -26564,13 +26618,13 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 sort=arguments.get("sort"),
                 limit=int(arguments.get("limit", 10)),
             )
-            return [TextContent(type="text", text=_format_search_scholarship_response(result))]
+            return _text_and_payload(result, _format_search_scholarship_response(result))
 
         elif name == "get_scholarship":
             result = await asyncio.to_thread(
                 get_scholarship, pub_id=arguments["pub_id"],
             )
-            return [TextContent(type="text", text=_format_get_scholarship_response(result))]
+            return _text_and_payload(result, _format_get_scholarship_response(result))
 
         elif name == "find_scholarship_citing_statute":
             result = await asyncio.to_thread(
@@ -26579,7 +26633,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 article=arguments.get("article"),
                 limit=int(arguments.get("limit", 20)),
             )
-            return [TextContent(type="text", text=_format_find_scholarship_citing_statute_response(result))]
+            return _text_and_payload(result, _format_find_scholarship_citing_statute_response(result))
 
         elif name == "find_scholarship_citing_decision":
             result = await asyncio.to_thread(
@@ -26587,11 +26641,11 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 decision_id=arguments["decision_id"],
                 limit=int(arguments.get("limit", 20)),
             )
-            return [TextContent(type="text", text=_format_find_scholarship_citing_decision_response(result))]
+            return _text_and_payload(result, _format_find_scholarship_citing_decision_response(result))
 
         elif name == "list_scholarship_sources":
             result = await asyncio.to_thread(list_scholarship_sources)
-            return [TextContent(type="text", text=_format_list_scholarship_sources_response(result))]
+            return _text_and_payload(result, _format_list_scholarship_sources_response(result))
 
         elif name == "get_scholarship_full_text":
             result = await asyncio.to_thread(
@@ -26619,7 +26673,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 law_code=arguments.get("law_code", ""),
                 article=arguments.get("article"),
             )
-            return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False, indent=2))]
+            return _text_and_payload(result, json.dumps(result, ensure_ascii=False, indent=2))
 
         elif name == "search_materialien":
             result = await asyncio.to_thread(
@@ -26628,7 +26682,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 law_code=arguments.get("law_code"),
                 limit=int(arguments.get("limit", 10)),
             )
-            return [TextContent(type="text", text=json.dumps(result, ensure_ascii=False, indent=2))]
+            return _text_and_payload(result, json.dumps(result, ensure_ascii=False, indent=2))
 
         elif name == "search_legislation":
             # language=None triggers a 3-way fan-out (DE/FR/IT) inside
@@ -26659,7 +26713,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 include_versions=arguments.get("include_versions", False),
                 language=arguments.get("language", "de"),
             )
-            return [TextContent(type="text", text=_format_get_legislation_response(result))]
+            return _text_and_payload(result, _format_get_legislation_response(result))
 
         elif name == "browse_legislation_changes":
             # language=None → 3-way fan-out + merge (see search_legislation).
@@ -26668,7 +26722,7 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 canton=arguments.get("canton", "CH"),
                 language=arguments.get("language"),
             )
-            return [TextContent(type="text", text=_format_legislation_changes_response(result))]
+            return _text_and_payload(result, _format_legislation_changes_response(result))
 
         elif name == "search_practice":
             result = await asyncio.to_thread(
@@ -26681,11 +26735,11 @@ async def _handle_call_tool_inner(name: str, arguments: dict) -> list[TextConten
                 limit=arguments.get("limit", 10),
                 include_superseded=bool(arguments.get("include_superseded", False)),
             )
-            return [TextContent(type="text", text=_format_search_practice_response(result))]
+            return _text_and_payload(result, _format_search_practice_response(result))
 
         elif name == "get_practice":
             result = await asyncio.to_thread(_get_practice, doc_id=arguments["doc_id"])
-            return [TextContent(type="text", text=_format_get_practice_response(result))]
+            return _text_and_payload(result, _format_get_practice_response(result))
 
         elif name == "update_database":
             global _update_thread
@@ -28625,6 +28679,44 @@ setInterval(load, 30000);
                                                "(separator-agnostic, alias-aware); no related or citing decisions."),
     ):
         return await asyncio.to_thread(_lookup_case_number, (q or query or ""), limit, exact)
+
+    @rest_api.post("/tool/{name}", tags=["Research"],
+                   summary="Call any research tool and get its structured payload",
+                   description="Every tool the MCP server offers, callable over plain HTTP: POST a JSON object of "
+                               "arguments (the tool's inputSchema; see GET /api/tool) and receive the handler's own "
+                               "dict — fields rather than Markdown. A tool-reported error comes back as HTTP 200 with "
+                               "an `error` key and `_is_error` true; an unknown tool is 404; invalid arguments are 422. "
+                               "Read-only; the same rate limits apply.")
+    async def api_tool_call(name: str, request: Request, response: Response):
+        try:
+            arguments = await request.json()
+        except Exception:  # noqa: BLE001
+            arguments = None
+        if arguments is None:
+            arguments = {}
+        if not isinstance(arguments, dict):
+            raise HTTPException(status_code=422, detail="Send a JSON object of tool arguments")
+        canonical = _TOOL_NAME_ALIASES.get(name, name)
+        schema = _tool_input_schema(canonical)
+        if schema is None:
+            raise HTTPException(status_code=404, detail=f"Unknown tool {name!r}; GET /api/tool lists them")
+        try:
+            jsonschema.validate(arguments, schema)
+        except jsonschema.ValidationError as exc:
+            raise HTTPException(status_code=422, detail=f"Input validation error: {exc.message}")
+        _ctx_client_ua.set(request.headers.get("user-agent", ""))
+        result = await _call_tool_json(canonical, arguments)
+        try:
+            json.dumps(result)
+        except (TypeError, ValueError):
+            result = json.loads(json.dumps(result, default=str))
+        return result
+
+    @rest_api.get("/tool", tags=["Research"], summary="List the research tools",
+                  description="Every tool with its description and input schema; POST /api/tool/{name} calls one.")
+    async def api_tool_list():
+        return {"tools": [{"name": t.name, "description": t.description, "inputSchema": t.inputSchema,
+                           "outputSchema": getattr(t, "outputSchema", None)} for t in _list_tools()]}
 
     @rest_api.get("/decisions", tags=["Case Law"],
                   summary="Search court decisions",

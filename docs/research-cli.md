@@ -263,6 +263,14 @@ ocl tool call get_regeste decision_id=bge_BGE_136_III_513
 ocl tool call search_scholarship query='missbräuchliche Kündigung' limit=5
 ```
 
+Confidential drafts can be checked without sending anything: `ocl pack pull`
+downloads the verification pack (a weekly SQLite snapshot with the service's
+citation strings, docket aliases and every indexed Erwägung, several GB, CC0)
+and `ocl --local ...` answers `citations resolve`, `cite`, `decisions
+passage`, `quotes check` and bundles from it. Search, statutes and tools stay
+online-only, and the pack carries no full texts; `ocl pack info` shows which
+corpus generation it holds.
+
 Three skills ship in the package: `citation-check` (verify a draft's
 citations and quotations), `research` (search, read, follow citations, cite,
 verify), `evidence-bundle` (keep what was relied on). Scripts that prefer code
