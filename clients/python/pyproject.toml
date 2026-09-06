@@ -34,13 +34,16 @@ Documentation = "https://opencaselaw.ch/research-cli.md"
 Source = "https://github.com/jonashertner/opencaselaw/tree/main/clients/python"
 Changelog = "https://github.com/jonashertner/opencaselaw/blob/main/clients/python/CHANGELOG.md"
 Issues = "https://github.com/jonashertner/opencaselaw/issues"
-"Agent skill" = "https://github.com/jonashertner/opencaselaw/blob/main/clients/python/skills/citation-check/SKILL.md"
+"Agent guide" = "https://github.com/jonashertner/opencaselaw/blob/main/clients/python/src/opencaselaw_cli/AGENTS.md"
 
 [project.scripts]
 ocl = "opencaselaw_cli.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+opencaselaw_cli = ["AGENTS.md", "skills/*/SKILL.md"]
 
 [tool.setuptools.dynamic]
 version = {attr = "opencaselaw_cli._version.__version__"}

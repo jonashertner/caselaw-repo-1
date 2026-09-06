@@ -4,7 +4,28 @@ The client follows semantic versioning. The research API contract it consumes is
 versioned separately (`x-opencaselaw-contract-version` in `/api/research/openapi.json`).
 
 
-## 0.4.0 (2026-09-06)
+## 0.5.0 (2026-09-06)
+
+The agent release: everything the service offers, from the command line,
+with a contract an agent can rely on.
+
+- `ocl tool list|schema|call`: every research tool of the service (leading
+  cases, relevant considerations, scholarship, commentaries, practice,
+  materials, legislation changes, case briefs, claim support, ...) called
+  over the same origin, with the tool's structured output; `key=value`
+  arguments are typed when they parse as JSON, `--args` takes an object,
+  `--stdin`/`--input` run one call per row; a tool-reported error is exit 4.
+- `--cache DIR` / `OCL_CACHE`: responses cached on disk, keyed by the
+  server's database generation, so repeated calls in a session cost nothing
+  and stay consistent until the nightly rebuild.
+- `ocl doctor`: connection, server generation and size, tool count, one
+  timed citation lookup, cache state; exit 3 when the service does not answer.
+- Skills shipped in the package: `citation-check`, `research`,
+  `evidence-bundle`; `ocl skills list|show|install --claude|--dir`.
+- `ocl agent-guide` prints the agent guide (contract, commands, statuses,
+  rules); `opencaselaw_cli.api` is the same functionality as a library.
+
+
 
 - `ocl quotes check`: quotations verified against the cited Erwägung and the
   decision text, with `exact` / `near` (differing spans, served wording) /

@@ -237,6 +237,38 @@ decisions, because the corpus is rebuilt nightly.
   ranked over a bounded candidate pool, so `has_more: false` never proves that
   every relevant decision was seen. Nothing here replaces reading the decision.
 
+## For agents
+
+An agent needs four things: a way to install without prompts, output it can
+parse, verdicts it can branch on, and rules it cannot talk itself out of.
+
+```bash
+pipx install opencaselaw-cli          # or: uv tool install opencaselaw-cli
+ocl doctor --format json              # reachability, server generation, tool count, latency
+ocl agent-guide                       # the contract, commands, statuses and rules on one page
+ocl skills install --claude           # the bundled skills into ~/.claude/skills (or --dir DIR)
+```
+
+Piped, every command is JSON; `--format jsonl` gives one row per line; exit
+codes carry the verdict (0 resolved, 2 invalid input, 3 transport, 4 something
+did not resolve). `--cache DIR` (or `OCL_CACHE`) keeps responses keyed by the
+server's database generation, so a session that re-reads the same passages
+pays once. `ocl tool list` shows every server tool, `ocl tool schema <name>`
+its arguments, and `ocl tool call <name> key=value ...` runs it, returning the
+tool's structured output:
+
+```bash
+ocl tool call find_leading_cases query='Rachekündigung Art. 336 OR' limit=5 --format json
+ocl tool call get_regeste decision_id=bge_BGE_136_III_513
+ocl tool call search_scholarship query='missbräuchliche Kündigung' limit=5
+```
+
+Three skills ship in the package: `citation-check` (verify a draft's
+citations and quotations), `research` (search, read, follow citations, cite,
+verify), `evidence-bundle` (keep what was relied on). Scripts that prefer code
+over a shell use `opencaselaw_cli.api` (`resolve`, `check_quotes`, `passage`,
+`search`, `tool`).
+
 ## Reusable setup
 
 Defaults can live in `~/.config/ocl/config` (one `key = value` per line:

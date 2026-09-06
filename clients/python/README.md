@@ -49,11 +49,15 @@ examples for each.
 
 ## For agents
 
-The package ships an agent skill (`skills/citation-check/SKILL.md`): extract
-the citations from a draft, run `ocl citations resolve --format jsonl`, read
-the statuses, quote passages verbatim, report what did not resolve. Exit codes
-carry the verdict: 0 everything resolved; 2 invalid input; 3 transport or
-server failure; 4 something did not resolve or is not in the corpus.
+`ocl agent-guide` prints the contract on one page: JSON when piped, exit
+codes that carry the verdict (0 resolved, 2 invalid input, 3 transport, 4
+something did not resolve), `--cache DIR` for free repeats within a server
+generation, and the rules (citation strings and quotations only from the
+service). `ocl tool list|schema|call` reaches every research tool of the
+service with its structured output. Three skills ship in the package
+(`citation-check`, `research`, `evidence-bundle`): `ocl skills install
+--claude` copies them into Claude Code's skills directory, `--dir` anywhere
+else. `opencaselaw_cli.api` offers the same as a library.
 
 ## Scope
 
