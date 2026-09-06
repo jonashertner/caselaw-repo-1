@@ -13,6 +13,7 @@ quotations honest. Print this page with `ocl agent-guide`.
 Python 3.10+, no dependencies. Non-interactive; never prompts.
 Windows without Python: the release installer (`OpenCaseLaw-CLI-<version>-setup.exe`)
 puts `ocl.cmd` under `Program Files\OpenCaseLaw`; same commands, same output.
+It bundles `pypdf`, so `ocl check filing.pdf` works there without pip.
 
 ## Contract
 

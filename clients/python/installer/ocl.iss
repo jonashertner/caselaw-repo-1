@@ -3,13 +3,14 @@
 ; What it packages: the tree that installer/build_tree.py lays out, i.e. the
 ; python.org embeddable runtime exactly as the PSF ships it (python.exe and its
 ; DLLs are the only executables; they carry the PSF Authenticode signature), the
-; pure-stdlib opencaselaw_cli package unzipped from its wheel, a python3XX._pth
-; that pins what the runtime sees, and three launcher scripts (ocl.cmd,
-; check-draft.cmd, pull-pack.cmd). No PyInstaller, no Nuitka, nothing compiled
-; here.
+; pure-stdlib opencaselaw_cli package unzipped from its wheel, the pure-Python
+; pypdf package unzipped from its wheel (filings arrive as PDF; court IT installs
+; nothing with pip), a python3XX._pth that pins what the runtime sees, and three
+; launcher scripts (ocl.cmd, check-draft.cmd, pull-pack.cmd). No PyInstaller, no
+; Nuitka, nothing compiled here.
 ;
 ; Compile (the workflow .github/workflows/installer-cli.yml does exactly this):
-;   ISCC.exe /DAppVersion=0.8.0 /DSourceDir=C:\path\build\tree /OC:\path\dist ocl.iss
+;   ISCC.exe /DAppVersion=0.9.0 /DSourceDir=C:\path\build\tree /OC:\path\dist ocl.iss
 ;
 ; Per-machine by default (admin, {autopf}\OpenCaseLaw); a per-user install lands
 ; in {localappdata}\OpenCaseLaw (/CURRENTUSER on the command line, or the dialog).
@@ -63,16 +64,16 @@ Name: "de"; MessagesFile: "compiler:Languages\German.isl"
 Name: "en"; MessagesFile: "compiler:Default.isl"
 
 [CustomMessages]
-de.TaskSendTo=Verknüpfung "Entwurf prüfen (offline)" im Menü "Senden an" anlegen (nur für den installierenden Benutzer)
-en.TaskSendTo=Add "Entwurf prüfen (offline)" to the "Send to" menu (installing user only)
+de.TaskSendTo=Verknüpfung "Eingabe oder Entwurf prüfen (offline)" im Menü "Senden an" anlegen (nur für den installierenden Benutzer)
+en.TaskSendTo=Add "Eingabe oder Entwurf prüfen (offline)" to the "Send to" menu (installing user only)
 de.TaskPath=Installationsordner zum PATH hinzufügen (ocl in jeder Eingabeaufforderung)
 en.TaskPath=Add the installation folder to PATH (ocl from any prompt)
 de.RunPull=Verifikationspaket jetzt laden (mehrere GB; Internet oder interner Spiegel nötig)
 en.RunPull=Download the verification pack now (several GB; needs the internet or an internal mirror)
 de.IconPull=Wöchentliches Verifikationspaket laden oder aktualisieren
 en.IconPull=Download or refresh the weekly verification pack
-de.IconCheck=Einen Entwurf offline gegen das Verifikationspaket prüfen
-en.IconCheck=Check a draft offline against the verification pack
+de.IconCheck=Eingaben (PDF) oder Entwürfe offline gegen das Verifikationspaket prüfen; mehrere Dateien: ein Lauf, ein Übersichtsbericht
+en.IconCheck=Check filings (PDF) or drafts offline against the verification pack; several files: one run, one index report
 
 [Tasks]
 Name: "sendto"; Description: "{cm:TaskSendTo}"
@@ -84,11 +85,18 @@ Source: "{#SourceDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs 
 [Icons]
 Name: "{group}\OpenCaseLaw - Verifikationspaket laden"; Filename: "{app}\pull-pack.cmd"; WorkingDir: "{app}"; Comment: "{cm:IconPull}"
 Name: "{group}\OpenCaseLaw CLI deinstallieren"; Filename: "{uninstallexe}"
-; The "Send to" entry is per user (there is no all-users SendTo folder). The same
+; The "Send to" entry is per user (there is no all-users SendTo folder). Explorer
+; passes every selected file to check-draft.cmd, so one entry serves a single
+; draft and a batch of filings alike. The same
 ; shortcut is also written to {app}\shortcuts as a template IT can copy into
 ; %APPDATA%\Microsoft\Windows\SendTo of every user (logon script or GPO).
-Name: "{usersendto}\Entwurf prüfen (offline)"; Filename: "{app}\check-draft.cmd"; WorkingDir: "{app}"; Comment: "{cm:IconCheck}"; Tasks: sendto
-Name: "{app}\shortcuts\Entwurf prüfen (offline)"; Filename: "{app}\check-draft.cmd"; WorkingDir: "{app}"; Comment: "{cm:IconCheck}"
+Name: "{usersendto}\Eingabe oder Entwurf prüfen (offline)"; Filename: "{app}\check-draft.cmd"; WorkingDir: "{app}"; Comment: "{cm:IconCheck}"; Tasks: sendto
+Name: "{app}\shortcuts\Eingabe oder Entwurf prüfen (offline)"; Filename: "{app}\check-draft.cmd"; WorkingDir: "{app}"; Comment: "{cm:IconCheck}"
+
+[InstallDelete]
+; 0.8.0 named the entry "Entwurf prüfen (offline)"; an upgrade must not leave both.
+Type: files; Name: "{usersendto}\Entwurf prüfen (offline).lnk"
+Type: files; Name: "{app}\shortcuts\Entwurf prüfen (offline).lnk"
 
 [Registry]
 Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: expandsz; ValueName: "Path"; ValueData: "{olddata};{app}"; Tasks: addtopath; Check: IsAdminInstallMode and NeedsAddPath('{app}')
@@ -99,6 +107,7 @@ Filename: "{cmd}"; Parameters: "/C ""{app}\pull-pack.cmd"""; Description: "{cm:R
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}\Lib\site-packages\opencaselaw_cli\__pycache__"
+Type: filesandordirs; Name: "{app}\Lib\site-packages\pypdf\__pycache__"
 Type: dirifempty; Name: "{app}\shortcuts"
 Type: dirifempty; Name: "{app}\Lib\site-packages"
 Type: dirifempty; Name: "{app}\Lib"
