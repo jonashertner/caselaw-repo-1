@@ -1,8 +1,11 @@
-"""Read a draft (Word, Markdown, HTML, plain text) and find the citations and
-quotations in it, so a lawyer hands over the document and gets a report back.
+"""Read a draft or a party submission (Word, PDF, Markdown, HTML, plain text) and
+find the citations and quotations in it, so a lawyer hands over the document and
+gets a report back.
 
 Reading is stdlib only: a .docx is a zip with word/document.xml (and footnotes,
-where citations usually live). Finding is regex over the prose, feeding the
+where citations usually live). A .pdf (electronic filings arrive as PDF) is read
+page by page through the optional `pypdf` package or the `pdftotext` executable;
+each paragraph keeps its page number. Finding is regex over the prose, feeding the
 same reference parser the checks use. Nothing here decides anything; every
 candidate goes through `citations resolve`.
 """
@@ -10,6 +13,8 @@ from __future__ import annotations
 
 import html
 import re
+import shutil
+import subprocess
 import zipfile
 from pathlib import Path
 from xml.etree import ElementTree as ET
@@ -20,6 +25,14 @@ _W = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
 
 
 def _docx_paragraphs(path: Path) -> list[str]:
+    """Paragraphs of a .docx; a file that is not a Word document is an input error, not a traceback."""
+    try:
+        return _docx_paragraphs_raw(path)
+    except (zipfile.BadZipFile, KeyError, ET.ParseError) as exc:
+        raise ValueError(f"{path.name}: not a readable Word document ({type(exc).__name__}: {exc})") from exc
+
+
+def _docx_paragraphs_raw(path: Path) -> list[str]:
     paragraphs: list[str] = []
     with zipfile.ZipFile(path) as zf:
         for member in ("word/document.xml", "word/footnotes.xml", "word/endnotes.xml"):
@@ -41,19 +54,98 @@ def _docx_paragraphs(path: Path) -> list[str]:
     return paragraphs
 
 
+# ── PDF: page texts through pypdf or pdftotext ────────────────────────────
+# A text layer that averages fewer characters per page than this is a scan.
+PDF_MIN_CHARS_PER_PAGE = 40
+PDF_READERS_HINT = "reading a PDF needs the pypdf package (pip install opencaselaw-cli[pdf]) or the pdftotext executable (poppler) on PATH"
+
+
+def _pdf_pages_pypdf(path: Path) -> list[str] | None:
+    """One text per page via pypdf; None when the package is not installed."""
+    try:
+        import pypdf  # optional extra: opencaselaw-cli[pdf]
+    except ImportError:
+        return None
+    try:
+        reader = pypdf.PdfReader(str(path))
+        return [(page.extract_text() or "") for page in reader.pages]
+    except Exception as exc:  # pypdf's own error classes (PdfReadError, ...) and the odd TypeError on a damaged file
+        raise ValueError(f"{path.name}: pypdf could not read the file ({exc})") from exc
+
+
+def _pdf_pages_pdftotext(path: Path) -> list[str] | None:
+    """One text per page via poppler's pdftotext (pages separated by form feeds); None when it is not on PATH."""
+    executable = shutil.which("pdftotext")
+    if not executable:
+        return None
+    try:
+        completed = subprocess.run([executable, "-enc", "UTF-8", str(path), "-"], capture_output=True, timeout=600)
+    except (OSError, subprocess.SubprocessError) as exc:
+        raise ValueError(f"{path.name}: pdftotext could not run ({exc})") from exc
+    if completed.returncode != 0:
+        message = completed.stderr.decode("utf-8", errors="replace").strip().splitlines()
+        raise ValueError(f"{path.name}: pdftotext could not read the file" + (f" ({message[-1]})" if message else ""))
+    pages = completed.stdout.decode("utf-8", errors="replace").split("\f")
+    if pages and pages[-1] == "":
+        pages.pop()  # pdftotext ends every page, the last included, with a form feed
+    return pages
+
+
+def pdf_pages(path: str | Path) -> list[str]:
+    """The text of each page of a PDF, in order. pypdf when installed, else pdftotext; a PDF whose
+    text layer is (nearly) empty is a scan and is refused: OCR has to come first."""
+    path = Path(path).expanduser()
+    pages = _pdf_pages_pypdf(path)
+    if pages is None:
+        pages = _pdf_pages_pdftotext(path)
+    if pages is None:
+        raise ValueError(f"{path.name}: {PDF_READERS_HINT}")
+    if not pages:
+        raise ValueError(f"{path.name}: the PDF has no pages")
+    characters = sum(len(re.sub(r"\s+", "", page)) for page in pages)
+    if characters / len(pages) < PDF_MIN_CHARS_PER_PAGE:
+        raise ValueError(f"{path.name}: no text layer (scanned PDF); OCR is needed before checking")
+    return pages
+
+
+def _pdf_paragraphs(page_text: str) -> list[str]:
+    """Paragraphs of one page: text blocks split on blank lines, hyphenated line breaks joined
+    ("Kündi-\ngung" -> "Kündigung"), whitespace normalised."""
+    text = page_text.replace("\r\n", "\n").replace("\r", "\n")
+    text = re.sub(r"(?<=[^\W\d_])-\n(?=[a-zßà-öø-ÿ])", "", text)
+    paragraphs = []
+    for block in re.split(r"\n\s*\n", text):
+        block = re.sub(r"\s+", " ", block).strip()
+        if block:
+            paragraphs.append(block)
+    return paragraphs
+
+
+def read_paragraphs(path: str | Path) -> list[tuple[str, int | None]]:
+    """(paragraph, page) pairs of a document. The page is the PDF page the paragraph starts on;
+    it is None for every other format, whose paragraphs are those of `read_document`."""
+    path = Path(path).expanduser()
+    if path.suffix.lower() != ".pdf":
+        return [(paragraph, None) for paragraph in read_document(path)]
+    pairs: list[tuple[str, int | None]] = []
+    for number, page_text in enumerate(pdf_pages(path), start=1):
+        pairs += [(paragraph, number) for paragraph in _pdf_paragraphs(page_text)]
+    return pairs
+
+
 def read_document(path: str | Path) -> list[str]:
-    """Paragraphs of a draft. .docx (body, footnotes, endnotes), .md/.txt, .html."""
+    """Paragraphs of a draft. .docx (body, footnotes, endnotes), .pdf (page by page), .md/.txt, .html."""
     path = Path(path).expanduser()
     suffix = path.suffix.lower()
     if suffix == ".docx":
         return _docx_paragraphs(path)
+    if suffix == ".pdf":
+        return [paragraph for paragraph, _ in read_paragraphs(path)]
     text = path.read_text(encoding="utf-8-sig", errors="replace")
     if suffix in (".html", ".htm"):
         text = re.sub(r"<(script|style)[^>]*>.*?</\1>", " ", text, flags=re.S | re.I)
         text = re.sub(r"<br\s*/?>|</p>|</div>|</li>|</h\d>|</tr>", "\n", text, flags=re.I)
         text = html.unescape(re.sub(r"<[^>]+>", " ", text))
-    if suffix == ".pdf":
-        raise ValueError("PDF is not read directly; save the draft as .docx, .md or .txt (or run `pdftotext` first)")
     return [p.strip() for p in re.split(r"\n\s*\n|\n(?=\S)", text) if p.strip()]
 
 

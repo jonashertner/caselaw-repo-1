@@ -477,25 +477,63 @@ def render_skills(value: dict, s: Style, width: int) -> str:
     return "\n".join(lines or [s.dim("nothing to do")])
 
 
-def render_check(value: dict, s: Style, width: int) -> str:
-    from .report import detail, is_bad, is_ok, label, t
+def _submission_colour(s: Style, summary: dict):
+    if summary.get("not_in_corpus") or summary.get("differing"):
+        return s.red
+    return s.yellow if summary.get("not_checked") else s.green
+
+
+def render_check_batch(value: dict, s: Style, width: int) -> str:
+    """`ocl check` over several files or a directory: one line per file, the totals, the index."""
+    from .report import batch_line, entry_name, index_title, submission_line, t
     summary = value.get("summary") or {}
     lang = value.get("report_language") or summary.get("language") or "en"
-    lines = [s.bold(f"{summary.get('source')}") + s.dim("  " + t(lang, "read_line", paragraphs=value.get("paragraphs", 0), checked=summary.get("checked", 0))),
-             s.dim(t(lang, "scope_short"))]
+    kind = value.get("report_kind") or "draft"
+    lines = [s.bold(index_title(summary, lang, kind))]
+    for entry in value.get("files") or []:
+        name = entry_name(entry)
+        file_summary = entry.get("summary")
+        if not file_summary:
+            message = str((entry.get("error") or {}).get("message") or "")
+            lines.append(f"  {s.red(name)}  " + s.dim(t(lang, "i_unreadable", message=message)))
+            continue
+        counts = submission_line(file_summary, lang)
+        if file_summary.get("statutes_attention"):
+            counts += " · " + t(lang, "i_statutes", n=file_summary["statutes_attention"])
+        lines.append(f"  {_submission_colour(s, file_summary)(name)}  " + s.dim(f"{file_summary.get('checked', 0)} · " + counts))
+    lines += ["", (s.red if summary.get("unreadable") or summary.get("not_in_corpus") or summary.get("differing") else s.yellow if summary.get("not_checked") else s.green)(batch_line(summary, lang))]
+    if value.get("index_path"):
+        lines.append(s.dim(t(lang, "report_line", path=value["index_path"])))
+    return "\n".join(lines)
+
+
+def render_check(value: dict, s: Style, width: int) -> str:
+    from .report import detail, is_bad, is_ok, label, submission_line, t, where
+    if isinstance(value.get("files"), list):
+        return render_check_batch(value, s, width)
+    summary = value.get("summary") or {}
+    lang = value.get("report_language") or summary.get("language") or "en"
+    kind = value.get("report_kind") or "draft"
+    read = (t(lang, "read_line_pages", pages=value["pages"], paragraphs=value.get("paragraphs", 0), checked=summary.get("checked", 0)) if value.get("pages")
+            else t(lang, "read_line", paragraphs=value.get("paragraphs", 0), checked=summary.get("checked", 0)))
+    lines = [s.bold(f"{summary.get('source')}") + s.dim("  " + read)]
+    if kind == "submission":
+        lines.append(_submission_colour(s, summary)(submission_line(summary, lang)))
+    lines.append(s.dim(t(lang, "scope_short")))
     rows = value.get("results") or []
     attention = [r for r in rows if not is_ok(r)]
     for r in attention:
-        finding, advice = label(r, lang)
+        finding, advice = label(r, lang, kind)
         colour = s.red if is_bad(r) else s.yellow
-        lines.append(f"  {colour(finding)}{' ' * max(1, 28 - visible_len(finding))}{r.get('reference')}")
+        place = where(r.get("input"), lang)
+        lines.append(f"  {colour(finding)}{' ' * max(1, 28 - visible_len(finding))}{r.get('reference')}" + (s.dim(f"  {place}") if place else ""))
         more = detail(r, lang)
         lines += [s.dim(l) for l in _wrap(advice + (" " + more if more else ""), width, "      ")]
     unparsed = value.get("unparsed") or []
     if unparsed:
         lines += ["", s.dim(t(lang, "unparsed_line", n=len(unparsed)))]
         for u in unparsed:
-            lines.append("  " + s.yellow(str(u.get("text"))) + s.dim(f"  §{u.get('paragraph')}"))
+            lines.append("  " + s.yellow(str(u.get("text"))) + s.dim(f"  {where(u, lang)}"))
     exists = len(rows) - len(attention)
     if rows:
         footer = t(lang, "footer", exists=exists, passages=summary.get("passages_retrieved", 0), attention=len(attention), unparsed=len(unparsed))

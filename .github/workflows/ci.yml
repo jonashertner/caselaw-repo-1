@@ -93,7 +93,7 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       - name: Install the client and pytest
-        run: pip install ./clients/python pytest
+        run: pip install "./clients/python[pdf]" pytest
       - name: Client tests
         run: pytest clients/python/tests -q -p no:cacheprovider
       - name: Entry point and completion

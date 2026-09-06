@@ -3,6 +3,32 @@
 The client follows semantic versioning. The research API contract it consumes is
 versioned separately (`x-opencaselaw-contract-version` in `/api/research/openapi.json`).
 
+## 0.9.0 (2026-09-07)
+
+- Party submissions. `ocl check` reads PDF (page by page, through the optional
+  `pypdf` package or `pdftotext` on PATH; a scan without a text layer is
+  refused with a message naming OCR), accepts several files or a directory and
+  writes an index report next to the per-file reports, and `--kind submission`
+  titles the report for the party's filing with the count of citations not in
+  the corpus, differing and not checked on the first line. Findings from PDFs
+  carry their page. Exit 2 when a file could not be read, 4 when anything needs
+  attention. A corrupt Word file is an input error, never a traceback.
+- Windows installer: the pure-Python `pypdf` wheel (6.17.0, BSD-3-Clause) is
+  bundled under `Lib\site-packages`, so `ocl check eingabe.pdf` reads a
+  filing that arrives as PDF without pip. The workflow downloads the pinned
+  wheel from PyPI and verifies its SHA-256 against the value pinned in the
+  workflow; `build_tree.py --extra-wheel` (repeatable) unpacks it with the
+  same checks as the client's wheel (pure `-none-any` wheels only, no
+  traversal, no binaries, no overwrite, declared dependencies must be extra
+  wheels too), records file and digest in `TREE.json` and copies the licence
+  to `LICENSE-pypdf.txt`. The smoke test runs `ocl check` on a hand-written
+  one-page PDF filing citing BGE 136 III 513 through the installed tree.
+- Windows installer: the "Send to" entry is "Eingabe oder Entwurf prüfen
+  (offline)" and takes several selected files: one `ocl check` run with one
+  index report (`check-index.html` next to the first file); a client that
+  takes one file per call is detected (exit 2) and called once per file. The
+  0.8.0 entry "Entwurf prüfen (offline)" is removed on upgrade.
+
 ## 0.8.0 (2026-09-06)
 
 - Offline mode is safe on the thread pool. `LocalClient` shared one SQLite

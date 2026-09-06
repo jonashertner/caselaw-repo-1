@@ -4,18 +4,21 @@ Für die IT von Gerichten und Verwaltungen. Beschreibt, was der Installer
 `OpenCaseLaw-CLI-<version>-setup.exe` auf einem Rechner ablegt, welche
 Programme dabei laufen, wann das Netzwerk benutzt wird und wie sich das Ganze
 allow-listen, verteilen, aktualisieren, prüfen und wieder entfernen lässt.
-Stand: Client 0.8.0 (unveröffentlicht), Laufzeit Python 3.13.7.
+Stand: Client 0.9.0 (unveröffentlicht), Laufzeit Python 3.13.7, PDF-Bibliothek
+pypdf 6.17.0.
 
 Was das Werkzeug leistet und was nicht, steht in der
-[Anleitung zum Client](research-cli.md): `ocl check ENTWURF.docx` liest einen
-Entwurf (Word inklusive Fussnoten, Markdown, HTML, Text), findet die zitierten
-Entscheide und die daneben stehenden Zitate, prüft jedes gegen das lokal
-gespeicherte Verifikationspaket und schreibt einen Bericht neben den Entwurf.
-Geprüft werden Existenz und Identität des zitierten Entscheids, die
-zitierte Erwägung (wo indexiert) und der Wortlaut eines Zitats. Nicht geprüft
-wird, ob ein Entscheid die Aussage trägt, noch gilt oder zum Sachverhalt
-passt. Eigene, unveröffentlichte Entscheide sind nie im Korpus; "nicht
-gefunden" bedeutet "nicht im veröffentlichten Korpus", nicht "falsch".
+[Anleitung zum Client](research-cli.md): `ocl check EINGABE.pdf` liest eine
+Eingabe der Parteien oder einen eigenen Entwurf (PDF, Word inklusive
+Fussnoten, Markdown, HTML, Text), findet die zitierten Entscheide und die
+daneben stehenden Zitate, prüft jedes gegen das lokal gespeicherte
+Verifikationspaket und schreibt einen Bericht neben die Datei. Geprüft werden
+Existenz und Identität des zitierten Entscheids, die zitierte Erwägung (wo
+indexiert) und der Wortlaut eines Zitats. Nicht geprüft wird, ob ein Entscheid
+die Aussage trägt, noch gilt oder zum Sachverhalt passt. Eigene,
+unveröffentlichte Entscheide und der angefochtene Entscheid sind nie im
+Korpus; "nicht gefunden" bedeutet "nicht im veröffentlichten Korpus", nicht
+"falsch".
 
 ## 1. Was installiert wird
 
@@ -28,20 +31,23 @@ oder Auswahl im Dialog) landet alles in `%LOCALAPPDATA%\OpenCaseLaw`.
 | `python.exe`, `pythonw.exe`, `python3.dll`, `python313.dll`, `*.pyd`, `sqlite3.dll`, `libssl-3.dll`, `libcrypto-3.dll`, `libffi-8.dll`, `vcruntime140.dll`, `vcruntime140_1.dll`, `python313.zip`, `python.cat`, `LICENSE-python.txt` | Die "embeddable" Laufzeit von python.org, Byte für Byte, wie die Python Software Foundation (PSF) sie veröffentlicht. Die SHA-256 des Zips ist im Build-Workflow festgeschrieben und wird bei jedem Build gegen das von python.org veröffentlichte SPDX-Dokument geprüft. | python.org |
 | `python313._pth` | Legt fest, was die Laufzeit sieht: nur `python313.zip`, den Installationsordner und `Lib\site-packages`. `import site` bleibt aus, also kein Benutzer-`site-packages`, kein `PYTHONPATH`, keine `.pth`-Dateien anderer Programme. | Installer |
 | `Lib\site-packages\opencaselaw_cli\` | Der Client als Python-Quelltext (reine Standardbibliothek, keine Abhängigkeiten), aus dem auf PyPI veröffentlichten Wheel entpackt. Enthält `AGENTS.md` und drei Skill-Dateien (Text). | Repository, MIT-Lizenz |
+| `Lib\site-packages\pypdf\`, `Lib\site-packages\pypdf-6.17.0.dist-info\` | Die PDF-Bibliothek pypdf als Python-Quelltext (reines Python, keine Abhängigkeiten auf dieser Laufzeit), aus dem auf PyPI veröffentlichten Wheel `pypdf-6.17.0-py3-none-any.whl` entpackt; die SHA-256 des Wheels ist im Build-Workflow festgeschrieben und wird bei jedem Build gegen die geladene Datei geprüft. Nur zum Lesen der Textebene von PDF-Eingaben (Abschnitt "PDF-Eingaben" unten). | PyPI, BSD-3-Clause-Lizenz |
 | `ocl.cmd` | Startskript: ruft `python.exe -m opencaselaw_cli` mit den übergebenen Argumenten auf. Setzt `PYTHONDONTWRITEBYTECODE=1` (nichts wird unter Program Files geschrieben) und `XDG_DATA_HOME=%LOCALAPPDATA%`, falls nicht gesetzt, damit das Verifikationspaket in `%LOCALAPPDATA%\ocl` liegt. | Installer |
-| `check-draft.cmd` | Ziel der "Senden an"-Verknüpfung: `ocl check "<Entwurf>" --local`, danach wird `<Entwurf>.check.html` geöffnet. | Installer |
+| `check-draft.cmd` | Ziel der "Senden an"-Verknüpfung: `ocl check "<Datei>" --local`, danach wird `<Datei>.check.html` geöffnet. Mehrere markierte Dateien: ein Lauf mit allen Dateien, danach wird der Übersichtsbericht `check-index.html` geöffnet (Abschnitt "Mehrere Eingaben auf einmal" unten). | Installer |
 | `pull-pack.cmd` | Ziel des Startmenü-Eintrags "OpenCaseLaw - Verifikationspaket laden": `ocl pack pull`; das Fenster bleibt bis zum Tastendruck offen. | Installer |
-| `shortcuts\Entwurf prüfen (offline).lnk` | Vorlage der "Senden an"-Verknüpfung für die Verteilung an alle Benutzer (Abschnitt 5). | Installer |
+| `shortcuts\Eingabe oder Entwurf prüfen (offline).lnk` | Vorlage der "Senden an"-Verknüpfung für die Verteilung an alle Benutzer (Abschnitt 5). | Installer |
 | `unins000.exe`, `unins000.dat` | Deinstallation (Inno Setup). | Installer |
-| `LICENSE-opencaselaw-cli.txt`, `TREE.json` | Lizenz des Clients; Inventar des Build-Baums. | Installer |
+| `LICENSE-opencaselaw-cli.txt`, `LICENSE-pypdf.txt`, `TREE.json` | Lizenzen des Clients (MIT) und von pypdf (BSD-3-Clause); Inventar des Build-Baums mit Dateiname und SHA-256 jedes entpackten Wheels. | Installer |
 
 Ausserhalb des Installationsordners:
 
 - Startmenü: Gruppe `OpenCaseLaw` mit "OpenCaseLaw - Verifikationspaket
   laden" und "OpenCaseLaw CLI deinstallieren".
 - "Senden an"-Menü des installierenden Benutzers
-  (`%APPDATA%\Microsoft\Windows\SendTo\Entwurf prüfen (offline).lnk`),
-  abwählbar (Task `sendto`).
+  (`%APPDATA%\Microsoft\Windows\SendTo\Eingabe oder Entwurf prüfen (offline).lnk`),
+  abwählbar (Task `sendto`). Bis 0.8.0 hiess der Eintrag "Entwurf prüfen
+  (offline)"; die Aktualisierung entfernt den alten Eintrag beim
+  installierenden Benutzer und in `shortcuts\`.
 - Registry: nur die Deinstallationsinformation unter
   `HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall\{7B2E9C7A-3F4D-4C33-9B2B-2D0F8E6A5C11}_is1`
   (bei Benutzerinstallation unter HKCU). Der Task `addtopath` (standardmässig
@@ -56,6 +62,48 @@ Es gibt keine Dienste, keine geplanten Aufgaben, keine Autostart-Einträge,
 keine Shell-Erweiterungen (die "Senden an"-Verknüpfung ist eine gewöhnliche
 `.lnk`-Datei) und keine COM-Registrierung.
 
+### PDF-Eingaben
+
+Elektronische Eingaben der Parteien kommen als PDF (PDF/A über
+justitia.swiss). Damit `ocl check` sie ohne Umweg liest, liegt die
+PDF-Bibliothek **pypdf** (Version 6.17.0, reines Python, Lizenz BSD-3-Clause,
+Lizenztext in `LICENSE-pypdf.txt`) unter `Lib\site-packages\pypdf\` neben dem
+Client. Sie stammt aus dem auf PyPI veröffentlichten Wheel
+`pypdf-6.17.0-py3-none-any.whl`: der Build-Workflow lädt genau diese Datei,
+prüft ihre SHA-256 gegen den im Workflow festgeschriebenen Wert
+(`5bd827266a21553b74d910e350131a6227b72f2ab4209bf372814b8195fa11c5`) und
+entpackt sie wie den Client, ohne pip; `TREE.json` nennt Datei und Prüfsumme.
+pypdf ist die einzige Komponente ausserhalb der Python-Standardbibliothek. Sie
+wird nur zum Lesen der Textebene benutzt: keine Schrift wird gerendert, kein
+Bild dekodiert, nichts geschrieben, keine Netzverbindung geöffnet. Nichts
+muss auf den Arbeitsplätzen nachinstalliert werden.
+
+Gelesen wird, was das PDF als Text enthält. Ein gescanntes Dokument ohne
+Textebene (Bild-PDF, etwa eine eingescannte Papiereingabe) wird abgewiesen:
+`ocl` meldet «no text layer (scanned PDF); OCR is needed before checking»
+(Code 2), und in einem Ordnerlauf steht die Datei in der Übersicht als nicht
+lesbar. Solche Eingaben brauchen vorher eine Texterkennung (OCR),
+zum Beispiel durch die Scan-Software oder das Dokumentenmanagement des
+Gerichts; der Client bringt keine mit. PDFs, die zum Öffnen ein Passwort
+verlangen, werden nicht gelesen; AES-verschlüsselte Dateien mit blossem
+Besitzer-Passwort bräuchten die optionale Bibliothek `cryptography`, die nicht
+mitgeliefert wird (RC4 liest pypdf selbst).
+
+### Mehrere Eingaben auf einmal
+
+Wer im Explorer mehrere Dateien markiert und an "Eingabe oder Entwurf prüfen
+(offline)" sendet, startet einen Lauf: `check-draft.cmd` übergibt alle
+Dateien einem `ocl check`-Aufruf (`ocl check EINGABE1.pdf EINGABE2.pdf …
+--local`), der je Datei einen Bericht `<Name>.check.html` und im Ordner der
+ersten Datei den Übersichtsbericht `check-index.html` schreibt; der
+Übersichtsbericht wird geöffnet. Der Rückgabewert ist 4, sobald eine der
+Dateien Aufmerksamkeit braucht. Für den Tagesbetrieb (viele Eingaben pro Tag)
+reicht das: die Eingaben des Tages markieren, senden, Übersichtsbericht lesen.
+Eine Ordnerüberwachung ist nicht Teil des Installers. Ein älterer Client, der
+eine Datei pro Aufruf nimmt, wird von `check-draft.cmd` erkannt (Rückgabewert
+2 bei mehreren Dateien) und je Datei einmal aufgerufen; dann gibt es keinen
+Übersichtsbericht, und die Berichte liegen neben den Dateien.
+
 ## 2. Welche Programme laufen
 
 Die einzigen ausführbaren Dateien sind `python.exe`, `pythonw.exe` und die
@@ -68,9 +116,9 @@ Katalog `python.cat` signiert. Prüfung:
 Get-AuthenticodeSignature "C:\Program Files\OpenCaseLaw\python.exe" | Format-List Status, SignerCertificate
 ```
 
-Der Client selbst ist Python-Quelltext, den `python.exe` liest. Die drei
-`.cmd`-Dateien sind Batch-Skripte in reinem ASCII, jeweils wenige Zeilen, und
-können vor der Freigabe gelesen werden. Der Installer selbst
+Der Client selbst und pypdf sind Python-Quelltext, den `python.exe` liest.
+Die drei `.cmd`-Dateien sind Batch-Skripte in reinem ASCII, jeweils wenige
+Dutzend Zeilen, und können vor der Freigabe gelesen werden. Der Installer selbst
 (`OpenCaseLaw-CLI-<version>-setup.exe`, Inno Setup) und der Deinstaller sind
 derzeit **nicht** signiert (Abschnitt 4 und 8).
 
@@ -160,7 +208,7 @@ für Benutzer nicht beschreibbar ist, ist das der Client und nichts anderes.
 Unbeaufsichtigt (SCCM, Intune, PDQ, Skript):
 
 ```
-OpenCaseLaw-CLI-0.8.0-setup.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /LOG="C:\Windows\Temp\opencaselaw-setup.log"
+OpenCaseLaw-CLI-0.9.0-setup.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /LOG="C:\Windows\Temp\opencaselaw-setup.log"
 ```
 
 Optionen: `/DIR="D:\Apps\OpenCaseLaw"` für einen anderen Ordner,
@@ -170,12 +218,14 @@ Rückgabewert 0 bedeutet Erfolg (Inno-Setup-Exit-Codes).
 
 "Senden an" ist ein Ordner pro Benutzer; ein Installer im Systemkontext kann
 ihn nicht für alle anlegen. Deshalb liegt die fertige Verknüpfung als Vorlage
-unter `<Installationsordner>\shortcuts\Entwurf prüfen (offline).lnk`. Sie kann
+unter `<Installationsordner>\shortcuts\Eingabe oder Entwurf prüfen (offline).lnk`. Sie kann
 per Anmeldeskript oder Gruppenrichtlinie (Benutzerkonfiguration, Einstellungen,
 Windows-Einstellungen, Verknüpfungen oder Dateien) nach
 `%APPDATA%\Microsoft\Windows\SendTo\` kopiert werden. Wer das Menü nicht will,
-lässt den Task `sendto` weg; `check-draft.cmd ENTWURF.docx` funktioniert auch
-von Hand oder aus einer eigenen Verknüpfung.
+lässt den Task `sendto` weg; `check-draft.cmd EINGABE.pdf [WEITERE …]`
+funktioniert auch von Hand oder aus einer eigenen Verknüpfung. Per Richtlinie
+verteilte Kopien der bis 0.8.0 verwendeten Verknüpfung "Entwurf prüfen
+(offline)" ersetzt die Richtlinie durch die neue Vorlage.
 
 Ein Office-Add-in gibt es für den Offline-Betrieb bewusst nicht (das
 Word-Add-in unter word.opencaselaw.ch arbeitet gegen den Online-Dienst).
@@ -225,8 +275,8 @@ er belegt, dass genau diese Datei vom Workflow
 `.github/workflows/installer-cli.yml` aus dem getaggten Commit gebaut wurde.
 
 ```
-certutil -hashfile OpenCaseLaw-CLI-0.8.0-setup.exe SHA256
-type OpenCaseLaw-CLI-0.8.0-setup.exe.sha256
+certutil -hashfile OpenCaseLaw-CLI-0.9.0-setup.exe SHA256
+type OpenCaseLaw-CLI-0.9.0-setup.exe.sha256
 ```
 
 Die beiden Werte müssen übereinstimmen. Herkunft mit der GitHub CLI
@@ -234,7 +284,7 @@ Die beiden Werte müssen übereinstimmen. Herkunft mit der GitHub CLI
 GitHub-Konto):
 
 ```
-gh attestation verify OpenCaseLaw-CLI-0.8.0-setup.exe --repo jonashertner/opencaselaw
+gh attestation verify OpenCaseLaw-CLI-0.9.0-setup.exe --repo jonashertner/opencaselaw
 ```
 
 Ausgabe bei Erfolg: "Loaded digest sha256:… / Verification succeeded"
@@ -281,6 +331,8 @@ verteilte "Senden an"-Kopien (Abschnitt 5) entfernt die Richtlinie.
 - Das Paket enthält keine Volltexte: ein Zitat ohne Erwägungsangabe kann
   offline nicht gegen den Text verglichen werden, und Gesetzesartikel werden
   offline nicht geprüft. Der Bericht kennzeichnet beides.
+- PDF-Eingaben ohne Textebene (Scans) werden abgewiesen und in der Übersicht
+  als nicht lesbar geführt; sie brauchen vorher OCR (Abschnitt 1, "PDF-Eingaben").
 - Die Abdeckung je Gericht ist unterschiedlich (`https://opencaselaw.ch/coverage/`);
   "nicht im veröffentlichten Korpus" ist bei Gerichten mit lückenhafter
   Veröffentlichung häufig und kein Fehlerbefund.

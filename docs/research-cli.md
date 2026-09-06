@@ -29,11 +29,14 @@ opencaselaw-cli`). The source lives in `clients/python` of the repository.
 
 Windows without Python (a court's managed desktop): each `cli-v*` release on
 GitHub carries `OpenCaseLaw-CLI-<version>-setup.exe`, which installs the
-python.org runtime and this client under `Program Files\OpenCaseLaw` with
-`ocl.cmd`, a "Send to" entry "Entwurf prüfen (offline)" that runs
-`ocl check DRAFT --local` and opens the report, and a Start-menu entry for
-`ocl pack pull`. What it installs, how to allow-list and verify it, and how to
-mirror the pack: [court-it-install.md](court-it-install.md) (German).
+python.org runtime, this client and the pure-Python `pypdf` package (so
+filings that arrive as PDF are read without pip) under `Program
+Files\OpenCaseLaw` with `ocl.cmd`, a "Send to" entry "Eingabe oder Entwurf
+prüfen (offline)" that runs `ocl check --local` on the selected file or files
+(several files are one run with one index report) and opens the report, and a
+Start-menu entry for `ocl pack pull`. What it installs, how to allow-list and
+verify it, and how to mirror the pack:
+[court-it-install.md](court-it-install.md) (German).
 
 Every command is a read-only call to the public service at
 `mcp.opencaselaw.ch`. Nothing is downloaded, no account or key is needed.
@@ -113,6 +116,26 @@ found`, `quotation differs` / `quotation not found`, and `not checked` for
 what could not be asked (a `§` reference without a canton, unless
 `OCL_CANTON=ZH` names the canton the draft belongs to). "Not checked" never
 fails the run; the others exit 4.
+
+### Check party submissions
+
+Electronic filings arrive as PDF. `ocl check` reads a PDF page by page (with the
+`pypdf` package: `pip install opencaselaw-cli[pdf]`, or `pdftotext` on PATH), so
+every finding carries its page. A scanned PDF without a text layer is refused
+with a clear message: OCR has to come first. Several files, or a directory of
+filings, are checked in one run:
+
+```bash
+ocl check eingaben/ --kind submission
+```
+
+Each filing gets its own report next to it and `check-index.html` in the folder
+lists them with their findings; `--report index.md` writes the index as
+Markdown. `--kind submission` titles the report for the party's filing and puts
+the count of citations not in the corpus, differing and not checked on the
+first line; a missing citation states in full that an unpublished decision or
+the decision under appeal is expected to be absent. Exit 4 when any file needs
+attention, 2 when a file could not be read (the others are still reported).
 
 ### Check the citations in a list
 

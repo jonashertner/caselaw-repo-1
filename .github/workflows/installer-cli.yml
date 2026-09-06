@@ -2,9 +2,11 @@ name: Windows installer (opencaselaw-cli)
 
 # Builds OpenCaseLaw-CLI-<version>-setup.exe for courts whose IT will not
 # install Python: the python.org embeddable runtime (PSF-signed, digest pinned
-# below) plus the pure-stdlib client, packaged with Inno Setup from
-# clients/python/installer/ocl.iss. No PyInstaller, no Nuitka, no compiled code
-# of our own: python.exe and the PSF DLLs are the only executables in the tree.
+# below) plus the pure-stdlib client and the pure-Python pypdf wheel from PyPI
+# (digest pinned below; filings arrive as PDF and nobody will pip install),
+# packaged with Inno Setup from clients/python/installer/ocl.iss. No
+# PyInstaller, no Nuitka, no compiled code of our own: python.exe and the PSF
+# DLLs are the only executables in the tree.
 #
 # Runs on cli-v* tags (attaches the installer, its SHA-256 and a build
 # provenance attestation to the GitHub release) and by hand. Needs nothing
@@ -27,6 +29,16 @@ env:
   # confirmed on an independent download on 2026-09-06. Bumping the runtime
   # means changing both values together and re-reading the SPDX document.
   PYTHON_EMBED_SHA256: "f6cca216a359be84797cabb54149ce5e062afb16cc7567eb7fc51cacb2d86b65"
+  # pypdf, the PDF reader bundled so `ocl check filing.pdf` works out of the box
+  # (pure Python, BSD-3-Clause, Requires-Python >=3.9; its only non-optional
+  # dependency, typing_extensions, is marked python_version < "3.11" and the
+  # runtime above is 3.13). The digest is the sha256 of
+  # pypdf-6.17.0-py3-none-any.whl as published by PyPI
+  # (https://pypi.org/pypi/pypdf/6.17.0/json, "digests" of that file), read on
+  # 2026-09-06 and confirmed on an independent download. Bumping pypdf means
+  # changing both values together and re-reading the PyPI JSON.
+  PYPDF_VERSION: "6.17.0"
+  PYPDF_SHA256: "5bd827266a21553b74d910e350131a6227b72f2ab4209bf372814b8195fa11c5"
 
 jobs:
   build:
@@ -93,17 +105,36 @@ jobs:
             "https://www.python.org/ftp/python/${PYTHON_EMBED_VERSION}/python-${PYTHON_EMBED_VERSION}-embed-amd64.zip"
           echo "${PYTHON_EMBED_SHA256}  build/python-embed.zip" | sha256sum -c -
 
+      - name: Download the pinned pypdf wheel from PyPI and verify its digest
+        shell: bash
+        run: |
+          mkdir -p build/wheels
+          # pip download with a pinned version fetches exactly the file PyPI serves
+          # for it; --no-deps keeps typing_extensions (Python < 3.11 only) out.
+          python -m pip download --disable-pip-version-check "pypdf==${PYPDF_VERSION}" \
+            --no-deps --only-binary=:all: -d build/wheels
+          wheel="build/wheels/pypdf-${PYPDF_VERSION}-py3-none-any.whl"
+          test -f "$wheel" || { echo "expected $wheel, got:"; ls -l build/wheels; exit 1; }
+          echo "--- sha256 of $wheel"
+          sha256sum "$wheel"
+          echo "${PYPDF_SHA256}  $wheel" | sha256sum -c -
+
       - name: Lay out the installation tree
         shell: bash
         run: |
           python clients/python/installer/build_tree.py \
             --embed-zip build/python-embed.zip \
             --wheel dist-wheel/opencaselaw_cli-*.whl \
+            --extra-wheel "build/wheels/pypdf-${PYPDF_VERSION}-py3-none-any.whl" \
             --out build/tree
           echo "--- python3XX._pth"
           cat build/tree/python3*._pth
           echo "--- executables"
           ls build/tree/*.exe build/tree/*.dll
+          echo "--- extra wheels (TREE.json)"
+          python -c "import json; print(json.dumps(json.load(open('build/tree/TREE.json'))['extra_wheels'], indent=2))"
+          test -f build/tree/Lib/site-packages/pypdf/__init__.py
+          test -f build/tree/LICENSE-pypdf.txt
 
       - name: Compile the installer with Inno Setup
         shell: pwsh
@@ -130,7 +161,7 @@ jobs:
           $log = "$env:RUNNER_TEMP\setup.log"
           $p = Start-Process -FilePath $setup -ArgumentList "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART", "/LOG=`"$log`"", "/DIR=`"$target`"" -Wait -PassThru
           if ($p.ExitCode -ne 0) { Get-Content $log; throw "installer exited with $($p.ExitCode)" }
-          foreach ($f in "python.exe", "python3.dll", "ocl.cmd", "check-draft.cmd", "pull-pack.cmd", "unins000.exe", "Lib\site-packages\opencaselaw_cli\__main__.py", "shortcuts\Entwurf prüfen (offline).lnk") {
+          foreach ($f in "python.exe", "python3.dll", "ocl.cmd", "check-draft.cmd", "pull-pack.cmd", "unins000.exe", "Lib\site-packages\opencaselaw_cli\__main__.py", "Lib\site-packages\pypdf\__init__.py", "LICENSE-pypdf.txt", "shortcuts\Eingabe oder Entwurf prüfen (offline).lnk") {
             if (-not (Test-Path "$target\$f")) { Get-Content $log; throw "missing after install: $f" }
           }
           "OCL_INSTALL_DIR=$target" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
@@ -149,7 +180,7 @@ jobs:
           $help = & $ocl check --help 2>&1 | Out-String
           if ($LASTEXITCODE -ne 0 -or $help -notmatch "--report") { throw "ocl check --help failed`n$help" }
 
-          # A four-decision pack and a draft citing it, from the client test suite's own fixtures.
+          # A four-decision pack, a draft citing it and a hand-written one-page PDF filing, from the client test suite's own fixtures.
           python clients\python\installer\smoke\make_fixture.py $fx
           if ($LASTEXITCODE -ne 0) { throw "fixture build failed" }
 
@@ -162,6 +193,22 @@ jobs:
           $summary = ($check -split "`n" | Where-Object { $_ -match '"summary"' } | Measure-Object).Count
           Write-Host "check exit $rc, report written, summary present: $($summary -gt 0)"
 
+          # PDF filings: the bundled pypdf must import from the installed tree alone (no pip, no user site).
+          $env:PYTHONDONTWRITEBYTECODE = "1"
+          $pypdf = & "$env:OCL_INSTALL_DIR\python.exe" -c "import pypdf; print(pypdf.__version__); print(pypdf.__file__)" 2>&1 | Out-String
+          if ($LASTEXITCODE -ne 0) { throw "pypdf does not import from the installed tree`n$pypdf" }
+          if (-not $pypdf.ToLower().Contains($env:OCL_INSTALL_DIR.ToLower())) { throw "pypdf was imported from outside the installation`n$pypdf" }
+          Write-Host "pypdf $($pypdf.Trim() -replace '\s+', ' ')"
+
+          # A filing that arrives as PDF: read, checked, reported; 0 or 4, never a traceback.
+          $pdf = & $ocl check "$fx\eingabe.pdf" --local --pack "$fx\pack.sqlite" --jobs 1 --color never --format json 2>&1 | Out-String
+          $rc = $LASTEXITCODE
+          if ($pdf -match "Traceback") { throw "traceback during ocl check on a PDF`n$pdf" }
+          if ($rc -ne 0 -and $rc -ne 4) { throw "expected exit 0 or 4 from the PDF filing, got $rc`n$pdf" }
+          if (-not (Test-Path "$fx\eingabe.check.html")) { throw "no report written next to the PDF filing" }
+          if ($pdf -notmatch "136 III 513") { throw "the PDF text was not read: BGE 136 III 513 is missing from the rows`n$pdf" }
+          Write-Host "pdf check exit $rc, report written"
+
           # doctor offline: 0 when the pack answers, 3 with a clean 'not available offline' error; never a traceback.
           $doctor = & $ocl doctor --local --pack "$fx\pack.sqlite" --format json 2>&1 | Out-String
           $rc = $LASTEXITCODE
@@ -171,6 +218,7 @@ jobs:
 
           # Program Files style guarantee: nothing was written into the install tree by the checks.
           if (Test-Path "$env:OCL_INSTALL_DIR\Lib\site-packages\opencaselaw_cli\__pycache__") { throw "bytecode was written into the installation" }
+          if (Test-Path "$env:OCL_INSTALL_DIR\Lib\site-packages\pypdf\__pycache__") { throw "bytecode was written into the installation (pypdf)" }
 
       - name: Uninstall silently
         shell: pwsh

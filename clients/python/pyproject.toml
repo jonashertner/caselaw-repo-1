@@ -28,6 +28,9 @@ classifiers = [
     "Topic :: Utilities",
 ]
 
+[project.optional-dependencies]
+pdf = ["pypdf>=4,<7"]   # `ocl check` on PDF submissions; without it, pdftotext (poppler) on PATH is used
+
 [project.urls]
 Homepage = "https://opencaselaw.ch/cli/"
 Documentation = "https://opencaselaw.ch/research-cli.md"
