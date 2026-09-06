@@ -381,7 +381,7 @@ def render_quotes(value: dict, s: Style, width: int) -> str:
     lines = []
     for row in value.get("results") or []:
         qs = str(row.get("quote_status") or "not_checked")
-        colour = s.green if qs == "exact" else s.yellow if qs == "near" else s.red
+        colour = s.green if qs == "exact" else s.yellow if qs in ("near", "unverifiable") else s.red
         head = f"{colour(qs)}{' ' * max(1, 12 - len(qs))}{row.get('reference', '')}"
         if row.get("decision_id"):
             head += "  " + s.cyan(str(row["decision_id"]))
@@ -390,7 +390,7 @@ def render_quotes(value: dict, s: Style, width: int) -> str:
         if row.get("ratio") is not None and qs != "exact":
             head += s.dim(f"  ratio {row['ratio']}")
         lines.append(head)
-        if qs == "not_checked" and (row.get("reason") or row.get("error")):
+        if qs in ("not_checked", "unverifiable") and (row.get("reason") or row.get("error")):
             lines += _wrap(str(row.get("reason") or (row.get("error") or {}).get("message")), width, "    ")
         for diff in row.get("differences") or []:
             lines.append("    " + s.dim(f"{diff.get('kind')}: ") + s.red(repr(diff.get("quote", ""))) + s.dim(" → ") + s.green(repr(diff.get("served", ""))))
@@ -478,22 +478,32 @@ def render_skills(value: dict, s: Style, width: int) -> str:
 
 
 def render_check(value: dict, s: Style, width: int) -> str:
-    from .report import _detail, _label
+    from .report import detail, is_bad, is_ok, label, t
     summary = value.get("summary") or {}
-    lines = [s.bold(f"{summary.get('source')}") + s.dim(f"  {value.get('paragraphs', 0)} paragraphs read, {summary.get('checked', 0)} citations found")]
+    lang = value.get("report_language") or summary.get("language") or "en"
+    lines = [s.bold(f"{summary.get('source')}") + s.dim("  " + t(lang, "read_line", paragraphs=value.get("paragraphs", 0), checked=summary.get("checked", 0))),
+             s.dim(t(lang, "scope_short"))]
     rows = value.get("results") or []
-    attention = [r for r in rows if _label(r)[0] != "verified"]
+    attention = [r for r in rows if not is_ok(r)]
     for r in attention:
-        label, advice = _label(r)
-        colour = s.red if label in ("not found", "detail wrong", "quotation not found", "not verifiable") else s.yellow
-        lines.append(f"  {colour(label)}{' ' * max(1, 20 - len(label))}{r.get('reference')}")
-        detail = _detail(r)
-        lines += [s.dim(l) for l in _wrap(advice + (" " + detail if detail else ""), width, "      ")]
-    verified = len(rows) - len(attention)
-    lines += ["", (s.green(f"{verified} verified") + s.dim(f", {len(attention)} need attention") if rows else s.dim("no citations found in the document"))]
+        finding, advice = label(r, lang)
+        colour = s.red if is_bad(r) else s.yellow
+        lines.append(f"  {colour(finding)}{' ' * max(1, 28 - visible_len(finding))}{r.get('reference')}")
+        more = detail(r, lang)
+        lines += [s.dim(l) for l in _wrap(advice + (" " + more if more else ""), width, "      ")]
+    unparsed = value.get("unparsed") or []
+    if unparsed:
+        lines += ["", s.dim(t(lang, "unparsed_line", n=len(unparsed)))]
+        for u in unparsed:
+            lines.append("  " + s.yellow(str(u.get("text"))) + s.dim(f"  §{u.get('paragraph')}"))
+    exists = len(rows) - len(attention)
+    if rows:
+        footer = t(lang, "footer", exists=exists, passages=summary.get("passages_retrieved", 0), attention=len(attention), unparsed=len(unparsed))
+        lines += ["", (s.green if not attention else s.yellow)(footer)]
+    else:
+        lines += ["", s.dim(t(lang, "none_found")) + (s.dim("  " + t(lang, "unparsed_line", n=len(unparsed))[:-1]) if unparsed else "")]
     if value.get("report_path"):
-        lines.append(s.dim(f"report: {value['report_path']}"))
-    lines.append(s.dim("Existence, identity and wording only; no assessment of legal support."))
+        lines.append(s.dim(t(lang, "report_line", path=value["report_path"])))
     return "\n".join(lines)
 
 

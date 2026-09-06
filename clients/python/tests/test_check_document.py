@@ -72,12 +72,40 @@ def test_check_writes_a_report_and_exits_4_when_something_needs_attention(tmp_pa
     code = cli.main(["check", str(path), "--format", "json"])
     out = json.loads(capsys.readouterr().out)
     assert code == 4 and out["summary"]["checked"] == 6 and out["summary"]["attention"] == 3
+    assert out["summary"]["exists"] == 3 and out["summary"]["passages_retrieved"] == 2 and out["summary"]["unparsed"] == 0 and out["unparsed"] == []
+    assert "verified" not in out["summary"]
     statuses = {r["reference"]: r["status"] for r in out["results"]}
     assert statuses["BGE 999 III 1"] == "missing" and statuses["BGer 4A_714/2014 vom 22. Mai 2016"] == "discrepancy"
+    missing = next(r for r in out["results"] if r["reference"] == "BGE 999 III 1")
+    assert missing["coverage"]["inferred"]["courts"] == ["bge"] and missing["coverage"]["decisions"] is None   # FakeClient has no list_courts
     quoted = next(r for r in out["results"] if r["reference"] == "ATF 136 III 513 consid. 2.3")
     assert quoted["quote_check"]["quote_status"] == "near"
+    # the CLI's default language is German, so the report reads German
     report = Path(out["report_path"])
-    assert report.name == "memo.check.html" and "Needs attention" in report.read_text(encoding="utf-8") and "BGE 999 III 1" in report.read_text(encoding="utf-8")
+    page = report.read_text(encoding="utf-8")
+    assert report.name == "memo.check.html" and out["report_language"] == "de" and "Zu prüfen" in page and "BGE 999 III 1" in page
+    assert page.index("Nicht, ob ein Entscheid das Argument stützt") < page.index("Zu prüfen") and "verified" not in page.lower()
     code = cli.main(["check", str(path), "--report", str(tmp_path / "memo-check.md"), "--format", "text", "--color", "never"])
     text = capsys.readouterr().out
-    assert code == 4 and "not found" in text and "detail wrong" in text and "quotation differs" in text and (tmp_path / "memo-check.md").read_text(encoding="utf-8").startswith("# Citation check: memo.docx")
+    assert code == 4 and "nicht im Korpus" in text and "Angabe falsch" in text and "Zitat weicht ab" in text
+    assert "3 vorhanden (2 mit abgerufener Erwägung), 3 zu prüfen" in text
+    assert (tmp_path / "memo-check.md").read_text(encoding="utf-8").startswith("# Zitatprüfung: memo.docx")
+
+
+def test_offline_quotation_without_pinpoint_is_not_checked_rather_than_not_found(tmp_path, monkeypatch, capsys):
+    """The pack carries no full text: a quotation next to a citation without a pinpoint has
+    nothing to be compared with, and the report says so instead of "not found"."""
+    from test_local_pack import _build_pack
+    pack, _, _ = _build_pack(tmp_path)
+    path = make_docx(tmp_path / "memo.docx", [
+        "Das Obergericht hielt fest: «Die Kündigung ist missbräuchlich, wenn sie wegen einer Eigenschaft erfolgt» (Obergericht ZH LA210005 vom 15. Juni 2021).",
+        "Le TF: «le contrat de travail conclu pour une durée indéterminée peut être résilié» (ATF 136 III 513 consid. 2.3).",
+    ])
+    monkeypatch.setenv("OCL_CONFIG", "/nonexistent/ocl-config"); monkeypatch.setenv("OCL_JOBS", "1")
+    code = cli.main(["--local", str(pack), "check", str(path), "--format", "json", "--language", "de"])
+    out = json.loads(capsys.readouterr().out)
+    checks = {r["reference"]: r["quote_check"]["quote_status"] for r in out["results"]}
+    assert code == 4 and checks == {"Obergericht ZH LA210005 vom 15. Juni 2021": "unverifiable", "ATF 136 III 513 consid. 2.3": "exact"}
+    page = Path(out["report_path"]).read_text(encoding="utf-8")
+    assert "Zitat nicht geprüft" in page and "Der Entscheidtext ist in diesem Modus nicht verfügbar; am Entscheid prüfen." in page
+    assert "Zitat nicht gefunden" not in page and "Zitat wörtlich" in page

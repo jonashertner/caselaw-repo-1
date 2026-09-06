@@ -405,7 +405,7 @@ def test_schema_gate_on_open(tmp_path, capsys):
         local.pack_report(too_new)
     with pytest.raises(ValueError, match="not a verification pack"):   # invalid input: exit 2 through the CLI
         LocalClient(_tiny_pack(tmp_path / "np.sqlite", with_meta=False, filler_rows=0))
-    with pytest.raises(APIError, match="not a verification pack"):
+    with pytest.raises(ValueError, match="not a verification pack"):
         LocalClient(Path(__file__))
     # through the CLI, a too-new pack is a clear failure, not a traceback
     assert cli.main(["--local", str(too_new), "cite", "4A_747/2012", "--format", "json"]) == 4
