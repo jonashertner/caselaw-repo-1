@@ -3,6 +3,120 @@
 The client follows semantic versioning. The research API contract it consumes is
 versioned separately (`x-opencaselaw-contract-version` in `/api/research/openapi.json`).
 
+## 0.8.0 (2026-09-06)
+
+- Offline mode is safe on the thread pool. `LocalClient` shared one SQLite
+  connection across the `--jobs` workers; a draft with many references
+  crashed with `sqlite3.InterfaceError` or, worse, answered "not found" for
+  a decision the pack holds. Every thread now opens its own read-only
+  connection; `ocl --local check` over 120 references with `--jobs 8` is
+  covered by a test.
+- `--local` is a plain switch and `--pack PATH` names the pack file, so
+  `ocl --local check memo.docx`, `ocl check memo.docx --local` and
+  `ocl --local --pack /x/pack.sqlite check memo.docx` all parse (0.6/0.7
+  read the pack path as the value of `--local` and rejected the first form).
+  `OCL_PACK` sets the path; `OCL_LOCAL=1` switches offline mode on, and a
+  pack path in `OCL_LOCAL`, the old grammar, keeps working. A missing pack is
+  exit 2 with a message naming `ocl pack pull`; a file that is not a pack
+  says so instead of failing later.
+- `ocl --local doctor` reports the pack instead of failing on the tool list:
+  path, size, schema version, build time, generation, decision and paragraph
+  counts, age in days (a warning past 14 days), the SQLite version; exit 0.
+  The online doctor is unchanged.
+- Windows: the pack lives in `%LOCALAPPDATA%\ocl` (elsewhere
+  `$XDG_DATA_HOME/ocl` or `~/.local/share/ocl`), read at run time, and the
+  pack is opened through its file URI, so paths with backslashes, spaces,
+  `%`, `#` or `?` work.
+- A failure inside the pack (I/O error, corrupt file) reaches the workflows
+  as an `APIError` and becomes a row with `status: error`, never a traceback.
+- Pack integrity. `ocl pack pull` downloads to `<pack>.gz.part` and resumes
+  an interrupted download (HTTP Range, or a seek on a file share; a source
+  that ignores Range starts over), prints a progress line every 50 MB, waits
+  at most 120 s for each read with no overall time limit, verifies the gzip
+  against the published `.sha256` sidecar before unpacking, and installs the
+  pack atomically. Without a published checksum the pull stops with exit 2;
+  `--insecure` continues and records the pack as unverified. A checksum
+  mismatch keeps the partial file for inspection (exit 2) and the next pull
+  starts over. The verification (source, checksum URL, gzip and pack
+  digests, client version) is recorded in `<pack>.json`; the new `ocl pack
+  verify` reports it with the pack's schema version, build date and counts
+  (exit 4 when the pack was never verified) and `ocl pack info` prints the
+  same.
+- `--url` accepts a mirror, a `file://` URL or a path; on Windows the share
+  spellings `file://server/share/latest.sqlite.gz` and
+  `\\server\share\latest.sqlite.gz` work, and the default location is
+  `%LOCALAPPDATA%\ocl`. Packs in folders with spaces or `%` open correctly.
+- A pack whose schema major version is newer than the client reads (1 and 2)
+  is refused on open with a message naming the client and pack versions.
+- `scripts/build_verification_pack.py --gzip` also writes
+  `<output>.gz.sha256` (sha256sum format) and logs the gzip size.
+- The `ocl check` report says what was established and no more. A cited
+  decision "exists" and, where a pinpoint was cited, its "passage retrieved"
+  (never "verified"); the passage number stands next to the finding, not
+  appended to the service's citation string. The scope statement (existence,
+  identity and wording only; not whether a decision supports the argument or
+  is still good law) stands above the results in HTML, Markdown and at the
+  terminal. `summary` carries `exists`, `passages_retrieved` and `unparsed`
+  (`verified` is gone).
+- New quotation status `unverifiable` (`reason: "no served text"`): nothing
+  was compared, because no indexed passage answered the pinpoint and the
+  decision text is not served in this mode (offline, the pack has no full
+  texts). The report labels it "quotation not checked" with the advice to
+  check against the decision. `not_found` is now only ever the result of a
+  real comparison and always carries the served text it was compared with.
+  `quotes check` rows read `quote_status: unverifiable`, status
+  `quote_unverifiable`; exit codes are unchanged (4).
+- "Not in the corpus" is qualified by coverage. A missing reference carries
+  `coverage`: the court read from the reference (label, court word, canton)
+  and, when obtainable, the corpus's decision count and year span for that
+  court (online from the `list_courts` tool, offline from the pack's new
+  `courts` table); the advice reads "Check the citation. If the decision is
+  unpublished or is the decision under appeal, it cannot be in any corpus."
+  The verification pack is schema 2 (a `courts` table grouped from its own
+  decisions); the client tolerates schema-1 packs.
+- Silent recall made visible: after the citations are found, docket-like
+  strings and collection references (ZR, Pra, GVP, BVR, RBOG, SJZ, AJP, JdT,
+  SJ, RDAF) that did not become a checked reference are listed under
+  "Possibly citations, not checked" (JSON: `unparsed`). They are not
+  attention items and do not affect the exit code; their number is in the
+  summary line.
+- `--language de|fr|it` drives the report's labels, advice, headings and
+  scope statement; English for anything else. The CLI's default language is
+  `de`, so a report without `--language` reads German.
+- `ocl check` checks the statutes a draft cites as well as the decisions.
+  References in German, French and Italian are found in the prose
+  (`Art. 8 Abs. 1 ZGB`, `art. 335 al. 1 CO`, `art. 8 cpv. 1 CC`, chains such
+  as `Art. 8, 9 und 10 ZGB`, `Art. 41 ff. OR`, `SR 210`, and cantonal acts
+  with the paragraph sign: `§ 12 Abs. 2 StG/ZH`, `§ 18 VRG (ZH)`); the
+  grammar is the server's statute audit grammar. Each is looked up
+  (`/api/laws/{abbreviation}?article=`) and reported as `statute_found`,
+  `article_missing`, `article_empty` (repealed or empty in the current
+  edition), `law_unknown`, `unverifiable` (a `§` reference without a canton,
+  or statutes not available offline) or `error`; a quotation next to the
+  reference is compared with the served article text (`exact`, `near`,
+  `not_found`). The report gets a "Statutes" table (as written, finding,
+  what to do, an excerpt of the served text), the terminal a short block,
+  the JSON a `statutes` list and `statutes_*` summary counts.
+  `article_missing`, `article_empty`, `law_unknown` and a differing
+  quotation exit 4; `unverifiable` does not. `OCL_CANTON=ZH` routes bare
+  `§` references to that canton.
+- Offline, `--local` answers `/api/laws` from a statutes database placed next
+  to the verification pack (`statutes.sqlite`, or the file `OCL_STATUTES`
+  names; the schema of `search_stack/build_statutes_db.py`), opened
+  read-only and immutable. Without it, statute rows are `unverifiable`
+  ("statutes not available offline"), never an error; cantonal acts and
+  `as_of` editions stay online-only. `ocl --local laws get OR --article 41`
+  works with the same file.
+- Windows installer for machines without Python (courts, managed desktops):
+  `OpenCaseLaw-CLI-<version>-setup.exe`, built by
+  `.github/workflows/installer-cli.yml` on every `cli-v*` tag from
+  `clients/python/installer/`. Ships the python.org embeddable runtime
+  (3.13.7, PSF-signed, digest pinned) and this package under
+  `Program Files\OpenCaseLaw` with `ocl.cmd`, a "Send to" entry
+  "Entwurf prüfen (offline)" (`ocl check DRAFT --local`, then opens the
+  report) and a Start-menu entry that runs `ocl pack pull`. SHA-256 file and
+  build provenance attestation on the release; not yet Authenticode-signed.
+  Install notes for court IT: `docs/court-it-install.md`.
 
 ## 0.7.0 (2026-09-06)
 
@@ -55,8 +169,6 @@ with a contract an agent can rely on.
   `evidence-bundle`; `ocl skills list|show|install --claude|--dir`.
 - `ocl agent-guide` prints the agent guide (contract, commands, statuses,
   rules); `opencaselaw_cli.api` is the same functionality as a library.
-
-
 
 - `ocl quotes check`: quotations verified against the cited Erwägung and the
   decision text, with `exact` / `near` (differing spans, served wording) /

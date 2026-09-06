@@ -20,7 +20,10 @@ Erwägung. Existence is checked against the corpus; legal support is not.
    `{"reference": "BGer 4A_747/2012 vom 5. April 2013, E. 3.2"}`, with a
    `quote` field for quoted passages.
 2. Run `ocl citations resolve --input references.jsonl --format jsonl > resolution.jsonl`
-   for a list; the rows have the same shape as `check`'s `results`.
+   for a list; the rows have the same shape as `check`'s `results`. `check` also
+   returns `statutes` (Art./§ references: `statute_found`, `article_missing`,
+   `article_empty`, `law_unknown`, `unverifiable`, `error`) and `unparsed`
+   (citation-like strings that were not checked); report both.
 3. Read every row. `resolved` means the decision exists and carries a label the
    author wrote (and the pinpoint, if any, exists: `pinpoint_status: retrieved`).
    `pinpoint_unavailable` means the decision exists but the numbered passage is
@@ -37,8 +40,11 @@ Erwägung. Existence is checked against the corpus; legal support is not.
    with one row per quotation (`reference`, `pinpoint` when cited, `quote`
    exactly as the author wrote it). `exact` stands; for `near` report the
    listed differences and replace the quotation with the served wording; for
-   `not_found` tell the author the quotation is not in that decision (the
-   closest served text is shown). Do not paraphrase inside quotation marks.
+   `not_found` tell the author the quotation is not in the served text that
+   was compared (the closest served text is shown); for `unverifiable` (no
+   served text: offline without an indexed pinpoint) say the quotation was
+   not checked and must be checked against the decision, never that it is
+   not there. Do not paraphrase inside quotation marks.
 5. Report per citation: reference, status, decision_id, canonical citation
    string from the service, pinpoint status, discrepancies. State that this
    establishes existence and wording only, not that the authority supports the

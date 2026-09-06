@@ -73,7 +73,12 @@ def test_no_retry_for_permanent_errors_or_excessive_server_delay(status, headers
     assert len(requests) == 1
 
 
-@pytest.mark.parametrize("body", [b"<html>failure</html>", b"[]", b"null"])
+def test_list_success_response_is_wrapped():
+    client = Client(base_url="https://x", retries=0)
+    assert client._parse(b'[{"court": "bger"}]', "application/json") == {"items": [{"court": "bger"}]}
+
+
+@pytest.mark.parametrize("body", [b"<html>failure</html>", b"null"])
 def test_invalid_success_response_is_explicit(body):
     client, requests = transport([body])
     with pytest.raises(APIError):

@@ -1,0 +1,269 @@
+name: Windows installer (opencaselaw-cli)
+
+# Builds OpenCaseLaw-CLI-<version>-setup.exe for courts whose IT will not
+# install Python: the python.org embeddable runtime (PSF-signed, digest pinned
+# below) plus the pure-stdlib client, packaged with Inno Setup from
+# clients/python/installer/ocl.iss. No PyInstaller, no Nuitka, no compiled code
+# of our own: python.exe and the PSF DLLs are the only executables in the tree.
+#
+# Runs on cli-v* tags (attaches the installer, its SHA-256 and a build
+# provenance attestation to the GitHub release) and by hand. Needs nothing
+# beyond GITHUB_TOKEN. The SignPath step at the end stays disabled until a
+# signing project exists; until then IT allow-lists by hash or path
+# (docs/court-it-install.md).
+
+on:
+  push:
+    tags:
+      - "cli-v*"
+  workflow_dispatch:
+
+permissions: {}
+
+env:
+  PYTHON_EMBED_VERSION: "3.13.7"
+  # SHA-256 of python-3.13.7-embed-amd64.zip as published in python.org's own
+  # SPDX document for the file (python-3.13.7-embed-amd64.zip.spdx.json) and
+  # confirmed on an independent download on 2026-09-06. Bumping the runtime
+  # means changing both values together and re-reading the SPDX document.
+  PYTHON_EMBED_SHA256: "f6cca216a359be84797cabb54149ce5e062afb16cc7567eb7fc51cacb2d86b65"
+
+jobs:
+  build:
+    name: Build and smoke-test the installer
+    runs-on: windows-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python (build tooling only; the installer ships its own runtime)
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Read the client version (a tag must match it)
+        id: version
+        shell: bash
+        run: |
+          python - <<'PY'
+          import os, pathlib, re
+          source = pathlib.Path("clients/python/src/opencaselaw_cli/_version.py").read_text()
+          version = re.search(r'__version__\s*=\s*"([^"]+)"', source).group(1)
+          if os.environ.get("GITHUB_REF_TYPE") == "tag":
+              tag = os.environ["GITHUB_REF_NAME"]
+              if tag != f"cli-v{version}":
+                  raise SystemExit(f"tag {tag} does not match clients/python version {version} (expected cli-v{version})")
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
+              out.write(f"version={version}\n")
+          print("version", version)
+          PY
+
+      - name: Build the wheel
+        shell: bash
+        run: |
+          python -m pip install --disable-pip-version-check "build==1.2.2"
+          python -m build --wheel --outdir dist-wheel clients/python
+          ls -l dist-wheel
+
+      - name: Run the client tests against the wheel
+        # Informational: the suite is exercised on Linux by release-cli.yml and
+        # has not been run on Windows before this workflow existed. The gate for
+        # the installer is the smoke test of the installed tree below.
+        continue-on-error: true
+        shell: bash
+        run: |
+          python -m pip install --disable-pip-version-check --no-deps dist-wheel/opencaselaw_cli-*.whl
+          python -m pip install --disable-pip-version-check pytest
+          python -m pytest -q -p no:cacheprovider clients/python/tests
+
+      - name: Download the python.org embeddable runtime and verify its digest
+        shell: bash
+        run: |
+          mkdir -p build
+          curl -sSfL --retry 3 --retry-delay 5 -o build/python-embed.zip \
+            "https://www.python.org/ftp/python/${PYTHON_EMBED_VERSION}/python-${PYTHON_EMBED_VERSION}-embed-amd64.zip"
+          echo "${PYTHON_EMBED_SHA256}  build/python-embed.zip" | sha256sum -c -
+
+      - name: Lay out the installation tree
+        shell: bash
+        run: |
+          python clients/python/installer/build_tree.py \
+            --embed-zip build/python-embed.zip \
+            --wheel dist-wheel/opencaselaw_cli-*.whl \
+            --out build/tree
+          echo "--- python3XX._pth"
+          cat build/tree/python3*._pth
+          echo "--- executables"
+          ls build/tree/*.exe build/tree/*.dll
+
+      - name: Compile the installer with Inno Setup
+        shell: pwsh
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          $iscc = "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) {
+            Write-Host "Inno Setup is not on this runner image; installing it with Chocolatey"
+            choco install innosetup --no-progress -y
+            if ($LASTEXITCODE -ne 0) { throw "choco install innosetup failed" }
+          }
+          & $iscc "/DAppVersion=$env:VERSION" "/DSourceDir=$PWD\build\tree" "/O$PWD\dist" "clients\python\installer\ocl.iss"
+          if ($LASTEXITCODE -ne 0) { throw "ISCC exited with $LASTEXITCODE" }
+          Get-ChildItem dist
+
+      - name: Install silently into a scratch directory
+        shell: pwsh
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          $setup = "$PWD\dist\OpenCaseLaw-CLI-$env:VERSION-setup.exe"
+          $target = "$env:RUNNER_TEMP\OpenCaseLaw"
+          $log = "$env:RUNNER_TEMP\setup.log"
+          $p = Start-Process -FilePath $setup -ArgumentList "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART", "/LOG=`"$log`"", "/DIR=`"$target`"" -Wait -PassThru
+          if ($p.ExitCode -ne 0) { Get-Content $log; throw "installer exited with $($p.ExitCode)" }
+          foreach ($f in "python.exe", "python3.dll", "ocl.cmd", "check-draft.cmd", "pull-pack.cmd", "unins000.exe", "Lib\site-packages\opencaselaw_cli\__main__.py", "shortcuts\Entwurf prüfen (offline).lnk") {
+            if (-not (Test-Path "$target\$f")) { Get-Content $log; throw "missing after install: $f" }
+          }
+          "OCL_INSTALL_DIR=$target" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+      - name: Smoke-test the installed tree (offline check against a fixture pack)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Continue"
+          $ocl = "$env:OCL_INSTALL_DIR\ocl.cmd"
+          $fx = "$env:RUNNER_TEMP\fixture"
+
+          $version = & $ocl --version 2>&1 | Out-String
+          if ($LASTEXITCODE -ne 0) { throw "ocl --version exited with $LASTEXITCODE`n$version" }
+          Write-Host $version.Trim()
+
+          $help = & $ocl check --help 2>&1 | Out-String
+          if ($LASTEXITCODE -ne 0 -or $help -notmatch "--report") { throw "ocl check --help failed`n$help" }
+
+          # A four-decision pack and a draft citing it, from the client test suite's own fixtures.
+          python clients\python\installer\smoke\make_fixture.py $fx
+          if ($LASTEXITCODE -ne 0) { throw "fixture build failed" }
+
+          $check = & $ocl check "$fx\draft.docx" --local "$fx\pack.sqlite" --jobs 1 --color never --format json 2>&1 | Out-String
+          $rc = $LASTEXITCODE
+          if ($check -match "Traceback") { throw "traceback during ocl check`n$check" }
+          # 4: the fixture draft cites two decisions that are not in the pack. 0 would mean they went unflagged.
+          if ($rc -ne 4) { throw "expected exit 4 from the fixture draft, got $rc`n$check" }
+          if (-not (Test-Path "$fx\draft.check.html")) { throw "no report written next to the draft" }
+          $summary = ($check -split "`n" | Where-Object { $_ -match '"summary"' } | Measure-Object).Count
+          Write-Host "check exit $rc, report written, summary present: $($summary -gt 0)"
+
+          # doctor offline: 0 when the pack answers, 3 with a clean 'not available offline' error; never a traceback.
+          $doctor = & $ocl doctor --local "$fx\pack.sqlite" --format json 2>&1 | Out-String
+          $rc = $LASTEXITCODE
+          Write-Host $doctor
+          if ($doctor -match "Traceback") { throw "traceback during ocl doctor --local" }
+          if ($rc -ne 0 -and $rc -ne 3) { throw "doctor --local exited with $rc" }
+
+          # Program Files style guarantee: nothing was written into the install tree by the checks.
+          if (Test-Path "$env:OCL_INSTALL_DIR\Lib\site-packages\opencaselaw_cli\__pycache__") { throw "bytecode was written into the installation" }
+
+      - name: Uninstall silently
+        shell: pwsh
+        run: |
+          $p = Start-Process -FilePath "$env:OCL_INSTALL_DIR\unins000.exe" -ArgumentList "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART" -Wait -PassThru
+          if ($p.ExitCode -ne 0) { throw "uninstaller exited with $($p.ExitCode)" }
+          $deadline = (Get-Date).AddSeconds(60)
+          while ((Test-Path "$env:OCL_INSTALL_DIR\python.exe") -and (Get-Date) -lt $deadline) { Start-Sleep -Seconds 2 }
+          if (Test-Path "$env:OCL_INSTALL_DIR\python.exe") { throw "python.exe still present after uninstall" }
+          Write-Host "uninstalled"
+
+      - name: Write the SHA-256 checksum file
+        shell: bash
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          cd dist
+          sha256sum "OpenCaseLaw-CLI-${VERSION}-setup.exe" | tee "OpenCaseLaw-CLI-${VERSION}-setup.exe.sha256"
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: dist/OpenCaseLaw-CLI-*-setup.exe
+
+      - name: Upload the installer and its checksum
+        id: installer
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: opencaselaw-cli-windows-installer
+          path: |
+            dist/OpenCaseLaw-CLI-*-setup.exe
+            dist/OpenCaseLaw-CLI-*-setup.exe.sha256
+          if-no-files-found: error
+
+      - name: Upload the setup log (diagnostics)
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: opencaselaw-cli-windows-installer-setup-log
+          path: ${{ runner.temp }}/setup.log
+          if-no-files-found: ignore
+
+      # ── Code signing: DISABLED until a SignPath project exists ──────────────
+      # SignPath Foundation signs open-source releases at no cost (an OV
+      # certificate, about CHF 200-300 a year, is the alternative). Enabling:
+      #   1. create the SignPath organisation and the project "opencaselaw-cli"
+      #      with a signing policy "release-signing" that trusts this repository
+      #      and this workflow;
+      #   2. add the repository secret SIGNPATH_API_TOKEN and put the
+      #      organisation id below;
+      #   3. move this step directly after "Compile the installer" (upload the
+      #      unsigned exe as an artifact there, sign it, and let the install,
+      #      hash, attestation and release steps use output-artifact-directory);
+      #   4. set the repository variable SIGNPATH_ENABLED to true.
+      # Inno's own unins000.exe is not covered by a post-build signature; sign at
+      # compile time (Inno's SignTool directive) if a certificate is ever local.
+      - name: Sign the installer with SignPath (disabled)
+        if: vars.SIGNPATH_ENABLED == 'true'
+        uses: signpath/github-action-submit-signing-request@c92b958760219087e01f8d67a1669ed57afe2627 # v2.3
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: "00000000-0000-0000-0000-000000000000"
+          project-slug: "opencaselaw-cli"
+          signing-policy-slug: "release-signing"
+          github-artifact-id: ${{ steps.installer.outputs.artifact-id }}
+          wait-for-completion: true
+          output-artifact-directory: dist-signed
+
+  release:
+    name: Attach the installer to the GitHub release
+    needs: build
+    if: github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Download the installer
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: opencaselaw-cli-windows-installer
+          path: dist/
+
+      - name: Create the release if it does not exist, then upload
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+          REPO: ${{ github.repository }}
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          if ! gh release view "$TAG" --repo "$REPO" > /dev/null 2>&1; then
+            gh release create "$TAG" --repo "$REPO" --verify-tag \
+              --title "opencaselaw-cli $VERSION" \
+              --notes "See clients/python/CHANGELOG.md. Windows installer: verify the SHA-256 against the .sha256 file and the provenance with \`gh attestation verify OpenCaseLaw-CLI-$VERSION-setup.exe --repo $REPO\` (docs/court-it-install.md)."
+          fi
+          gh release upload "$TAG" dist/OpenCaseLaw-CLI-*-setup.exe dist/OpenCaseLaw-CLI-*-setup.exe.sha256 --repo "$REPO" --clobber

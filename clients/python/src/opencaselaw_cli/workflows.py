@@ -9,6 +9,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import sqlite3
 import sys
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
@@ -842,12 +843,16 @@ def _resolve_one(client, item, language):
                 if not text:
                     continue
                 found = match_quote(item["quote"], text)
+                if found["quote_status"] == "unverifiable":
+                    continue
                 found["found_in"] = label
                 if checked is None or found["quote_status"] == "exact" or (found["ratio"] > checked["ratio"] and checked["quote_status"] != "exact"):
                     checked = found
                 if found["quote_status"] == "exact":
                     break
-            row["quote_check"] = checked or {"quote_status": "not_found", "ratio": 0.0, "reason": "no served text"}
+            # No served text at all (no indexed passage for the pinpoint, no full text
+            # in this mode): nothing was compared, so the quotation is not "not found".
+            row["quote_check"] = checked or {"quote_status": "unverifiable", "reason": "no served text"}
         if pinpoint:
             passage, pinpoint_status, error = fetch_passage(client, decision["decision_id"], pinpoint)
             row["pinpoint_status"] = pinpoint_status
@@ -920,28 +925,251 @@ def resolve_citations(args, client):
     return report, 0 if report["status"] == "complete" else 4
 
 
+# ── coverage: what "not in the corpus" means for the court a reference names ──
+# Court words as written, mapped to the stem of the corpus's court codes
+# (zh_obergericht, be_verwaltungsgericht, sg_kantonsgericht, ...). A word with an
+# empty stem names the canton's courts as a whole.
+_COURT_WORD = re.compile(
+    r"(?<![A-Za-zÀ-ÿ])(Bundesverwaltungsgericht\w*|Bundesstrafgericht\w*|Bundesgericht\w*|Bundespatentgericht\w*|"
+    r"Sozialversicherungsgericht\w*|Steuerrekursgericht\w*|Steuerrekurskommission|Verwaltungsgericht\w*|Appellationsgericht\w*|"
+    r"Handelsgericht\w*|Obergericht\w*|Kantonsgericht\w*|Bezirksgericht\w*|Arbeitsgericht\w*|Mietgericht\w*|Baurekursgericht\w*|"
+    r"Versicherungsgericht\w*|Zivilgericht\w*|Strafgericht\w*|Kassationsgericht\w*|Gericht\w*|"
+    r"Tribunal administratif fédéral|Tribunal pénal fédéral|Tribunal fédéral|Tribunal administratif|Tribunal cantonal|Cour de justice|Cour d'appel|Tribunal|"
+    r"Tribunale amministrativo federale|Tribunale penale federale|Tribunale federale|Tribunale d'appello|Tribunale cantonale|Tribunale|"
+    r"BVGer|BStGer|BPatGer|BGer|OGer|KGer|VGer|SozVGer|TAF|TPF|TF)(?![A-Za-zÀ-ÿ])")
+_COURT_STEMS = {
+    "bundesgericht": "bger", "bger": "bger", "tf": "bger", "tribunal fédéral": "bger", "tribunale federale": "bger",
+    "bundesverwaltungsgericht": "bvger", "bvger": "bvger", "taf": "bvger", "tribunal administratif fédéral": "bvger", "tribunale amministrativo federale": "bvger",
+    "bundesstrafgericht": "bstger", "bstger": "bstger", "tpf": "bstger", "tribunal pénal fédéral": "bstger", "tribunale penale federale": "bstger",
+    "bundespatentgericht": "bpatger", "bpatger": "bpatger",
+    "obergericht": "obergericht", "oger": "obergericht", "kantonsgericht": "kantonsgericht", "kger": "kantonsgericht",
+    "tribunal cantonal": "kantonsgericht", "tribunale cantonale": "kantonsgericht", "tribunale d'appello": "appello",
+    "verwaltungsgericht": "verwaltungsgericht", "vger": "verwaltungsgericht", "tribunal administratif": "verwaltungsgericht",
+    "handelsgericht": "handelsgericht", "sozialversicherungsgericht": "sozialversicherungsgericht", "sozvger": "sozialversicherungsgericht",
+    "steuerrekursgericht": "steuerrekurs", "steuerrekurskommission": "steuerrekurs", "appellationsgericht": "appellationsgericht",
+    "bezirksgericht": "bezirksgericht", "arbeitsgericht": "arbeitsgericht", "mietgericht": "mietgericht", "baurekursgericht": "baurekursgericht",
+    "versicherungsgericht": "versicherungsgericht", "zivilgericht": "zivilgericht", "strafgericht": "strafgericht", "kassationsgericht": "kassationsgericht",
+}
+_FEDERAL_STEMS = {"bger", "bvger", "bstger", "bpatger", "bge"}
+_FEDERAL_DOCKET = re.compile(r"^\d[A-Z]{1,2}[ _.]\d{1,5}/\d{4}$")
+_BVGER_DOCKET = re.compile(r"^[A-Z]{1,2}-\d{1,5}/\d{4}$")
+
+
+def infer_court(reference: str) -> dict:
+    """What a written reference says about where the decision comes from: the label
+    written, the court word as written, the canton code, and the corpus court codes
+    or stems it points at. Nothing here is looked up; it is read from the text."""
+    parsed = parse_reference(reference)
+    label = parsed.bge_label or parsed.primary_docket or parsed.core
+    head = parsed.core
+    word = None
+    for m in _COURT_WORD.finditer(head):
+        word = re.sub(r"(?i)(gericht)(?:s|es)$", r"\1", m.group(1))   # "des Obergerichts" names the Obergericht
+        break
+    stem = None
+    if word:
+        lowered = word.casefold()
+        for name, value in _COURT_STEMS.items():
+            if lowered == name or lowered.startswith(name):
+                stem = value
+                break
+        if stem is None:
+            stem = ""  # a court word without a known stem: the canton's collections
+    courts: list[str] = []
+    if parsed.bge_label and parsed.bge_first:
+        courts.append("bge")
+        word = word or "BGE"
+    elif stem in _FEDERAL_STEMS:
+        courts.append(stem)
+    elif stem is None and parsed.primary_docket:
+        if _FEDERAL_DOCKET.match(parsed.primary_docket):
+            courts.append("bger"); word = word or "BGer"
+        elif _BVGER_DOCKET.match(parsed.primary_docket):
+            courts.append("bvger"); word = word or "BVGer"
+    elif "bger" in parsed.courts and not parsed.canton:
+        courts.append("bger")
+    return {"label": label, "court_word": word, "canton": parsed.canton, "courts": courts,
+            "stem": stem if not courts else None}
+
+
+def _coverage_rows(value) -> list[dict]:
+    """Rows {court, canton, decisions, first_year, last_year} from list_courts (any of its
+    shapes) or from the pack's courts table."""
+    rows = value
+    if isinstance(value, dict):
+        rows = next((value[k] for k in ("courts", "results", "items", "data") if isinstance(value.get(k), list)), None)
+    if not isinstance(rows, list):
+        return []
+    out = []
+    for r in rows:
+        if not isinstance(r, dict) or not r.get("court"):
+            continue
+        n = next((r[k] for k in ("decision_count", "decisions", "total", "count") if r.get(k) is not None), None)
+        first = next((r[k] for k in ("first_year", "earliest") if r.get(k)), None)
+        last = next((r[k] for k in ("last_year", "latest") if r.get(k)), None)
+        try:
+            n = int(n) if n is not None else None
+        except (TypeError, ValueError):
+            n = None
+        out.append({"court": str(r["court"]), "canton": (str(r.get("canton") or "")).upper() or None, "decisions": n,
+                    "first_year": str(first)[:4] if first else None, "last_year": str(last)[:4] if last else None})
+    return out
+
+
+def load_coverage(client) -> tuple[list[dict], str | None]:
+    """Per-court coverage of the corpus: online from the list_courts tool, offline from the
+    pack's courts table (schema 2). ([], None) when neither is available; never raises."""
+    if not getattr(client, "offline", False):
+        try:  # the REST court list first (live today), then the list_courts tool
+            rows = _coverage_rows(client.get("/api/courts"))
+            if rows:
+                return rows, "api_courts"
+        except Exception:  # noqa: BLE001 - coverage is a qualification, never a reason to fail the check
+            pass
+    tool_json = getattr(client, "tool_json", None)
+    if callable(tool_json) and not getattr(client, "offline", False):
+        try:
+            rows = _coverage_rows(tool_json("list_courts", {}))
+            if rows:
+                return rows, "list_courts"
+        except Exception:  # noqa: BLE001
+            pass
+    pack = getattr(client, "pack_path", None)
+    if pack and Path(pack).is_file():
+        try:
+            from .local import _sqlite_uri  # URI-safe on Windows too (drive letters, spaces, %)
+            con = sqlite3.connect(_sqlite_uri(Path(pack)), uri=True)
+            try:
+                rows = [{"court": r[0], "canton": r[1], "decisions": r[2], "first_year": r[3], "last_year": r[4]}
+                        for r in con.execute("SELECT court, canton, decisions, first_year, last_year FROM courts")]
+            finally:
+                con.close()
+            rows = _coverage_rows(rows)
+            if rows:
+                return rows, "pack"
+        except sqlite3.Error:
+            pass
+    return [], None
+
+
+def coverage_for(reference: str, rows: list[dict], source: str | None) -> dict:
+    """The coverage line's data for a missing reference: the inferred court, the matched
+    corpus collections and their decision count and year span (None when unknown)."""
+    inferred = infer_court(reference)
+    out = {"inferred": inferred, "courts": [], "decisions": None, "first_year": None, "last_year": None, "source": source}
+    rows = _coverage_rows(rows)
+    if not rows:
+        return out
+    canton = (inferred.get("canton") or "").upper()
+    matched: list[dict] = []
+    if inferred["courts"]:
+        matched = [r for r in rows if r["court"] in inferred["courts"]]
+    elif canton:
+        own = [r for r in rows if (r.get("canton") == canton or r["court"].lower().startswith(canton.lower() + "_"))]
+        stem = inferred.get("stem")
+        if stem:
+            matched = [r for r in own if stem in r["court"].lower()]
+        if not matched and own:
+            matched = own
+            out["canton_wide"] = True
+    if not matched:
+        return out
+    counted = [r for r in matched if r.get("decisions") is not None]
+    out["courts"] = [r["court"] for r in matched]
+    out["decisions"] = sum(r["decisions"] for r in counted) if counted else None
+    firsts = [r["first_year"] for r in matched if r.get("first_year")]
+    lasts = [r["last_year"] for r in matched if r.get("last_year")]
+    out["first_year"] = min(firsts) if firsts else None
+    out["last_year"] = max(lasts) if lasts else None
+    return out
+
+def check_statute_rows(client, rows: list[dict], language: str = "de", jobs: int = DEFAULT_JOBS,
+                       default_canton: str | None = None) -> list[dict]:
+    """The statute references a draft cites (rows from `documents.find_statutes`): does the act
+    exist, does it have the article, does the quotation next to it stand in the served text.
+    One request per distinct (canton, act, article); every field reported is the answer's own.
+    Offline, a missing statutes database makes rows `unverifiable`, never `error`."""
+    from .statutes import classify_law_error, classify_law_response, law_request
+    specs = [law_request(row, language, default_canton) for row in rows]
+    keyed = {key: (path, params) for path, params, key in specs if path}
+
+    def fetch(key):
+        path, params = keyed[key]
+        try:
+            return _get(client, path, params), None
+        except APIError as error:
+            return None, error
+
+    answers = {}
+    if keyed:
+        with ThreadPoolExecutor(max_workers=max(1, min(int(jobs), 8))) as pool:
+            answers = dict(zip(list(keyed), pool.map(fetch, list(keyed))))
+    results = []
+    for row, (path, reason, key) in zip(rows, specs):
+        out = {"reference": row["reference"], "law": row.get("law"), "article": row.get("article")}
+        out.update({k: row[k] for k in ("paragraph", "letter", "canton", "sr_number", "paragraph_index", "context") if row.get(k) is not None})
+        out.update(checked_at=_now(), legal_support_assessed=False)
+        if path is None:
+            out.update(status="unverifiable", reason=reason)
+        else:
+            if key[0] != "CH":
+                out["canton"] = key[0]  # the canton the act was asked in (written, or the default for bare § references)
+            result, error = answers[key]
+            out.update(classify_law_error(error) if error is not None else classify_law_response(result, row.get("article")))
+        if isinstance(row.get("quote"), str) and row["quote"].strip():
+            out["quote"] = row["quote"]
+            if out.get("article_text"):
+                found = match_quote(row["quote"], out["article_text"])
+                found["found_in"] = "article"
+                out["quote_check"] = found
+            else:
+                out["quote_check"] = {"quote_status": "unverifiable", "ratio": 0.0, "reason": "no article text served"}
+        results.append(out)
+    return results
+
+
 def check_document(args, client):
     """`ocl check DRAFT`: read the draft, find its citations and quotations, check them, write a report."""
-    from .documents import find_citations, read_document
-    from .report import render_html, render_markdown, summarize
+    from .documents import find_citations, find_statutes, read_document, unparsed_candidates
+    from .report import court_name, language_of, render_html, render_markdown, summarize
     source = Path(args.draft).expanduser()
     if not source.is_file():
         raise ValueError(f"draft not found: {source}")
+    language = args.language or "de"
+    cite_language = language if language in ("de", "fr", "it") else "de"  # the service builds citation strings in de/fr/it; en is a report language
     paragraphs = read_document(source)
     found = find_citations(paragraphs)
+    unparsed = unparsed_candidates(paragraphs, found)
     rows = [{"reference": f["reference"], **({"quote": f["quote"]} if f.get("quote") else {}), "paragraph": f["paragraph"]} for f in found]
-    report = resolve_rows(client, rows, args.language or "de", _jobs(args)) if rows else {
+    report = resolve_rows(client, rows, cite_language, _jobs(args)) if rows else {
         "schema_version": SCHEMA_VERSION, "kind": "opencaselaw-citation-resolution", "client_version": __version__,
         "base_url": client.base_url, "generated_at": _now(), "status": "complete", "results": [], "counts": {}, "requests": getattr(client, "requests", None)}
-    summary = summarize(report, source.name)
+    missing = [r for r in report["results"] if r.get("status") == "missing"]
+    if missing:
+        # "Not in the corpus" is qualified by what the corpus holds for the court the
+        # reference names: an unpublished ruling or the decision under appeal is
+        # expected to be absent, a wrong citation is not.
+        coverage_rows, coverage_source = load_coverage(client)
+        for r in missing:
+            r["coverage"] = coverage_for(r["reference"], coverage_rows, coverage_source)
+            r["coverage"]["name"] = court_name(r["coverage"], language)
+    report["unparsed"] = unparsed
+    # statutes: their own rows, checked after the decisions so the request counter covers both
+    from os import environ
+    statutes_found = find_statutes(paragraphs, claimed_quotes=[f["quote"] for f in found if f.get("quote")])  # a decision's quotation never lands on an article
+    report["statutes"] = check_statute_rows(client, statutes_found, cite_language, _jobs(args),
+                                            getattr(args, "canton", None) or environ.get("OCL_CANTON") or None) if statutes_found else []
+    report["requests"] = getattr(client, "requests", None)
+    summary = summarize(report, source.name, language)
     report_path = None
     if not getattr(args, "no_report", False):
         target = Path(args.report).expanduser() if getattr(args, "report", None) else source.with_name(source.stem + ".check.html")
-        text = render_markdown(report, source.name, found) if target.suffix.lower() in (".md", ".markdown") else render_html(report, source.name, found)
+        text = render_markdown(report, source.name, found, language) if target.suffix.lower() in (".md", ".markdown") else render_html(report, source.name, found, language)
         target.write_text(text, encoding="utf-8")
         report_path = str(target)
-    report.update(kind="opencaselaw-draft-check", source=str(source), paragraphs=len(paragraphs), found=found, summary=summary, report_path=report_path)
-    return report, 0 if summary["attention"] == 0 else 4
+    report.update(kind="opencaselaw-draft-check", source=str(source), paragraphs=len(paragraphs), found=found, statutes_found=statutes_found,
+                  summary=summary, report_path=report_path, report_language=language_of(language))
+    return report, 0 if summary["attention"] == 0 and not summary.get("statutes_attention") else 4
 
 
 def _load_manifest(directory):
@@ -1099,7 +1327,8 @@ def match_quote(quote: str, text: str) -> dict:
     exact: the normalised quote is a substring of the normalised text.
     near: the best window of the text matches with a difflib ratio >= 0.9; the
     differing spans are listed (quote wording vs served wording).
-    not_found: below that; the best window and its ratio are still reported."""
+    not_found: below that; the best window and its ratio are still reported.
+    unverifiable: the served text is empty, so nothing was compared (never a verdict)."""
     q = normalise_quote(quote)
     t = normalise_quote(text)
     if not q:
@@ -1113,7 +1342,8 @@ def match_quote(quote: str, text: str) -> dict:
         return {"quote_status": "near", "ratio": 0.99, "offset": lowered_idx, "served": served,
                 "differences": [{"quote": quote.strip(), "served": served, "kind": "case"}]}
     if not t:
-        return {"quote_status": "not_found", "ratio": 0.0, "reason": "no served text"}
+        # Nothing to compare with: not a verdict on the quotation.
+        return {"quote_status": "unverifiable", "reason": "no served text"}
     width = len(q)
     step = max(1, width // 8)
     best_ratio, best_start = 0.0, 0
@@ -1191,6 +1421,8 @@ def check_one_quote(client, item, language):
             if not text:
                 continue
             found = match_quote(quotation, text)
+            if found["quote_status"] == "unverifiable":
+                continue
             found["found_in"] = label
             if label != "full_text":
                 found["pinpoint_status"] = status
@@ -1199,7 +1431,9 @@ def check_one_quote(client, item, language):
             if found["quote_status"] == "exact":
                 break
         if best is None:
-            row.update(quote_status="not_found", ratio=0.0, reason="no served text to compare with")
+            # No served text was compared (no indexed passage, no full text in this
+            # mode): the quotation is unverifiable here, not "not found".
+            row.update(quote_status="unverifiable", reason="no served text")
         else:
             row.update(best)
         if row.get("status") == "resolved" and row["quote_status"] != "exact":

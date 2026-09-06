@@ -69,7 +69,10 @@ _FEDERAL = re.compile(r"(?<![A-Za-z0-9/])" + _COURT_PREFIX + r"(?:\d[A-Z]{1,2}[ 
 _CANTONAL_COURT = r"(?:Ober|Kantons|Verwaltungs|Handels|Bezirks|Appellations|Sozialversicherungs|Steuerrekurs)gericht(?:s)?|Tribunal\s+cantonal|Cour\s+de\s+justice|Tribunale\s+(?:d'appello|cantonale)|OGer|KGer|VGer|Gericht|Tribunal|Kantonsgerichts"
 _CANTONAL = re.compile(r"(?<![A-Za-z0-9])(?:(?:Urteil|Entscheid|Beschluss|arrêt|décision|sentenza)\s+(?:des|der|du|de\s+la|del|della)?\s*)?(?:" + _CANTONAL_COURT +
                        r")[^\n.;()«»]{0,40}?((?:[A-Z]{1,6}\.\d{4}\.\d{1,6}|[A-Z]{2}\d{6}(?:-[A-Z](?:_U\d+)?)?|[A-Za-zÀ-ÿ]{1,8} ?/ ?\d{1,6} ?/ ?\d{1,6}|[A-Z]{1,3} \d{4}/\d{1,4}|\d{3} \d{2} \d{1,4}|[A-Z]{2,4}\d? (?:19|20)\d{2} \d{1,4}|[A-Za-z]{2,6} \d{4}(?:/\d{2,4})? Nr\. \d{1,5}))" + _DATE + _PIN)
-_QUOTE = re.compile(r"[«„“\"‘']([^»“”\"’']{25,600})[»“”\"’']")
+# Paired marks first («…», „…“, “…”, "…"; an apostrophe inside is part of the
+# quotation), then single marks only where they cannot be an apostrophe
+# ("l'art. 335" opened a quotation before).
+_QUOTE = re.compile(r"[«„“\"]([^«»„“”\"]{25,600})[»“”\"]|(?<![A-Za-zÀ-ÿ0-9])[‘']([^‘’']{25,600})[’'](?![A-Za-zÀ-ÿ0-9])")
 
 
 def find_citations(paragraphs: list[str]) -> list[dict]:
@@ -88,7 +91,7 @@ def find_citations(paragraphs: list[str]) -> list[dict]:
             if start < last_end:
                 continue
             kept.append((start, end, text)); last_end = end
-        quotes = [(m.start(), m.end(), m.group(1).strip()) for m in _QUOTE.finditer(paragraph)]
+        quotes = [(m.start(), m.end(), (m.group(1) or m.group(2) or "").strip()) for m in _QUOTE.finditer(paragraph)]
         for start, end, text in kept:
             parsed = parse_reference(text)
             if not (parsed.bge_label or parsed.dockets):
@@ -107,3 +110,55 @@ def find_citations(paragraphs: list[str]) -> list[dict]:
             found.append({"reference": text, "paragraph": index + 1, "context": paragraph[max(0, start - 60):end + 60].strip(),
                           **({"quote": quote} if quote else {})})
     return found
+
+
+# ── silent recall: citation-like strings the finder did not read ──────────
+# Docket-like shapes and collection labels (ZR, Pra, GVP, ...) that are not
+# part of any checked reference. Listed so a reader knows what was not checked;
+# nothing about them is decided.
+_UNPARSED_SHAPES = (
+    re.compile(r"(?<![A-Za-z0-9])[A-Z]{1,3}[ _.]?(?:\d{1,5}/\d{4}|\d{4}/\d{1,4})(?![0-9/])"),       # C 1234/2020, SK 2019/12
+    re.compile(r"(?<![A-Za-z0-9])[A-Z]{2}\d{6}(?:-[A-Z](?:_U\d+)?)?(?![A-Za-z0-9])"),               # LA210005 without a court word
+    re.compile(r"(?<![0-9.])\d{3} \d{2} \d{1,4}(?![0-9])"),                                           # BL 810 16 9
+    re.compile(r"(?<![A-Za-z])(?:ZR|Pra|GVP|BVR|RBOG|SJZ|AJP|JdT|SJ|RDAF)\s+\d{1,4}(?:/\d{2,4})?"
+               r"(?:\s+(?:I{1,3}|IV)(?:\s+\d{1,5})?)?(?:\s*(?:Nr\.|n°|no\.|N)\s*\d{1,5})?(?:,?\s*(?:S\.|p\.|pag\.)\s*\d{1,5})?(?![0-9])"),  # ZR 110 Nr. 23, Pra 2015 Nr. 45, JdT 2019 II 45
+)
+
+
+def _fold(text: str) -> str:
+    return re.sub(r"[\s_.]+", "", text or "").casefold()
+
+
+def unparsed_candidates(paragraphs: list[str], found: list[dict]) -> list[dict]:
+    """Citation-like strings that did not become a checked reference, in document order,
+    deduplicated by written form: {"text", "paragraph", "context"}. A string counts as
+    checked when it lies inside a found reference (any paragraph, since references are
+    deduplicated across the document)."""
+    checked = [_fold(f.get("reference", "")) for f in found]
+    out: list[dict] = []
+    seen: set[str] = set()
+    for index, paragraph in enumerate(paragraphs):
+        spans = []
+        for pattern in _UNPARSED_SHAPES:
+            for m in pattern.finditer(paragraph):
+                spans.append((m.start(), m.end(), m.group(0).strip()))
+        spans.sort(key=lambda span: (span[0], -span[1]))   # the longest match at a position wins
+        last_end = -1
+        for start, end, text in spans:
+            if start < last_end:
+                continue
+            last_end = end
+            key = _fold(text)
+            if not key or key in seen or any(key in c for c in checked):
+                continue
+            seen.add(key)
+            out.append({"text": text, "paragraph": index + 1, "context": paragraph[max(0, start - 60):end + 60].strip()})
+    return out
+
+
+# ── finding statute references in prose ───────────────────────────────────
+def find_statutes(paragraphs: list[str], claimed_quotes=None) -> list[dict]:
+    """Statute references ("Art. 8 Abs. 1 ZGB", "art. 335 al. 1 CO", "§ 18 VRG (ZH)", "SR 210")
+    with the quotation next to them; the grammar and the rows live in `statutes.py`."""
+    from .statutes import find_statute_references
+    return find_statute_references(paragraphs, quote_pattern=_QUOTE, claimed_quotes=claimed_quotes)

@@ -206,6 +206,8 @@ class Client:
             data = "".join(line[5:].strip() for line in text.splitlines() if line.startswith("data:"))
             text = data or text
         result = json.loads(text)
+        if isinstance(result, list):
+            return {"items": result}  # list endpoints such as /api/courts; callers read "items"
         if not isinstance(result, dict):
             raise APIError(None, "API returned JSON that is not an object")
         return result

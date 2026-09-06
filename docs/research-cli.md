@@ -27,6 +27,14 @@ virtual environment is refused by Homebrew and Debian Pythons (PEP 668).
 Upgrade with `pipx upgrade opencaselaw-cli` (or `uv tool upgrade
 opencaselaw-cli`). The source lives in `clients/python` of the repository.
 
+Windows without Python (a court's managed desktop): each `cli-v*` release on
+GitHub carries `OpenCaseLaw-CLI-<version>-setup.exe`, which installs the
+python.org runtime and this client under `Program Files\OpenCaseLaw` with
+`ocl.cmd`, a "Send to" entry "Entwurf prüfen (offline)" that runs
+`ocl check DRAFT --local` and opens the report, and a Start-menu entry for
+`ocl pack pull`. What it installs, how to allow-list and verify it, and how to
+mirror the pack: [court-it-install.md](court-it-install.md) (German).
+
 Every command is a read-only call to the public service at
 `mcp.opencaselaw.ch`. Nothing is downloaded, no account or key is needed.
 Queries are subject to the [privacy notice](https://opencaselaw.ch/datenschutz/);
@@ -66,10 +74,45 @@ ocl check memo.docx
 
 The draft is read (Word with its footnotes, Markdown, HTML or text), the
 citations and the quotations next to them are found in the prose, each is
-checked, and `memo.check.html` is written next to the draft: what held, what
-needs attention, and what to do about it. `--report notes.md` writes Markdown
-instead. The command exits 4 when anything needs attention, so a script or an
-agent can branch on it; `--format json` returns the rows.
+checked, and `memo.check.html` is written next to the draft: what exists,
+what needs attention, and what to do about it. `--report notes.md` writes
+Markdown instead. The command exits 4 when anything needs attention, so a
+script or an agent can branch on it; `--format json` returns the rows. `ocl --local check
+memo.docx` does the same against the verification pack on this machine, so
+nothing about the draft is sent anywhere (see "For agents" below).
+
+The report says only what was established. Its scope statement stands above
+the results: existence, identity and wording only; not whether a decision
+supports the argument or is still good law. A cited decision "exists" and,
+where a pinpoint was cited, its "passage retrieved"; it is never "verified".
+A quotation is "verbatim", "differs" or "not found" only after a served text
+was compared; when no text could be compared (offline, the pack carries no
+full texts, so a quotation next to a citation without an indexed pinpoint has
+nothing to stand against) it is "not checked", with the advice to check
+against the decision. A reference that is "not in the corpus" is qualified
+by what the corpus holds for the court the reference names, read from the
+reference itself (label, court word, canton), with the corpus's decision
+count and year span for that court when the service or the pack can supply
+it: an unpublished decision or the decision under appeal cannot be in any
+corpus, a wrong citation can be. Strings that look like dockets or
+collection references (ZR, Pra, GVP, SJZ, JdT, ...) but were not read as a
+citation are listed under "possibly citations, not checked", so a miss is
+never silent; they are not attention items. `--language de|fr|it` sets the
+language of the report's labels and advice (the CLI's default is `de`);
+anything else reads English.
+
+Statutes are checked too. `Art. 8 Abs. 1 ZGB`, `art. 335 al. 1 CO`, `art. 8
+cpv. 1 CC`, `Art. 8, 9 und 10 ZGB`, `Art. 41 ff. OR`, `SR 210` and cantonal
+acts written with the paragraph sign (`§ 12 Abs. 2 StG/ZH`, `§ 18 VRG (ZH)`)
+are found in the prose and looked up: does the act exist, does it have the
+article, and does a quotation next to the reference stand in the served
+article text. The report has its own "Statutes" table with an excerpt of the
+served text; the findings are `article retrieved`, `article not in the act`,
+`article has no text` (repealed or empty in the current edition), `act not
+found`, `quotation differs` / `quotation not found`, and `not checked` for
+what could not be asked (a `§` reference without a canton, unless
+`OCL_CANTON=ZH` names the canton the draft belongs to). "Not checked" never
+fails the run; the others exit 4.
 
 ### Check the citations in a list
 
@@ -134,7 +177,10 @@ ocl quotes check --input quotes.jsonl --format jsonl     # rows: {"reference": .
 `quote_status` is `exact` (verbatim once typography, OCR line hyphenation,
 whitespace and the service's link markup are folded), `near` (the best match
 scores 90% or better; the differing spans and the served wording are listed)
-or `not_found` (the closest served text and its score are still shown).
+or `not_found` (the closest served text and its score are still shown). When
+no served text could be compared at all (offline without an indexed
+pinpoint, since the pack carries no full texts) the status is `unverifiable`
+with `reason: "no served text"`: not a verdict, check against the decision.
 `found_in` says whether the match lies in the cited Erwägung or elsewhere in
 the decision. The served wording is authoritative and is never rewritten;
 exit code 4 unless every quotation is exact. A `quote` field on a
@@ -237,7 +283,9 @@ decisions, because the corpus is rebuilt nightly.
   means the quotation stands verbatim in the served text after folding
   typography and line breaks; `near` means it differs (the spans are
   listed: quote wording against served wording); `not_found` means no
-  window of the text comes close. Never repair a quotation from the
+  window of the compared text comes close (the closest window is in
+  `served`); `unverifiable` means nothing was compared because no text was
+  served (`reason: "no served text"`). Never repair a quotation from the
   differences by hand: copy the served wording.
 - Passage `text` is the served string; the service marks cross-references
   inside it as Markdown links. `text_plain` is the same text with those links
@@ -281,10 +329,28 @@ ocl tool call search_scholarship query='missbräuchliche Kündigung' limit=5
 Confidential drafts can be checked without sending anything: `ocl pack pull`
 downloads the verification pack (a weekly SQLite snapshot with the service's
 citation strings, docket aliases and every indexed Erwägung, several GB, CC0)
+and `ocl --local ...` answers `check`, `citations resolve`, `cite`, `decisions
+passage`, `quotes check` and bundles from it. `--local` is a switch and goes
+before or after the command (`ocl --local check memo.docx`, `ocl check
+memo.docx --local`, or `OCL_LOCAL=1`); `--pack PATH` (or `OCL_PACK`) names a
+pack file elsewhere than the pulled one, which lives in `%LOCALAPPDATA%\ocl`
+on Windows and `~/.local/share/ocl` (or `$XDG_DATA_HOME/ocl`) elsewhere. A
+missing pack is exit 2 with the advice to run `ocl pack pull`. Search,
+statutes and tools stay online-only, and the pack carries no full texts;
+`ocl --local doctor` reports the pack's path, size, generation, counts and
+age (a warning past 14 days, the snapshots being weekly) without sending
+anything, and `ocl pack info` shows the same metadata.
 and `ocl --local ...` answers `citations resolve`, `cite`, `decisions
-passage`, `quotes check` and bundles from it. Search, statutes and tools stay
+passage`, `quotes check`, `check` and bundles from it. Search and tools stay
 online-only, and the pack carries no full texts; `ocl pack info` shows which
-corpus generation it holds.
+corpus generation it holds and how the download was verified (the section
+below covers the checksum, resumable pulls and mirroring on a share).
+Federal statutes are answered offline when a
+statutes database sits next to the pack (`statutes.sqlite`, or the file
+`OCL_STATUTES` points to: the `statutes.db` the server serves, built by
+`search_stack/build_statutes_db.py`); without it, `ocl check` reports statute
+references as "not checked" rather than wrong, and cantonal acts stay
+online-only.
 
 Three skills ship in the package: `citation-check` (verify a draft's
 citations and quotations), `research` (search, read, follow citations, cite,
@@ -292,12 +358,63 @@ verify), `evidence-bundle` (keep what was relied on). Scripts that prefer code
 over a shell use `opencaselaw_cli.api` (`resolve`, `check_quotes`, `passage`,
 `search`, `tool`).
 
+## Offline pack: download, verify, mirror
+
+The verification pack is one SQLite file, published weekly on the HuggingFace
+mirror as `artifacts/verification_pack/latest.sqlite.gz` next to a
+`latest.sqlite.gz.sha256` sidecar in sha256sum format (the dated copy
+`<date>.sqlite.gz` has one too). `ocl pack pull` downloads the gzip resumably,
+verifies it against the sidecar before unpacking, installs the pack atomically
+and records the verification next to it. Without a published checksum it stops
+(exit 2) unless `--insecure` is given, and it never replaces an installed pack
+with one that failed verification or that the client cannot read.
+
+For a court whose workstations do not reach the internet, IT downloads once,
+verifies, and mirrors the pair on a file share:
+
+```bash
+# 1. On a machine with internet access, once a week (about 8 GB):
+curl -LO https://huggingface.co/datasets/voilaj/swiss-caselaw/resolve/main/artifacts/verification_pack/latest.sqlite.gz
+curl -LO https://huggingface.co/datasets/voilaj/swiss-caselaw/resolve/main/artifacts/verification_pack/latest.sqlite.gz.sha256
+sha256sum -c latest.sqlite.gz.sha256
+# PowerShell: curl.exe -LO ...; then
+#   (Get-FileHash latest.sqlite.gz).Hash -eq ((Get-Content latest.sqlite.gz.sha256) -split ' ')[0]
+# 2. Copy both files, unchanged, to a read-only share, e.g. \\server\share\ocl\
+# 3. Each workstation (a login script, or the clerk) installs from the share:
+ocl pack pull --url file://server/share/ocl/latest.sqlite.gz
+ocl pack verify
+```
+
+`pull` reads the `.sha256` from the same place as the gzip, so the share must
+carry both. The pack lands in `%LOCALAPPDATA%\ocl\verification_pack.sqlite`
+on Windows and `~/.local/share/ocl/` elsewhere (`--to FILE` for another
+location); `\\server\share\ocl\latest.sqlite.gz`,
+`D:\packs\latest.sqlite.gz` and `file:///mnt/share/latest.sqlite.gz` are
+accepted as well, and any mirror that serves the gzip and its sidecar over
+https works. An interrupted pull continues from the bytes already saved in
+`<pack>.gz.part` (HTTP Range with the source's ETag; a seek on a share; a
+mirror that ignores Range starts over). It prints a line every 50 MB and waits
+at most 120 s for each read, with no overall limit. A checksum mismatch keeps
+the partial file for inspection and exits 2; the next pull starts over. A pull
+with `--insecure` installs the pack but records it as unverified.
+
+`ocl pack verify` and `ocl pack info` print the same report: what the pull
+recorded (`source_url`, `checksum_url`, `gzip_sha256`, `pack_sha256`,
+`pulled_at`, `client_version`) together with the pack's `schema_version`,
+`built_at`, `db_generation`, `decisions` and `paragraphs`. `verify` exits 4
+when the pack was pulled with `--insecure`, copied by hand (no `<pack>.json`
+next to it) or changed size since, so a login script can branch on it. Packs
+of schema 1 and 2 open; a newer major version is refused on open with a
+message naming the client and pack versions (upgrade the client).
+
 ## Reusable setup
 
 Defaults can live in `~/.config/ocl/config` (one `key = value` per line:
-`base_url`, `timeout`, `retries`, `format`, `color`, `language`, `jobs`) or in
-`OCL_BASE_URL`, `OCL_TIMEOUT`, `OCL_RETRIES`, `OCL_FORMAT`, `OCL_COLOR`,
-`OCL_LANGUAGE`, `OCL_JOBS`. A flag beats the environment, which beats the file.
+`base_url`, `timeout`, `retries`, `format`, `color`, `language`, `jobs`,
+`cache`, `local`, `pack`) or in `OCL_BASE_URL`, `OCL_TIMEOUT`, `OCL_RETRIES`,
+`OCL_FORMAT`, `OCL_COLOR`, `OCL_LANGUAGE`, `OCL_JOBS`, `OCL_CACHE`, `OCL_LOCAL`
+(`1` for offline mode; a pack path here, the 0.6 grammar, still works) and
+`OCL_PACK` (the pack file). A flag beats the environment, which beats the file.
 `ocl completion zsh > ~/.zfunc/_ocl` (or `eval "$(ocl completion bash)"`, or
 `ocl completion fish > ~/.config/fish/completions/ocl.fish`) installs tab
 completion for commands, options and choices.
