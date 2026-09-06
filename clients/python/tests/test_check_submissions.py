@@ -90,7 +90,7 @@ def test_batch_over_a_directory_writes_an_index_and_reports_unreadable_files(tmp
     assert "a.docx" in html and "b.pdf" in html and "scan.pdf" in html and (folder / "b.check.html").is_file()
     code = cli.main(["check", str(folder / "a.docx"), str(folder / "b.pdf"), "--kind", "submission", "--format", "text", "--color", "never", "--report", str(folder / "index.md")])
     text = capsys.readouterr().out
-    assert code == 4 and "check" in text.lower() and (folder / "index.md").read_text(encoding="utf-8").startswith("# ")
+    assert code == 4 and "2 Dateien" in text and (folder / "index.md").read_text(encoding="utf-8").startswith("# ")
 
 
 def test_submission_kind_titles_the_report_and_leads_with_the_counts(tmp_path, monkeypatch, capsys):

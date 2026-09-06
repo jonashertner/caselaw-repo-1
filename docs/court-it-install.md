@@ -79,9 +79,10 @@ Bild dekodiert, nichts geschrieben, keine Netzverbindung geöffnet. Nichts
 muss auf den Arbeitsplätzen nachinstalliert werden.
 
 Gelesen wird, was das PDF als Text enthält. Ein gescanntes Dokument ohne
-Textebene (Bild-PDF, etwa eine eingescannte Papiereingabe) liefert keinen
-Text; der Bericht meldet dann, dass keine Zitate gefunden wurden, und nennt
-das ausdrücklich. Solche Eingaben brauchen vorher eine Texterkennung (OCR),
+Textebene (Bild-PDF, etwa eine eingescannte Papiereingabe) wird abgewiesen:
+`ocl` meldet «no text layer (scanned PDF); OCR is needed before checking»
+(Code 2), und in einem Ordnerlauf steht die Datei in der Übersicht als nicht
+lesbar. Solche Eingaben brauchen vorher eine Texterkennung (OCR),
 zum Beispiel durch die Scan-Software oder das Dokumentenmanagement des
 Gerichts; der Client bringt keine mit. PDFs, die zum Öffnen ein Passwort
 verlangen, werden nicht gelesen; AES-verschlüsselte Dateien mit blossem
@@ -330,8 +331,8 @@ verteilte "Senden an"-Kopien (Abschnitt 5) entfernt die Richtlinie.
 - Das Paket enthält keine Volltexte: ein Zitat ohne Erwägungsangabe kann
   offline nicht gegen den Text verglichen werden, und Gesetzesartikel werden
   offline nicht geprüft. Der Bericht kennzeichnet beides.
-- PDF-Eingaben ohne Textebene (Scans) liefern keine Zitate; sie brauchen
-  vorher OCR (Abschnitt 1, "PDF-Eingaben").
+- PDF-Eingaben ohne Textebene (Scans) werden abgewiesen und in der Übersicht
+  als nicht lesbar geführt; sie brauchen vorher OCR (Abschnitt 1, "PDF-Eingaben").
 - Die Abdeckung je Gericht ist unterschiedlich (`https://opencaselaw.ch/coverage/`);
   "nicht im veröffentlichten Korpus" ist bei Gerichten mit lückenhafter
   Veröffentlichung häufig und kein Fehlerbefund.

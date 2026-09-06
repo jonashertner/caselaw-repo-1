@@ -26,7 +26,10 @@ rem An index from an earlier run must never pass for this run's result.
 if exist "%INDEX%" del /q "%INDEX%" 2>nul
 call "%OCL_DIR%ocl.cmd" check %* %LOCALFLAG% --color never
 set "RC=%ERRORLEVEL%"
-if not "%RC%"=="2" goto :multi_done
+rem 0 = all found, 4 = something needs attention, 2 = a file could not be read (a scan without a
+rem text layer): all three wrote the index, which names every file with its result.
+
+:multi_done
 rem Exit 2 with several files: a client that takes one file per call rejects the
 rem extra arguments ("unrecognized arguments"). Check the files one after another.
 echo.
@@ -40,7 +43,7 @@ shift
 goto :next
 
 :multi_done
-if exist "%INDEX%" (
+if exist "%INDEX%" if not %RC%==1 if not %RC%==3 (
   start "" "%INDEX%"
 ) else (
   echo.
@@ -49,7 +52,7 @@ if exist "%INDEX%" (
   pause
 )
 rem 0 = alles gefunden, 4 = etwas braucht Aufmerksamkeit (steht im Bericht),
-rem 2 = Eingabe, 3 = Paket oder Dienst nicht erreichbar; bei mehreren Dateien der hoechste Code.
+rem 2 = eine Datei nicht lesbar (steht in der Uebersicht), 3 = Paket oder Dienst nicht erreichbar.
 exit /b %RC%
 
 :single
@@ -75,11 +78,3 @@ if exist "%REPORT%" if %RC% LEQ 4 if not %RC%==1 if not %RC%==2 if not %RC%==3 (
 :done
 exit /b %RC%
 
-:one
-rem Fallback, one file per call: check it, leave the report next to it, return the exit code.
-set "REPORT=%~dpn1.check.html"
-echo.
-echo --- %~nx1
-if exist "%REPORT%" del /q "%REPORT%" 2>nul
-call "%OCL_DIR%ocl.cmd" check "%~1" %LOCALFLAG% --color never
-exit /b %ERRORLEVEL%

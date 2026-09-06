@@ -79,7 +79,7 @@ def _unpack_wheel(wheel: Path, site: Path, *, label: str) -> tuple[list[str], Pa
         for info in zf.infolist():
             name = info.filename
             top = name.split("/", 1)[0]
-            if ".." in Path(name).parts or "\\" in name or Path(name).is_absolute() or not name.strip():
+            if ".." in Path(name).parts or "\\" in name or Path(name).is_absolute() or ":" in name or not name.strip():
                 raise SystemExit(f"refusing {label} entry {name!r}")
             if top.endswith(".data"):
                 continue  # scripts/ entry points: the launcher replaces them
@@ -96,7 +96,7 @@ def _unpack_wheel(wheel: Path, site: Path, *, label: str) -> tuple[list[str], Pa
                 shutil.copyfileobj(src, dst)
             written.append(name)
             if top.endswith(".dist-info"):
-                if Path(name).name == "LICENSE":
+                if Path(name).name.upper().startswith("LICENSE"):
                     licence = target
                 elif Path(name).name == "METADATA":
                     metadata = target.read_text(encoding="utf-8", errors="replace")

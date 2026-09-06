@@ -3,7 +3,7 @@
 The client follows semantic versioning. The research API contract it consumes is
 versioned separately (`x-opencaselaw-contract-version` in `/api/research/openapi.json`).
 
-## 0.9.0 (unreleased)
+## 0.9.0 (2026-09-07)
 
 - Party submissions. `ocl check` reads PDF (page by page, through the optional
   `pypdf` package or `pdftotext` on PATH; a scan without a text layer is
