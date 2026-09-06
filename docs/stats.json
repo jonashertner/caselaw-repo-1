@@ -2,7 +2,10 @@
   "total": 1076953,
   "source_representations": 1076953,
   "representation_method_version": "2026-07-23.1",
-  "unique_decisions_status": "stale",
+  "unique_decisions": 936150,
+  "unique_decisions_lower_bound": 936100,
+  "duplicate_representations": 140803,
+  "unique_decisions_status": "current",
   "by_court": [
     {
       "court": "bger",
@@ -2397,7 +2400,7 @@
     "2026-08": 1040,
     "2026-09": 14
   },
-  "generated_at": "2026-09-06T11:28:34.824327+00:00",
+  "generated_at": "2026-09-06T21:04:00.688676+00:00",
   "scraper_health": {
     "run_at": "2026-09-06T04:41:56.244361+00:00",
     "run_duration_s": 13255.1,
@@ -3578,7 +3581,7 @@
       "ZH": 135
     },
     "commentaries": 1173,
-    "scholarship_publications": 44495,
+    "scholarship_publications": 44497,
     "scholarship_by_source": {
       "zora_law": 14022,
       "boris_law": 7319,
@@ -3594,7 +3597,7 @@
       "edoc_unibas_law": 324,
       "sui_generis": 294,
       "medialex": 278,
-      "eizpublishing": 268,
+      "eizpublishing": 270,
       "leges": 204,
       "ex_ante": 176,
       "thegoodboard": 140,
@@ -3606,7 +3609,7 @@
       "alexandria_law": 13
     },
     "scholarship_by_type": {
-      "article": 30288,
+      "article": 30290,
       "book": 10614,
       "dissertation": 2237,
       "report": 628,
@@ -3616,19 +3619,19 @@
       "reference_article": 40,
       "bachelor_thesis": 3
     },
-    "citation_edges": 9983764,
-    "statute_edges": 12668616
+    "citation_edges": 10014722,
+    "statute_edges": 12760553
   },
   "interesting_stats": {
     "most_cited_decision": {
       "docket": "BGE 125 V 351",
-      "citation_count": 77815,
+      "citation_count": 77819,
       "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
     },
     "most_cited_statute": {
       "law_code": "LTF",
       "article": "100",
-      "ref_count": 192596
+      "ref_count": 198179
     },
     "oldest_decision": {
       "docket": "1_I_26",
@@ -3637,20 +3640,20 @@
       "url": "https://mcp.opencaselaw.ch/entscheid/bge_1_I_26"
     },
     "language_split": {
-      "de_pct": 47.1,
-      "fr_pct": 44.3,
+      "de_pct": 46.9,
+      "fr_pct": 44.7,
       "it_pct": 8.5,
-      "total": 1067158
+      "total": 1072999
     },
     "regeste_coverage": {
-      "pct": 38.5,
-      "with_regeste": 412423,
-      "total": 1071112
+      "pct": 38.3,
+      "with_regeste": 412409,
+      "total": 1076953
     },
     "graph_size": {
-      "decision_edges": 11678678,
-      "statute_edges": 12668616,
-      "total": 24347294
+      "decision_edges": 11751554,
+      "statute_edges": 12760553,
+      "total": 24512107
     },
     "echr_switzerland": {
       "total": 1526,
@@ -3667,19 +3670,19 @@
     "top_5_decisions": [
       {
         "docket": "BGE 125 V 351",
-        "citation_count": 77815,
+        "citation_count": 77819,
         "regeste_excerpt": "Regeste\n Art. 4 BV; Art. 108 Abs. 1 lit. b UVG; Art. 40 BZP in Verbindung mit Art. 19 VwVG; Art. 95 Abs. 2 in Verbindung mit Art. 113 und 132 OG: Beweiswürdigun",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_125_V_351"
       },
       {
         "docket": "125 V 351",
-        "citation_count": 76310,
+        "citation_count": 76314,
         "regeste_excerpt": "Regeste\n Art. 4 BV; Art. 108 Abs. 1 lit. b UVG; Art. 40 BZP in Verbindung mit Art. 19 VwVG; Art. 95 Abs. 2 in Verbindung mit Art. 113 und 132 OG: Beweiswürdigun",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_125 V 351"
       },
       {
         "docket": "BGE 122 V 157",
-        "citation_count": 40364,
+        "citation_count": 40368,
         "regeste_excerpt": "Regeste\n Art. 4 BV, Art. 6 Ziff. 1 EMRK. - Art. 4 BV und Art. 6 Ziff. 1 EMRK umfassen keinen formellen Anspruch auf Beizug versicherungsexterner medizinischer G",
         "url": "https://mcp.opencaselaw.ch/entscheid/bge_BGE_122_V_157"
       },
@@ -3700,17 +3703,17 @@
       {
         "law_code": "LTF",
         "article": "100",
-        "ref_count": 192596
+        "ref_count": 198179
       },
       {
         "law_code": "LTF",
         "article": "113",
-        "ref_count": 118201
+        "ref_count": 122988
       },
       {
         "law_code": "LTF",
         "article": "42",
-        "ref_count": 108695
+        "ref_count": 108698
       },
       {
         "law_code": "BGG",
@@ -3720,7 +3723,7 @@
       {
         "law_code": "BGG",
         "article": "66",
-        "ref_count": 60547
+        "ref_count": 60548
       }
     ],
     "materialien_coverage": {
@@ -4385,7 +4388,10 @@
       "VD": 5839,
       "BS": 1
     },
-    "corpus": {},
+    "corpus": {
+      "citation_edges": 30958,
+      "statute_edges": 91937
+    },
     "previous_generated_at": "2026-09-05T21:56:48.810129+00:00"
   }
 }
