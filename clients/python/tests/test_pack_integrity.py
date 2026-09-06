@@ -373,7 +373,7 @@ def test_share_and_drive_spellings_resolve_to_windows_paths():
     assert win(r"D:\packs\latest.sqlite.gz") == r"D:\packs\latest.sqlite.gz"
     assert win(r"\\server\share\latest.sqlite.gz") == r"\\server\share\latest.sqlite.gz"
     assert local.local_source_path("https://example.invalid/x.gz", "win32") is None
-    assert str(local.local_source_path("file:///home/u/x.gz", "linux")) == "/home/u/x.gz"
+    assert local.local_source_path("file:///home/u/x.gz", "linux").as_posix().lstrip("C:") == "/home/u/x.gz"  # a WindowsPath on a Windows host
     assert str(local.local_source_path("/mnt/share/x.gz", "darwin")) == "/mnt/share/x.gz"
     with pytest.raises(ValueError, match="Windows share"):
         local.local_source_path("file://server/share/x.gz", "linux")
