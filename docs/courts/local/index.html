@@ -133,18 +133,6 @@
       </ol>
       <p data-t="server_p"></p>
 
-      <h2 id="prices" data-t="price_h">Richtpreise</h2>
-      <table class="chk">
-        <thead><tr><th data-t="t_tier">Stufe</th><th data-t="t_service">Leistung</th><th class="num">CHF</th></tr></thead>
-        <tbody>
-          <tr><td data-t="p1a"></td><td data-t="p1b"></td><td class="num" data-t="p1c"></td></tr>
-          <tr><td data-t="p2a"></td><td data-t="p2b"></td><td class="num" data-t="p2c"></td></tr>
-          <tr><td data-t="p3a"></td><td data-t="p3b"></td><td class="num" data-t="p3c"></td></tr>
-          <tr><td data-t="p4a"></td><td data-t="p4b"></td><td class="num" data-t="p4c"></td></tr>
-        </tbody>
-      </table>
-      <p data-t="price_p"></p>
-
       <h2 id="pilot" data-t="pilot_h">Pilot in drei Monaten</h2>
       <p data-t="pilot_p"></p>
       <p data-t="contact_p"></p>
@@ -220,14 +208,6 @@ OCL.init({
     "st2": "Die IT lädt das Prüfpaket einmal pro Woche vom Spiegel, prüft die Prüfsumme und legt es auf ein Laufwerk. Die Arbeitsplätze holen es von dort. Kein Arbeitsplatz braucht Internet.",
     "st3": "Die Gerichtsschreiberin speichert den Entwurf, wählt «Entwurf prüfen» und liest den Bericht. Der Bericht ist so vertraulich wie der Entwurf und liegt neben ihm.",
     "server_p": "Für macOS steht dieselbe Prüfung als Kommandozeilenwerkzeug bereit (<a href=\"/cli/\">ocl</a>); der Windows-Installer ist für Gerichte gedacht, deren IT keine Python-Umgebung auf den Arbeitsplätzen zulässt.",
-    "price_h": "Richtpreise",
-    "t_tier": "Stufe",
-    "t_service": "Leistung",
-    "p1a": "Pilot", "p1b": "3 Monate, ein Gericht, Kalibrierung auf 200 eigene publizierte Entscheide, Messbericht", "p1c": "5'000 pauschal",
-    "p2a": "Arbeitsplatz", "p2b": "Signierte Installer, wöchentliches Paket, Updates, Support innert zwei Arbeitstagen, ein Kalibrierungstag pro Jahr; bis 50 Arbeitsplätze", "p2c": "12'000 pro Jahr",
-    "p3a": "Server", "p3b": "Vollkorpus mit Suche im Netz des Gerichts, alle Arbeitsplätze", "p3c": "15'000 einmalig, 24'000 pro Jahr",
-    "p4a": "Kalibrierung, Schulung", "p4b": "Tagessatz", "p4c": "2'400",
-    "price_p": "Alle Stufen liegen auch über drei Jahre unter der Schwelle von CHF 150'000 für die freihändige Vergabe von Dienstleistungen (IVöB 2019, Anhang 2). Das Gericht kann direkt bestellen. Stand September 2026.",
     "pilot_h": "Pilot in drei Monaten",
     "pilot_p": "Das Gericht stellt zweihundert publizierte eigene Entscheide als Testmenge. Der Anbieter kalibriert die Erkennung auf die Zitierweise des Gerichts, misst die Trefferquote und legt einen Messbericht vor. Danach entscheidet das Gericht. Keine Entwürfe werden ausgetauscht.",
     "contact_p": "Kontakt: Jonas Hertner, <a href=\"/ueber/\">über OpenCaseLaw</a>.",
@@ -294,14 +274,6 @@ OCL.init({
     "st2": "Le service informatique récupère le paquet de vérification une fois par semaine depuis le miroir, contrôle la somme de contrôle et le dépose sur un lecteur. Les postes le prennent là. Aucun poste n’a besoin d’Internet.",
     "st3": "Le greffier enregistre le projet, choisit « Vérifier le projet » et lit le rapport. Le rapport est aussi confidentiel que le projet et se trouve à côté de lui.",
     "server_p": "Sur macOS, la même vérification existe en ligne de commande (<a href=\"/cli/\">ocl</a>) ; l’installateur Windows s’adresse aux tribunaux dont le service informatique n’autorise pas d’environnement Python sur les postes.",
-    "price_h": "Prix indicatifs",
-    "t_tier": "Niveau",
-    "t_service": "Prestation",
-    "p1a": "Pilote", "p1b": "3 mois, un tribunal, calibrage sur 200 décisions propres publiées, rapport de mesure", "p1c": "5'000 forfait",
-    "p2a": "Postes de travail", "p2b": "Installateurs signés, paquet hebdomadaire, mises à jour, support sous deux jours ouvrables, une journée de calibrage par an ; jusqu’à 50 postes", "p2c": "12'000 par an",
-    "p3a": "Serveur", "p3b": "Corpus complet avec recherche dans le réseau du tribunal, tous les postes", "p3c": "15'000 une fois, 24'000 par an",
-    "p4a": "Calibrage, formation", "p4b": "Tarif journalier", "p4c": "2'400",
-    "price_p": "Tous les niveaux restent, même sur trois ans, sous le seuil de CHF 150'000 de la procédure de gré à gré pour les services (AIMP 2019, annexe 2). Le tribunal peut commander directement. État : septembre 2026.",
     "pilot_h": "Pilote en trois mois",
     "pilot_p": "Le tribunal fournit deux cents décisions propres publiées comme jeu de test. Le prestataire calibre la détection sur la manière de citer du tribunal, mesure le taux de détection et remet un rapport de mesure. Le tribunal décide ensuite. Aucun projet n’est échangé.",
     "contact_p": "Contact : Jonas Hertner, <a href=\"/ueber/\">à propos d’OpenCaseLaw</a>.",
@@ -368,14 +340,6 @@ OCL.init({
     "st2": "Il servizio informatico scarica il pacchetto di verifica una volta alla settimana dal mirror, controlla la somma di controllo e lo deposita su un’unità. Le postazioni lo prendono da lì. Nessuna postazione ha bisogno di Internet.",
     "st3": "Il cancelliere salva il progetto, sceglie «Verifica il progetto» e legge il rapporto. Il rapporto è confidenziale quanto il progetto e si trova accanto a esso.",
     "server_p": "Su macOS la stessa verifica è disponibile come strumento a riga di comando (<a href=\"/cli/\">ocl</a>); l’installatore Windows è pensato per i tribunali il cui servizio informatico non ammette un ambiente Python sulle postazioni.",
-    "price_h": "Prezzi indicativi",
-    "t_tier": "Livello",
-    "t_service": "Prestazione",
-    "p1a": "Pilota", "p1b": "3 mesi, un tribunale, calibrazione su 200 decisioni proprie pubblicate, rapporto di misura", "p1c": "5'000 forfettario",
-    "p2a": "Postazioni", "p2b": "Installatori firmati, pacchetto settimanale, aggiornamenti, supporto entro due giorni lavorativi, una giornata di calibrazione all’anno; fino a 50 postazioni", "p2c": "12'000 all’anno",
-    "p3a": "Server", "p3b": "Corpus completo con ricerca nella rete del tribunale, tutte le postazioni", "p3c": "15'000 una tantum, 24'000 all’anno",
-    "p4a": "Calibrazione, formazione", "p4b": "Tariffa giornaliera", "p4c": "2'400",
-    "price_p": "Tutti i livelli restano, anche su tre anni, sotto la soglia di CHF 150'000 per l’aggiudicazione a trattativa privata di servizi (CIAP 2019, allegato 2). Il tribunale può ordinare direttamente. Stato: settembre 2026.",
     "pilot_h": "Progetto pilota in tre mesi",
     "pilot_p": "Il tribunale mette a disposizione duecento decisioni proprie pubblicate come insieme di prova. Il fornitore calibra il riconoscimento sul modo di citare del tribunale, misura il tasso di riconoscimento e consegna un rapporto di misura. Poi decide il tribunale. Nessun progetto viene scambiato.",
     "contact_p": "Contatto: Jonas Hertner, <a href=\"/ueber/\">su OpenCaseLaw</a>.",
@@ -442,14 +406,6 @@ OCL.init({
     "st2": "Court IT fetches the verification pack once a week from the mirror, checks the checksum and drops it on a share. Workstations take it from there. No workstation needs the internet.",
     "st3": "The clerk saves the draft, chooses \"Check draft\" and reads the report. The report is as confidential as the draft and sits next to it.",
     "server_p": "On macOS the same check is available as a command-line tool (<a href=\"/cli/\">ocl</a>); the Windows installer is meant for courts whose IT allows no Python environment on workstations.",
-    "price_h": "Indicative prices",
-    "t_tier": "Tier",
-    "t_service": "Service",
-    "p1a": "Pilot", "p1b": "3 months, one court, calibration on 200 of its own published decisions, measurement report", "p1c": "5,000 flat",
-    "p2a": "Workstations", "p2b": "Signed installers, weekly pack, updates, support within two working days, one calibration day per year; up to 50 workstations", "p2c": "12,000 per year",
-    "p3a": "Server", "p3b": "Full corpus with search inside the court's network, all workstations", "p3c": "15,000 once, 24,000 per year",
-    "p4a": "Calibration, training", "p4b": "Day rate", "p4c": "2,400",
-    "price_p": "Every tier stays, even over three years, below the CHF 150,000 threshold for direct award of services (IVöB 2019, annex 2). A court can order directly. As of September 2026.",
     "pilot_h": "Three-month pilot",
     "pilot_p": "The court provides two hundred of its own published decisions as a test set. The provider calibrates the recognition to the court's citation style, measures the recall and delivers a measurement report. Then the court decides. No drafts are exchanged.",
     "contact_p": "Contact: Jonas Hertner, <a href=\"/ueber/\">about OpenCaseLaw</a>.",
