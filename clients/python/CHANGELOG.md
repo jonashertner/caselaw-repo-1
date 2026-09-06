@@ -4,6 +4,33 @@ The client follows semantic versioning. The research API contract it consumes is
 versioned separately (`x-opencaselaw-contract-version` in `/api/research/openapi.json`).
 
 
+## 0.8.0 (unreleased)
+
+- Offline mode is safe on the thread pool. `LocalClient` shared one SQLite
+  connection across the `--jobs` workers; a draft with many references
+  crashed with `sqlite3.InterfaceError` or, worse, answered "not found" for
+  a decision the pack holds. Every thread now opens its own read-only
+  connection; `ocl --local check` over 120 references with `--jobs 8` is
+  covered by a test.
+- `--local` is a plain switch and `--pack PATH` names the pack file, so
+  `ocl --local check memo.docx`, `ocl check memo.docx --local` and
+  `ocl --local --pack /x/pack.sqlite check memo.docx` all parse (0.6/0.7
+  read the pack path as the value of `--local` and rejected the first form).
+  `OCL_PACK` sets the path; `OCL_LOCAL=1` switches offline mode on, and a
+  pack path in `OCL_LOCAL`, the old grammar, keeps working. A missing pack is
+  exit 2 with a message naming `ocl pack pull`; a file that is not a pack
+  says so instead of failing later.
+- `ocl --local doctor` reports the pack instead of failing on the tool list:
+  path, size, schema version, build time, generation, decision and paragraph
+  counts, age in days (a warning past 14 days), the SQLite version; exit 0.
+  The online doctor is unchanged.
+- Windows: the pack lives in `%LOCALAPPDATA%\ocl` (elsewhere
+  `$XDG_DATA_HOME/ocl` or `~/.local/share/ocl`), read at run time, and the
+  pack is opened through its file URI, so paths with backslashes, spaces,
+  `%`, `#` or `?` work.
+- A failure inside the pack (I/O error, corrupt file) reaches the workflows
+  as an `APIError` and becomes a row with `status: error`, never a traceback.
+
 ## 0.7.0 (2026-09-06)
 
 - `ocl check memo.docx`: hand over the draft itself. The document is read

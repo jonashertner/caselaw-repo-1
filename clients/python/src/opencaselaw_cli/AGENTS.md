@@ -68,13 +68,21 @@ Quotes: `exact` · `near` (differences listed) · `not_found`.
 ## Offline
 
     ocl pack pull                                   # several GB, weekly snapshot (CC0)
+    ocl --local doctor --format json                # the pack: path, size, generation, age
+    ocl --local check memo.docx
     ocl --local citations resolve --input refs.jsonl --format jsonl
     ocl --local quotes check --input quotes.jsonl --format jsonl
+    ocl --local --pack /srv/packs/verification_pack.sqlite check memo.docx
 
-With `--local` nothing about the draft leaves the machine: identity, pinpoints
-and quotations are checked against the pack (no full texts, no search, no
-tools). `ocl pack info` shows the snapshot's generation; results carry
-`offline: true`.
+`--local` is a switch (before or after the command; `OCL_LOCAL=1`); `--pack
+PATH` (or `OCL_PACK`) names the pack file, otherwise the one `ocl pack pull`
+stored (`%LOCALAPPDATA%\ocl` on Windows, `~/.local/share/ocl` elsewhere). A
+missing pack is exit 2 with the advice to run `ocl pack pull`. With `--local`
+nothing about the draft leaves the machine: identity, pinpoints and
+quotations are checked against the pack (no full texts, no search, no tools).
+`ocl --local doctor` reports the pack's generation and age (a warning past 14
+days) and exits 0; `ocl pack info` shows the same metadata. Results carry
+`offline: true`; a failure inside the pack is a row with `status: error`.
 
 ## Skills
 

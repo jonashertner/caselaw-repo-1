@@ -430,7 +430,27 @@ def render_tool(value: dict, s: Style, width: int) -> str:
     return "\n".join(lines)
 
 
+def _render_doctor_offline(value: dict, s: Style) -> str:
+    """`ocl --local doctor`: the pack on this machine (nothing was sent)."""
+    ok = value.get("ok")
+    lines = [(s.green("ok") if ok else s.red("not ok")) + "  offline  "
+             + s.dim(f"client {value.get('client_version')} · python {value.get('python')} · sqlite {value.get('sqlite_version')}")]
+    lines.append(f"  pack: {value.get('pack')}  " + s.dim(f"{(value.get('pack_bytes') or 0) / 1e9:.2f} GB"))
+    counts = "  ".join(f"{key} {value[key]:,}" if isinstance(value.get(key), int) else f"{key} {value.get(key)}" for key in ("decisions", "paragraphs"))
+    lines.append(f"  built: {value.get('built_at')}  generation {value.get('db_generation')}  schema {value.get('schema_version')}  {counts}")
+    age = value.get("pack_age_days")
+    lines.append("  pack_age_days: " + (str(age) if age is not None else "unknown"))
+    if "cite_ok" in value:
+        lines.append(f"  citation lookup: {'ok' if value['cite_ok'] else 'unexpected answer'}  " + s.dim(f"{value.get('cite_ms')} ms"))
+    lines += ["  " + s.yellow(str(w)) for w in value.get("warnings") or []]
+    if value.get("error"):
+        lines.append("  " + s.red(str(value["error"].get("message"))))
+    return "\n".join(lines)
+
+
 def render_doctor(value: dict, s: Style, width: int) -> str:
+    if value.get("mode") == "offline":
+        return _render_doctor_offline(value, s)
     ok = value.get("ok")
     lines = [(s.green("ok") if ok else s.red("not ok")) + f"  {value.get('base_url')}  " + s.dim(f"client {value.get('client_version')} · python {value.get('python')}")]
     health = value.get("health") or {}

@@ -69,7 +69,9 @@ citations and the quotations next to them are found in the prose, each is
 checked, and `memo.check.html` is written next to the draft: what held, what
 needs attention, and what to do about it. `--report notes.md` writes Markdown
 instead. The command exits 4 when anything needs attention, so a script or an
-agent can branch on it; `--format json` returns the rows.
+agent can branch on it; `--format json` returns the rows. `ocl --local check
+memo.docx` does the same against the verification pack on this machine, so
+nothing about the draft is sent anywhere (see "For agents" below).
 
 ### Check the citations in a list
 
@@ -281,10 +283,17 @@ ocl tool call search_scholarship query='missbräuchliche Kündigung' limit=5
 Confidential drafts can be checked without sending anything: `ocl pack pull`
 downloads the verification pack (a weekly SQLite snapshot with the service's
 citation strings, docket aliases and every indexed Erwägung, several GB, CC0)
-and `ocl --local ...` answers `citations resolve`, `cite`, `decisions
-passage`, `quotes check` and bundles from it. Search, statutes and tools stay
-online-only, and the pack carries no full texts; `ocl pack info` shows which
-corpus generation it holds.
+and `ocl --local ...` answers `check`, `citations resolve`, `cite`, `decisions
+passage`, `quotes check` and bundles from it. `--local` is a switch and goes
+before or after the command (`ocl --local check memo.docx`, `ocl check
+memo.docx --local`, or `OCL_LOCAL=1`); `--pack PATH` (or `OCL_PACK`) names a
+pack file elsewhere than the pulled one, which lives in `%LOCALAPPDATA%\ocl`
+on Windows and `~/.local/share/ocl` (or `$XDG_DATA_HOME/ocl`) elsewhere. A
+missing pack is exit 2 with the advice to run `ocl pack pull`. Search,
+statutes and tools stay online-only, and the pack carries no full texts;
+`ocl --local doctor` reports the pack's path, size, generation, counts and
+age (a warning past 14 days, the snapshots being weekly) without sending
+anything, and `ocl pack info` shows the same metadata.
 
 Three skills ship in the package: `citation-check` (verify a draft's
 citations and quotations), `research` (search, read, follow citations, cite,
@@ -295,9 +304,11 @@ over a shell use `opencaselaw_cli.api` (`resolve`, `check_quotes`, `passage`,
 ## Reusable setup
 
 Defaults can live in `~/.config/ocl/config` (one `key = value` per line:
-`base_url`, `timeout`, `retries`, `format`, `color`, `language`, `jobs`) or in
-`OCL_BASE_URL`, `OCL_TIMEOUT`, `OCL_RETRIES`, `OCL_FORMAT`, `OCL_COLOR`,
-`OCL_LANGUAGE`, `OCL_JOBS`. A flag beats the environment, which beats the file.
+`base_url`, `timeout`, `retries`, `format`, `color`, `language`, `jobs`,
+`cache`, `local`, `pack`) or in `OCL_BASE_URL`, `OCL_TIMEOUT`, `OCL_RETRIES`,
+`OCL_FORMAT`, `OCL_COLOR`, `OCL_LANGUAGE`, `OCL_JOBS`, `OCL_CACHE`, `OCL_LOCAL`
+(`1` for offline mode; a pack path here, the 0.6 grammar, still works) and
+`OCL_PACK` (the pack file). A flag beats the environment, which beats the file.
 `ocl completion zsh > ~/.zfunc/_ocl` (or `eval "$(ocl completion bash)"`, or
 `ocl completion fish > ~/.config/fish/completions/ocl.fish`) installs tab
 completion for commands, options and choices.

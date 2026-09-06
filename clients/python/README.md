@@ -64,8 +64,9 @@ service with its structured output. Three skills ship in the package
 --claude` copies them into Claude Code's skills directory, `--dir` anywhere
 else. `opencaselaw_cli.api` offers the same as a library. For confidential
 drafts, `ocl pack pull` fetches the weekly verification pack and
-`ocl --local ...` runs the citation, pinpoint and quotation checks on this
-machine only.
+`ocl --local check memo.docx` (or `ocl --local ...` for the other check
+commands; `--pack PATH` for a pack stored elsewhere) runs the citation,
+pinpoint and quotation checks on this machine only.
 
 ## Scope
 

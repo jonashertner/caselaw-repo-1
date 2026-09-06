@@ -21,7 +21,7 @@ from .workflows import (BREAKER_THRESHOLD, DEFAULT_JOBS, RANKED_MAX_RESULTS, Res
 
 DEFAULT_BASE_URL = "https://mcp.opencaselaw.ch"
 FORMATS = ("text", "json", "jsonl", "table", "csv", "md")
-CONFIG_KEYS = ("base_url", "timeout", "retries", "format", "color", "language", "jobs", "cache", "local")
+CONFIG_KEYS = ("base_url", "timeout", "retries", "format", "color", "language", "jobs", "cache", "local", "pack")
 
 
 def config_path() -> str:
@@ -97,10 +97,29 @@ def _common():
     parser.add_argument("--jobs", type=positive_int, help=f"concurrent requests for batch commands, 1-8 (default: {DEFAULT_JOBS}; OCL_JOBS)")
     parser.add_argument("--verbose", action="store_true", help="log every request (URL, status, time) to stderr")
     parser.add_argument("--cache", metavar="DIR", help="cache responses in DIR, keyed by the server's database generation (OCL_CACHE)")
-    parser.add_argument("--local", metavar="PACK", nargs="?", const="default",
-                        help="offline: answer from the verification pack (a file, or the one `ocl pack pull` stored; OCL_LOCAL). "
-                             "Covers citations resolve, cite, decisions passage/get, quotes check and bundles; no search, laws or tools")
+    parser.add_argument("--local", action="store_true",
+                        help="offline: answer from the verification pack on this machine (OCL_LOCAL=1). Covers check, citations resolve, "
+                             "cite, decisions passage/get, quotes check, bundles and doctor; no search, laws or tools")
+    parser.add_argument("--pack", metavar="PATH",
+                        help="the pack file for --local (default: the one `ocl pack pull` stored in the user data directory; OCL_PACK)")
     return parser
+
+
+_OFF = frozenset({"", "0", "false", "no", "off"})
+_ON = frozenset({"1", "true", "yes", "on", "default"})
+
+
+def offline_defaults(cfg: dict) -> tuple[bool, str | None]:
+    """(local mode on, pack path or None) from the config file and OCL_* variables.
+    `pack` / OCL_PACK is a path. `local` / OCL_LOCAL is a switch (1, true, yes, on);
+    a path given there, the 0.6/0.7 grammar, turns local mode on and names the pack."""
+    local = str(cfg.get("local") or "").strip()
+    pack = str(cfg.get("pack") or "").strip() or None
+    if local.lower() in _OFF:
+        return False, pack
+    if local.lower() in _ON:
+        return True, pack
+    return True, pack or local
 
 
 _FILTER_HELP = {
@@ -153,7 +172,7 @@ def build_parser(config: dict | None = None):
         epilog=_EXAMPLES)
     parser.set_defaults(base_url=cfg.get("base_url", DEFAULT_BASE_URL), timeout=cfg.get("timeout", 30),
                         retries=cfg.get("retries", 2), format=cfg.get("format"), fields=None, cache=cfg.get("cache"),
-                        local=cfg.get("local") or None,
+                        local=offline_defaults(cfg)[0], pack=offline_defaults(cfg)[1],
                         color=cfg.get("color", "auto"), jobs=cfg.get("jobs", DEFAULT_JOBS), verbose=False)
     parser.add_argument("--version", action="version", version=f"ocl {__version__}")
     commands = parser.add_subparsers(dest="command", required=True, metavar="COMMAND")
@@ -345,7 +364,9 @@ def build_parser(config: dict | None = None):
     tcall.add_argument("--input", metavar="FILE", help="read one JSON object of arguments per line from FILE")
 
     doctor = commands.add_parser("doctor", parents=[common], formatter_class=fmt, help="check the connection, the server and this client",
-                                 description="Reachability, server database generation and size, tool count, one timed citation lookup, cache state. Exit 3 when the service does not answer.")
+                                 description=("Reachability, server database generation and size, tool count, one timed citation lookup, cache state. "
+                                              "Exit 3 when the service does not answer. With --local: the pack's path, size, schema, generation, "
+                                              "counts and age (a warning past 14 days), the SQLite version, one timed lookup; nothing is sent."))
 
     skills = commands.add_parser("skills", parents=[common], formatter_class=fmt, help="agent skills bundled with the client",
                                  description="The procedures an agent follows with ocl (citation check, research, evidence bundle), shipped in the package.",
@@ -366,11 +387,14 @@ def build_parser(config: dict | None = None):
                                description=("A single SQLite file with decision metadata, the service's citation strings, docket aliases and every "
                                             "indexed Erwägung, so citation, pinpoint and quotation checks run on this machine only: nothing about a "
                                             "draft leaves it. Weekly snapshot published on the HuggingFace mirror (CC0). No full texts, no search."),
-                               epilog="examples:\n  ocl pack pull\n  ocl pack info\n  ocl --local citations resolve --input refs.jsonl --format jsonl\n")
+                               epilog=("examples:\n  ocl pack pull\n  ocl pack info\n  ocl --local doctor\n  ocl --local check memo.docx\n"
+                                       "  ocl --local citations resolve --input refs.jsonl --format jsonl\n"
+                                       "  ocl --local --pack D:\\packs\\verification_pack.sqlite check memo.docx\n"))
     pack_actions = pack.add_subparsers(dest="action", required=True)
     ppull = pack_actions.add_parser("pull", parents=[common], formatter_class=fmt, help="download the latest pack (several GB)",
                                     description="Download the latest verification pack from the mirror and unpack it (default location: the user data directory; --to for another file).")
-    ppull.add_argument("--to", metavar="FILE", help="where to store the pack (default: ~/.local/share/ocl/verification_pack.sqlite)")
+    ppull.add_argument("--to", metavar="FILE", help="where to store the pack (default: verification_pack.sqlite in the user data directory: "
+                                                    "%%LOCALAPPDATA%%\\ocl on Windows, $XDG_DATA_HOME/ocl or ~/.local/share/ocl elsewhere)")
     ppull.add_argument("--url", help="alternative download URL (a .sqlite.gz)")
     pinfo = pack_actions.add_parser("info", parents=[common], formatter_class=fmt, help="show the installed pack's generation and size",
                                     description="The pack's build date, database generation, decision and paragraph counts, and file size.")
@@ -661,13 +685,18 @@ def _diagnostic(message: str, args=None) -> None:
     print(style.yellow("ocl: ") + message, file=sys.stderr)
 
 
+def pack_path(args) -> Path:
+    """The pack file --local uses: --pack / OCL_PACK / config, else the pulled default."""
+    from .local import default_pack_path
+    given = getattr(args, "pack", None)
+    return Path(given).expanduser() if given else default_pack_path()
+
+
 def create_client(args):
     log = (lambda line: print("ocl: " + line, file=sys.stderr)) if getattr(args, "verbose", False) else None
-    local = getattr(args, "local", None)
-    if local:
-        from .local import DEFAULT_PACK_DIR, LocalClient
-        pack = DEFAULT_PACK_DIR / "verification_pack.sqlite" if local == "default" else local
-        return LocalClient(pack, log=log)
+    if getattr(args, "local", False):
+        from .local import LocalClient
+        return LocalClient(pack_path(args), log=log)  # a missing or unreadable pack is a ValueError: exit 2, no traceback
     return Client(base_url=args.base_url, timeout=args.timeout, retries=args.retries, log=log,
                   cache_dir=getattr(args, "cache", None) or None)
 
@@ -948,9 +977,65 @@ def tool_command(args, client):
             "requests": getattr(client, "requests", None)}, code
 
 
+def _pack_age_days(built_at) -> int | None:
+    from datetime import datetime, timezone
+    if not isinstance(built_at, str) or not built_at.strip():
+        return None
+    try:
+        built = datetime.fromisoformat(built_at.strip().replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if built.tzinfo is None:
+        built = built.replace(tzinfo=timezone.utc)
+    return max(0, int((datetime.now(timezone.utc) - built).total_seconds() // 86400))
+
+
+PACK_STALE_DAYS = 14
+
+
+def doctor_offline(args, client):
+    """`ocl --local doctor`: the pack on this machine, nothing sent. Exit 0 when the
+    pack opens and answers; a stale pack is a warning, not a failure."""
+    import platform
+    import sqlite3
+    import time as _time
+    report = {"client_version": __version__, "python": platform.python_version(), "platform": platform.platform(terse=True),
+              "mode": "offline", "pack": str(client.pack_path), "ok": True}
+    try:
+        meta = client.meta
+        report["pack_bytes"] = client.pack_path.stat().st_size
+        for key in ("schema_version", "built_at", "db_generation"):
+            report[key] = meta.get(key)
+        for key in ("decisions", "paragraphs"):
+            value = meta.get(key)
+            report[key] = int(value) if isinstance(value, str) and value.isdigit() else value
+        age = _pack_age_days(meta.get("built_at"))
+        report["pack_age_days"] = age
+        report["sqlite_version"] = sqlite3.sqlite_version
+        warnings = []
+        if age is None:
+            warnings.append("the pack carries no readable built_at; its age is unknown")
+        elif age > PACK_STALE_DAYS:
+            warnings.append(f"the pack is {age} days old (weekly snapshots; run `ocl pack pull` for the current one)")
+        started = _time.monotonic()
+        cite = client.get("/api/cite", {"reference": "BGE 136 III 513", "language": "de"})
+        report["cite_ms"] = round(1000 * (_time.monotonic() - started))
+        report["cite_ok"] = cite.get("exists") is True and cite.get("decision_id") == "bge_BGE_136_III_513"
+        if not report["cite_ok"]:
+            warnings.append("the reference check did not find BGE 136 III 513 in the pack; the pack may be partial")
+        if warnings:
+            report["warnings"] = warnings
+    except (APIError, OSError, ValueError) as exc:
+        report.update(ok=False, error=exc.to_dict() if isinstance(exc, APIError) else {"status": None, "message": str(exc)})
+        return report, 3
+    return report, 0
+
+
 def doctor(args, client):
     import platform
     import time as _time
+    if getattr(client, "offline", False):
+        return doctor_offline(args, client)
     report = {"client_version": __version__, "python": platform.python_version(), "platform": platform.platform(terse=True),
               "base_url": getattr(client, "base_url", args.base_url),
               "cache_dir": str(client.cache_dir) if getattr(client, "cache_dir", None) else None, "ok": True}
@@ -1013,8 +1098,8 @@ def skills_command(args):
 
 
 def pack_command(args):
-    from .local import DEFAULT_PACK_DIR, PACK_URL, LocalClient, pull
-    default = DEFAULT_PACK_DIR / "verification_pack.sqlite"
+    from .local import PACK_URL, LocalClient, pull
+    default = pack_path(args)  # --pack / OCL_PACK / config, else the user data directory
     if args.action == "pull":
         log = (lambda line: print("ocl: " + line, file=sys.stderr))
         return pull(Path(args.to).expanduser() if getattr(args, "to", None) else default, url=getattr(args, "url", None) or PACK_URL, log=log), 0
@@ -1104,7 +1189,7 @@ def _reorder_tool_call(argv: list[str]) -> list[str]:
         if token.startswith("-"):
             others.append(token)
             # an option with a separate value keeps its value out of the pair scan
-            if token in ("--args", "--input", "--base-url", "--timeout", "--retries", "--format", "--fields", "--color", "--jobs", "--cache") and "=" not in token:
+            if token in ("--args", "--input", "--base-url", "--timeout", "--retries", "--format", "--fields", "--color", "--jobs", "--cache", "--pack") and "=" not in token:
                 skip = True
             continue
         (pairs if _PAIR_TOKEN.match(token) else others).append(token)

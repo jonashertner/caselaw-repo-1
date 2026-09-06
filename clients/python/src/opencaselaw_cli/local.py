@@ -1,25 +1,30 @@
 """Offline mode: the verification pack (one SQLite file) answers the endpoints the
-verification commands use, so `citations resolve`, `cite`, `decisions passage`,
-`quotes check` and bundles run without the service and without a memo's
-citations leaving the machine.
+verification commands use, so `check`, `citations resolve`, `cite`, `decisions
+passage`, `quotes check` and bundles run without the service and without a
+draft's citations leaving the machine.
 
 The pack carries the service's own citation strings and its indexed Erwägungen;
 it carries no full texts and no search index. Anything else answers with a
 clear "not available offline" error (status 200, exit 4).
+
+Thread safety: the batch commands resolve rows on a thread pool, so every
+thread opens its own read-only connection (sqlite3 connections and cursors are
+not shareable). Every failure inside the pack is raised as APIError so the
+workflows record it in the row instead of dying with a traceback.
 """
 from __future__ import annotations
 
 import gzip
-import json
 import os
 import re
 import shutil
 import sqlite3
 import sys
+import threading
 import time
 import zlib
 from pathlib import Path
-from urllib.parse import parse_qs, unquote, urlsplit
+from urllib.parse import unquote
 from urllib.request import Request, urlopen
 
 from ._version import __version__
@@ -27,32 +32,101 @@ from .client import APIError
 from .references import docket_variants, fold_docket, label_key, parse_reference
 
 PACK_URL = "https://huggingface.co/datasets/voilaj/swiss-caselaw/resolve/main/artifacts/verification_pack/latest.sqlite.gz"
-DEFAULT_PACK_DIR = Path(os.environ.get("XDG_DATA_HOME") or (Path.home() / ".local" / "share")) / "ocl"
+PACK_FILENAME = "verification_pack.sqlite"
 _BGE_ID = re.compile(r"^bge_(?:BGE_)?(\d{1,3})[ _]([IVab]+)[ _](\d{1,4})$")
+
+
+def default_pack_dir() -> Path:
+    """Where `ocl pack pull` stores the pack: %LOCALAPPDATA%\\ocl on Windows,
+    $XDG_DATA_HOME/ocl or ~/.local/share/ocl elsewhere. Read at call time so a
+    changed environment (or a test) is honoured."""
+    if sys.platform == "win32":
+        base = os.environ.get("LOCALAPPDATA")
+        return (Path(base) if base else Path.home() / "AppData" / "Local") / "ocl"
+    base = os.environ.get("XDG_DATA_HOME")
+    return (Path(base) if base else Path.home() / ".local" / "share") / "ocl"
+
+
+def default_pack_path() -> Path:
+    return default_pack_dir() / PACK_FILENAME
+
+
+# Kept for callers of 0.6/0.7; new code calls default_pack_dir() at run time.
+DEFAULT_PACK_DIR = default_pack_dir()
+
+
+def pack_uri(path: str | Path) -> str:
+    """The read-only, immutable SQLite URI for a pack file. Built from the absolute
+    path's file URI so backslashes, spaces, `%`, `#` and `?` in the path survive
+    (SQLite decodes the percent-escapes; the query string stays ours)."""
+    return Path(path).expanduser().resolve().as_uri() + "?mode=ro&immutable=1"
+
+
+def _missing(path: Path) -> ValueError:
+    return ValueError(f"verification pack not found: {path}. Run `ocl pack pull` to download it "
+                      "(several GB), or point --pack PATH (or OCL_PACK) at an existing pack file.")
 
 
 class LocalClient:
     """Duck-types Client.get() for the pack; keeps the request counter and base_url."""
 
+    offline = True
+
     def __init__(self, pack: str | Path, *, log=None):
         self.pack_path = Path(pack).expanduser()
         if not self.pack_path.is_file():
-            raise ValueError(f"verification pack not found: {self.pack_path} (run `ocl pack pull`)")
-        self._con = sqlite3.connect(f"file:{self.pack_path}?mode=ro&immutable=1", uri=True, check_same_thread=False)
-        self._con.row_factory = sqlite3.Row
-        self.meta = {r["key"]: r["value"] for r in self._con.execute("SELECT key, value FROM meta")}
-        self.base_url = f"file://{self.pack_path}"
+            raise _missing(self.pack_path)
+        self.pack_path = self.pack_path.resolve()
+        self._uri = pack_uri(self.pack_path)
+        self._threads = threading.local()
+        self._lock = threading.Lock()
         self.requests = 0
         self.cache_dir = None
         self.cache_hits = 0
         self._log = log
+        try:
+            self.meta = {r["key"]: r["value"] for r in self._connection().execute("SELECT key, value FROM meta")}
+        except sqlite3.Error as exc:
+            raise ValueError(f"{self.pack_path} is not a verification pack ({exc}); run `ocl pack pull` again") from exc
+        self.base_url = self.pack_path.as_uri()
+
+    # ── connections ─────────────────────────────────────────────────────
+    def _connection(self) -> sqlite3.Connection:
+        """This thread's connection, opened on first use. A pool thread that is
+        reused keeps its connection; the pack is immutable, so no state is shared."""
+        con = getattr(self._threads, "con", None)
+        if con is None:
+            con = sqlite3.connect(self._uri, uri=True)
+            con.row_factory = sqlite3.Row
+            self._threads.con = con
+        return con
+
+    @property
+    def _con(self) -> sqlite3.Connection:  # compatibility with 0.6/0.7 callers
+        return self._connection()
+
+    def close(self) -> None:
+        con = getattr(self._threads, "con", None)
+        if con is not None:
+            con.close()
+            self._threads.con = None
 
     # ── dispatch ────────────────────────────────────────────────────────
     def get(self, path: str, params: dict | None = None) -> dict:
-        self.requests += 1
+        with self._lock:
+            self.requests += 1
         params = {k: v for k, v in (params or {}).items() if v is not None}
         if self._log:
             self._log(f"local {path} {params}")
+        try:
+            return self._dispatch(path, params)
+        except APIError:
+            raise
+        except Exception as exc:  # noqa: BLE001 — a pack failure is a row error, never a traceback
+            raise APIError(None, f"offline pack error on {path}: {type(exc).__name__}: {exc} (pack {self.pack_path}; "
+                                 "if it persists, run `ocl pack pull` again)") from exc
+
+    def _dispatch(self, path: str, params: dict) -> dict:
         if path == "/health":
             return {"status": "ok", "decisions": int(self.meta.get("decisions") or 0), "db_generation": self.meta.get("db_generation"),
                     "offline": True, "pack": str(self.pack_path), "built_at": self.meta.get("built_at")}
@@ -77,7 +151,7 @@ class LocalClient:
 
     # ── records ─────────────────────────────────────────────────────────
     def _row(self, decision_id: str):
-        return self._con.execute("SELECT * FROM decisions WHERE decision_id = ?", (decision_id,)).fetchone()
+        return self._connection().execute("SELECT * FROM decisions WHERE decision_id = ?", (decision_id,)).fetchone()
 
     def _record(self, row, full_text: bool = False) -> dict:
         record = {k: row[k] for k in row.keys() if k != "has_full_text"}
@@ -87,7 +161,7 @@ class LocalClient:
         if full_text:
             record["full_text"] = None
             record["note"] = "The verification pack carries no full texts; `decisions passage` serves the indexed Erwägungen."
-        aliases = [r[0] for r in self._con.execute(
+        aliases = [r[0] for r in self._connection().execute(
             "SELECT alias_docket_norm FROM aliases WHERE canonical_decision_id = ?", (row["decision_id"],))]
         if aliases:
             record["joined_dockets"] = aliases
@@ -101,10 +175,11 @@ class LocalClient:
         return self._record(row, full_text=wants_text)
 
     def _passage(self, decision_id: str, number: str) -> dict:
-        row = self._con.execute("SELECT depth, parent, text_z FROM paragraphs WHERE decision_id = ? AND e_number = ?",
-                                (decision_id, number)).fetchone()
+        con = self._connection()
+        row = con.execute("SELECT depth, parent, text_z FROM paragraphs WHERE decision_id = ? AND e_number = ?",
+                          (decision_id, number)).fetchone()
         if row is None:
-            available = [r[0] for r in self._con.execute("SELECT e_number FROM paragraphs WHERE decision_id = ? ORDER BY e_number LIMIT 60", (decision_id,))]
+            available = [r[0] for r in con.execute("SELECT e_number FROM paragraphs WHERE decision_id = ? ORDER BY e_number LIMIT 60", (decision_id,))]
             if not available:
                 return {"error": f"No structured Erwägungen found for {decision_id!r} in the pack.", "text_source": "none"}
             return {"error": f"E. {number!r} not found in {decision_id!r}.", "available_e_numbers": available, "text_source": "none"}
@@ -121,6 +196,7 @@ class LocalClient:
 
     # ── identity ────────────────────────────────────────────────────────
     def _candidates_for(self, reference: str) -> list:
+        con = self._connection()
         parsed = parse_reference(reference)
         core = parsed.core
         found = []
@@ -136,18 +212,18 @@ class LocalClient:
                     if row:
                         found.append(row)
                 if not found:
-                    for row in self._con.execute("SELECT * FROM decisions WHERE court IN ('bge','bge_egmr') AND docket_number = ?", (f"{vol} {part} {page}",)):
+                    for row in con.execute("SELECT * FROM decisions WHERE court IN ('bge','bge_egmr') AND docket_number = ?", (f"{vol} {part} {page}",)):
                         found.append(row)
             if found or (parsed.bge_first or not parsed.dockets):
                 return found
         if parsed.primary_docket:
             for variant in docket_variants(parsed.primary_docket):
-                rows = self._con.execute("SELECT * FROM decisions WHERE docket_number = ? OR docket_number_2 = ? ORDER BY decision_date DESC LIMIT 8",
-                                         (variant, variant)).fetchall()
+                rows = con.execute("SELECT * FROM decisions WHERE docket_number = ? OR docket_number_2 = ? ORDER BY decision_date DESC LIMIT 8",
+                                   (variant, variant)).fetchall()
                 found.extend(r for r in rows if r["decision_id"] not in {f["decision_id"] for f in found})
             if not found:
                 key = fold_docket(parsed.primary_docket).replace(" ", "_").upper()
-                for r in self._con.execute("SELECT canonical_decision_id FROM aliases WHERE alias_docket_norm = ? LIMIT 8", (key,)):
+                for r in con.execute("SELECT canonical_decision_id FROM aliases WHERE alias_docket_norm = ? LIMIT 8", (key,)).fetchall():
                     row = self._row(r[0])
                     if row:
                         found.append(row)
@@ -155,8 +231,8 @@ class LocalClient:
             return scoped or ([] if (parsed.courts or parsed.canton) else found)
         # a citation string of the service, verbatim
         key = label_key(core)
-        for r in self._con.execute("SELECT * FROM decisions WHERE citation_string_de = ? OR citation_string_fr = ? OR citation_string_it = ? LIMIT 8",
-                                   (core, core, core)):
+        for r in con.execute("SELECT * FROM decisions WHERE citation_string_de = ? OR citation_string_fr = ? OR citation_string_it = ? LIMIT 8",
+                             (core, core, core)):
             found.append(r)
         return [r for r in found if key in {label_key(r["citation_string_de"]), label_key(r["citation_string_fr"]), label_key(r["citation_string_it"])}] or found
 
@@ -187,7 +263,7 @@ class LocalClient:
 
 def pull(destination: Path | None = None, *, url: str = PACK_URL, opener=None, log=None) -> dict:
     """Download the pack (gzip) and unpack it to the destination file."""
-    destination = Path(destination).expanduser() if destination else DEFAULT_PACK_DIR / "verification_pack.sqlite"
+    destination = Path(destination).expanduser() if destination else default_pack_path()
     destination.parent.mkdir(parents=True, exist_ok=True)
     tmp_gz = destination.with_name(destination.name + ".gz.part")
     tmp_db = destination.with_name(destination.name + ".part")

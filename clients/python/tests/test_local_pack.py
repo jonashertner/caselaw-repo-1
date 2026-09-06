@@ -70,15 +70,15 @@ def test_pack_builds_and_answers_offline(tmp_path):
 def test_resolve_and_quotes_run_against_the_pack(tmp_path, monkeypatch, capsys):
     out, _, _ = _build_pack(tmp_path)
     monkeypatch.setenv("OCL_CONFIG", "/nonexistent/ocl-config"); monkeypatch.setenv("OCL_JOBS", "1")
-    code = cli.main(["--local", str(out), "citations", "resolve", "BGE 136 III 513 E. 2.3", "4A_747/2012", "BGE 999 III 1", "--format", "jsonl", "--fields", "reference,status,decision_id"])
+    code = cli.main(["--local", "--pack", str(out), "citations", "resolve", "BGE 136 III 513 E. 2.3", "4A_747/2012", "BGE 999 III 1", "--format", "jsonl", "--fields", "reference,status,decision_id"])
     rows = [json.loads(l) for l in capsys.readouterr().out.splitlines()]
     statuses = {r["reference"]: r["status"] for r in rows if not r.get("_type")}
     assert code == 4 and statuses == {"BGE 136 III 513 E. 2.3": "resolved", "4A_747/2012": "resolved", "BGE 999 III 1": "missing"}
-    code = cli.main(["--local", str(out), "quotes", "check", "BGE 136 III 513 E. 2.3", "--quote", "le contrat de travail conclu pour une durée indéterminée", "--format", "json"])
+    code = cli.main(["--local", "--pack", str(out), "quotes", "check", "BGE 136 III 513 E. 2.3", "--quote", "le contrat de travail conclu pour une durée indéterminée", "--format", "json"])
     assert code == 0 and json.loads(capsys.readouterr().out)["results"][0]["quote_status"] == "exact"
-    code = cli.main(["--local", str(out), "pack", "info", "--path", str(out), "--format", "json"])
+    code = cli.main(["--local", "--pack", str(out), "pack", "info", "--path", str(out), "--format", "json"])
     assert code == 0 and json.loads(capsys.readouterr().out)["decisions"] == "4"
-    code = cli.main(["--local", str(out), "decisions", "search", "x", "--format", "json"])
+    code = cli.main(["--local", "--pack", str(out), "decisions", "search", "x", "--format", "json"])
     assert code == 4 and "not available offline" in capsys.readouterr().err
 
 
