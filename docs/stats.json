@@ -1989,7 +1989,6 @@
     "2026": 22067
   },
   "recent_daily": {
-    "2026-08-06": 88,
     "2026-08-07": 56,
     "2026-08-09": 1,
     "2026-08-10": 75,
@@ -2011,7 +2010,8 @@
     "2026-08-31": 3,
     "2026-09-01": 5,
     "2026-09-02": 1,
-    "2026-09-03": 6
+    "2026-09-03": 6,
+    "2026-09-06": 1
   },
   "date_range": {
     "earliest": "1875-01-01",
@@ -2362,7 +2362,7 @@
     }
   },
   "by_month": {
-    "2023-09": 4001,
+    "2023-09": 3758,
     "2023-10": 4404,
     "2023-11": 4790,
     "2023-12": 4311,
@@ -2398,9 +2398,9 @@
     "2026-06": 2957,
     "2026-07": 2233,
     "2026-08": 1040,
-    "2026-09": 12
+    "2026-09": 13
   },
-  "generated_at": "2026-09-05T21:56:48.810129+00:00",
+  "generated_at": "2026-09-06T00:22:43.566345+00:00",
   "scraper_health": {
     "run_at": "2026-09-05T05:36:50.057033+00:00",
     "run_duration_s": 16549.1,
@@ -3651,9 +3651,9 @@
       "total": 1071112
     },
     "graph_size": {
-      "decision_edges": 11709332,
+      "decision_edges": 11678678,
       "statute_edges": 12668616,
-      "total": 24377948
+      "total": 24347294
     },
     "echr_switzerland": {
       "total": 1526,
@@ -4374,37 +4374,10 @@
     }
   ],
   "delta": {
-    "total": 5520,
-    "by_court": {
-      "ge_gerichte": 6,
-      "bvger": 25,
-      "ti_gerichte": 2,
-      "vd_gerichte": 5420,
-      "zh_sozialversicherungsgericht": 14,
-      "so_gerichte": 3,
-      "be_verwaltungsgericht": 2,
-      "bstger": 1,
-      "bs_appellationsgericht": 5,
-      "sg_versicherungsgericht": 7,
-      "ag_strafgericht": 2,
-      "ag_zivilgericht": 8,
-      "bazg": 32
-    },
-    "by_canton": {
-      "GE": 6,
-      "VD": 5413,
-      "ZH": 14,
-      "TI": 2,
-      "BE": 2,
-      "SG": 7,
-      "SO": 3,
-      "AG": 10,
-      "BS": 5
-    },
-    "corpus": {
-      "citation_edges": 72681,
-      "statute_edges": 110038
-    },
-    "previous_generated_at": "2026-09-04T22:55:39.402529+00:00"
+    "total": 0,
+    "by_court": {},
+    "by_canton": {},
+    "corpus": {},
+    "previous_generated_at": "2026-09-05T21:56:48.810129+00:00"
   }
 }
