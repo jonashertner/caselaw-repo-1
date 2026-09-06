@@ -470,3 +470,13 @@ def test_verbose_logs_requests_and_counts_them(monkeypatch, capsys):
     assert lines and lines[0].startswith("GET https://mcp.opencaselaw.ch/api/decisions?") and " 200 " in lines[0]
     args = cli.build_parser(config={}).parse_args(["decisions", "search", "--verbose"])
     assert args.verbose is True
+
+
+def test_heading_only_statute_text_is_unresolved(monkeypatch, capsys):
+    flagged = {"abbreviation": "OR", "sr_number": "220", "as_of": "2010-01-01", "text_source": "fedlex_pdf", "text_status": "heading_only",
+               "note": "UNRESOLVED: no article text recovered", "articles": [{"article_num": "336c", "text": "Art. 336c", "text_status": "heading_only"}]}
+    _, code, output = invoke(monkeypatch, capsys, ["laws", "get", "OR", "--article", "336c", "--as-of", "2010-01-01", "--format", "json"], [dict(flagged)])
+    assert code == 4 and json.loads(output.out)["text_status"] == "heading_only"
+    ok = {**flagged, "text_status": "ok", "articles": [{"article_num": "336c", "text": "1 Nach Ablauf der Probezeit ...", "text_status": "ok"}]}
+    _, code, _ = invoke(monkeypatch, capsys, ["laws", "get", "OR", "--article", "336c", "--as-of", "2010-01-01", "--format", "json"], [dict(ok)])
+    assert code == 0

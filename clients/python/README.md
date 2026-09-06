@@ -25,6 +25,13 @@ strings and the verbatim text of the cited Erwägung. The rule behind it: the
 decision the service proposes must carry the label the author wrote; nothing
 is ever substituted, and no citation string is built by the client.
 
+**Check the quotations** against the served text (`exact`, `near` with the
+differing spans, or `not_found`):
+
+```sh
+ocl quotes check 'BGE 136 III 513 E. 2.3' --quote "le contrat de travail conclu pour une durée indéterminée"
+```
+
 **Keep the evidence behind a memo**:
 
 ```sh

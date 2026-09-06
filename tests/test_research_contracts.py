@@ -4,6 +4,7 @@ from __future__ import annotations
 import asyncio
 import copy
 import json
+from pathlib import Path
 from urllib.parse import urlsplit
 
 import jsonschema
@@ -30,6 +31,11 @@ def offline(monkeypatch):
         monkeypatch.setattr(m, name, lambda *a, **k: None)
     monkeypatch.setattr(m, "_overlay_enabled", lambda: False)
     monkeypatch.setattr(m, "_representation_info", lambda *a: None)
+    # No representation manifest here: compact rows then carry exactly the
+    # documented compact keys (tests/test_identity_exposure.py covers the
+    # canonical_decision_id / is_canonical keys the manifest adds).
+    monkeypatch.setattr(m, "REPRESENTATION_MANIFEST_DB_PATH", Path("/nonexistent/representation_manifest.db"))
+    monkeypatch.setattr(m, "_manifest_warned", True)
     monkeypatch.setattr(m, "_count_citations", lambda *a: (0, 0))
     monkeypatch.setattr(m, "_materials_for_decision", lambda *a: None)
     monkeypatch.setattr(m, "_pinpoint_enrich_results", lambda *a, **k: None)

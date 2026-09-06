@@ -30,11 +30,12 @@ Erwägung. Existence is checked against the corpus; legal support is not.
    the court, ask which one, or use the `decision_id`. `unrecognized` means the
    service proposed a decision that does not carry the author's label: treat it
    as unverified, and never report `service_candidate` as the citation.
-4. For quoted passages, fetch the verbatim text with
-   `ocl decisions passage <decision_id> <number>` and compare the quote with
-   `text_plain` (the served text with the service's Markdown cross-reference
-   links reduced to their labels). Report differences; do not paraphrase inside
-   quotation marks.
+4. For quoted passages, run `ocl quotes check --input quotes.jsonl --format jsonl`
+   with one row per quotation (`reference`, `pinpoint` when cited, `quote`
+   exactly as the author wrote it). `exact` stands; for `near` report the
+   listed differences and replace the quotation with the served wording; for
+   `not_found` tell the author the quotation is not in that decision (the
+   closest served text is shown). Do not paraphrase inside quotation marks.
 5. Report per citation: reference, status, decision_id, canonical citation
    string from the service, pinpoint status, discrepancies. State that this
    establishes existence and wording only, not that the authority supports the

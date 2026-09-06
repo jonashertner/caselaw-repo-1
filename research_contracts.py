@@ -57,6 +57,9 @@ class DecisionRecord(CitationFields):
     pinpoint: dict[str, Any] | None = None
     citation_count: int | None = None
     is_leading_case: bool | None = None
+    joined_dockets: list[str] | None = Field(default=None, description="Secondary dockets of a consolidated proceeding stored under this decision; a reference by any of them names this record. Absent when there are none.")
+    canonical_decision_id: str | None = Field(default=None, description="The canonical decision_id when the representation manifest is loaded: equals decision_id unless this record is a duplicate representation of another stored decision. decision_id itself is never changed.")
+    is_canonical: bool | None = Field(default=None, description="Whether this record is the canonical representation (canonical_decision_id == decision_id). Absent when the manifest is not loaded.")
 
 
 class SearchDecisionsResponse(ResearchModel):
@@ -107,6 +110,7 @@ class LawArticle(ResearchModel):
     article_num: str
     heading: str | None = None
     text: str | None = Field(default=None, description="Article text; a whole-law table of contents can omit it.")
+    text_status: str | None = Field(default=None, description="ok, heading_only or empty for a historical PDF edition: heading_only/empty means no article text was recovered.")
     xml: str | None = None
     section: str | None = None
     section_heading: str | None = None
@@ -129,6 +133,7 @@ class LawResponse(ResearchModel):
     fedlex_snapshot_uri: str | None = None
     text_source: str | None = None
     verbatim_quotation: str | None = None
+    text_status: str | None = Field(default=None, description="ok, heading_only or empty (historical PDF editions); heading_only/empty means no article text was recovered.")
     source_url: str | None = None
     source_label: str | None = None
     articles: list[LawArticle] | None = None
@@ -169,6 +174,9 @@ class CiteResponse(CitationFields):
     resolved_id: str | None = None
     citation_string: str | None = None
     close_matches: list[DecisionRecord] | None = None
+    joined_dockets: list[str] | None = Field(default=None, description="Secondary dockets of the resolved consolidated proceeding; absent when there are none.")
+    canonical_decision_id: str | None = Field(default=None, description="Canonical decision_id of the resolved record when the representation manifest is loaded; decision_id is never changed.")
+    is_canonical: bool | None = Field(default=None, description="Whether the resolved record is the canonical representation; absent when the manifest is not loaded.")
 
 
 class LookupHit(DecisionRecord):

@@ -56,7 +56,7 @@ from search_stack.extract_decision_structure import (  # noqa: E402
 # the 6,029 already-seen decisions and the fix never reaches the sidecar
 # (proven: 2026-07-03 shadow drift stayed at 0.797%). Bumping forces one
 # full re-extract on the next run, healing the frozen backlog.
-EXTRACTOR_VERSION = 2
+EXTRACTOR_VERSION = 2  # the source hash of extract_decision_structure.py already forces a full re-extraction on change
 
 # Derived version — the state tables carry this, so a change to the
 # structure extractor bootstraps the sidecar without a remembered bump.

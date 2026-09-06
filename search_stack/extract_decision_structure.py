@@ -88,6 +88,10 @@ ERWAEGUNGEN_PATTERNS = {
         (r"(?:Das|Die)\s+(?:Beschwerdekammer|Strafkammer|Berufungskammer|Anklagekammer|Abteilung)\s+zieht\s+in\s+Erwägung\s*:?", "ranked_de_zieht_chamber"),
         # MKG uses "hat erwogen" (seen in older Bände) as a less-common opener.
         (r"Das\s+Militärkassationsgericht\s+hat\s+erwogen\s*:?", "ranked_de_MKG_erwogen"),
+        # BGE excerpts open with "Aus den Erwägungen:"; the printed volumes
+        # before ~1950 with "hat in Erwägung gezogen" / "hat erwogen".
+        (r"^\s*Aus\s+den\s+Erwägungen\s*:?\s*$", "ranked_de_BGE_aus_den"),
+        (r"(?:hat|haben)\s+(?:in\s+Erwägung\s+gezogen|erwogen)\s*:?", "ranked_de_erwaegung_gezogen"),
         (r"in\s+Erwägung,?\s+dass\b", "ranked_de_in_erwaegung"),
         # SO Obergericht direct texts glue the heading ("zieht die
         # Beschwerdekammer des Obergerichts inErwägung:") — PDF-extraction
@@ -123,6 +127,9 @@ ERWAEGUNGEN_PATTERNS = {
     "it": [
         # BGE-IT
         (r"Estratto\s+dei\s+considerandi\s*:?", "ranked_it_BGE_estratto"),
+        # Modern Italian BGE excerpts open with "Dai considerandi:".
+        (r"^\s*Dai\s+considerandi\s*:?\s*$", "ranked_it_BGE_dai"),
+        (r"^\s*Considerandi\s*:?\s*$", "ranked_it_considerandi_header"),
         # Court-specific "considera"
         (r"Il\s+Tribunale\s+(?:federale|amministrativo\s+federale|penale\s+federale)\s+considera\s+in\s+(?:diritto|fatto)\s*:?", "ranked_it_considera_TF"),
         (r"(?:La\s+Corte(?:\s+dei\s+reclami\s+penali)?|Il\s+Tribunale|Il\s+Giudice)[^.\n]*considera\s+in\s+(?:diritto|fatto)\s*:?", "ranked_it_considera_court"),
@@ -219,18 +226,30 @@ ERW_PARA_RE_INLINE = re.compile(
 )
 
 
+# "4 février 2013" / "3 et 4" at a line start are dates and enumerations in the
+# facts, not Erwägung markers (a Geneva ruling was segmented on such a date).
+_NOT_A_MARKER_AFTER = re.compile(
+    r"(?:janvier|f[ée]vrier|mars|avril|mai|juin|juillet|ao[uû]t|septembre|octobre|novembre|d[ée]cembre|"
+    r"Januar|Februar|März|April|Juni|Juli|August|September|Oktober|November|Dezember|"
+    r"gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|ottobre|dicembre|"
+    r"et|und|e|ed|oder|ou|o)\b", re.IGNORECASE)
+
+
 def _erw_candidates(text: str) -> list[tuple[int, int, str]]:
     seen = {}
     for pat in (ERW_PARA_RE, ERW_PARA_RE_INLINE):
         for m in pat.finditer(text):
+            if pat is ERW_PARA_RE_INLINE and "." not in m.group(1) and _NOT_A_MARKER_AFTER.match(text[m.end():m.end() + 12]):
+                continue
             seen.setdefault(m.start(), (m.end(), m.group(1)))
     return sorted([(s, e, n) for s, (e, n) in seen.items()])
 
 
-def _validate_erw_sequence(markers: list[tuple[int, int, str]]) -> list[tuple[int, int, str]]:
-    """Drop spurious matches (e.g. '140' from a 'BGE 140 III 86' citation)."""
-    if not markers:
-        return []
+def _validate_erw_run(markers: list[tuple[int, int, str]]) -> list[tuple[int, int, str]]:
+    """One greedy monotone run over the markers (the pre-2026-09 validator, plus:
+    a sub-number whose parent line is missing opens its parent implicitly when
+    it starts the block or continues the numbering — BGE excerpts begin at
+    "4.1" without a "4." line)."""
     out = []
     seen_paths = set()
     last_top = 0
@@ -246,12 +265,42 @@ def _validate_erw_sequence(markers: list[tuple[int, int, str]]) -> list[tuple[in
             last_top = first_n
         else:
             parent = ".".join(e_num.split(".")[:-1])
-            if parent in seen_paths:
-                last_subnum = int(e_num.split(".")[-1])
-                if last_subnum > 30: continue
-                out.append((start, end, e_num))
-                seen_paths.add(e_num)
+            last_subnum = int(e_num.split(".")[-1])
+            if last_subnum > 30: continue
+            if parent not in seen_paths:
+                # implicit parent: only when it starts the block or advances
+                # the numbering by at most the usual step
+                if first_n > 50 or first_n < last_top or (last_top and first_n > last_top + 5):
+                    continue
+                if out and first_n == last_top and parent.count(".") == 0 and any(p.startswith(parent + ".") for p in seen_paths):
+                    pass  # sibling under an implicit parent already opened
+                elif out and first_n == last_top:
+                    continue
+                parts = parent.split(".")
+                for i in range(1, len(parts) + 1):
+                    seen_paths.add(".".join(parts[:i]))
+                last_top = first_n
+            out.append((start, end, e_num))
+            seen_paths.add(e_num)
     return out
+
+
+def _validate_erw_sequence(markers: list[tuple[int, int, str]]) -> list[tuple[int, int, str]]:
+    """Drop spurious matches (e.g. '140' from a 'BGE 140 III 86' citation).
+
+    Keeps the longest monotone run: a running case number ("12.") or a page
+    number before the real "1." in an OCR'd volume must not swallow the whole
+    sequence, so every top-level "1" (and the first marker) starts a candidate
+    run and the longest wins."""
+    if not markers:
+        return []
+    starts = [0] + [i for i, (_, _, n) in enumerate(markers) if i and n.split(".")[0] == "1"]
+    best: list[tuple[int, int, str]] = []
+    for i in starts[:12]:
+        run = _validate_erw_run(markers[i:])
+        if len(run) > len(best):
+            best = run
+    return best
 
 
 def parse_erwaegungen_paragraphs(erw_text: str) -> list[dict]:
@@ -268,13 +317,59 @@ def parse_erwaegungen_paragraphs(erw_text: str) -> list[dict]:
         body = erw_text[m_end:next_start].strip()
         if not body:
             continue
+        depth = e_num.count(".") + 1
         paragraphs.append({
             "e_number": e_num,
-            "depth": e_num.count(".") + 1,
+            "depth": depth,
             "parent": ".".join(e_num.split(".")[:-1]) if e_num.count(".") else None,
             "text": body,
         })
+        paragraphs.extend(_lettered_units(e_num, depth, body))
     return paragraphs
+
+
+# A letter marker at a line start, or a double-letter marker right after a
+# single-letter one on the same line ("c) aa) Erstens ...").
+_LETTER_MARK_RE = re.compile(r"(?m)(?:^[ \t]*|(?<=\) ))([a-z]{1,2})\)[ \t]+(?=\S)")
+
+
+def _lettered_units(parent_num: str, parent_depth: int, body: str) -> list[dict]:
+    """Old-style lettered sub-Erwägungen ("a) ...", "b) ...", "aa) ...") at line
+    starts inside a numbered paragraph become their own citable units: "2a",
+    "2b", and "3c/aa" for a double-letter run under a letter. Only an ordered
+    run that begins with "a)" (or "aa)") counts, so a stray "a)" in prose
+    never splits a paragraph. The parent keeps its complete text."""
+    marks = [(m.start(), m.end(), m.group(1)) for m in _LETTER_MARK_RE.finditer(body)]
+    if not marks:
+        return []
+    singles = [(s, e, l) for s, e, l in marks if len(l) == 1]
+    doubles = [(s, e, l) for s, e, l in marks if len(l) == 2]
+    units: list[dict] = []
+    def ordered(run, letters):
+        return bool(run) and [l for _, _, l in run][:len(letters)] == letters[:len(run)]
+    alphabet = [chr(c) for c in range(ord("a"), ord("z") + 1)]
+    if singles and ordered(singles, alphabet):
+        for i, (s, e, letter) in enumerate(singles):
+            nxt = singles[i + 1][0] if i + 1 < len(singles) else len(body)
+            text = body[e:nxt].strip()
+            if not text:
+                continue
+            number = f"{parent_num}{letter}"
+            units.append({"e_number": number, "depth": parent_depth + 1, "parent": parent_num, "text": text})
+            inner = [(ds - e, de - e, dl) for ds, de, dl in doubles if e <= ds < nxt]
+            if inner and ordered(inner, [c * 2 for c in alphabet]):
+                for j, (ds, de, dl) in enumerate(inner):
+                    dn = inner[j + 1][0] if j + 1 < len(inner) else len(text)
+                    sub = text[de:dn].strip()
+                    if sub:
+                        units.append({"e_number": f"{number}/{dl}", "depth": parent_depth + 2, "parent": number, "text": sub})
+    elif doubles and ordered(doubles, [c * 2 for c in alphabet]):
+        for j, (ds, de, dl) in enumerate(doubles):
+            dn = doubles[j + 1][0] if j + 1 < len(doubles) else len(body)
+            sub = body[de:dn].strip()
+            if sub:
+                units.append({"e_number": f"{parent_num}{dl}", "depth": parent_depth + 1, "parent": parent_num, "text": sub})
+    return units
 
 
 def _find(text: str, patterns: dict, lang: str) -> tuple[int | None, int | None, str | None]:

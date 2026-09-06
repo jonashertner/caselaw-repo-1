@@ -3,6 +3,38 @@
 The client follows semantic versioning. The research API contract it consumes is
 versioned separately (`x-opencaselaw-contract-version` in `/api/research/openapi.json`).
 
+
+## 0.4.0 (unreleased)
+
+- `ocl quotes check`: quotations verified against the cited Erwägung and the
+  decision text, with `exact` / `near` (differing spans, served wording) /
+  `not_found`; typography, OCR hyphenation, whitespace and link markup are
+  folded for the comparison only. A `quote` field on a `citations resolve`
+  row is checked the same way (`quote_check`); exit 4 unless every quotation
+  is exact.
+- `laws get --article ... --as-of`: an edition whose PDF window holds only
+  the article heading (`text_status` heading_only/empty) is unresolved (exit 4).
+
+Two identity gaps from the field test, closed together with the server
+(which now lists `joined_dockets` on decisions, lookup hits and `cite`, and
+`canonical_decision_id` + `is_canonical` on decisions, lookup hits, `cite` and
+search rows while its representation manifest is loaded):
+
+- A reference by a joined docket of a consolidated proceeding (`BGer
+  1B_243/2022`, filed under the lead docket 1B_242/2022) resolves instead of
+  coming back `unrecognized`: `identity_check.method` is
+  `exact_server_joined_docket`, with `joined_docket` and `lead_docket`.
+  Uniqueness is still checked through `/api/lookup?exact=true`, whose hits
+  carry their joined dockets too. Against an older server the row stays
+  `unrecognized`; nothing is guessed.
+- `decisions search` keeps one row per ruling the service stores under
+  several ids (the canonical record, at the group's first-seen rank); the
+  others are counted in `_client.duplicates_collapsed` and listed under
+  `_client.collapsed_representations`. `--no-collapse` keeps every row.
+- `citations resolve` and `cite` rows carry `canonical_decision_id` when the
+  resolved record is a duplicate representation of another stored decision;
+  `decision_id` is never changed. `--fields` keeps it.
+
 ## 0.3.1 (2026-09-06)
 
 Packaging only: project links, classifiers and keywords on PyPI; a README
