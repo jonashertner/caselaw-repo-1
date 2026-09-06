@@ -1034,6 +1034,31 @@ def run(args, client):
     return _batch(args, client, "cite")
 
 
+_PAIR_TOKEN = re.compile(r"^[A-Za-z_][\w.\-]*=")
+
+
+def _reorder_tool_call(argv: list[str]) -> list[str]:
+    """`ocl tool call NAME key=value ... --option` in any order: argparse before
+    Python 3.12 does not take positionals that follow an option, so the
+    key=value tokens are moved right after the tool name."""
+    if len(argv) < 3 or argv[:2] != ["tool", "call"] or argv[2].startswith("-"):
+        return argv
+    head, rest = argv[:3], argv[3:]
+    pairs, others = [], []
+    skip = False
+    for i, token in enumerate(rest):
+        if skip:
+            others.append(token); skip = False; continue
+        if token.startswith("-"):
+            others.append(token)
+            # an option with a separate value keeps its value out of the pair scan
+            if token in ("--args", "--input", "--base-url", "--timeout", "--retries", "--format", "--fields", "--color", "--jobs", "--cache") and "=" not in token:
+                skip = True
+            continue
+        (pairs if _PAIR_TOKEN.match(token) else others).append(token)
+    return head + pairs + others
+
+
 def main(argv=None):
     if sys.platform == "win32":
         for stream in (sys.stdout, sys.stderr):
@@ -1044,7 +1069,9 @@ def main(argv=None):
     args = None
     try:
         parser = build_parser()
-        args = parser.parse_args(argv)
+        if argv is None:
+            argv = sys.argv[1:]
+        args = parser.parse_args(_reorder_tool_call(list(argv)))
         value, code = run(args, create_client(args))
         emit(value, args)
         if code:

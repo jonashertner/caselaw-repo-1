@@ -66,6 +66,10 @@ def test_tool_list_schema_and_typed_call(monkeypatch, capsys):
     # --args object plus pairs; unknown tool is exit 4 with a message
     client, code, out = invoke(monkeypatch, capsys, ["tool", "call", "cite", "--args", '{"reference": "BGE 136 III 513"}', "pinpoint=1", "--format", "json"])
     assert code == 0 and client.calls[0][1] == {"reference": "BGE 136 III 513", "pinpoint": "1"}
+    # pairs after options, as a shell user types them, on every Python version
+    client, code, out = invoke(monkeypatch, capsys, ["tool", "call", "cite", "--format", "json", "reference=BGE 136 III 513", "--timeout", "5", "pinpoint=2"])
+    assert code == 0 and client.calls[0][1] == {"reference": "BGE 136 III 513", "pinpoint": "2"}
+    assert cli._reorder_tool_call(["tool", "call", "x", "--args", "a=b", "k=v"]) == ["tool", "call", "x", "k=v", "--args", "a=b"]
     _, code, out = invoke(monkeypatch, capsys, ["tool", "call", "nope", "--format", "json"])
     assert code == 4 and json.loads(out.out)["errors"][0]["status"] == 400
     # one call per JSONL row

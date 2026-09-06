@@ -4,6 +4,13 @@ The client follows semantic versioning. The research API contract it consumes is
 versioned separately (`x-opencaselaw-contract-version` in `/api/research/openapi.json`).
 
 
+## 0.5.1 (2026-09-06)
+
+- `ocl tool call NAME key=value --option` accepts the pairs in any position on
+  Python 3.10 and 3.11 as well (argparse there does not take positionals after
+  an option; the pairs are now moved behind the tool name before parsing).
+  0.5.0 failed its own test on 3.10 for this reason and is superseded.
+
 ## 0.5.0 (2026-09-06)
 
 The agent release: everything the service offers, from the command line,
