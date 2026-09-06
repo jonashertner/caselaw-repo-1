@@ -238,14 +238,26 @@ def _get_structure_db():
         return None
 
 
+_E_NUMBER_LEVEL_RE = re.compile(r"^(\d*)([A-Za-z]*)$")
+
+
 def _e_number_sort_key(e_number: str) -> tuple:
-    parts = e_number.split(".")
+    """Sort '1.10' after '1.9' (numeric, not lexicographic) and keep
+    lettered Erwägungen in document order: '2' < '2a' < '2a/aa' <
+    '2a/bb' < '2b', and 'aa' < 'ab' < 'bb'.
+
+    Every level is a (number, letters) pair, so keys always compare.
+    The old int-or-str mix raised TypeError as soon as the structure
+    sidecar started carrying lettered numbers ('2a', '2aa', '3c/aa';
+    2026-09-06 incident). Levels split on '.' and on '/' (the extractor
+    writes a double-letter run under a letter as '3c/aa')."""
     out = []
-    for p in parts:
-        try:
-            out.append(int(p))
-        except ValueError:
-            out.append(p)
+    for level in re.split(r"[./]", str(e_number or "")):
+        m = _E_NUMBER_LEVEL_RE.match(level)
+        if level and m:
+            out.append((int(m.group(1)) if m.group(1) else 0, m.group(2).lower()))
+        else:
+            out.append((0, level.lower()))
     return tuple(out)
 
 

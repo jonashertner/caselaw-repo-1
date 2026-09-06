@@ -87,8 +87,10 @@ def check_sidecar_population(conn: sqlite3.Connection, **_):
 
 def check_e_number_sortable(conn: sqlite3.Connection, **_) -> CheckResult:
     """Every e_number should be a dotted numeric like '1', '2.3',
-    '4.1.2'. Letters or other tokens mean the extractor produced
-    garbage that breaks _e_number_sort_key."""
+    '4.1.2', optionally with an old-style letter run on the last level
+    ('2a', '2aa', '3c/aa', '3.3.3bb' — since 2026-09-06 the extractor
+    keeps lettered sub-Erwägungen). Anything else means the heading
+    parser produced garbage."""
     sconn = _open_structure()
     if sconn is None:
         return CheckResult(
@@ -109,7 +111,7 @@ def check_e_number_sortable(conn: sqlite3.Connection, **_) -> CheckResult:
         sconn.close()
 
     import re
-    pat = re.compile(r"^\d+(?:\.\d+)*$")
+    pat = re.compile(r"^\d+(?:\.\d+)*[a-z]{0,2}(?:/[a-z]{1,2})?$")
     bad = [r for r in rows if not pat.match(r["e_number"] or "")]
     pct = round(100 * len(bad) / max(1, len(rows)), 3)
     return CheckResult(
