@@ -1,0 +1,31 @@
+--- a/publish.py
++++ b/publish.py
+@@ -882,15 +882,27 @@
+     for stale in sorted(pack_dir.glob("*.sqlite.gz"))[:-2]:
+         try:
+             stale.unlink()
++            stale.with_name(stale.name + ".sha256").unlink(missing_ok=True)
+         except OSError:
+             pass
++    # The builder (--gzip) writes <date>.sqlite.gz.sha256 in sha256sum format ("<hex>  <name>").
++    # `ocl pack pull` fetches <url>.sha256 and refuses an unverified pack, so each uploaded
++    # name gets a sidecar naming that file (latest.sqlite.gz.sha256 must say latest.sqlite.gz
++    # for `sha256sum -c` on the court's side).
++    sidecar = gz.with_name(gz.name + ".sha256")
++    digest = sidecar.read_text(encoding="utf-8").split()[0] if sidecar.exists() else ""
+     try:
+         from huggingface_hub import HfApi
+         api = HfApi()
+         for name in (gz.name, "latest.sqlite.gz"):
+             api.upload_file(path_or_fileobj=str(gz), path_in_repo=f"artifacts/verification_pack/{name}",
+                             repo_id=HF_REPO_ID, repo_type="dataset")
+-        logger.info(f"  uploaded {gz.name} ({gz.stat().st_size / 1e9:.2f} GB) and latest.sqlite.gz to {HF_REPO_ID}")
++            if digest:
++                api.upload_file(path_or_fileobj=f"{digest}  {name}\n".encode("utf-8"),
++                                path_in_repo=f"artifacts/verification_pack/{name}.sha256",
++                                repo_id=HF_REPO_ID, repo_type="dataset")
++        logger.info(f"  uploaded {gz.name} ({gz.stat().st_size / 1e9:.2f} GB) and latest.sqlite.gz"
++                    + (" with .sha256 sidecars" if digest else " without .sha256 (builder wrote none)") + f" to {HF_REPO_ID}")
+     except Exception as exc:  # noqa: BLE001 — the pack file stays on disk for a manual upload
+         logger.error(f"  verification pack upload failed: {exc}")
+         return False

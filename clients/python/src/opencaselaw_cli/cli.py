@@ -366,15 +366,28 @@ def build_parser(config: dict | None = None):
                                description=("A single SQLite file with decision metadata, the service's citation strings, docket aliases and every "
                                             "indexed Erwägung, so citation, pinpoint and quotation checks run on this machine only: nothing about a "
                                             "draft leaves it. Weekly snapshot published on the HuggingFace mirror (CC0). No full texts, no search."),
-                               epilog="examples:\n  ocl pack pull\n  ocl pack info\n  ocl --local citations resolve --input refs.jsonl --format jsonl\n")
+                               epilog=("examples:\n  ocl pack pull\n  ocl pack pull --url file://server/share/latest.sqlite.gz   # from a share (Windows)\n"
+                                       "  ocl pack verify\n  ocl --local citations resolve --input refs.jsonl --format jsonl\n"))
     pack_actions = pack.add_subparsers(dest="action", required=True)
-    ppull = pack_actions.add_parser("pull", parents=[common], formatter_class=fmt, help="download the latest pack (several GB)",
-                                    description="Download the latest verification pack from the mirror and unpack it (default location: the user data directory; --to for another file).")
-    ppull.add_argument("--to", metavar="FILE", help="where to store the pack (default: ~/.local/share/ocl/verification_pack.sqlite)")
-    ppull.add_argument("--url", help="alternative download URL (a .sqlite.gz)")
-    pinfo = pack_actions.add_parser("info", parents=[common], formatter_class=fmt, help="show the installed pack's generation and size",
-                                    description="The pack's build date, database generation, decision and paragraph counts, and file size.")
+    ppull = pack_actions.add_parser("pull", parents=[common], formatter_class=fmt, help="download the latest pack (several GB), verify it, install it",
+                                    description=("Download the verification pack gzip (resumable: an interrupted pull continues from the bytes already saved), "
+                                                 "verify it against the published .sha256 checksum, then unpack and install it atomically; the verification is "
+                                                 "recorded next to the pack for `ocl pack verify`. Default location: the user data directory (--to for another file)."))
+    ppull.add_argument("--to", metavar="FILE", help="where to store the pack (default: ~/.local/share/ocl/verification_pack.sqlite; "
+                                                   "%%LOCALAPPDATA%%\\ocl\\verification_pack.sqlite on Windows)")
+    ppull.add_argument("--url", help="alternative source of the .sqlite.gz: an https URL, a file:// URL (file://server/share/latest.sqlite.gz on Windows) "
+                                     "or a path; its .sha256 sidecar is read from the same place")
+    ppull.add_argument("--insecure", action="store_true", help="install even when no .sha256 checksum is published next to the pack "
+                                                              "(without it the pull stops with exit 2; the pack is then recorded as unverified)")
+    pinfo = pack_actions.add_parser("info", parents=[common], formatter_class=fmt, help="show the installed pack's generation, size and verification",
+                                    description="The pack's schema version, build date, database generation, decision and paragraph counts, file size, "
+                                                "and how it was verified when pulled (source, checksum).")
     pinfo.add_argument("--path", metavar="FILE", help="a pack file other than the default one")
+    pverify = pack_actions.add_parser("verify", parents=[common], formatter_class=fmt, help="report how the installed pack was verified (exit 4 if it was not)",
+                                      description=("The checksum the pull compared against the published .sha256, the source it came from, and the pack's "
+                                                   "schema version, build date and counts; exit 4 when the pack was never verified (pulled with --insecure, "
+                                                   "copied by hand, or changed since)."))
+    pverify.add_argument("--path", metavar="FILE", help="a pack file other than the default one")
 
     commands.add_parser("agent-guide", parents=[common], formatter_class=fmt, help="print the agent guide (contract, commands, rules)",
                         description="The compact guide agents read first: install, JSON contract, exit codes, commands, statuses and the rules.")
@@ -1013,16 +1026,18 @@ def skills_command(args):
 
 
 def pack_command(args):
-    from .local import DEFAULT_PACK_DIR, PACK_URL, LocalClient, pull
-    default = DEFAULT_PACK_DIR / "verification_pack.sqlite"
+    from .local import PACK_URL, default_pack_dir, pack_report, pull
+    default = default_pack_dir() / "verification_pack.sqlite"
     if args.action == "pull":
-        log = (lambda line: print("ocl: " + line, file=sys.stderr))
-        return pull(Path(args.to).expanduser() if getattr(args, "to", None) else default, url=getattr(args, "url", None) or PACK_URL, log=log), 0
-    path = Path(args.path).expanduser() if getattr(args, "path", None) else default
-    if not path.is_file():
-        return {"pack": str(path), "installed": False, "hint": "run `ocl pack pull`"}, 4
-    client = LocalClient(path)
-    return {"pack": str(path), "installed": True, "bytes": path.stat().st_size, **client.meta}, 0
+        log = (lambda line: print("ocl: " + line, file=sys.stderr, flush=True))
+        return pull(Path(args.to).expanduser() if getattr(args, "to", None) else default, url=getattr(args, "url", None) or PACK_URL,
+                    log=log, insecure=getattr(args, "insecure", False)), 0
+    report = pack_report(Path(args.path).expanduser() if getattr(args, "path", None) else default)
+    if not report.get("installed"):
+        return report, 4
+    if args.action == "verify":
+        return report, 0 if report.get("verified") else 4
+    return report, 0
 
 
 def run(args, client):

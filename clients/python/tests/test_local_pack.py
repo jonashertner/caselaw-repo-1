@@ -1,5 +1,6 @@
 """Offline mode: the verification pack answers the verification endpoints without the service."""
 import gzip
+import hashlib
 import importlib.util
 import io
 import json
@@ -85,9 +86,11 @@ def test_resolve_and_quotes_run_against_the_pack(tmp_path, monkeypatch, capsys):
 def test_pull_downloads_and_unpacks(tmp_path):
     out, _, _ = _build_pack(tmp_path)
     payload = gzip.compress(out.read_bytes())
+    sidecar = (hashlib.sha256(payload).hexdigest() + "  pack.gz\n").encode()  # pull verifies the gzip against <url>.sha256 first
     class Resp(io.BytesIO):
         headers = {"Content-Length": str(len(payload))}
         def __enter__(self): return self
         def __exit__(self, *a): return False
-    report = pull(tmp_path / "dl" / "pack.sqlite", url="https://example.invalid/pack.gz", opener=lambda request, timeout: Resp(payload))
+    report = pull(tmp_path / "dl" / "pack.sqlite", url="https://example.invalid/pack.gz",
+                  opener=lambda request, timeout: Resp(sidecar if request.full_url.endswith(".sha256") else payload))
     assert report["decisions"] == "4" and (tmp_path / "dl" / "pack.sqlite").stat().st_size == out.stat().st_size

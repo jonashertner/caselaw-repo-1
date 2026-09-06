@@ -11,12 +11,15 @@ docket aliases, canonical representations, and every indexed Erwägung
 paragraph with its text zlib-compressed per row. No full texts: the pack is
 for verification, not for reading. Read-only on its inputs; writes a .tmp and
 renames it. The pipeline runs it weekly (publish.py step 3b) and uploads the
-gzip to the HuggingFace mirror; `ocl pack pull` fetches it.
+gzip to the HuggingFace mirror; `ocl pack pull` fetches it. With --gzip the
+script also writes <output>.gz.sha256 in sha256sum format ("<hex>  <name>"),
+the sidecar `ocl pack pull` verifies the download against before unpacking.
 """
 from __future__ import annotations
 
 import argparse
 import gzip
+import hashlib
 import json
 import os
 import shutil
@@ -163,13 +166,39 @@ def build(decisions_db: Path, structure_db: Path, output: Path, *, repo_dir: Pat
     return meta
 
 
-def gzip_file(path: Path) -> Path:
+class _HashingWriter:
+    """Forwards writes to a file and feeds the same bytes to a digest, so the gzip is hashed as it is written."""
+
+    def __init__(self, fp, digest):
+        self._fp, self._digest = fp, digest
+
+    def write(self, data):
+        self._digest.update(data)
+        return self._fp.write(data)
+
+    def flush(self):
+        self._fp.flush()
+
+
+def gzip_file(path: Path) -> tuple[Path, str]:
+    """Write <path>.gz (level 6); returns the gzip path and the sha256 hex digest of its bytes."""
     target = path.with_name(path.name + ".gz")
     tmp = target.with_name(target.name + ".tmp")
-    with open(path, "rb") as src, gzip.open(tmp, "wb", compresslevel=6) as dst:
+    digest = hashlib.sha256()
+    with open(path, "rb") as src, open(tmp, "wb") as raw, gzip.GzipFile(filename=target.name, mode="wb", compresslevel=6,
+                                                                       fileobj=_HashingWriter(raw, digest)) as dst:
         shutil.copyfileobj(src, dst, 1 << 20)
     os.replace(tmp, target)
-    return target
+    return target, digest.hexdigest()
+
+
+def write_sha256(gz: Path, digest: str) -> Path:
+    """<gz>.sha256 in sha256sum format, so `sha256sum -c <gz>.sha256` and `ocl pack pull` both verify it."""
+    sidecar = gz.with_name(gz.name + ".sha256")
+    tmp = sidecar.with_name(sidecar.name + ".tmp")
+    tmp.write_text(f"{digest}  {gz.name}\n", encoding="utf-8")
+    os.replace(tmp, sidecar)
+    return sidecar
 
 
 def main() -> int:
@@ -179,13 +208,17 @@ def main() -> int:
     ap.add_argument("--manifest-db", type=Path, default=None, help="representation_manifest.db (optional)")
     ap.add_argument("--output", type=Path, required=True)
     ap.add_argument("--repo-dir", type=Path, default=Path(__file__).resolve().parents[1])
-    ap.add_argument("--gzip", action="store_true", help="also write <output>.gz for upload")
+    ap.add_argument("--gzip", action="store_true", help="also write <output>.gz and <output>.gz.sha256 (sha256sum format) for upload")
     ap.add_argument("--limit", type=int, default=None, help="build a small pack (tests)")
     args = ap.parse_args()
     meta = build(args.decisions_db, args.structure_db, args.output, repo_dir=args.repo_dir, manifest_db=args.manifest_db, limit=args.limit)
     if args.gzip:
-        gz = gzip_file(args.output)
+        gz, digest = gzip_file(args.output)
+        sidecar = write_sha256(gz, digest)
         meta["gzip_bytes"] = gz.stat().st_size
+        meta["gzip_sha256"] = digest
+        meta["sha256_file"] = str(sidecar)
+        _log(f"gzip {gz} {meta['gzip_bytes'] / 1e9:.2f} GB ({meta['gzip_bytes']:,} bytes) sha256 {digest} -> {sidecar.name}")
     print(json.dumps(meta, indent=1))
     return 0
 
