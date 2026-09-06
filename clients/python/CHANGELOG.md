@@ -4,6 +4,19 @@ The client follows semantic versioning. The research API contract it consumes is
 versioned separately (`x-opencaselaw-contract-version` in `/api/research/openapi.json`).
 
 
+## 0.8.0 (unreleased)
+
+- Windows installer for machines without Python (courts, managed desktops):
+  `OpenCaseLaw-CLI-<version>-setup.exe`, built by
+  `.github/workflows/installer-cli.yml` on every `cli-v*` tag from
+  `clients/python/installer/`. Ships the python.org embeddable runtime
+  (3.13.7, PSF-signed, digest pinned) and this package under
+  `Program Files\OpenCaseLaw` with `ocl.cmd`, a "Send to" entry
+  "Entwurf prüfen (offline)" (`ocl check DRAFT --local`, then opens the
+  report) and a Start-menu entry that runs `ocl pack pull`. SHA-256 file and
+  build provenance attestation on the release; not yet Authenticode-signed.
+  Install notes for court IT: `docs/court-it-install.md`.
+
 ## 0.7.0 (2026-09-06)
 
 - `ocl check memo.docx`: hand over the draft itself. The document is read

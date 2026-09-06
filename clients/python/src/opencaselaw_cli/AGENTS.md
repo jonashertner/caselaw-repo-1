@@ -11,6 +11,8 @@ quotations honest. Print this page with `ocl agent-guide`.
     ocl doctor --format json         # connectivity, server generation, tool count, latency
 
 Python 3.10+, no dependencies. Non-interactive; never prompts.
+Windows without Python: the release installer (`OpenCaseLaw-CLI-<version>-setup.exe`)
+puts `ocl.cmd` under `Program Files\OpenCaseLaw`; same commands, same output.
 
 ## Contract
 
