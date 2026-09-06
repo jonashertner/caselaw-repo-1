@@ -55,8 +55,10 @@ def _docx_paragraphs_raw(path: Path) -> list[str]:
 
 
 # ── PDF: page texts through pypdf or pdftotext ────────────────────────────
-# A text layer that averages fewer characters per page than this is a scan.
-PDF_MIN_CHARS_PER_PAGE = 40
+# A text layer that averages fewer characters per page than this is a scan: pypdf returns
+# nothing or a few stray glyphs for an image-only page, while even a one-line cover letter
+# carries dozens of characters.
+PDF_MIN_CHARS_PER_PAGE = 12
 PDF_READERS_HINT = "reading a PDF needs the pypdf package (pip install opencaselaw-cli[pdf]) or the pdftotext executable (poppler) on PATH"
 
 

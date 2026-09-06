@@ -3,6 +3,12 @@
 The client follows semantic versioning. The research API contract it consumes is
 versioned separately (`x-opencaselaw-contract-version` in `/api/research/openapi.json`).
 
+## 0.9.1 (2026-09-07)
+
+- A short PDF filing (a one-line cover letter) is no longer mistaken for a scan:
+  the text-layer threshold is 12 characters per page, where an image-only page
+  yields none.
+
 ## 0.9.0 (2026-09-07)
 
 - Party submissions. `ocl check` reads PDF (page by page, through the optional
