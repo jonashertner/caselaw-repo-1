@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 import sqlite3
 import sys
@@ -1128,19 +1129,115 @@ def check_statute_rows(client, rows: list[dict], language: str = "de", jobs: int
     return results
 
 
+# `ocl check` reads these when given a directory; a previous run's reports and
+# Word's lock files are left out.
+CHECKABLE_SUFFIXES = (".pdf", ".docx", ".md", ".html", ".htm", ".txt")
+INDEX_REPORT = "check-index"
+
+
+def report_kind(args) -> str:
+    """draft or submission: --kind, else OCL_KIND, else draft. Anything else is an input error."""
+    from os import environ
+    value = str(getattr(args, "kind", None) or environ.get("OCL_KIND") or "draft").strip().lower()
+    if value not in ("draft", "submission"):
+        raise ValueError(f"--kind (or OCL_KIND) must be draft or submission, not {value!r}")
+    return value
+
+
+def _is_check_report(path: Path) -> bool:
+    name = path.name.lower()
+    return name.endswith((".check.html", ".check.md")) or name in (INDEX_REPORT + ".html", INDEX_REPORT + ".md")
+
+
+def expand_inputs(inputs) -> list[Path]:
+    """The files `ocl check` reads: each file as given; a directory contributes its checkable
+    files (not recursive, sorted by name), without reports of an earlier run or Word lock files.
+    A file that does not exist stays in the list so the batch can report it as unreadable."""
+    files: list[Path] = []
+    for raw in inputs:
+        path = Path(raw).expanduser()
+        if path.is_dir():
+            files += sorted((child for child in path.iterdir() if child.is_file() and child.suffix.lower() in CHECKABLE_SUFFIXES
+                             and not child.name.startswith((".", "~$")) and not _is_check_report(child)), key=lambda child: child.name)
+        else:
+            files.append(path)
+    return files
+
+
+def _common_dir(files: list[Path]) -> Path:
+    parents = [str(path.absolute().parent) for path in files]
+    try:
+        return Path(os.path.commonpath(parents))
+    except ValueError:  # different drives
+        return files[0].absolute().parent
+
+
 def check_document(args, client):
-    """`ocl check DRAFT`: read the draft, find its citations and quotations, check them, write a report."""
-    from .documents import find_citations, find_statutes, read_document, unparsed_candidates
+    """`ocl check FILE...`: read each draft or submission, find its citations and quotations,
+    check them, write a report next to it. One file is today's single check; several files or a
+    directory make a batch with an index report."""
+    inputs = args.draft if isinstance(args.draft, (list, tuple)) else [args.draft]
+    language = args.language or "de"
+    kind = report_kind(args)
+    if len(inputs) == 1 and not Path(inputs[0]).expanduser().is_dir():
+        target = Path(args.report).expanduser() if getattr(args, "report", None) else None
+        return _check_one(args, client, Path(inputs[0]).expanduser(), language, kind, target)
+    return _check_batch(args, client, inputs, language, kind)
+
+
+def _check_batch(args, client, inputs, language: str, kind: str):
+    from .report import language_of, render_index_html, render_index_markdown, summarize_batch
+    files = expand_inputs(inputs)
+    if not files:
+        raise ValueError("nothing to check: no .pdf, .docx, .md, .html or .txt file among the inputs")
+    entries = []
+    for number, source in enumerate(files, start=1):
+        _progress(f"checking {number}/{len(files)}: {source.name}")
+        try:
+            result, code = _check_one(args, client, source, language, kind, None)
+        except (ValueError, OSError) as exc:
+            # A scan without a text layer, a missing PDF reader, a file that is not there:
+            # the batch goes on and the index names the file with its error.
+            result = {"kind": "opencaselaw-draft-check", "source": str(source), "name": source.name, "status": "unreadable",
+                      "error": {"kind": "input", "message": str(exc)}, "summary": None, "report_path": None,
+                      "report_kind": kind, "report_language": language_of(language)}
+            code = 2
+        result["name"] = source.name
+        result["exit_code"] = code
+        entries.append(result)
+    _progress(None)
+    summary = summarize_batch(entries, language)
+    batch = {"schema_version": SCHEMA_VERSION, "kind": "opencaselaw-check-batch", "client_version": __version__,
+             "base_url": client.base_url, "generated_at": _now(), "report_kind": kind, "report_language": language_of(language),
+             "inputs": [str(item) for item in inputs], "files": entries, "summary": summary, "index_path": None,
+             "requests": getattr(client, "requests", None)}
+    if not getattr(args, "no_report", False):
+        target = Path(args.report).expanduser() if getattr(args, "report", None) else _common_dir(files) / (INDEX_REPORT + ".html")
+        text = (render_index_markdown if target.suffix.lower() in (".md", ".markdown") else render_index_html)(batch, language, kind, target)
+        target.write_text(text, encoding="utf-8")
+        batch["index_path"] = str(target)
+    return batch, 2 if summary["unreadable"] else 4 if summary["attention_files"] else 0
+
+
+def _check_one(args, client, source: Path, language: str, kind: str, target):
+    """One document: read it, find its citations and quotations, check them, write its report
+    (to `target`, else next to the document)."""
+    from .documents import find_citations, find_statutes, read_paragraphs, unparsed_candidates
     from .report import court_name, language_of, render_html, render_markdown, summarize
-    source = Path(args.draft).expanduser()
     if not source.is_file():
         raise ValueError(f"draft not found: {source}")
-    language = args.language or "de"
     cite_language = language if language in ("de", "fr", "it") else "de"  # the service builds citation strings in de/fr/it; en is a report language
-    paragraphs = read_document(source)
+    pairs = read_paragraphs(source)
+    paragraphs = [paragraph for paragraph, _ in pairs]
+    pages = [page for _, page in pairs]
+    paged = any(page is not None for page in pages)  # a PDF: every paragraph knows its page
     found = find_citations(paragraphs)
     unparsed = unparsed_candidates(paragraphs, found)
-    rows = [{"reference": f["reference"], **({"quote": f["quote"]} if f.get("quote") else {}), "paragraph": f["paragraph"]} for f in found]
+    if paged:
+        for item in (*found, *unparsed):
+            item["page"] = pages[item["paragraph"] - 1]
+    rows = [{"reference": f["reference"], **({"quote": f["quote"]} if f.get("quote") else {}), "paragraph": f["paragraph"],
+             **({"page": f["page"]} if f.get("page") else {})} for f in found]
     report = resolve_rows(client, rows, cite_language, _jobs(args)) if rows else {
         "schema_version": SCHEMA_VERSION, "kind": "opencaselaw-citation-resolution", "client_version": __version__,
         "base_url": client.base_url, "generated_at": _now(), "status": "complete", "results": [], "counts": {}, "requests": getattr(client, "requests", None)}
@@ -1159,16 +1256,23 @@ def check_document(args, client):
     statutes_found = find_statutes(paragraphs, claimed_quotes=[f["quote"] for f in found if f.get("quote")])  # a decision's quotation never lands on an article
     report["statutes"] = check_statute_rows(client, statutes_found, cite_language, _jobs(args),
                                             getattr(args, "canton", None) or environ.get("OCL_CANTON") or None) if statutes_found else []
+    if paged:
+        for row in (*statutes_found, *report["statutes"]):
+            if row.get("paragraph_index"):
+                row["page"] = pages[row["paragraph_index"] - 1]
     report["requests"] = getattr(client, "requests", None)
     summary = summarize(report, source.name, language)
     report_path = None
     if not getattr(args, "no_report", False):
-        target = Path(args.report).expanduser() if getattr(args, "report", None) else source.with_name(source.stem + ".check.html")
-        text = render_markdown(report, source.name, found, language) if target.suffix.lower() in (".md", ".markdown") else render_html(report, source.name, found, language)
+        if target is None:
+            target = source.with_name(source.stem + ".check.html")
+        text = render_markdown(report, source.name, found, language, kind) if target.suffix.lower() in (".md", ".markdown") else render_html(report, source.name, found, language, kind)
         target.write_text(text, encoding="utf-8")
         report_path = str(target)
     report.update(kind="opencaselaw-draft-check", source=str(source), paragraphs=len(paragraphs), found=found, statutes_found=statutes_found,
-                  summary=summary, report_path=report_path, report_language=language_of(language))
+                  summary=summary, report_path=report_path, report_language=language_of(language), report_kind=kind)
+    if paged:
+        report["pages"] = max(page for page in pages if page)
     return report, 0 if summary["attention"] == 0 and not summary.get("statutes_attention") else 4
 
 

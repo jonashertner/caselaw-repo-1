@@ -35,6 +35,7 @@ puts `ocl.cmd` under `Program Files\OpenCaseLaw`; same commands, same output.
 | job | command |
 |---|---|
 | check a whole draft (docx/md/html/txt) | `ocl check memo.docx --format json --no-report` (rows + found citations; `--report x.md` for a person) |
+| check party submissions (pdf) or a folder | `ocl check eingaben/ --kind submission --format json --no-report` (`files[]` with per-file `summary`, `unreadable` entries carry `error`; exit 2 if any file could not be read) |
 | check citations in a list | `ocl citations resolve --input refs.jsonl --format jsonl` |
 | check quotations | `ocl quotes check --input quotes.jsonl --format jsonl` |
 | a citation string to copy | `ocl cite '<reference>' --pinpoint 2.3` |

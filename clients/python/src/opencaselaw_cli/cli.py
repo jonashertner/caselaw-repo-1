@@ -21,7 +21,7 @@ from .workflows import (BREAKER_THRESHOLD, DEFAULT_JOBS, RANKED_MAX_RESULTS, Res
 
 DEFAULT_BASE_URL = "https://mcp.opencaselaw.ch"
 FORMATS = ("text", "json", "jsonl", "table", "csv", "md")
-CONFIG_KEYS = ("base_url", "timeout", "retries", "format", "color", "language", "jobs", "cache", "local", "pack")
+CONFIG_KEYS = ("base_url", "timeout", "retries", "format", "color", "language", "jobs", "cache", "local", "pack", "kind")
 
 
 def config_path() -> str:
@@ -58,7 +58,7 @@ def load_config(path: str | None = None) -> dict:
             values["jobs"] = positive_int(values["jobs"])
     except (ValueError, argparse.ArgumentTypeError) as exc:
         raise ValueError(f"config: {exc}") from exc
-    for key, choices in (("format", FORMATS), ("color", ("auto", "always", "never")), ("language", ("de", "fr", "it"))):
+    for key, choices in (("format", FORMATS), ("color", ("auto", "always", "never")), ("language", ("de", "fr", "it")), ("kind", ("draft", "submission"))):
         if key in values and values[key] not in choices:
             raise ValueError(f"config: {key} must be one of {', '.join(choices)}")
     return values
@@ -265,16 +265,28 @@ def build_parser(config: dict | None = None):
     _input(resolve, "references", "references such as 'BGE 136 III 513' or '4A_747/2012'")
     resolve.add_argument("--language", choices=["de", "fr", "it"], default=lang, help="language of the returned citation string (default: de; OCL_LANGUAGE)")
 
-    check = commands.add_parser("check", parents=[common], formatter_class=fmt, help="check every citation and quotation in a draft (Word, Markdown, text) and write a report",
-                                description=("Read a draft (.docx including footnotes, .md, .txt, .html), find the citations and the quotations next to them, "
-                                             "check each one against the corpus, and write a report you can open (HTML, or Markdown with a .md report name). "
-                                             "Exit 4 when anything needs attention. Citations are read as written; the report shows the service's citation strings and the served wording."),
-                                epilog="examples:\n  ocl check memo.docx\n  ocl check memo.docx --report memo-check.md\n  ocl check memo.docx --format json --no-report\n")
-    check.add_argument("draft", help="the draft: .docx, .md, .txt or .html")
-    check.add_argument("--report", metavar="FILE", help="where to write the report (default: <draft>.check.html next to the draft; a .md name gives Markdown)")
+    check = commands.add_parser("check", parents=[common], formatter_class=fmt,
+                                help="check every citation and quotation in a draft or a party submission (Word, PDF, Markdown, text) and write a report",
+                                description=("Read a draft or a party submission (.docx including footnotes, .pdf page by page, .md, .txt, .html), find the citations "
+                                             "and the quotations next to them, check each one against the corpus, and write a report you can open (HTML, or Markdown "
+                                             "with a .md report name). Exit 4 when anything needs attention. Citations are read as written; the report shows the "
+                                             "service's citation strings and the served wording. Several files, or a directory (its .pdf/.docx/.md/.html/.txt files, "
+                                             "not recursive), are checked one after the other: each gets its report next to it and an index report lists them "
+                                             "(exit 2 when a file could not be read, for instance a scanned PDF without a text layer). PDF reading needs the pypdf "
+                                             "package (pip install opencaselaw-cli[pdf]) or pdftotext (poppler) on PATH."),
+                                epilog=("examples:\n  ocl check memo.docx\n  ocl check memo.docx --report memo-check.md\n  ocl check memo.docx --format json --no-report\n"
+                                        "  ocl check eingabe.pdf --kind submission\n  ocl check eingaben/ --kind submission --report eingaben/index.md\n"))
+    check.add_argument("draft", nargs="+", metavar="FILE",
+                       help="the draft or submission: .docx, .pdf, .md, .txt or .html; several files, or a directory (its checkable files, not recursive)")
+    check.add_argument("--report", metavar="FILE", help="where to write the report (default: <draft>.check.html next to the draft; a .md name gives Markdown); "
+                                                        "with several inputs, where to write the index (default: check-index.html in their common folder)")
     check.add_argument("--no-report", action="store_true", help="do not write a report file")
     check.add_argument("--language", choices=["de", "fr", "it", "en"], default=lang,
                        help="language of the report and of the returned citation strings (default: de; OCL_LANGUAGE; en: English report, German citation strings)")
+    check.add_argument("--kind", choices=["draft", "submission"], default=cfg.get("kind", "draft"),
+                       help="what the document is (default: draft; OCL_KIND). submission: the report is titled for the party's filing, its first line counts "
+                            "citations not in the corpus, differing and not checked, and a missing row states in full that unpublished decisions and the "
+                            "decision under appeal are expected to be absent")
     check.add_argument("--statutes", metavar="FILE", help="offline: statutes database for the statute checks (default: statutes.sqlite next to the pack; OCL_STATUTES)")
     check.add_argument("--canton", metavar="XX", help="canton for bare § references such as \"§ 18 VRG\" (OCL_CANTON)")
 

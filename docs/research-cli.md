@@ -114,6 +114,26 @@ what could not be asked (a `§` reference without a canton, unless
 `OCL_CANTON=ZH` names the canton the draft belongs to). "Not checked" never
 fails the run; the others exit 4.
 
+### Check party submissions
+
+Electronic filings arrive as PDF. `ocl check` reads a PDF page by page (with the
+`pypdf` package: `pip install opencaselaw-cli[pdf]`, or `pdftotext` on PATH), so
+every finding carries its page. A scanned PDF without a text layer is refused
+with a clear message: OCR has to come first. Several files, or a directory of
+filings, are checked in one run:
+
+```bash
+ocl check eingaben/ --kind submission
+```
+
+Each filing gets its own report next to it and `check-index.html` in the folder
+lists them with their findings; `--report index.md` writes the index as
+Markdown. `--kind submission` titles the report for the party's filing and puts
+the count of citations not in the corpus, differing and not checked on the
+first line; a missing citation states in full that an unpublished decision or
+the decision under appeal is expected to be absent. Exit 4 when any file needs
+attention, 2 when a file could not be read (the others are still reported).
+
 ### Check the citations in a list
 
 Before a brief goes out, you want to know that every cited decision exists,
