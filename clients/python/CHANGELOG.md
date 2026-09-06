@@ -30,6 +30,27 @@ versioned separately (`x-opencaselaw-contract-version` in `/api/research/openapi
   `%`, `#` or `?` work.
 - A failure inside the pack (I/O error, corrupt file) reaches the workflows
   as an `APIError` and becomes a row with `status: error`, never a traceback.
+- Pack integrity. `ocl pack pull` downloads to `<pack>.gz.part` and resumes
+  an interrupted download (HTTP Range, or a seek on a file share; a source
+  that ignores Range starts over), prints a progress line every 50 MB, waits
+  at most 120 s for each read with no overall time limit, verifies the gzip
+  against the published `.sha256` sidecar before unpacking, and installs the
+  pack atomically. Without a published checksum the pull stops with exit 2;
+  `--insecure` continues and records the pack as unverified. A checksum
+  mismatch keeps the partial file for inspection (exit 2) and the next pull
+  starts over. The verification (source, checksum URL, gzip and pack
+  digests, client version) is recorded in `<pack>.json`; the new `ocl pack
+  verify` reports it with the pack's schema version, build date and counts
+  (exit 4 when the pack was never verified) and `ocl pack info` prints the
+  same.
+- `--url` accepts a mirror, a `file://` URL or a path; on Windows the share
+  spellings `file://server/share/latest.sqlite.gz` and
+  `\\server\share\latest.sqlite.gz` work, and the default location is
+  `%LOCALAPPDATA%\ocl`. Packs in folders with spaces or `%` open correctly.
+- A pack whose schema major version is newer than the client reads (1 and 2)
+  is refused on open with a message naming the client and pack versions.
+- `scripts/build_verification_pack.py --gzip` also writes
+  `<output>.gz.sha256` (sha256sum format) and logs the gzip size.
 
 ## 0.7.0 (2026-09-06)
 

@@ -294,12 +294,66 @@ statutes and tools stay online-only, and the pack carries no full texts;
 `ocl --local doctor` reports the pack's path, size, generation, counts and
 age (a warning past 14 days, the snapshots being weekly) without sending
 anything, and `ocl pack info` shows the same metadata.
+and `ocl --local ...` answers `citations resolve`, `cite`, `decisions
+passage`, `quotes check` and bundles from it. Search, statutes and tools stay
+online-only, and the pack carries no full texts; `ocl pack info` shows which
+corpus generation it holds and how the download was verified (the section
+below covers the checksum, resumable pulls and mirroring on a share).
 
 Three skills ship in the package: `citation-check` (verify a draft's
 citations and quotations), `research` (search, read, follow citations, cite,
 verify), `evidence-bundle` (keep what was relied on). Scripts that prefer code
 over a shell use `opencaselaw_cli.api` (`resolve`, `check_quotes`, `passage`,
 `search`, `tool`).
+
+## Offline pack: download, verify, mirror
+
+The verification pack is one SQLite file, published weekly on the HuggingFace
+mirror as `artifacts/verification_pack/latest.sqlite.gz` next to a
+`latest.sqlite.gz.sha256` sidecar in sha256sum format (the dated copy
+`<date>.sqlite.gz` has one too). `ocl pack pull` downloads the gzip resumably,
+verifies it against the sidecar before unpacking, installs the pack atomically
+and records the verification next to it. Without a published checksum it stops
+(exit 2) unless `--insecure` is given, and it never replaces an installed pack
+with one that failed verification or that the client cannot read.
+
+For a court whose workstations do not reach the internet, IT downloads once,
+verifies, and mirrors the pair on a file share:
+
+```bash
+# 1. On a machine with internet access, once a week (about 8 GB):
+curl -LO https://huggingface.co/datasets/voilaj/swiss-caselaw/resolve/main/artifacts/verification_pack/latest.sqlite.gz
+curl -LO https://huggingface.co/datasets/voilaj/swiss-caselaw/resolve/main/artifacts/verification_pack/latest.sqlite.gz.sha256
+sha256sum -c latest.sqlite.gz.sha256
+# PowerShell: curl.exe -LO ...; then
+#   (Get-FileHash latest.sqlite.gz).Hash -eq ((Get-Content latest.sqlite.gz.sha256) -split ' ')[0]
+# 2. Copy both files, unchanged, to a read-only share, e.g. \\server\share\ocl\
+# 3. Each workstation (a login script, or the clerk) installs from the share:
+ocl pack pull --url file://server/share/ocl/latest.sqlite.gz
+ocl pack verify
+```
+
+`pull` reads the `.sha256` from the same place as the gzip, so the share must
+carry both. The pack lands in `%LOCALAPPDATA%\ocl\verification_pack.sqlite`
+on Windows and `~/.local/share/ocl/` elsewhere (`--to FILE` for another
+location); `\\server\share\ocl\latest.sqlite.gz`,
+`D:\packs\latest.sqlite.gz` and `file:///mnt/share/latest.sqlite.gz` are
+accepted as well, and any mirror that serves the gzip and its sidecar over
+https works. An interrupted pull continues from the bytes already saved in
+`<pack>.gz.part` (HTTP Range with the source's ETag; a seek on a share; a
+mirror that ignores Range starts over). It prints a line every 50 MB and waits
+at most 120 s for each read, with no overall limit. A checksum mismatch keeps
+the partial file for inspection and exits 2; the next pull starts over. A pull
+with `--insecure` installs the pack but records it as unverified.
+
+`ocl pack verify` and `ocl pack info` print the same report: what the pull
+recorded (`source_url`, `checksum_url`, `gzip_sha256`, `pack_sha256`,
+`pulled_at`, `client_version`) together with the pack's `schema_version`,
+`built_at`, `db_generation`, `decisions` and `paragraphs`. `verify` exits 4
+when the pack was pulled with `--insecure`, copied by hand (no `<pack>.json`
+next to it) or changed size since, so a login script can branch on it. Packs
+of schema 1 and 2 open; a newer major version is refused on open with a
+message naming the client and pack versions (upgrade the client).
 
 ## Reusable setup
 

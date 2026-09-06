@@ -70,6 +70,9 @@ Quotes: `exact` · `near` (differences listed) · `not_found`.
     ocl pack pull                                   # several GB, weekly snapshot (CC0)
     ocl --local doctor --format json                # the pack: path, size, generation, age
     ocl --local check memo.docx
+    ocl pack pull                                   # several GB, weekly snapshot (CC0), verified against the published .sha256
+    ocl pack pull --url file://server/share/latest.sqlite.gz   # from a mirror or a share (Windows: \\server\share\... too)
+    ocl pack verify                                 # how the installed pack was verified; exit 4 if it never was
     ocl --local citations resolve --input refs.jsonl --format jsonl
     ocl --local quotes check --input quotes.jsonl --format jsonl
     ocl --local --pack /srv/packs/verification_pack.sqlite check memo.docx
@@ -83,6 +86,13 @@ quotations are checked against the pack (no full texts, no search, no tools).
 `ocl --local doctor` reports the pack's generation and age (a warning past 14
 days) and exits 0; `ocl pack info` shows the same metadata. Results carry
 `offline: true`; a failure inside the pack is a row with `status: error`.
+With `--local` nothing about the draft leaves the machine: identity, pinpoints
+and quotations are checked against the pack (no full texts, no search, no
+tools). A pull resumes after an interruption, stops without a published
+checksum (exit 2; `--insecure` overrides and records the pack as unverified)
+and never replaces the installed pack with one that failed verification or
+that this client cannot read (schema 1 and 2). `ocl pack info` shows the
+snapshot's generation and verification; results carry `offline: true`.
 
 ## Skills
 
