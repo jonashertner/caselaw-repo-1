@@ -5,9 +5,31 @@
     <link>https://opencaselaw.ch/feeds/fr.xml</link>
     <description>Latest published Swiss court decisions in Français.</description>
     <language>de-CH</language>
-    <lastBuildDate>Sat, 05 Sep 2026 13:25:01 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 06 Sep 2026 11:36:34 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feeds/fr.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>vs_gerichte C1 25 8 vom 2026-09-06</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/vs_gerichte_C1%2025%208</link>
+      <description>C1 25 8 
+ 
+ 
+ARRÊT DU 6 JUILLET 2026 
+ 
+Tribunal cantonal du Valais 
+Cour civile II 
+ 
+Composition : Christian Zuber, président ; Christophe Pralong, juge, et Valentin Piccinin, 
+juge suppléant ; Laura Jost, greffière ; 
+ 
+en la cause 
+ 
+X _________,…</description>
+      <pubDate>Sun, 06 Sep 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">vs_gerichte_C1 25 8</guid>
+      <category>vs_gerichte</category>
+      <category>Eherecht (anderes)</category>
+    </item>
     <item>
       <title>EGMR (Kammer) 13598/21 vom 2026-09-03</title>
       <link>https://mcp.opencaselaw.ch/entscheid/ecthr_chamber_13598_21_20260903</link>
@@ -876,29 +898,6 @@ Chambre des assurances sociales
 Arrêt du 24 …</description>
       <pubDate>Mon, 24 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ge_gerichte_ATAS_735_2026</guid>
-      <category>ge_gerichte</category>
-    </item>
-    <item>
-      <title>ge_gerichte ATAS/736/2026 vom 2026-08-24</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/ge_gerichte_ATAS_736_2026</link>
-      <description>Siégeant : Valérie MONTANI, présidente ; Teresa SOARES et Yves MABILLARD, 
-juges assesseurs. 
- 
- 
- 
- 
-RÉPUBLIQUE ET 
- 
-CANTON DE GEN ÈVE 
-POUVOIR JUDICIAIRE 
- 
-A/1294/2026 
-ATAS/736/2026 
-COUR DE JUSTICE 
-Chambre des assurances sociales 
-Arrêt du 24 …</description>
-      <pubDate>Mon, 24 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ge_gerichte_ATAS_736_2026</guid>
       <category>ge_gerichte</category>
     </item>
   </channel>

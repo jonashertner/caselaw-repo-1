@@ -5,9 +5,31 @@
     <link>https://opencaselaw.ch/feed.xml</link>
     <description>Latest published decisions across all Swiss courts indexed by OpenCaseLaw.</description>
     <language>de-CH</language>
-    <lastBuildDate>Sat, 05 Sep 2026 13:25:01 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 06 Sep 2026 11:36:34 +0000</lastBuildDate>
     <generator>OpenCaseLaw publish.py</generator>
     <atom:link href="https://opencaselaw.ch/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>vs_gerichte C1 25 8 vom 2026-09-06</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/vs_gerichte_C1%2025%208</link>
+      <description>C1 25 8 
+ 
+ 
+ARRÊT DU 6 JUILLET 2026 
+ 
+Tribunal cantonal du Valais 
+Cour civile II 
+ 
+Composition : Christian Zuber, président ; Christophe Pralong, juge, et Valentin Piccinin, 
+juge suppléant ; Laura Jost, greffière ; 
+ 
+en la cause 
+ 
+X _________,…</description>
+      <pubDate>Sun, 06 Sep 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">vs_gerichte_C1 25 8</guid>
+      <category>vs_gerichte</category>
+      <category>Eherecht (anderes)</category>
+    </item>
     <item>
       <title>bs_appellationsgericht AUS.2026.73 vom 2026-09-03</title>
       <link>https://mcp.opencaselaw.ch/entscheid/bs_appellationsgericht_AUS.2026.73</link>
@@ -34,6 +56,34 @@ Basel-Stadt,
 Spiegelgasse 12, Postfach, 4001…</description>
       <pubDate>Thu, 03 Sep 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">bs_appellationsgericht_AUS.2026.73</guid>
+      <category>bs_appellationsgericht</category>
+    </item>
+    <item>
+      <title>bs_appellationsgericht AUS.2026.74 vom 2026-09-03</title>
+      <link>https://mcp.opencaselaw.ch/entscheid/bs_appellationsgericht_AUS.2026.74</link>
+      <description>Appellationsgericht
+
+des Kantons Basel-Stadt
+
+als Verwaltungsgericht
+
+Einzelrichterfür Zwangsmassnahmen imAusländerrecht
+
+AUS.2026.74
+
+URTEIL
+
+vom3.
+September 2026
+
+Beteiligte
+
+Migrationsamt des Kantons
+Basel-Stadt,
+
+Spiegelgasse 12, Postfach, 4001…</description>
+      <pubDate>Thu, 03 Sep 2026 00:00:00 +0000</pubDate>
+      <guid isPermaLink="false">bs_appellationsgericht_AUS.2026.74</guid>
       <category>bs_appellationsgericht</category>
     </item>
     <item>
@@ -780,22 +830,6 @@ A.________,
       <description>Marktüberwachung</description>
       <pubDate>Tue, 25 Aug 2026 00:00:00 +0000</pubDate>
       <guid isPermaLink="false">ECLI:CH:BVGer:2026:C-4816.2026</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht D-1024/2024 vom 2026-08-25</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-1024_2024</link>
-      <description>Asile (sans exécution du renvoi)</description>
-      <pubDate>Tue, 25 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-1024.2024</guid>
-      <category>bvger</category>
-    </item>
-    <item>
-      <title>Bundesverwaltungsgericht D-2182/2022 vom 2026-08-25</title>
-      <link>https://mcp.opencaselaw.ch/entscheid/bvger_D-2182_2022</link>
-      <description>Asile (sans exécution du renvoi)</description>
-      <pubDate>Tue, 25 Aug 2026 00:00:00 +0000</pubDate>
-      <guid isPermaLink="false">ECLI:CH:BVGer:2026:D-2182.2022</guid>
       <category>bvger</category>
     </item>
   </channel>
